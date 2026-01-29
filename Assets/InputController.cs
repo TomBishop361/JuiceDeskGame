@@ -139,11 +139,15 @@ public class InputController : MonoBehaviour
         else
         {
             rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
-            
 
-            Quaternion targetRotation = Quaternion.LookRotation(horizontal, Vector3.up);
+            if (horizontal != Vector3.zero)
+            {
+                
+                Quaternion targetRotation = Quaternion.LookRotation(horizontal, Vector3.up);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+            }
             
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+            
         }
     }
 
