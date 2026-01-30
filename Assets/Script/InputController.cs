@@ -16,7 +16,15 @@ public class InputController : MonoBehaviour
     [SerializeField] GameObject _camera;
 
     [Header("Movement Values")]
-    [SerializeField] float moveSpeed = 7;
+    private float moveSpeed = 7;
+    [SerializeField] float walkSpeed = 7;
+    [SerializeField] float sprintSpeed = 14;
+
+    [Header("Crouching")]
+    [SerializeField] float crouchSpeed = 14;
+    [SerializeField] float crouchYscale = 0.5f; // This will likely be removed when animations are made
+    [SerializeField] float startScaleYscale = 1;
+
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
     [SerializeField] float groundFriction = 0.4f;
@@ -31,6 +39,8 @@ public class InputController : MonoBehaviour
 
     public const float gravity = -9.81f;
     private bool jump;
+    private bool sprint;
+    private bool crouch;
     public bool IsJumpReady;
     bool isOnCoolDown;
     private Vector3 velocity;
@@ -48,6 +58,14 @@ public class InputController : MonoBehaviour
 
     IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
+
+    public MovementState state;
+    public enum MovementState
+    {
+        walking,
+        sprinting,
+        air
+    }
     
 
     private void OnEnable()
@@ -56,8 +74,11 @@ public class InputController : MonoBehaviour
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
+        InputManager.OnSprintReceived += SprintPressed;
+        InputManager.OnCrouchReceived += CrouchPressed;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        startScaleYscale = transform.localScale.y;
     }
 
     bool _isGrounded
@@ -96,7 +117,24 @@ public class InputController : MonoBehaviour
         isOnCoolDown= false;
     }
         
-  
+    //Movement fsm
+    private void StateHandler()
+    {
+        if (_isGrounded && sprint)
+        {
+            state = MovementState.sprinting;
+            moveSpeed = sprintSpeed;
+        }
+        else if (_isGrounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
+        }
+        else
+        {
+            state = MovementState.air;
+        }
+    }
 
     private void LookMoved(Vector2 vector)
     {
@@ -113,6 +151,15 @@ public class InputController : MonoBehaviour
     {        
             jump = value;
             _isGrounded = false;
+    }
+
+    private void SprintPressed(bool value)
+    {
+        sprint = value;
+    }
+    private void CrouchPressed(bool value)
+    {
+        crouch = value;
     }
 
     void GroundCheck()
@@ -182,6 +229,21 @@ public class InputController : MonoBehaviour
         }
     }
 
+    void HandleCrouch()
+    {
+        if (crouch)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, crouchYscale, transform.localScale.z);
+            rb.AddForce(Vector3.down, ForceMode.Impulse);
+            moveSpeed = crouchSpeed;
+        }
+        else
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startScaleYscale, transform.localScale.z);
+            
+        }
+    }
+
     private void LateUpdate()
     {
         HandleLook(LookDirection);
@@ -196,6 +258,9 @@ public class InputController : MonoBehaviour
         GroundCheck();
         HandleMove(MoveDirection);
         Jump();
+        StateHandler();
+        HandleCrouch();
+        Debug.Log("SprintPressed? " + sprint);
     }
 
 
@@ -203,6 +268,9 @@ public class InputController : MonoBehaviour
     {
         InputManager.OnMoveReceived -= MovePressed;
         InputManager.OnLookReceived -= LookMoved;
+        InputManager.OnJumpReceived -= JumpPressed;
+        InputManager.OnSprintReceived -= SprintPressed;
+        InputManager.OnCrouchReceived -= CrouchPressed;
     }
 
 #if UNITY_EDITOR
