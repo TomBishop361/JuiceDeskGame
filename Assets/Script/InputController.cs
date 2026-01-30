@@ -21,10 +21,15 @@ public class InputController : MonoBehaviour
     [SerializeField] float sprintSpeed = 14;
 
     [Header("Crouching")]
-    [SerializeField] float crouchSpeed = 14;
+    [SerializeField] float crouchSpeed = 4;
     [SerializeField] float crouchYscale = 0.5f; // This will likely be removed when animations are made
     [SerializeField] float startScaleYscale = 1;
 
+    [Header("Slop Handling")]
+    public float maxSlopeAngle;
+    private RaycastHit slopeHit;
+
+    [Header("Misc")]
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
     [SerializeField] float groundFriction = 0.4f;
@@ -168,13 +173,45 @@ public class InputController : MonoBehaviour
         _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * (CharacterHeight * 0.5f), 0.1f, hit, Ground) > 0;
     }
 
+    //Detects if player is on a slope
+    bool OnSlope()
+    {
+       if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
+        { 
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < maxSlopeAngle && angle > 0; // Ensure slope angle is within valid bounds.        
+        }
+        return false;
+    }
+
+    private Vector3 GetSlopeMoveDirection( Vector3 Direction)
+    {
+        return Vector3.ProjectOnPlane(Direction, slopeHit.normal).normalized;
+    }
+
     void HandleMove(Vector2 Direction)
     {
+        //Converts direction according to camera Direction
         Vector3 desiredvelocity = (_camera.transform.forward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
 
         Vector3 horizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        if (OnSlope())
+        {
+            Debug.Log("OnSlope");
+
+            // Project the desired velocity onto the slope and scale it by movement speed
+            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
+
+            // Preserve vertical velocity, but ensure it's consistent with slope behavior
+            rb.linearVelocity = new Vector3(slopeVel.x, rb.linearVelocity.y, slopeVel.z);
+
+            // Apply an extra force to keep the player grounded
+            rb.AddForce(Vector3.down * 80, ForceMode.Force);
+
+        }
 
         if (isGrounded && Direction == Vector2.zero)
         {
@@ -196,6 +233,7 @@ public class InputController : MonoBehaviour
             
             
         }
+        rb.useGravity = !OnSlope();
     }
 
     
