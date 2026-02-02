@@ -19,6 +19,7 @@ public class InputController : MonoBehaviour
     private float moveSpeed = 7;
     [SerializeField] float walkSpeed = 7;
     [SerializeField] float sprintSpeed = 14;
+    [SerializeField] float wallRunSpeed = 7;
 
     [Header("Crouching")]
     [SerializeField] float crouchSpeed = 4;
@@ -46,6 +47,7 @@ public class InputController : MonoBehaviour
     private bool jump;
     private bool sprint;
     private bool crouch;
+    public bool wallRunning;
     public bool IsJumpReady;
     bool isOnCoolDown;
     private Vector3 velocity;
@@ -61,7 +63,7 @@ public class InputController : MonoBehaviour
     Vector2 LookDirection;
 
 
-    IInputManager InputManager => _inputManager.InputManager;
+    public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
 
     public MovementState state;
@@ -69,6 +71,7 @@ public class InputController : MonoBehaviour
     {
         walking,
         sprinting,
+        wallRunning,
         air
     }
     
@@ -125,6 +128,12 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
+        if (wallRunning)
+        {
+            state = MovementState.wallRunning;
+            moveSpeed = wallRunSpeed;
+        }
+
         if (_isGrounded && sprint)
         {
             state = MovementState.sprinting;
