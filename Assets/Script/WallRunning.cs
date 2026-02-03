@@ -100,12 +100,15 @@ public class WallRunning : MonoBehaviour
             wallForward =-wallForward;
         }
 
+        //Rotate Orientation to meet wall
+        orientation.transform.rotation = Quaternion.LookRotation(wallForward);
+
         rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
 
         //Push to wall
         if (!(wallLeft && moveDir.x > 0) && !(wallRight && moveDir.x < 0))
         {
-            rb.AddForce(-wallNoral * 100, ForceMode.Force);
+            rb.AddForce(-wallNoral * 200, ForceMode.Force);
         }
     }
 

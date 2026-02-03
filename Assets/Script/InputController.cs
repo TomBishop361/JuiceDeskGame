@@ -129,7 +129,7 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
-        if (wallRunning)
+        if (wallRunning) // Movement needs to change to be body relative instead of camera
         {
             state = MovementState.wallRunning;
             moveSpeed = wallRunSpeed;
