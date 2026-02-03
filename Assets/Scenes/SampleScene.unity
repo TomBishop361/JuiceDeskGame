@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 236212038}
   - component: {fileID: 236212037}
   - component: {fileID: 236212043}
+  - component: {fileID: 236212048}
   - component: {fileID: 236212047}
   - component: {fileID: 236212044}
   - component: {fileID: 236212046}
@@ -367,6 +368,20 @@ MonoBehaviour:
   orientation: {fileID: 236212040}
   controller: {fileID: 236212045}
   rb: {fileID: 236212044}
+--- !u!114 &236212048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 236212034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d436824b44b7141a5dec7f1c175253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cineCam: {fileID: 1323598756}
+  XShoulderOffset: 0.9
 --- !u!1 &261643595
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,7 +905,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.029021919, y: 3.5570002, z: 0.80669284}
+  m_LocalPosition: {x: 0.26902187, y: 3.5570002, z: 0.80669284}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1658,7 +1673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: {x: 0.1, y: 0.5, z: 0.3}
-  ShoulderOffset: {x: 0.66, y: 0.65, z: -0.53}
+  ShoulderOffset: {x: 0.9, y: 0.65, z: -0.53}
   VerticalArmLength: 0.4
   CameraSide: 1
   CameraDistance: 2
@@ -1723,7 +1738,7 @@ Transform:
   m_GameObject: {fileID: 1323598755}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.029021919, y: 3.5570002, z: 0.80669284}
+  m_LocalPosition: {x: 0.26902187, y: 3.5570002, z: 0.80669284}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

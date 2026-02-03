@@ -37,6 +37,8 @@ public class InputController : MonoBehaviour
     [SerializeField] LayerMask Ground;
     [SerializeField] float CharacterHeight = 2;
     [Range(0,1)]
+    [SerializeField] float CoyoteTime = 0.1f;
+    [Range(0,1)]
     [SerializeField] float Sensitivity = 0.15f;
     [SerializeField] float jumpForce= 10;
     [SerializeField] float jumpCoolDown = 0.3f;
@@ -112,8 +114,7 @@ public class InputController : MonoBehaviour
 
     IEnumerator coyoteTime(bool value)
     {
-        yield return new WaitForSeconds(0.1f);// new WaitForSeconds(0f);
-
+        yield return new WaitForSeconds(CoyoteTime);// new WaitForSeconds(0f);
         isGrounded = value;
     }
 

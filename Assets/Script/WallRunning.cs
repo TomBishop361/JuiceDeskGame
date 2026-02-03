@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -22,8 +23,10 @@ public class WallRunning : MonoBehaviour
     public Transform orientation;
     [SerializeField] InputController controller;
     Vector2 moveDir;
-    [SerializeField] Rigidbody rb; 
+    [SerializeField] Rigidbody rb;
 
+    public event Action<bool> OnWallRunStart;
+    
 
     private void OnEnable()
     {
@@ -73,12 +76,14 @@ public class WallRunning : MonoBehaviour
     void startWallRun()
     {
         controller.wallRunning = true;
+        OnWallRunStart?.Invoke(wallRight);
         
     }
 
     void StopWallRun()
     {
         controller.wallRunning = false;
+        OnWallRunStart?.Invoke(false);
     }
 
     void wallRunMove()
