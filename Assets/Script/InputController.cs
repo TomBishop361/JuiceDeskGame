@@ -202,7 +202,10 @@ public class InputController : MonoBehaviour
     void HandleMove(Vector2 Direction)
     {
         //Converts direction according to camera Direction
-        Vector3 desiredvelocity = (_camera.transform.forward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
+        Vector3 desiredvelocity;
+        if (wallRunning) desiredvelocity = (transform.forward * Direction.y + transform.right * Direction.x).normalized * moveSpeed;
+
+        else desiredvelocity = (_camera.transform.forward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
 

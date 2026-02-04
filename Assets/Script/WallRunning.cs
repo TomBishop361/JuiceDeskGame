@@ -8,22 +8,29 @@ public class WallRunning : MonoBehaviour
     public LayerMask wallLayer;
     public LayerMask groundLayer;
     public float wallRunForce;
-    public float wallRunTime;
-    public float wallRunTimer;   
+    public Transform orientation;
+    [SerializeField] InputController controller;
+    Vector2 moveDir;
+    bool jump;
+    [SerializeField] Rigidbody rb;
 
-    [Header("Detection")]
+    [Header("Wall Run")]
     public float wallCheckDist =0.7f;
     public float minJumpHeight;
+    public float wallRunTime;
+    float wallRunTimer;
     private RaycastHit leftWallCheck;
     private RaycastHit rightWallCheck;
     private bool wallLeft;
     private bool wallRight;
 
-    [Header("References")]
-    public Transform orientation;
-    [SerializeField] InputController controller;
-    Vector2 moveDir;
-    [SerializeField] Rigidbody rb;
+    [Header("Wall Jumping")]
+    public float wallJumpUpForce;
+    public float wallJumpSideForce;
+    public float exitWallTime;
+    float exitWallTimer;
+    bool exitingWall;  
+   
 
     public event Action<bool> OnWallRunStart;
     
@@ -31,11 +38,14 @@ public class WallRunning : MonoBehaviour
     private void OnEnable()
     {
        controller.InputManager.OnMoveReceived += MoveInput;
+        controller.InputManager.OnJumpReceived += JumpInput;
+
     }
 
     private void OnDisable()
     {
         controller.InputManager.OnMoveReceived -= MoveInput;
+        controller.InputManager.OnJumpReceived -= JumpInput;
     }
 
     void MoveInput(Vector2 input)
@@ -43,6 +53,10 @@ public class WallRunning : MonoBehaviour
         moveDir = input;
     }
 
+    void JumpInput(bool input)
+    {
+        jump = input;
+    }
 
     void CheckForWall()
     {
@@ -59,12 +73,36 @@ public class WallRunning : MonoBehaviour
 
     private void StateMachine()
     {
-        if ((wallLeft || wallRight) && moveDir.y > 0 && AboveGround())
+        if ((wallLeft || wallRight) && moveDir.y > 0 && AboveGround() && !exitingWall)
         {
             //Start Wall Run
-            if (!controller.wallRunning)
+            if (!controller.wallRunning) startWallRun();
+
+            if (wallRunTimer > 0) wallRunTimer -= Time.deltaTime;
+
+            if(wallRunTimer <=0 && controller.wallRunning)
             {
-                startWallRun();
+                exitingWall = true;
+                exitWallTimer = exitWallTime;
+            }
+
+            if (jump) WallJump();
+
+        }
+        else if (exitingWall)
+        {
+            if (controller.wallRunning)
+            {
+                StopWallRun();
+            }
+            if(exitWallTimer > 0)
+            {
+                exitWallTimer -= +Time.deltaTime;
+            }
+            if(exitWallTimer <= 0)
+            {
+                exitingWall = false;
+                
             }
         }
         else
@@ -77,7 +115,8 @@ public class WallRunning : MonoBehaviour
     {
         controller.wallRunning = true;
         OnWallRunStart?.Invoke(wallRight);
-        
+
+        wallRunTimer = wallRunTime;
     }
 
     void StopWallRun()
@@ -122,5 +161,20 @@ public class WallRunning : MonoBehaviour
     {
      CheckForWall();
         StateMachine();
+    }
+
+    private void WallJump()
+    {
+        exitingWall = true;
+        exitWallTimer = exitWallTime;
+
+        Vector3 wallNormal = wallRight ? rightWallCheck.normal : leftWallCheck.normal;
+
+        Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        rb.AddForce(forceToApply, ForceMode.Impulse);
+
+        
     }
 }
