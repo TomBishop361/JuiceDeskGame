@@ -26,8 +26,8 @@ public class InputController : MonoBehaviour
     [SerializeField] float crouchYscale = 0.5f; // This will likely be removed when animations are made
     [SerializeField] float startScaleYscale = 1;
 
-    [Header("Slop Handling")]
-    public float maxSlopeAngle;
+    [Header("Slope Handling")]
+    [SerializeField] public float maxSlopeAngle;
     private RaycastHit slopeHit;
 
     [Header("Misc")]
@@ -52,6 +52,7 @@ public class InputController : MonoBehaviour
     public bool wallRunning;
     public bool IsJumpReady;
     bool isOnCoolDown;
+    bool exitingSlope;
     private Vector3 velocity;
     
     private Vector2 lastInputEvent;
@@ -123,7 +124,8 @@ public class InputController : MonoBehaviour
         Debug.Log("JumpReady");
         yield return new WaitForSeconds(jumpCoolDown);
         IsJumpReady = true;
-        isOnCoolDown= false;
+        //exitingSlope =false;
+        isOnCoolDown = false;
     }
         
     //Movement fsm
@@ -165,6 +167,7 @@ public class InputController : MonoBehaviour
     private void JumpPressed(bool value) 
     {        
             jump = value;
+        exitingSlope = true;
             _isGrounded = false;
     }
 
@@ -180,6 +183,7 @@ public class InputController : MonoBehaviour
     void GroundCheck()
     {
         Collider[] hit = new Collider[1];
+        exitingSlope = false;
         _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * (CharacterHeight * 0.5f), 0.1f, hit, Ground) > 0;
     }
 
@@ -189,7 +193,7 @@ public class InputController : MonoBehaviour
        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
         { 
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            return angle < maxSlopeAngle && angle > 0; // Ensure slope angle is within valid bounds.        
+            return angle < maxSlopeAngle && angle != 0; // Ensure slope angle is within valid bounds.        
         }
         return false;
     }
@@ -211,18 +215,19 @@ public class InputController : MonoBehaviour
 
         Vector3 horizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 
-        if (OnSlope())
+        if (OnSlope() && !exitingSlope)
         {
             Debug.Log("OnSlope");
 
             // Project the desired velocity onto the slope and scale it by movement speed
-            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
+            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed*20;
 
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
-            rb.linearVelocity = new Vector3(slopeVel.x, rb.linearVelocity.y, slopeVel.z);
+            rb.linearVelocity = new Vector3(slopeVel.x , rb.linearVelocity.y, slopeVel.z);
 
             // Apply an extra force to keep the player grounded
-            rb.AddForce(Vector3.down * 80, ForceMode.Force);
+          //rb.AddForce(Vector3.down, ForceMode.Force);
+            rb.AddForce(-slopeHit.normal * 80, ForceMode.Force);
 
         }
 
