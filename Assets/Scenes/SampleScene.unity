@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 236212040}
   - component: {fileID: 236212039}
   - component: {fileID: 236212038}
+  - component: {fileID: 236212049}
   - component: {fileID: 236212037}
   - component: {fileID: 236212043}
   - component: {fileID: 236212048}
@@ -311,6 +312,7 @@ MonoBehaviour:
   walkSpeed: 7
   sprintSpeed: 14
   wallRunSpeed: 7
+  slideSpeed: 30
   crouchSpeed: 4
   crouchYscale: 0.5
   startScaleYscale: 1
@@ -327,6 +329,7 @@ MonoBehaviour:
   jumpCoolDown: 0.3
   isGrounded: 0
   inputLagPeriod: 0.0001
+  sliding: 0
   wallRunning: 0
   IsJumpReady: 0
   rb: {fileID: 236212044}
@@ -386,6 +389,25 @@ MonoBehaviour:
   XShoulderOffset: 0.9
   controller: {fileID: 236212047}
   cineCam: {fileID: 1323598756}
+--- !u!114 &236212049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 236212034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a48a8537bca9a4a45b33cc19f7da6a9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation: {fileID: 1265075365}
+  playerObj: {fileID: 236212040}
+  rb: {fileID: 236212044}
+  controller: {fileID: 236212045}
+  maxSlideTime: 0.75
+  slideForce: 200
+  slideYScale: 0.5
 --- !u!1 &254566016
 GameObject:
   m_ObjectHideFlags: 0
@@ -520,7 +542,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 261643595}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 2a0f8b9a12084564598fd130c1d3d433, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

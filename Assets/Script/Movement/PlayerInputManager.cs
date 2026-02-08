@@ -8,12 +8,14 @@ public class PlayerInputManager : InputManagerBase, IInputManager
     public Vector2 Look { get; private set; }
     public bool jump { get; private set; }
     public bool sprint { get; private set; }
-    public bool crouch{ get; private set; }
+    public float crouch{ get; private set; }
+    public float slide{ get; private set; }
 
     public event Action<Vector2> OnMoveReceived = delegate (Vector2 vector2) { };
     public event Action<bool> OnJumpReceived = delegate (bool value ) { };
     public event Action<bool> OnSprintReceived = delegate (bool value ) { };
-    public event Action<bool> OnCrouchReceived = delegate (bool value ) { };
+    public event Action<float> OnCrouchReceived = delegate (float value ) { };
+    public event Action<float> OnSlideReceived = delegate (float value ) { };
     public event Action<Vector2> OnLookReceived = delegate (Vector2 vector2) { };
     
     void OnLook(InputValue inputValue)
@@ -44,7 +46,13 @@ public class PlayerInputManager : InputManagerBase, IInputManager
 
     void OnCrouch(InputValue inputvalue)
     {
-        crouch = (inputvalue.Get<float>() == 1);
+        crouch = inputvalue.Get<float>();
         OnCrouchReceived(crouch);
+    }
+
+    void OnSlide(InputValue inputvalue)
+    {
+        slide = inputvalue.Get<float>();
+        OnSlideReceived(slide);
     }
 }

@@ -20,6 +20,10 @@ public class InputController : MonoBehaviour
     [SerializeField] float walkSpeed = 7;
     [SerializeField] float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
+    [SerializeField] float slideSpeed = 7;
+
+    private float desiredMoveSpeed;
+    private float lastDesiredMoveSpeed;
 
     [Header("Crouching")]
     [SerializeField] float crouchSpeed = 4;
@@ -48,7 +52,9 @@ public class InputController : MonoBehaviour
     public const float gravity = -9.81f;
     private bool jump;
     private bool sprint;
-    private bool crouch;
+    private float crouch;
+    bool crouching;
+    public bool sliding;
     public bool wallRunning;
     public bool IsJumpReady;
     bool isOnCoolDown;
@@ -75,6 +81,8 @@ public class InputController : MonoBehaviour
         walking,
         sprinting,
         wallRunning,
+        crouching,
+        sliding,
         air
     }
     
@@ -131,13 +139,28 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
-        if (wallRunning) // Movement needs to change to be body relative instead of camera
+        //if (sliding)
+        //{
+        //    state = MovementState.sliding;
+        //    if (OnSlope() && rb.linearVelocity.y < 0.1f)
+        //    {
+        //        moveSpeed = slideSpeed;
+        //    }
+        //    else moveSpeed = sprintSpeed;
+        //}
+         if (wallRunning) // Movement needs to change to be body relative instead of camera
         {
             state = MovementState.wallRunning;
             moveSpeed = wallRunSpeed;
         }
 
-        if (_isGrounded && sprint)
+        if (crouching)
+        {
+            state = MovementState.crouching;
+            moveSpeed = crouchSpeed;
+        }
+
+        else if (_isGrounded && sprint)
         {
             state = MovementState.sprinting;
             moveSpeed = sprintSpeed;
@@ -151,6 +174,31 @@ public class InputController : MonoBehaviour
         {
             state = MovementState.air;
         }
+
+        //if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 8f && moveSpeed != 0)
+        //{
+        //    StopAllCoroutines();
+        //    StartCoroutine(SmoothLerpSpeed());
+        //}
+        //else
+        //{
+        //    moveSpeed = desiredMoveSpeed;
+        //}
+        //    lastDesiredMoveSpeed = desiredMoveSpeed;
+    }
+
+    private IEnumerator SmoothLerpSpeed()
+    {
+        float t = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float startValue = moveSpeed;
+        while (t < difference)
+        {
+            moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, t / difference);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        moveSpeed = desiredMoveSpeed;
     }
 
     private void LookMoved(Vector2 vector)
@@ -175,7 +223,7 @@ public class InputController : MonoBehaviour
     {
         sprint = value;
     }
-    private void CrouchPressed(bool value)
+    private void CrouchPressed(float value)
     {
         crouch = value;
     }
@@ -184,11 +232,11 @@ public class InputController : MonoBehaviour
     {
         Collider[] hit = new Collider[1];
         exitingSlope = false;
-        _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * (CharacterHeight * 0.5f), 0.1f, hit, Ground) > 0;
+        _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, hit, Ground) > 0;
     }
 
     //Detects if player is on a slope
-    bool OnSlope()
+    public bool OnSlope()
     {
        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
         { 
@@ -198,7 +246,7 @@ public class InputController : MonoBehaviour
         return false;
     }
 
-    private Vector3 GetSlopeMoveDirection( Vector3 Direction)
+    public Vector3 GetSlopeMoveDirection( Vector3 Direction)
     {
         return Vector3.ProjectOnPlane(Direction, slopeHit.normal).normalized;
     }
@@ -287,14 +335,18 @@ public class InputController : MonoBehaviour
 
     void HandleCrouch()
     {
-        if (crouch)
+        if (crouch ==1 )
         {
+            crouch = -1;
+            crouching = true;
             transform.localScale = new Vector3(transform.localScale.x, crouchYscale, transform.localScale.z);
             rb.AddForce(Vector3.down, ForceMode.Impulse);
-            moveSpeed = crouchSpeed;
+            
         }
-        else
+        if(crouch == 0)
         {
+            crouch = -1;
+            crouching = false;
             transform.localScale = new Vector3(transform.localScale.x, startScaleYscale, transform.localScale.z);
             
         }
