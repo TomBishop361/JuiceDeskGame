@@ -34,7 +34,7 @@ public class WallRunning : MonoBehaviour
 
     public event Action<bool> OnWallRunStart;
     
-
+    public ForceMode forceMode;
     private void OnEnable()
     {
        controller.InputManager.OnMoveReceived += MoveInput;
@@ -173,7 +173,8 @@ public class WallRunning : MonoBehaviour
         Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        rb.AddForce(forceToApply, ForceMode.Impulse);
+
+        rb.AddForce(forceToApply, forceMode);
 
         
     }
