@@ -21,11 +21,13 @@ public class Sliding : MonoBehaviour
 
     Vector2 moveDir;
     float slideInput;
+    bool jump;
 
     private void OnEnable()
     {
         controller.InputManager.OnSlideReceived += SlideInput;
         controller.InputManager.OnMoveReceived += MoveInput;
+        controller.JumpEvent += jumpListener;
         startYScale = transform.localScale.y;   
     }
 
@@ -33,6 +35,7 @@ public class Sliding : MonoBehaviour
     {
         controller.InputManager.OnSlideReceived -= SlideInput;
         controller.InputManager.OnMoveReceived -= MoveInput;
+        controller.JumpEvent -= jumpListener;
     }
 
     void SlideInput(float val)
@@ -45,10 +48,12 @@ public class Sliding : MonoBehaviour
     {
         moveDir = input;
     }
+    
 
     void SlidingMovement()
     {
-        Vector3 slideDirection = orientation.forward * moveDir.y + orientation.right * moveDir.x;
+        Vector3 flatOrientationForward = new Vector3(orientation.forward.x, 0, orientation.forward.z);
+        Vector3 slideDirection = flatOrientationForward * moveDir.y + orientation.right * moveDir.x;
 
         if (!controller.OnSlope() || rb.linearVelocity.y > -0.1f)
         {
@@ -69,7 +74,7 @@ public class Sliding : MonoBehaviour
 
     void StartSlide()
     {
-        Debug.Log("Slide Start");
+        
         controller.sliding = true;
         transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
         rb.AddForce(Vector3.down, ForceMode.Impulse);
@@ -80,7 +85,8 @@ public class Sliding : MonoBehaviour
 
     void StopSlide()
     {
-        Debug.Log("Slide STOP");
+        if (!controller.sliding) return;
+
         controller.sliding = false;
         transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
     }
@@ -98,19 +104,31 @@ public class Sliding : MonoBehaviour
             SlidingMovement();
         }
     }
+    void jumpListener()
+    {
+        StopSlide();
+    }
+
+    bool shouldStopSlide()
+    {
+        return controller.wallRunning ||
+        controller.IsJumpReady == false || // jumping
+        slideInput == 0;
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (slideInput==1 && moveDir != Vector2.zero)
+        if (slideInput==1 && moveDir != Vector2.zero && controller._isGrounded)
         {
             slideInput = -1;
             StartSlide();
         } 
-        if(slideInput==0 && controller.sliding)
+        if(controller.sliding && shouldStopSlide())
         {
             slideInput = -1;
             StopSlide();
         }
+       
     }
 }

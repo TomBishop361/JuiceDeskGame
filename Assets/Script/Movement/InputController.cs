@@ -8,6 +8,7 @@ using UnityEngine.Windows;
 
 
 
+
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
 {
@@ -52,14 +53,14 @@ public class InputController : MonoBehaviour
     [SerializeField] TextMeshProUGUI VelocityUI;
 
     public const float gravity = -9.81f;
-    private bool jump;
+    public bool jump;
     private bool sprint;
     private float crouch;
     bool crouching;
     public bool sliding;
     public bool wallRunning;
     public bool IsJumpReady;
-    bool isOnCoolDown;
+    public bool isOnCoolDown;
     bool exitingSlope;
     private Vector3 velocity;
     
@@ -73,9 +74,12 @@ public class InputController : MonoBehaviour
     Vector2 MoveDirection;
     Vector2 LookDirection;
 
+    Coroutine speedLerpCoroutine;
 
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
+
+    public event Action JumpEvent = delegate { };
 
     public MovementState state;
     public enum MovementState
@@ -102,15 +106,16 @@ public class InputController : MonoBehaviour
         startScaleYscale = transform.localScale.y;
     }
 
-    bool _isGrounded
+    public bool _isGrounded
     {
         get => isGrounded;
-        set
+        private set
         {
             if (value == false)
             {                
                 StartCoroutine(coyoteTime(value));
             }
+            //True
             else
             {                
                 isGrounded = value;
@@ -133,8 +138,7 @@ public class InputController : MonoBehaviour
     {
         Debug.Log("JumpReady");
         yield return new WaitForSeconds(jumpCoolDown);
-        IsJumpReady = true;
-        //exitingSlope =false;
+        IsJumpReady = true;        
         isOnCoolDown = false;
     }
         
@@ -146,7 +150,7 @@ public class InputController : MonoBehaviour
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
         }
-        if (sliding)
+        else if (sliding)
         {
             state = MovementState.sliding;
             if (OnSlope() && rb.linearVelocity.y < 0.1f)
@@ -178,8 +182,9 @@ public class InputController : MonoBehaviour
 
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 8f && moveSpeed != 0)
         {
-            StopAllCoroutines();
-            StartCoroutine(SmoothLerpSpeed());
+            if(speedLerpCoroutine != null)
+                StopCoroutine(speedLerpCoroutine);
+            speedLerpCoroutine = StartCoroutine(SmoothLerpSpeed());
         }
         else
         {
@@ -215,9 +220,8 @@ public class InputController : MonoBehaviour
 
     private void JumpPressed(bool value) 
     {        
-            jump = value;
-        exitingSlope = true;
-            _isGrounded = false;
+            jump = value;        
+            //_isGrounded = false;
     }
 
     private void SprintPressed(bool value)
@@ -232,8 +236,10 @@ public class InputController : MonoBehaviour
     void GroundCheck()
     {
         Collider[] hit = new Collider[1];
-        exitingSlope = false;
+        
         _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, hit, Ground) > 0;
+        if (_isGrounded)
+            exitingSlope = false;
     }
 
     //Detects if player is on a slope
@@ -258,18 +264,22 @@ public class InputController : MonoBehaviour
         Vector3 desiredvelocity;
         if (wallRunning) desiredvelocity = (transform.forward * Direction.y + transform.right * Direction.x).normalized * moveSpeed;
 
-        else desiredvelocity = (_camera.transform.forward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
+        else {
+            Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
+            desiredvelocity = ( cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
+        }
+            
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
 
         Vector3 horizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 
-        if (OnSlope() && !exitingSlope)
+        if (OnSlope() && !exitingSlope && !sliding)
         {
             Debug.Log("OnSlope");
 
             // Project the desired velocity onto the slope and scale it by movement speed
-            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed*20;
+            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed * 20;
 
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
             rb.linearVelocity = new Vector3(slopeVel.x , rb.linearVelocity.y, slopeVel.z);
@@ -318,7 +328,7 @@ public class InputController : MonoBehaviour
         yRotation += lastInputEvent.x * Sensitivity;
         xRotation -= lastInputEvent.y * Sensitivity;
 
-        xRotation = Mathf.Clamp(xRotation, -90, 90);
+        xRotation = Mathf.Clamp(xRotation, -89, 89);
 
         _camera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0); 
         //transform.rotation = Quaternion.Euler(0, yRotation, 0);
@@ -328,9 +338,17 @@ public class InputController : MonoBehaviour
     {
         if (jump && isGrounded && IsJumpReady)
         {
+            float slideJumpMultiplier = sliding ? 1.25f : 1f;
+
+            JumpEvent();
+
             IsJumpReady = false;
+            exitingSlope = true;
+            sliding = false;
+            rb.useGravity = true;
+
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z); // Clear vertical
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);            
+            rb.AddForce(Vector3.up * jumpForce * slideJumpMultiplier, ForceMode.Impulse);            
         }
     }
 
@@ -365,8 +383,8 @@ public class InputController : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
-        HandleMove(MoveDirection);
         Jump();
+        HandleMove(MoveDirection);        
         StateHandler();
         HandleCrouch();
         Debug.Log("SprintPressed? " + sprint);
