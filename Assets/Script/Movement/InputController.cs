@@ -26,6 +26,9 @@ public class InputController : MonoBehaviour
 
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
+    [Header("Slope Slide Multiplier")]
+    public float speedIncreaseMultiplier;
+    public float slopeIncreaseMultiplier;
 
     [Header("Crouching")]
     [SerializeField] float crouchSpeed = 4;
@@ -201,7 +204,17 @@ public class InputController : MonoBehaviour
         while (t < difference)
         {
             moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, t / difference);
-            t += Time.deltaTime;
+
+            if (OnSlope())
+            {
+                float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
+                float slopeAngleIncrease = 1 + (slopeAngle / 90f);
+
+                t += Time.deltaTime * speedIncreaseMultiplier * slopeIncreaseMultiplier * slopeAngleIncrease;
+            }
+            else
+                t += Time.deltaTime * speedIncreaseMultiplier;
+            
             yield return null;
         }
         moveSpeed = desiredMoveSpeed;
