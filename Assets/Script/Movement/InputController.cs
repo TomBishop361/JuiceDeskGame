@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Windows;
@@ -20,7 +21,7 @@ public class InputController : MonoBehaviour
     [SerializeField] float walkSpeed = 7;
     [SerializeField] float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
-    [SerializeField] float slideSpeed = 7;
+    [SerializeField] float slideSpeed = 30;
 
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
@@ -48,6 +49,7 @@ public class InputController : MonoBehaviour
     [SerializeField] float jumpCoolDown = 0.3f;
     [SerializeField] bool isGrounded;
     [SerializeField] float inputLagPeriod = 0.0001f;
+    [SerializeField] TextMeshProUGUI VelocityUI;
 
     public const float gravity = -9.81f;
     private bool jump;
@@ -139,52 +141,51 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
-        //if (sliding)
-        //{
-        //    state = MovementState.sliding;
-        //    if (OnSlope() && rb.linearVelocity.y < 0.1f)
-        //    {
-        //        moveSpeed = slideSpeed;
-        //    }
-        //    else moveSpeed = sprintSpeed;
-        //}
-         if (wallRunning) // Movement needs to change to be body relative instead of camera
+        if (wallRunning) // Movement needs to change to be body relative instead of camera
         {
             state = MovementState.wallRunning;
-            moveSpeed = wallRunSpeed;
+            desiredMoveSpeed = wallRunSpeed;
         }
-
-        if (crouching)
+        if (sliding)
+        {
+            state = MovementState.sliding;
+            if (OnSlope() && rb.linearVelocity.y < 0.1f)
+            {
+                desiredMoveSpeed = slideSpeed;
+            }
+            else desiredMoveSpeed = sprintSpeed;
+        }
+        else if (crouching)
         {
             state = MovementState.crouching;
-            moveSpeed = crouchSpeed;
+            desiredMoveSpeed = crouchSpeed;
         }
 
         else if (_isGrounded && sprint)
         {
             state = MovementState.sprinting;
-            moveSpeed = sprintSpeed;
+            desiredMoveSpeed = sprintSpeed;
         }
         else if (_isGrounded)
         {
             state = MovementState.walking;
-            moveSpeed = walkSpeed;
+            desiredMoveSpeed = walkSpeed;
         }
         else
         {
             state = MovementState.air;
         }
 
-        //if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 8f && moveSpeed != 0)
-        //{
-        //    StopAllCoroutines();
-        //    StartCoroutine(SmoothLerpSpeed());
-        //}
-        //else
-        //{
-        //    moveSpeed = desiredMoveSpeed;
-        //}
-        //    lastDesiredMoveSpeed = desiredMoveSpeed;
+        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 8f && moveSpeed != 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(SmoothLerpSpeed());
+        }
+        else
+        {
+            moveSpeed = desiredMoveSpeed;
+        }
+        lastDesiredMoveSpeed = desiredMoveSpeed;
     }
 
     private IEnumerator SmoothLerpSpeed()
@@ -358,7 +359,7 @@ public class InputController : MonoBehaviour
     }
     private void Update()
     {        
-        
+        VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
             
     }
     private void FixedUpdate()

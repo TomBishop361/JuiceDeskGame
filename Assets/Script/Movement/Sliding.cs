@@ -13,7 +13,7 @@ public class Sliding : MonoBehaviour
     [SerializeField] float maxSlideTime;
     public float slideForce;
     private float slideTimer;
-    bool isSliding;
+    //bool isSliding;
 
     [Header("Scaling")]
     public float slideYScale;
@@ -70,7 +70,7 @@ public class Sliding : MonoBehaviour
     void StartSlide()
     {
         Debug.Log("Slide Start");
-        isSliding = true;
+        controller.sliding = true;
         transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
         rb.AddForce(Vector3.down, ForceMode.Impulse);
 
@@ -81,7 +81,7 @@ public class Sliding : MonoBehaviour
     void StopSlide()
     {
         Debug.Log("Slide STOP");
-        isSliding =false;
+        controller.sliding = false;
         transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
     }
 
@@ -93,7 +93,7 @@ public class Sliding : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isSliding)
+        if (controller.sliding)
         {
             SlidingMovement();
         }
@@ -107,7 +107,7 @@ public class Sliding : MonoBehaviour
             slideInput = -1;
             StartSlide();
         } 
-        if(slideInput==0 && isSliding)
+        if(slideInput==0 && controller.sliding)
         {
             slideInput = -1;
             StopSlide();
