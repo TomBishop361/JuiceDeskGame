@@ -33,6 +33,7 @@ public class WallRunning : MonoBehaviour
    
 
     public event Action<bool> OnWallRunStart;
+    public event Action OnWallRunEnd;
     
     public ForceMode forceMode;
     private void OnEnable()
@@ -122,7 +123,8 @@ public class WallRunning : MonoBehaviour
     void StopWallRun()
     {
         controller.wallRunning = false;
-        OnWallRunStart?.Invoke(false);
+        OnWallRunEnd?.Invoke();
+        //OnWallRunStart?.Invoke(false);
     }
 
     void wallRunMove()
