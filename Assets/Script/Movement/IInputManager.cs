@@ -8,11 +8,14 @@ public interface IInputManager
     bool jump { get; }
 
     bool sprint { get; }
-    bool crouch { get; }
+    float crouch { get; }
+
+    float slide { get; }
 
     event Action<Vector2> OnMoveReceived;
     event Action<Vector2> OnLookReceived;
     event Action<bool> OnJumpReceived;
     event Action<bool> OnSprintReceived;
-    event Action<bool> OnCrouchReceived;
+    event Action<float> OnCrouchReceived;
+    event Action<float> OnSlideReceived;
 }
