@@ -21,7 +21,7 @@ public class Sliding : MonoBehaviour
 
     Vector2 moveDir;
     float slideInput;
-    bool jump;
+    //bool jump;
 
     private void OnEnable()
     {

@@ -23,6 +23,12 @@ public class CameraShoulderHandler : MonoBehaviour
 
     Coroutine cameraLerp;
 
+    [Header("Temp Gun Movement")]
+    //Temporary Move Gun Side
+    [SerializeField] GameObject gunObj;
+    [SerializeField] Vector3 RightSideGunPlacement;
+    [SerializeField] Vector3 LeftSideGunPlacement;
+
     private void Start()
     {
         currentOffset = XShoulderOffset;
@@ -44,15 +50,17 @@ public class CameraShoulderHandler : MonoBehaviour
 
     void changeShoulder(bool right)
     {
-        Debug.Log("Right" + right);
+        
         if (right)
         {
             targetOffset = -XShoulderOffset;
             targetDutch = DutchTilt;
+            gunObj.transform.localPosition = LeftSideGunPlacement;
         }
         else
         {            
             targetDutch = -DutchTilt;
+            gunObj.transform.localPosition = RightSideGunPlacement;
         }
 
         //Begin Lerp
