@@ -177,9 +177,9 @@ namespace Game.AI.Behavior.Shared {
 				return Status.Failure;
 			}
 
-			bool hasStartedAttack = agent.TryStartPrimaryAttack();
+			bool hasStartedPrimaryAttack = agent.TryStartPrimaryAttack();
 
-			return hasStartedAttack ? Status.Running : Status.Failure;
+			return hasStartedPrimaryAttack ? Status.Running : Status.Failure;
 		}
 
 		protected override Status OnUpdate() {
@@ -187,7 +187,7 @@ namespace Game.AI.Behavior.Shared {
 				return Status.Failure;
 			}
 
-			// Running whilst the animation/attack is active (Returns Success once finished)
+			// Running whilst the Primary animation/attack is active (Returns Success once finished)
 			return agent.IsAttacking ? Status.Running : Status.Success;
 		}
 	}

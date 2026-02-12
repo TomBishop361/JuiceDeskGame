@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System;
-using Game.AI;// IEnemyAgent namespace
+using Game.AI; // IEnemyAgent namespace
 
-namespace Game.AI.Sword {
+namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class SwordEnemy : MonoBehaviour, IEnemyAgent {
+	public class ShieldEnemy : MonoBehaviour/*, IEnemyAgent*/ {
 
 		[Header("References")]
 		[SerializeField] private Transform target;
@@ -14,24 +14,29 @@ namespace Game.AI.Sword {
 		[SerializeField] private Animator animator;
 
 		[Header("Stats")]
-		[SerializeField] private int health = 3;
+		[SerializeField] private int health = 5;
 
 		[Header("Combat")]
-		[SerializeField] private float damage = 2.0f;
-
+		[SerializeField] private float damage = 1.0f;
+	
 		[Header("Ranges")]
-		[SerializeField] private float attackRange = 1.8f;
+		[SerializeField] private float punchRange = 1.6f;
+		[SerializeField] private float slamRange = 2.4f;
 
 		[Header("Cooldowns")]
-		[SerializeField] private float attackCooldown = 1.2f;
+		[SerializeField] private float punchCooldown = 1.0f;
+		[SerializeField] private float slamCooldown = 3.0f;
+
+		[Header("Grapple Window")]
+		[SerializeField] private float grappleWindowDuration = 1.0f;
 
 		[Header("Movement")]
 		[SerializeField] private bool toggleSmoothRotation = false; // toggle between reactive rotation & smooth rotation
-		[SerializeField] private float rotationSpeed = 360.0f; // degrees per second
-		[SerializeField] private float smoothingRotationMultiplier = 12.0f; // smoothing multiplier
+		[SerializeField] private float rotationSpeed = 180.0f; // degrees per second (120 - 240 good range)
+		[SerializeField] private float smoothingRotationMultiplier = 10.0f; // smoothing multiplier
 
 		[Header("Stun")]
-		[SerializeField] private float hitStunDuration = 0.6f;
+		[SerializeField] private float hitStunDuration = 0.4f;
 
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
@@ -41,22 +46,39 @@ namespace Game.AI.Sword {
 		//public bool HasLOS =>{ get; private set; }
 
 		public float DistanceToTarget { get; private set; }
-		public bool InAttackRange => HasTarget && DistanceToTarget <= attackRange;
+		// Shared nodes ask for 'InAttackRange' and 'CanAttack'
+		// For shield enemy, 'attack range' can mean punch OR slam
+		public bool InAttackRange => HasTarget && (InPunchRange || InSlamRange);
 
-		public bool CanAttack => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextAttackTime;
+		public bool CanAttack => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime; // used for punch
 		public bool IsAttacking { get; private set; }
 		//public bool IsTargetTooClose { get; private set; }
 
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [END] -
 
+		// - Shield Enemy Specific Properties [START] -
+
+		public bool InPunchRange => HasTarget && DistanceToTarget <= punchRange;
+		public bool InSlamRange => HasTarget && DistanceToTarget <= slamRange;
+
+		//public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
+		public bool CanSlam => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSlamTime;
+
+		public bool GrappleWindowOpen { get; private set; }
+		private float grappleWindowEndTime;
+
+		// - Shield Enemy Specific Properties [END] -
+
 		// Cooldown timers
-		private float nextAttackTime;
+		private float nextPunchTime;
+		private float nextSlamTime;
 		private float stunEndTime;
-		private float attackEndTime; // enforce min attack time [DELETE LATER]
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");
-		private static readonly int AnimAttack = Animator.StringToHash("Attack");
+		private static readonly int AnimPunch = Animator.StringToHash("Punch");
+		private static readonly int AnimSlam = Animator.StringToHash("Slam");
+		private static readonly int AnimShieldRaised = Animator.StringToHash("ShieldRaised");
 		private static readonly int AnimHit = Animator.StringToHash("Hit");
 		private static readonly int AnimDie = Animator.StringToHash("Die");
 
@@ -70,7 +92,7 @@ namespace Game.AI.Sword {
 			if (navMeshAgent == null) {
 				navMeshAgent = GetComponent<NavMeshAgent>();
 			}
-				
+
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
@@ -80,32 +102,31 @@ namespace Game.AI.Sword {
 			if (IsDead == true) {
 				return;
 			}
-				
+
 			// Auto acquire target (in prototype)
 			if (target == null) {
 				TryFindPlayer();
 			}
-			
+
 			// Fetch distance to target (if target is valid)
 			if (target != null) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
 			}
-				
+
 			// Handle stun timer
 			if (IsStunned == true && Time.time >= stunEndTime) {
 				IsStunned = false;
 			}
 
-			// DELETE LATER START
-			if (IsAttacking && Time.time >= attackEndTime) {
-				IsAttacking = false;
+			// Handle grapple window timer
+			if (GrappleWindowOpen == true && Time.time >= grappleWindowEndTime) {
+				GrappleWindowOpen = false;
 			}
-			// DELETE LATER END
-
+				
 			// Animator movement speed
 			if (navMeshAgent != null && animator != null) {
 				animator.SetFloat(AnimMoveSpeed, navMeshAgent.velocity.magnitude);
-			}		
+			}
 		}
 
 		// Find player automatically (in prototype)
@@ -113,7 +134,7 @@ namespace Game.AI.Sword {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
-			}		
+			}
 		}
 
 		// - Implement IEnemyAgent Methods [START] -
@@ -130,6 +151,7 @@ namespace Game.AI.Sword {
 			IsDead = true;
 			IsStunned = false;
 			IsAttacking = false;
+			GrappleWindowOpen = false;
 
 			// Disable nav mesh agent upon death
 			if (navMeshAgent != null) {
@@ -137,10 +159,9 @@ namespace Game.AI.Sword {
 				navMeshAgent.enabled = false;
 			}
 
-			// Play death animation for sword enemy
-			if (animator != null) {
+			// Play death animation for shield enemy
+			if (animator != null)
 				animator.SetTrigger(AnimDie);
-			}
 		}
 
 		public void RecoverTick() {
@@ -151,8 +172,36 @@ namespace Game.AI.Sword {
 			StopMove();
 		}
 
+		// Shared chase action node uses this (so we need to implement it)
+		// For shield enemy specific movement, we prefer to use 'advance raised' 
 		public void ChaseTargetTick() {
-			// Chase interrupts
+			AdvanceRaisedTick();
+		}
+
+		public void StopMove() {
+			if (navMeshAgent != null) {
+				navMeshAgent.isStopped = true;
+			}
+		}
+
+		// Shared action node 'PrimaryAttack' can be used, but for shield we want
+		// punch vs slam selection in the BT for shield enemy combat actions
+		public bool TryStartPrimaryAttack() {
+			// Prototype fallback: if slam is ready and not too close to target -> slam, otherwise punch
+			if (CanSlam == true && InSlamRange == true && InPunchRange == false) {
+				return TryStartSlam();
+			}
+				
+			// Punch if not in slam attack range
+			return TryStartPunch();
+		}
+
+		// - Implement IEnemyAgent Methods [END] -
+
+		// - Shield Enemy Specifc Action Node Execution -
+
+		public void AdvanceRaisedTick() {
+			// Advanced raised interrupts
 			if (IsDead == true || IsStunned == true || IsAttacking == true) {
 				return;
 			}
@@ -160,52 +209,87 @@ namespace Game.AI.Sword {
 			if (HasTarget == false || navMeshAgent == null) {
 				return;
 			}
-				
+
 			navMeshAgent.isStopped = false;
 			navMeshAgent.SetDestination(target.position);
 
-			// Continuously adjust direction when chasing target
+			// Continuously adjust direction when advanceing towards target
 			FaceTarget(target.position);
+
+			// Play shield raised animation whilst advancing
+			if (animator != null) {
+				animator.SetBool(AnimShieldRaised, true);
+			}
 		}
 
-		public void StopMove() {
-			if (navMeshAgent != null) {
-				navMeshAgent.isStopped = true;
-			}	
-		}
-
-		public bool TryStartPrimaryAttack() {
-			if (CanAttack == false) {
+		// Called by TryStartPrimaryAttack() function as fallback if slam attack is not possible
+		public bool TryStartPunch() {
+			// Punch interrupts
+			if (IsDead == true || IsStunned == true || IsAttacking == true) {
 				return false;
 			}
-				
+			// No target
+			if (HasTarget == false) {
+				return false;
+			}
+			// Punch is out of range
+			if (InPunchRange == false) {
+				return false;
+			}
+			// Punch is still on cooldown
+			if (Time.time < nextPunchTime) {
+				return false;
+			}
+
 			StopMove();
 
 			IsAttacking = true;
-			nextAttackTime = Time.time + attackCooldown;
-			attackEndTime = Time.time + 0.6f; // DELETE LATER (match potential animation length)
+			nextPunchTime = Time.time + punchCooldown;
 
 			if (animator != null) {
-				animator.SetTrigger(AnimAttack);
+				animator.SetBool(AnimShieldRaised, true);
+				animator.SetTrigger(AnimPunch);
 			}
-			//else {
-			//	// Safety if no animator is set (ensures attack doesn't run forever)
-			//	StartCoroutine(DelayAttackEnd());
-			//}
-				
+
 			return true;
 		}
 
-		// DELETE ONCE ANIMATION IS IN FOR ATTACKING (THIS WILL SET IsAttacking to false instead [START]
-		IEnumerator DelayAttackEnd() {
-			yield return new WaitForSeconds(1.5f);
+		// Called by TryStartPrimaryAttack() function if slam attack is possible
+		public bool TryStartSlam() {
+			// Slam interrupts
+			if (IsDead == true || IsStunned == true || IsAttacking == true) {
+				return false;
+			}
+			// No target
+			if (HasTarget == false) {
+				return false;
+			}
+			// Slam is out of range
+			if (InSlamRange == false) {
+				return false;
+			}
+			// Slam is still on cooldown
+			if (Time.time < nextSlamTime) {
+				return false;
+			}
 
-			// Set IsAttacking to false
-			AnimEvent_AttackFinished();
+			StopMove();
+
+			IsAttacking = true;
+			nextSlamTime = Time.time + slamCooldown;
+
+			// Prototype: Open grapple window immediately (or trigger it via anim event)
+			GrappleWindowOpen = true;
+			grappleWindowEndTime = Time.time + grappleWindowDuration;
+
+			if (animator != null) {
+				animator.SetBool(AnimShieldRaised, true);
+				animator.SetTrigger(AnimSlam);
+			}
+
+			return true;
 		}
-		// DELETE ONCE ANIMATION IS IN FOR ATTACKING (THIS WILL SET IsAttacking to false instead [END]
 
-		// - Implement IEnemyAgent Methods [END] -
 
 		// - Damge / Stun -
 
@@ -232,9 +316,7 @@ namespace Game.AI.Sword {
 
 		// Prevent/Interrupt enemy from attacking once they take damage (for a 'short' time)
 		private void Stun(float duration) {
-			if (IsDead == true) {
-				return;
-			}
+			if (IsDead) return;
 
 			IsStunned = true;
 			IsAttacking = false;
@@ -248,6 +330,8 @@ namespace Game.AI.Sword {
 		// Call this at end of attack animation
 		public void AnimEvent_AttackFinished() {
 			IsAttacking = false;
+			// For prototype: keep shield raised during combat
+			// If you want it to lower, set 'ShieldRaised' false somewhere
 		}
 
 		// Hitbox toggles (call inside anim event)
@@ -270,13 +354,14 @@ namespace Game.AI.Sword {
 			if (direction.sqrMagnitude < 0.0001f) {
 				return;
 			}
-			
+
 			Quaternion targetRotation = Quaternion.LookRotation(direction);
 
 			if (toggleSmoothRotation == true) {
 				// Smooth rotation towards target direction (using Slerp)
 				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * smoothingRotationMultiplier);
-			} else {
+			}
+			else {
 				// Responsive rotation towards target direction (using RotateTowards)
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}

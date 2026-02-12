@@ -2,6 +2,7 @@ using Unity.AppUI.Core;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 using Unity.Behavior;
+using Game.AI.Shield; // ShieldEnemy namespace
 
 // ShieldConditions.cs
 namespace Game.AI.Behavior.Shield {
@@ -16,13 +17,50 @@ namespace Game.AI.Behavior.Shield {
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
 
+
+	[Condition(name: "Shield: In Punch Range", description: "True if target is within punch range.", story: "Shield enemy is in punch range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_punch_range")]
+	public sealed class ShieldInPunchRange : Condition {
+		public override bool IsTrue() {
+			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+
+			return shieldEnemy != null && shieldEnemy.InPunchRange;
+		}
+	}
+
+	[Condition(name: "Shield: In Slam Range", description: "True if target is within slam range.", story: "Shield enemy is in slam range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_slam_range")]
+	public sealed class ShieldInSlamRange : Condition {
+		public override bool IsTrue() {
+			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+
+			return shieldEnemy != null && shieldEnemy.InSlamRange;
+		}
+	}
+
+	[Condition(name: "Shield: Can Slam", description: "True if slam cooldown is ready and enemy can slam now.", story: "Shield enemy can slam", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.can_slam")]
+	public sealed class ShieldCanSlam : Condition {
+		public override bool IsTrue() {
+			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+
+			return shieldEnemy != null && shieldEnemy.CanSlam;
+		}
+	}
+
+	[Condition(name: "Shield: Grapple Window Open", description: "True if grapple window is currently open after slam.", story: "Shield grapple window is open", category: "Enemy/Shield/Conditions/Grapple", id: "shield.condition.grapple.window_open")]
+	public sealed class ShieldGrappleWindowOpen : Condition {
+		public override bool IsTrue() {
+			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+
+			return shieldEnemy != null && shieldEnemy.GrappleWindowOpen;
+		}
+	}
+
 	// Category: Enemy/Shield/Conditions
 
 	// - SHIELD CONDITIONS ID NAMES -
-	// InPunchRange -> shield.condition.combat.in_punch_range
-	// InSlamRange -> shield.condition.combat.in_slam_range
-	// CanSlam -> shield.condition.combat.can_slam
-	// GrappleWindowOpen -> shield.condition.grapple.window_open
+	// InPunchRange -> shield.condition.combat.in_punch_range - DONE
+	// InSlamRange -> shield.condition.combat.in_slam_range - DONE
+	// CanSlam -> shield.condition.combat.can_slam - DONE
+	// GrappleWindowOpen -> shield.condition.grapple.window_open - DONE
 	// (optional later) PlayerInFront -> shield.condition.defense.player_in_front
 	// (optional later) PlayerBehind -> shield.condition.defense.player_behind
 
