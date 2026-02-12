@@ -2,11 +2,11 @@ using Unity.AppUI.Core;
 using UnityEditor.Playables;
 using UnityEngine;
 using Unity.Behavior;
-using Game.AI;
+using Game.AI; // IEnemyAgent namespace
 
 // SharedActions.cs
 namespace Game.AI.Behavior.Shared {
-	// NOTE: ids must be UNIQUE across the project. Keep them stable once committed.
+	// NOTE: IDs must be globally unique and should NEVER change once used in graphs.
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// INFO: 'IEnemyAgent' is an interface implemented by all enemy types
@@ -19,6 +19,23 @@ namespace Game.AI.Behavior.Shared {
 	//name = the specific node name
 
 	// - Shared Core (Actions) - 
+
+	[NodeDescription(name: "Enemy: Acquire Target", description: "Assigns a target.", story: "Enemy acquires a target", category: "Enemy/Shared/Actions/Core", id: "enemy.action.core.acquire_target")]
+	public sealed class EnemyAcquireTarget : Action {
+		private IEnemyAgent agent;
+
+		protected override Status OnStart() {
+			agent = GameObject.GetComponent<IEnemyAgent>();
+			if (agent == null) {
+				LogFailure("IEnemyAgent not found on this GameObject.", isError: true);
+				return Status.Failure;
+			}
+
+			agent.AcquireTarget();
+
+			return agent.HasTarget ? Status.Success : Status.Failure;
+		}
+	}
 
 	[NodeDescription(name: "Enemy: Die", description: "Runs the enemy death logic and stops movement.", story: "Enemy dies", category: "Enemy/Shared/Actions/Core", id: "enemy.action.core.die")]
 	public sealed class EnemyDie : Action {
@@ -69,23 +86,6 @@ namespace Game.AI.Behavior.Shared {
 			agent.RecoverTick();
 
 			return Status.Running;
-		}
-	}
-
-	[NodeDescription(name: "Enemy: Acquire Target", description: "Assigns a target.", story: "Enemy acquires a target", category: "Enemy/Shared/Actions/Core", id: "enemy.action.core.acquire_target")]
-	public sealed class EnemyAcquireTarget : Action {
-		private IEnemyAgent agent;
-
-		protected override Status OnStart() {
-			agent = GameObject.GetComponent<IEnemyAgent>();
-			if (agent == null) {
-				LogFailure("IEnemyAgent not found on this GameObject.", isError: true);
-				return Status.Failure;
-			}
-
-			agent.AcquireTarget();
-
-			return agent.HasTarget ? Status.Success : Status.Failure;
 		}
 	}
 
@@ -192,22 +192,14 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-
-
-	// OPTIONAL - EnemyStopMovement - OPTIONAL
-
-	// OPTIONAL - EnemyFaceTarget - OPTIONAL
-
-	// EnemyPrimaryAttack
-
 	// - SHARED ACTIONS ID NAMES -
+	// AcquireTarget -> enemy.action.core.acquire_target (optional) - DONE
 	// Die -> enemy.action.core.die - DONE
 	// Recover -> enemy.action.core.recover_tick - DONE
-	// AcquireTarget -> enemy.action.core.acquire_target (optional) - DONE
 	// ChaseTarget -> enemy.action.move.chase_target_tick - DONE
 	// StopMovement -> enemy.action.move.stop (optional) - DONE
 	// FaceTarget -> enemy.action.move.face_target (optional) - PARTIALLY DONE
-	// PrimaryAttack -> enemy.action.combat.primary_attack
+	// PrimaryAttack -> enemy.action.combat.primary_attack - DONE
 
 	// - SHARED ACTION CATEGORY SCRIPT NAMES -
 	// SharedActions_Core.cs
@@ -215,7 +207,4 @@ namespace Game.AI.Behavior.Shared {
 	// SharedActions_Combat.cs
 	// SharedActions_Utility.cs (optional)
 	// SharedActions_Debug.cs
-
-	//TBD
-
 }

@@ -6,6 +6,7 @@ namespace Game.AI {
 		bool IsDead { get; }
 		bool IsStunned { get; }
 		bool HasTarget { get; }
+		// bool HasLOS { get; } // OPTIONAL (Same as HasTarget?)
 
 		// Targeting / ranges
 		float DistanceToTarget { get; }
@@ -14,11 +15,12 @@ namespace Game.AI {
 		// Combate gating
 		bool CanAttack { get; }
 		bool IsAttacking { get; }
+		//bool IsTargetTooClose { get; }
 
 		// Execution hooks (called by Custom Behaviour action node classes)
+		void AcquireTarget(); // OPTIONAL
 		void Die();
 		void RecoverTick();
-		void AcquireTarget(); // OPTIONAL
 		void ChaseTargetTick();
 		void StopMove(); // OPTIONAL
 		//void FaceTarget(); // OPTIONAL

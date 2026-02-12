@@ -5,7 +5,7 @@ using Unity.Behavior;
 
 // DroneActions.cs
 namespace Game.AI.Behavior.Drone {
-	// NOTE: ids must be UNIQUE across the project. Keep them stable once committed.
+	// NOTE: IDs must be globally unique and should NEVER change once used in graphs.
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
