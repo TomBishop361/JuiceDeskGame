@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 2975428769303140544}
   - component: {fileID: 581469678733509098}
   - component: {fileID: 8026149057988269503}
+  - component: {fileID: 1025106597326282760}
   - component: {fileID: 4427368479392184185}
+  - component: {fileID: -8049584155395832736}
   m_Layer: 0
   m_Name: Drone_Projectile_Prefab
   m_TagString: Untagged
@@ -87,6 +89,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!54 &1025106597326282760
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527449327847401711}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!135 &4427368479392184185
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -102,9 +131,33 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-8049584155395832736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527449327847401711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 422e1943395ed6f4aa71c5288b43fc7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectileSpeed: 14
+  projectileLifetime: 3.5
+  projectileDamage: 1
+  projectileDamageLayers:
+    serializedVersion: 2
+    m_Bits: 10
+  gizmoHitRadius: 0.3
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  rigidbody: {fileID: 1025106597326282760}
+  useTrigger: 1

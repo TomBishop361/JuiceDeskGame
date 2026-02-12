@@ -68,7 +68,8 @@ namespace Game.AI.Behavior.Drone {
 
 			droneEnemy.MoveAwayTick();
 
-			return Status.Running;
+			//return Status.Running;
+			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
 		}
 
 		protected override Status OnUpdate() {
@@ -81,7 +82,8 @@ namespace Game.AI.Behavior.Drone {
 
 			droneEnemy.MoveAwayTick();
 
-			return Status.Running;
+			//return Status.Running;
+			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
 		}
 	}
 
@@ -102,7 +104,8 @@ namespace Game.AI.Behavior.Drone {
 
 			droneEnemy.MaintainRangeTick();
 
-			return Status.Running;
+			//return Status.Running;
+			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
 		}
 
 		protected override Status OnUpdate() {
@@ -115,7 +118,8 @@ namespace Game.AI.Behavior.Drone {
 
 			droneEnemy.MaintainRangeTick();
 
-			return Status.Running;
+			//return Status.Running;
+			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
 		}
 	}
 

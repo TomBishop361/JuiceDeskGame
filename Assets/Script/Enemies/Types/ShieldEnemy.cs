@@ -70,10 +70,10 @@ namespace Game.AI.Shield {
 		// - Shield Enemy Specific Properties [END] -
 
 		// Cooldown timers
-		private float nextPunchTime;
-		private float nextSlamTime;
-		private float stunEndTime;
-		private float attackEndTime; // enforce min attack time [DELETE LATER]
+		private float nextPunchTime = -Mathf.Infinity;
+		private float nextSlamTime = -Mathf.Infinity;
+		private float stunEndTime = -Mathf.Infinity;
+		private float attackEndTime = -Mathf.Infinity; // enforce min attack time [DELETE LATER]
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");

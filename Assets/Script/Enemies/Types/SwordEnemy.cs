@@ -50,9 +50,9 @@ namespace Game.AI.Sword {
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [END] -
 
 		// Cooldown timers
-		private float nextAttackTime;
-		private float stunEndTime;
-		private float attackEndTime; // enforce min attack time [DELETE LATER]
+		private float nextAttackTime = -Mathf.Infinity;
+		private float stunEndTime = -Mathf.Infinity;
+		private float attackEndTime = -Mathf.Infinity; // enforce min attack time [DELETE LATER]
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 using Game.AI; // IEnemyAgent namespace
+using Game.Combat.Projectiles; // DroneProjectile namespace
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
@@ -16,8 +17,8 @@ namespace Game.AI.Drone {
 		[SerializeField] private int health = 1;
 
 		[Header("Combat")]
-		[SerializeField] private float damage = 1.0f; // TODO: projectileDamage
-		[SerializeField] private float projectileSpeed = 14.0f;
+		//[SerializeField] private float damage = 1.0f; // USED IN DroneProjectile.cs
+		//[SerializeField] private float projectileSpeed = 14.0f; // USED IN DroneProjectile.cs
 		[SerializeField] private GameObject projectilePrefab;
 		[SerializeField] private Transform projectileSpawn;
 
@@ -69,9 +70,9 @@ namespace Game.AI.Drone {
 		// - Drone Enemy Specific Properties [END] -
 
 		// Cooldown timers
-		private float nextFireTime;
-		private float knockdownEndTime;
-		private float attackEndTime; // enforce min attack time [DELETE LATER]
+		private float nextFireTime = -Mathf.Infinity;
+		private float knockdownEndTime = -Mathf.Infinity;
+		private float attackEndTime = -Mathf.Infinity; // enforce min attack time [DELETE LATER]
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");
@@ -118,6 +119,9 @@ namespace Game.AI.Drone {
 			if (IsKnockedDown == false) {
 				MaintainHoverHeight();
 			}
+			else {
+				FallToGround();
+			}
 
 			// DELETE LATER START
 			if (IsAttacking && Time.time >= attackEndTime) {
@@ -149,6 +153,15 @@ namespace Game.AI.Drone {
 			position.y = Mathf.Lerp(position.y, targetY, Time.deltaTime * heightLerpSpeed);
 
 			// Move towards target height
+			transform.position = position;
+		}
+
+		// Called in Update() function (as soon as drone is considered to be knocked down)
+		private void FallToGround() {
+			Vector3 position = transform.position;
+
+			position.y = Mathf.Lerp(position.y, groundY, Time.deltaTime * heightLerpSpeed);
+
 			transform.position = position;
 		}
 
@@ -207,14 +220,14 @@ namespace Game.AI.Drone {
 		// - Drone Enemy Specifc Action Node Execution -
 
 		public void RecoverFromKnockdownTick() {
-			// While knocked down, remain at ground height
-			Vector3 position = transform.position;
+			//// While knocked down, remain at ground height
+			//Vector3 position = transform.position;
 
-			// Attempt to maintain ground height (constantly attempt to reach target height - hovering)
-			// Drone is knocked but still hovering slightly
-			position.y = Mathf.Lerp(position.y, groundY, Time.deltaTime * heightLerpSpeed);
+			//// Attempt to maintain ground height (constantly attempt to reach target height - hovering)
+			//// Drone is knocked but still hovering slightly
+			//position.y = Mathf.Lerp(position.y, groundY, Time.deltaTime * heightLerpSpeed);
 
-			transform.position = position;
+			//transform.position = position;
 
 			// Face target whilst knocked down (OPTIONAL)
 			if (HasTarget == true) {
@@ -296,7 +309,10 @@ namespace Game.AI.Drone {
 			if (InFireRange == false) {
 				return false;
 			}
-				
+			if (projectilePrefab == null || projectileSpawn == null || HasTarget == false) {
+				return false;
+			}
+
 			IsAttacking = true;
 			nextFireTime = Time.time + fireCooldown;
 			attackEndTime = Time.time + 0.1f; // DELETE LATER (match potential animation length)
@@ -312,19 +328,26 @@ namespace Game.AI.Drone {
 		}
 
 		private void FireProjectileNow() {
-			if (projectilePrefab == null || projectileSpawn == null || HasTarget == false) {
-				return;
-			}
-
 			// Get direction away from drone
-			Vector3 direction = target.position - projectileSpawn.position.normalized;
+			Vector3 direction = (target.position - projectileSpawn.position);
+			direction.y = 0.0f;
 
-			// Instantiate Projectile GameObject
-			GameObject projectileObj = Instantiate(projectilePrefab, projectileSpawn.position, Quaternion.LookRotation(direction));
+			GameObject projectileObj = Instantiate(projectilePrefab, projectileSpawn.position, Quaternion.identity);
 
-			if (projectileObj.TryGetComponent<Rigidbody>(out Rigidbody rigidbody)) {
-				rigidbody.linearVelocity = direction * projectileSpeed;
+			// Launch projectile
+			if (projectileObj.TryGetComponent(out DroneProjectile droneProjectile)) {
+				droneProjectile.Launch(direction);
 			}
+
+			//// Get direction away from drone
+			//Vector3 direction = target.position - projectileSpawn.position.normalized;
+
+			//// Instantiate Projectile GameObject
+			//GameObject projectileObj = Instantiate(projectilePrefab, projectileSpawn.position, Quaternion.LookRotation(direction));
+
+			//if (projectileObj.TryGetComponent(out Rigidbody rigidbody)) {
+			//	rigidbody.linearVelocity = direction * projectileSpeed;
+			//}
 		}
 
 		// - Damge / Knock -
@@ -359,7 +382,6 @@ namespace Game.AI.Drone {
 
 			// Use override duration if it's been set (> 1)
 			//float duration = knockdownDurationOverride > 0 ? knockdownDurationOverride : knockdownDuration;
-
 			knockdownEndTime = Time.time + knockdownDuration;
 
 			if (animator != null) {
