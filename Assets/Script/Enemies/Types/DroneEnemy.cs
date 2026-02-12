@@ -119,6 +119,12 @@ namespace Game.AI.Drone {
 				MaintainHoverHeight();
 			}
 
+			// DELETE LATER START
+			if (IsAttacking && Time.time >= attackEndTime) {
+				IsAttacking = false;
+			}
+			// DELETE LATER END
+
 			// Move speed (Prototype: simple debug)
 			if (animator != null) {
 				animator.SetFloat(AnimMoveSpeed, CurrentHorizontalSpeed());
@@ -293,6 +299,7 @@ namespace Game.AI.Drone {
 				
 			IsAttacking = true;
 			nextFireTime = Time.time + fireCooldown;
+			attackEndTime = Time.time + 0.1f; // DELETE LATER (match potential animation length)
 
 			if (animator != null) {
 				animator.SetTrigger(AnimFire);
