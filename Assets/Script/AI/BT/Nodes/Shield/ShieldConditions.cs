@@ -54,6 +54,11 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	// TODO: ADD ShieldPlayerInFront CONDITION NODE CLASS
+	// TODO: ADD ShieldPlayerBehind CONDITION NODE CLASS
+
+
+
 	// Category: Enemy/Shield/Conditions
 
 	// - SHIELD CONDITIONS ID NAMES -
@@ -69,6 +74,4 @@ namespace Game.AI.Behavior.Shield {
 	// ShieldConditions_Combat.cs
 	// ShieldConditions_Grapple.cs
 	// ShieldConditions_Defense.cs
-
-	//TBD
 }

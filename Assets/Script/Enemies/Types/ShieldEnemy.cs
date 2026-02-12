@@ -17,8 +17,8 @@ namespace Game.AI.Shield {
 		[SerializeField] private int health = 5;
 
 		[Header("Combat")]
-		[SerializeField] private float damage = 1.0f;
-	
+		[SerializeField] private float damage = 1.0f; // TODO: punch dmg + slam dmg
+
 		[Header("Ranges")]
 		[SerializeField] private float punchRange = 1.6f;
 		[SerializeField] private float slamRange = 2.4f;
@@ -27,16 +27,16 @@ namespace Game.AI.Shield {
 		[SerializeField] private float punchCooldown = 1.0f;
 		[SerializeField] private float slamCooldown = 3.0f;
 
-		[Header("Grapple Window")]
-		[SerializeField] private float grappleWindowDuration = 1.0f;
-
 		[Header("Movement")]
 		[SerializeField] private bool toggleSmoothRotation = false; // toggle between reactive rotation & smooth rotation
 		[SerializeField] private float rotationSpeed = 180.0f; // degrees per second (120 - 240 good range)
-		[SerializeField] private float smoothingRotationMultiplier = 10.0f; // smoothing multiplier
+		[SerializeField] private float rotationSmoothing = 6.0f; // smoothing multiplier (6 - 8 good range)
 
 		[Header("Stun")]
 		[SerializeField] private float hitStunDuration = 0.4f;
+
+		[Header("Grapple Window")]
+		[SerializeField] private float grappleWindowDuration = 1.0f;
 
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
@@ -65,7 +65,7 @@ namespace Game.AI.Shield {
 		public bool CanSlam => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSlamTime;
 
 		public bool GrappleWindowOpen { get; private set; }
-		private float grappleWindowEndTime;
+		[SerializeField] private float grappleWindowEndTime;
 
 		// - Shield Enemy Specific Properties [END] -
 
@@ -110,7 +110,7 @@ namespace Game.AI.Shield {
 			}
 
 			// Fetch distance to target (if target is valid)
-			if (target != null) {
+			if (HasTarget == true) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
 			}
 
@@ -167,8 +167,9 @@ namespace Game.AI.Shield {
 			}
 
 			// Play death animation for shield enemy
-			if (animator != null)
+			if (animator != null) {
 				animator.SetTrigger(AnimDie);
+			}
 		}
 
 		public void RecoverTick() {
@@ -179,8 +180,8 @@ namespace Game.AI.Shield {
 			StopMove();
 		}
 
-		// Shared chase action node uses this (so we need to implement it)
-		// For shield enemy specific movement, we prefer to use 'advance raised' 
+		// Shared 'Chase' action node uses this (so we need to implement it)
+		// For shield enemy specific movement, we are using 'AdvanceRaised' action node
 		public void ChaseTargetTick() {
 			AdvanceRaisedTick();
 		}
@@ -299,7 +300,6 @@ namespace Game.AI.Shield {
 			return true;
 		}
 
-
 		// - Damge / Stun -
 
 		public void TakeDamage(int amount) {
@@ -339,8 +339,8 @@ namespace Game.AI.Shield {
 		// Call this at end of attack animation
 		public void AnimEvent_AttackFinished() {
 			IsAttacking = false;
-			// For prototype: keep shield raised during combat
-			// If you want it to lower, set 'ShieldRaised' false somewhere
+			// Prototype: keep shield raised during combat
+			// To lower it, set 'ShieldRaised' false somewhere
 		}
 
 		// Hitbox toggles (call inside anim event)
@@ -368,10 +368,11 @@ namespace Game.AI.Shield {
 
 			if (toggleSmoothRotation == true) {
 				// Smooth rotation towards target direction (using Slerp)
-				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * smoothingRotationMultiplier);
+				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
 			}
 			else {
 				// Responsive rotation towards target direction (using RotateTowards)
+				// [BETTER FOR SHIELD since heavy, deliberate]
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
 		}

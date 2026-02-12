@@ -14,6 +14,14 @@ namespace Game.AI.Behavior.Sword {
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
 
+
+	// TODO: ADD SwordShouldLunge CONDITION NODE CLASS
+	// TODO: ADD SwordCanLunge CONDITION NODE CLASS
+
+
+
+	// Category: Enemy/Sword/Conditions
+
 	// - SWORD CONDITIONS ID NAMES -
 	// ShouldLunge -> sword.condition.combat.should_lunge
 	// CanLunge -> sword.condition.combat.can_lunge
@@ -21,10 +29,11 @@ namespace Game.AI.Behavior.Sword {
 	// - SWORD CONDITIONS CATEGORY SCRIPT NAMES -
 	// SwordConditions_Movement.cs (maybe)
 	// SwordConditions_Combat.cs
-
-	// TBD 
 }
 
+// - DEPRECATED (FOR NOW) -
+
+// REASON: Have a shared IsDead Condition node inside SharedConditions.cs
 //[Condition(name: "Sword: Is Dead", description: "True if the SwordEnemy is dead.", story: "Sword enemy is dead", category: "Enemy/Sword/Conditions", id: "sword.condition.is_dead")]
 //public sealed class SwordIsDeadCondition : Condition {
 //	public override bool IsTrue() {

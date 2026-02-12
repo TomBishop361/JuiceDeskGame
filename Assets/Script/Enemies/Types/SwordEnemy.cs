@@ -17,7 +17,7 @@ namespace Game.AI.Sword {
 		[SerializeField] private int health = 3;
 
 		[Header("Combat")]
-		[SerializeField] private float damage = 2.0f;
+		[SerializeField] private float damage = 2.0f; // TODO: differen atck dmgs
 
 		[Header("Ranges")]
 		[SerializeField] private float attackRange = 1.8f;
@@ -28,7 +28,7 @@ namespace Game.AI.Sword {
 		[Header("Movement")]
 		[SerializeField] private bool toggleSmoothRotation = false; // toggle between reactive rotation & smooth rotation
 		[SerializeField] private float rotationSpeed = 360.0f; // degrees per second
-		[SerializeField] private float smoothingRotationMultiplier = 12.0f; // smoothing multiplier
+		[SerializeField] private float rotationSmoothing = 12.0f; // smoothing multiplier (12 - 15 good range)
 
 		[Header("Stun")]
 		[SerializeField] private float hitStunDuration = 0.6f;
@@ -87,7 +87,7 @@ namespace Game.AI.Sword {
 			}
 			
 			// Fetch distance to target (if target is valid)
-			if (target != null) {
+			if (HasTarget == true) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
 			}
 				
@@ -275,9 +275,10 @@ namespace Game.AI.Sword {
 
 			if (toggleSmoothRotation == true) {
 				// Smooth rotation towards target direction (using Slerp)
-				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * smoothingRotationMultiplier);
+				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
 			} else {
 				// Responsive rotation towards target direction (using RotateTowards)
+				// [BETTER FOR SWORD since precise, melee facing]
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
 		}

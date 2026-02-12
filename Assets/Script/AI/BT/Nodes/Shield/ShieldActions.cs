@@ -113,6 +113,9 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	// TODO: ADD ShieldBlockReact ACTION NODE CLASS
+
+
 	// Category: Enemy/Shield/Actions
 
 	// - SHIELD ACTIONS ID NAMES -
@@ -128,6 +131,4 @@ namespace Game.AI.Behavior.Shield {
 	// ShieldActions_Combat.cs
 	// ShieldActions_Grapple.cs
 	// ShieldActions_Defense.cs
-
-	//TBD
 }

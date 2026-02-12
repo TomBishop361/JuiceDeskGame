@@ -15,6 +15,11 @@ namespace Game.AI.Behavior.Sword {
 	//name = the specific node name
 
 
+	// TODO: ADD SwordSwing ACTION NODE CLASS
+	// TODO: ADD SwordLunge ACTION NODE CLASS
+
+
+
 	// Category: Enemy/Sword/Actions
 
 	// - SWORD ACTIONS ID NAMES -
@@ -24,6 +29,4 @@ namespace Game.AI.Behavior.Sword {
 	// - SWORD ACTION CATEGORY SCRIPT NAMES -
 	// SwordActions_Movement.cs (maybe)
 	// SwordActions_Combat.cs
-
-	//TBD
 }
