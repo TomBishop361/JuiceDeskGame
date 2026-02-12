@@ -6,7 +6,7 @@ using Game.AI; // IEnemyAgent namespace
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class ShieldEnemy : MonoBehaviour/*, IEnemyAgent*/ {
+	public class ShieldEnemy : MonoBehaviour, IEnemyAgent {
 
 		[Header("References")]
 		[SerializeField] private Transform target;
@@ -73,6 +73,7 @@ namespace Game.AI.Shield {
 		private float nextPunchTime;
 		private float nextSlamTime;
 		private float stunEndTime;
+		private float attackEndTime; // enforce min attack time [DELETE LATER]
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");
@@ -122,7 +123,13 @@ namespace Game.AI.Shield {
 			if (GrappleWindowOpen == true && Time.time >= grappleWindowEndTime) {
 				GrappleWindowOpen = false;
 			}
-				
+
+			// DELETE LATER START
+			if (IsAttacking && Time.time >= attackEndTime) {
+				IsAttacking = false;
+			}
+			// DELETE LATER END
+
 			// Animator movement speed
 			if (navMeshAgent != null && animator != null) {
 				animator.SetFloat(AnimMoveSpeed, navMeshAgent.velocity.magnitude);
@@ -245,6 +252,7 @@ namespace Game.AI.Shield {
 
 			IsAttacking = true;
 			nextPunchTime = Time.time + punchCooldown;
+			attackEndTime = Time.time + 0.3f; // DELETE LATER (match potential animation length)
 
 			if (animator != null) {
 				animator.SetBool(AnimShieldRaised, true);
@@ -277,6 +285,7 @@ namespace Game.AI.Shield {
 
 			IsAttacking = true;
 			nextSlamTime = Time.time + slamCooldown;
+			attackEndTime = Time.time + 0.8f; // DELETE LATER (match potential animation length)
 
 			// Prototype: Open grapple window immediately (or trigger it via anim event)
 			GrappleWindowOpen = true;
