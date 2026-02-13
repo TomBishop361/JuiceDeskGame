@@ -46,7 +46,7 @@ public class GunBase : MonoBehaviour
     {
         get => _isReloading;
         set { 
-            if (value == true && !_isReloading) reloadTimer = reloadSpeed;
+            if (value == true) reloadTimer = reloadSpeed;
             _isReloading = value;
         }
     }
@@ -100,6 +100,7 @@ public class GunBase : MonoBehaviour
         magSize = gunData.magSize;
         maxAmmoReserve = gunData.maxAmmoReserve;
         currentAmmo = magSize;
+        reloadTimer = fireRate;
 
         if(isDrawn) Instantiate(gunObject, transform.position, transform.rotation, transform.parent);
        // gunAnimationHandler = gunObject.GetComponent<GunAnimationHandler>();
@@ -122,7 +123,7 @@ public class GunBase : MonoBehaviour
         {
             shootTimer -= Time.deltaTime;
         }
-        if (shootTimer <= 0) canShoot = true;
+        if (shootTimer <= 0 ) canShoot = true;
     }
 
     void ReloadTimer()
@@ -132,10 +133,8 @@ public class GunBase : MonoBehaviour
             Debug.Log("Reloading");
             reloadTimer -= Time.deltaTime;
         }
-        if (reloadTimer <= 0)
-        {            
-            reloadGun();
-        }
+        if (reloadTimer <= 0 && isReloading) reloadGun();
+        
     }
 
     void reload(bool reload)
