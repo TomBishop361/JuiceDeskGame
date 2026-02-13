@@ -32,6 +32,9 @@ public class GunBase : MonoBehaviour
     //logic
     public bool isDrawn;
 
+    [Tooltip("Where the aiming raycast will shootfrom")]
+    public GameObject AimOrigin;
+    [Tooltip("Where the bullet will be shot from")]
     public GameObject BulletOrigin;
 
     bool isShooting;
@@ -113,10 +116,10 @@ public class GunBase : MonoBehaviour
         {
             RaycastHit hit;
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red,2);
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit)) 
+            if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit)) 
                 ShootDir = hit.point - BulletOrigin.transform.position;
             else
-                ShootDir = Camera.main.transform.forward * 100 - BulletOrigin.transform.position;
+                ShootDir = AimOrigin.transform.forward * 100 - BulletOrigin.transform.position;
 
            StartCoroutine("shootBullet");            
         }
