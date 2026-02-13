@@ -159,9 +159,9 @@ public class GunBase : MonoBehaviour
             RaycastHit hit;
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red,2);
             if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit)) 
-                ShootDir = hit.point - BulletOrigin.transform.position;
+                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;
             else
-                ShootDir = AimOrigin.transform.forward * 1000 - BulletOrigin.transform.position;
+                ShootDir = AimOrigin.transform.forward ;
                  
             ShootBullet();
         }
