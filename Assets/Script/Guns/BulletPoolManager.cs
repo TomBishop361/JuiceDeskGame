@@ -17,19 +17,28 @@ public class BulletPoolManager : MonoBehaviour
 
 
 
-    private void OnEnable()
+    private void Start()
     {
         for (int i = 0; i < bulletPoolSize; i++)
         {
-            GameObject Bullet = Instantiate(bulletPrefab,transform);
-            bullets.Add(Bullet.GetComponent<Bullet>());
-            Bullet.SetActive(false);
-            Bullet.GetComponent<Bullet>().onBulletHit += returnBulletToPool;
+            createBullet();
         }
+    }
+
+    void createBullet()
+    {
+        GameObject Bullet = Instantiate(bulletPrefab, transform);
+        bullets.Add(Bullet.GetComponent<Bullet>());
+        Bullet.SetActive(false);
+        Bullet.GetComponent<Bullet>().onBulletHit += returnBulletToPool;
     }
 
     public void ShootBullet(Vector3 direction, Vector3 origin, float speed, int dmg)
     {
+        if (bullets.Count <= 0)
+        {
+            createBullet();
+        }
         Bullet Bullet = bullets[0];
         bullets.Remove(Bullet);        
         inUse.Add(Bullet);

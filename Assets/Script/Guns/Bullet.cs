@@ -43,8 +43,7 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         StopCoroutine(bulletTimeOut());
-        IDamageable hit;
-        //Debug.Log("Hit");
+        IDamageable hit;        
         if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
         {
             hit.adjustHealth(Damage);
