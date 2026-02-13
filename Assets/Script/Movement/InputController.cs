@@ -160,7 +160,9 @@ public class InputController : MonoBehaviour
             {
                 desiredMoveSpeed = slideSpeed;
             }
+            
             else desiredMoveSpeed = sprintSpeed;
+            
         }
         else if (crouching)
         {

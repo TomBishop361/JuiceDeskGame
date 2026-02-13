@@ -4,30 +4,25 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Bullet : MonoBehaviour
+public class Bullet : ProjectileBase
 {
     
-    Rigidbody rb;
-    int Damage;
+    Rigidbody rb;    
 
     Vector3 direction;
     [SerializeField]
-    GameObject testHitParticle;
+    GameObject testHitParticle;   
     
-    //public delegate void BulletHit(Bullet bullet);
-    public event Action<Bullet> onBulletHit = delegate(Bullet bullet) { } ;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    public void fire(Vector3 direction, Vector3 origin, float speed, int damage)
+    public override void Fire(Vector3 direction, Vector3 origin, float speed, int damage)
     {
-        Damage = damage;   
-        this.direction = direction;
-        transform.position = origin;        
-        gameObject.SetActive(true);
+        base.Fire(direction, origin, speed, damage);
+        this.direction = direction;                
         rb.linearVelocity = direction * speed;
         StartCoroutine("bulletTimeOut");
     }   
@@ -36,7 +31,7 @@ public class Bullet : MonoBehaviour
     IEnumerator bulletTimeOut()
     {
         yield return new WaitForSeconds(2f);
-        onBulletHit?.Invoke(this);       
+        OnBulletHit(this);
         yield return null;
     }
 
@@ -48,7 +43,7 @@ public class Bullet : MonoBehaviour
         {
             hit.adjustHealth(Damage);
         }
-        onBulletHit?.Invoke(this);
+        OnBulletHit(this);
         Instantiate(testHitParticle,transform.position,Quaternion.LookRotation(-direction));
     }
 }

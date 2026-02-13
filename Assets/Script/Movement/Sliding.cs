@@ -11,6 +11,7 @@ public class Sliding : MonoBehaviour
 
     [Header("Sliding")]
     [SerializeField] float maxSlideTime;
+    [SerializeField] float SlideDownforce;
     public float slideForce;
     private float slideTimer;
     //bool isSliding;
@@ -70,6 +71,7 @@ public class Sliding : MonoBehaviour
         {
             StopSlide();
         }
+        rb.AddForce(Vector3.down * SlideDownforce, ForceMode.Force);
     }
 
     void StartSlide()
