@@ -40,13 +40,29 @@ public class GunBase : MonoBehaviour
     bool isShooting;
     bool canShoot = true;
     public int currentAmmo;
-    bool isReloading = false;
+    bool _isReloading = false;
+
+    bool isReloading
+    {
+        get => _isReloading;
+        set { 
+            if (value == true && !_isReloading) reloadTimer = reloadSpeed;
+            _isReloading = value;
+        }
+    }
+    
+       
+    
 
     //BulletPool
     [SerializeField]
     BulletPoolManager bulletPoolManager;
 
     //GunAnimationHandler gunAnimationHandler;
+
+    //Timers
+    float shootTimer;
+    float reloadTimer;
 
     //TPPGunShoot
     Vector3 ShootDir;
@@ -94,20 +110,46 @@ public class GunBase : MonoBehaviour
         handleShoot(isShooting);
     }
 
+    private void Update()
+    {
+        RofTimer();
+        ReloadTimer();
+    }
+
+    void RofTimer()
+    {
+        if (!canShoot)
+        {
+            shootTimer -= Time.deltaTime;
+        }
+        if (shootTimer <= 0) canShoot = true;
+    }
+
+    void ReloadTimer()
+    {
+        if (isReloading)
+        {
+            Debug.Log("Reloading");
+            reloadTimer -= Time.deltaTime;
+        }
+        if (reloadTimer <= 0)
+        {            
+            reloadGun();
+        }
+    }
+
     void reload(bool reload)
     {
         Debug.Log("reload");
         if (!isReloading)
-        {
-            StartCoroutine("reloadGun");
+        {            
+            isReloading = true;          
         }
     }
 
     void Shoot(bool shoot)
-    {
-        
-        isShooting = shoot;
-        
+    {        
+        isShooting = shoot;        
     }   
 
     private void handleShoot(bool isShooting)
@@ -119,40 +161,33 @@ public class GunBase : MonoBehaviour
             if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit)) 
                 ShootDir = hit.point - BulletOrigin.transform.position;
             else
-                ShootDir = AimOrigin.transform.forward * 100 - BulletOrigin.transform.position;
-
-           StartCoroutine("shootBullet");            
+                ShootDir = AimOrigin.transform.forward * 1000 - BulletOrigin.transform.position;
+                 
+            ShootBullet();
         }
         else if (currentAmmo <= 0 && !isReloading)
         {
-            StartCoroutine("reloadGun");
+            isReloading = true;            
         }
     }
 
-    IEnumerator shootBullet()
+    void ShootBullet()
     {        
         canShoot = false;
+        shootTimer = fireRate;
+
         onShot?.Invoke(); //For animation Script or audio or anything else to subscribe to        
         currentAmmo--;
         Vector3 offset = Vector3.zero; //new Vector3(UnityEngine.Random.Range(-0.05f,0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f));
-        bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage);
-        yield return new WaitForSeconds(fireRate);
-       
-        canShoot = true;
-        yield return null;  
+        bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage);       
     }
 
-    IEnumerator reloadGun()
+    void reloadGun()
     {
-        isReloading = true;
-        onReload?.Invoke();
-        Debug.Log("Reloading");
-        yield return new WaitForSeconds(reloadSpeed);
+        onReload?.Invoke();    
         Debug.Log("Reload Complete");
         currentAmmo = magSize;
-        isReloading = false;    
-        yield return null;
-
+        isReloading = false;        
     }
     
 }

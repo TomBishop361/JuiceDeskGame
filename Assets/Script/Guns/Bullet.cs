@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -11,7 +12,12 @@ public class Bullet : ProjectileBase
 
     Vector3 direction;
     [SerializeField]
-    GameObject testHitParticle;   
+    GameObject testHitParticle;
+
+    [SerializeField] float lifeTime = 2f;
+
+    float lifeTimer;
+    bool isActive;
     
 
     private void Awake()
@@ -24,20 +30,27 @@ public class Bullet : ProjectileBase
         base.Fire(direction, origin, speed, damage);
         this.direction = direction;                
         rb.linearVelocity = direction * speed;
-        StartCoroutine("bulletTimeOut");
-    }   
-    
-    //Destroy bullet if it hits nothing after timelimit
-    IEnumerator bulletTimeOut()
+
+        lifeTimer = lifeTime;
+        isActive = true;            
+    }
+
+
+    private void Update()
     {
-        yield return new WaitForSeconds(2f);
-        OnBulletHit(this);
-        yield return null;
+        LifeTimer();
+    }
+
+    void LifeTimer()
+    {
+        if (!isActive) return;
+        lifeTimer -= Time.deltaTime;
+        if (lifeTimer <= 0) OnBulletHit(this);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        StopCoroutine(bulletTimeOut());
+        isActive = false;
         IDamageable hit;        
         if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
         {

@@ -71,6 +71,7 @@ public class Sliding : MonoBehaviour
         {
             StopSlide();
         }
+        //Adds down force when sliding
         rb.AddForce(Vector3.down * SlideDownforce, ForceMode.Force);
     }
 
