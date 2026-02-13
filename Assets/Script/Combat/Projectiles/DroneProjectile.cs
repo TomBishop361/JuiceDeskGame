@@ -39,30 +39,30 @@ namespace Game.Combat.Projectiles {
 
 		[Space(5)]
 
-		[Header("Setup")]
-		[SerializeField] private Rigidbody rigidbody;
+		[Header("Physics")]
+		[SerializeField] private Rigidbody rb;
 		[SerializeField] private bool useTrigger = true;
 
-		// Runtime values
+		// Runtime params
 		private float deathTime = 0.0f;
 		private bool hasHit = false;
 
 		// Reset to default values
 		private void Reset() {
-			rigidbody = GetComponent<Rigidbody>();
+			rb = GetComponent<Rigidbody>();
 		}
 
 		private void Awake() {
-			if (rigidbody == null) {
-				rigidbody = GetComponent<Rigidbody>();
+			if (rb == null) {
+				rb = GetComponent<Rigidbody>();
 			}
 
 			deathTime = Time.time + projectileLifetime;
 
 			// Make sure that there is consistent physics behaviour
-			if (rigidbody != null) {
-				rigidbody.useGravity = false;
-				rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+			if (rb != null) {
+				rb.useGravity = false;
+				rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 			}
 		}
 
@@ -87,8 +87,8 @@ namespace Game.Combat.Projectiles {
 
 			transform.rotation = Quaternion.LookRotation(direction);
 
-			if (rigidbody != null) {
-				rigidbody.linearVelocity = direction * projectileSpeed;
+			if (rb != null) {
+				rb.linearVelocity = direction * projectileSpeed;
 
 			}
 			else {
@@ -129,7 +129,7 @@ namespace Game.Combat.Projectiles {
 			hasHit = true;
 
 			// Prototype: if hit object implements IDamageable then call it
-			if (other.TryGetComponent(out IDamageableTemporary damageable)) {
+			if (other.TryGetComponent(out IDamageableProjectileTemp damageable)) {
 				damageable.TakeDamage(projectileDamage);
 			}
 
@@ -138,7 +138,7 @@ namespace Game.Combat.Projectiles {
 	}
 
 	// Prototype: Fallback interface - DELETE LATER
-	public interface IDamageableTemporary {
+	public interface IDamageableProjectileTemp {
 		void TakeDamage(float amount);
 	}
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 using Game.AI; // IEnemyAgent namespace
-using Game.Combat.Projectiles; // DroneProjectile namespace
+using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namespace
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
@@ -40,6 +40,13 @@ namespace Game.AI.Drone {
 		[SerializeField] private float hoverHeight = 3.0f;
 		[SerializeField] private float flightMoveSpeed = 4.0f;
 		[SerializeField] private float heightLerpSpeed = 8.0f;
+
+		[Header("Dynamic Height")]
+		[SerializeField] private bool matchPlayerHeight = true;
+		[SerializeField] private float heightOffsetFromPlayer = 3.0f; // drone floats above player
+		[SerializeField] private float minWorldY = -100.0f;
+		[SerializeField] private float maxWorldY = 100.0f;
+		[SerializeField] private float verticalFollowSpeed = 6.0f; // how quickly it tracks height changes
 
 		[Header("Knockdown")]
 		[SerializeField] private float knockdownDuration = 1.2f;
@@ -144,16 +151,47 @@ namespace Game.AI.Drone {
 		}
 
 		// Called in Update() function (as long as drone is not knocked down)
+		//private void MaintainHoverHeightOld() {
+		//	Vector3 position = transform.position;
+		//	float targetY = groundY + hoverHeight;
+
+		//	// Attempt to maintain height (constantly attempt to reach target height - hovering)
+		//	// Drone is actively hovering whilst adjusting
+		//	position.y = Mathf.Lerp(position.y, targetY, Time.deltaTime * heightLerpSpeed);
+
+		//	// Move towards target height
+		//	transform.position = position;
+		//}
+
+		// Dynamically maintain hover height based on enemy movement
+		// Called in Update() function (as long as drone is not knocked down)
 		private void MaintainHoverHeight() {
-			Vector3 position = transform.position;
-			float targetY = groundY + hoverHeight;
 
-			// Attempt to maintain height (constantly attempt to reach target height - hovering)
-			// Drone is actively hovering whilst adjusting
-			position.y = Mathf.Lerp(position.y, targetY, Time.deltaTime * heightLerpSpeed);
+			if (matchPlayerHeight == false || target == null) {
+				// Fallback to fixed hoverHeight -> around about the spawns groundY (if there is no target)
+				float fixedY = groundY + hoverHeight;
 
-			// Move towards target height
-			transform.position = position;
+				SetHeight(fixedY, verticalFollowSpeed);
+
+				return;
+			}
+
+			float desiredY = target.position.y + heightOffsetFromPlayer;
+
+			// Keep drone within world bounds (OPTIONAL)
+			desiredY = Mathf.Clamp(desiredY, minWorldY, maxWorldY);
+
+			SetHeight(desiredY, verticalFollowSpeed);
+		}
+
+		// Sets the height that the Drone should attempt to maintain
+		// Called above in MaintainHoverHeight() function
+		private void SetHeight(float desiredY, float followSpeed) {
+			Vector3 pos = transform.position;
+
+			pos.y = Mathf.Lerp(pos.y, desiredY, Time.deltaTime * followSpeed);
+
+			transform.position = pos;
 		}
 
 		// Called in Update() function (as soon as drone is considered to be knocked down)
@@ -328,15 +366,19 @@ namespace Game.AI.Drone {
 		}
 
 		private void FireProjectileNow() {
-			// Get direction away from drone
-			Vector3 direction = (target.position - projectileSpawn.position);
-			direction.y = 0.0f;
+			// Get aim direction towards target (aim at chest height -> + Vector3.up * 1.0f)
+			Vector3 direction = (target.position + Vector3.up * 1.0f - projectileSpawn.position);
 
 			GameObject projectileObj = Instantiate(projectilePrefab, projectileSpawn.position, Quaternion.identity);
 
 			// Launch projectile
-			if (projectileObj.TryGetComponent(out DroneProjectile droneProjectile)) {
-				droneProjectile.Launch(direction);
+			//if (projectileObj.TryGetComponent(out DroneProjectile droneProjectile)) {
+			//	droneProjectile.Launch(direction);
+			//}
+			// Launch homing projectile
+			if (projectileObj.TryGetComponent(out DroneHomingProjectile droneHomingProjectile)) {
+				droneHomingProjectile.Init(target);
+				droneHomingProjectile.Launch(direction);
 			}
 
 			//// Get direction away from drone
