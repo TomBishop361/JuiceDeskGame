@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputManager : InputManagerBase, IInputManager
 {
+    //Movement Input
     public Vector2 Movement { get; private set; }
     public Vector2 Look { get; private set; }
     public bool jump { get; private set; }
@@ -11,13 +12,18 @@ public class PlayerInputManager : InputManagerBase, IInputManager
     public float crouch{ get; private set; }
     public float slide{ get; private set; }
 
+
+    //Movement
     public event Action<Vector2> OnMoveReceived = delegate (Vector2 vector2) { };
     public event Action<bool> OnJumpReceived = delegate (bool value ) { };
     public event Action<bool> OnSprintReceived = delegate (bool value ) { };
     public event Action<float> OnCrouchReceived = delegate (float value ) { };
     public event Action<float> OnSlideReceived = delegate (float value ) { };
     public event Action<Vector2> OnLookReceived = delegate (Vector2 vector2) { };
-    
+   
+
+
+    //Movement
     void OnLook(InputValue inputValue)
     {
         Look = inputValue.Get<Vector2>();
@@ -28,8 +34,7 @@ public class PlayerInputManager : InputManagerBase, IInputManager
     {
         Movement = inputValue.Get<Vector2>();        
         OnMoveReceived(Movement);
-    }
-    
+    }   
 
     void OnJump(InputValue inputValue)
     {
@@ -55,4 +60,6 @@ public class PlayerInputManager : InputManagerBase, IInputManager
         slide = inputvalue.Get<float>();
         OnSlideReceived(slide);
     }
+
+   
 }
