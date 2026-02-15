@@ -1,4 +1,3 @@
-using Unity.AppUI.Core;
 using UnityEngine;
 using Unity.Behavior;
 using Game.AI.Drone; // DroneEnemy namespace
@@ -8,15 +7,17 @@ namespace Game.AI.Behavior.Drone {
 	// NOTE: IDs must be globally unique and should NEVER change once used in graphs.
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
+	// NOTE: For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
+
 	// - ID INFORMATION -
-	//<scope>.<kind>.<domain>.<name>
+	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
 
-	[NodeDescription(name: "Drone: Recover From Knockdown", description: "Handles knocked down recovery. Running until recovered.", story: "Drone recovers from knockdown", category: "Enemy/Drone/Actions/Core", id: "drone.action.core.recover_knockdown")]
+	[NodeDescription(name: "Drone: Recover From Knockdown", description: "Handles knocked down recovery. Running until recovered.", story: "Drone enemy recovers from knockdown", category: "Enemy/Drone/Actions/Core", id: "drone.action.core.recover_knockdown")]
 	public sealed class DroneRecoverFromKnockdown : Action {
 		private DroneEnemy droneEnemy;
 
@@ -51,7 +52,7 @@ namespace Game.AI.Behavior.Drone {
 		}
 	}
 
-	[NodeDescription(name: "Drone: Move Away (Tick)", description: "Moves away from target when too close.", story: "Drone moves away from target", category: "Enemy/Drone/Actions/Flight", id: "drone.action.flight.move_away_tick")]
+	[NodeDescription(name: "Drone: Move Away (Tick)", description: "Moves away from target when too close.", story: "Drone enemy moves away from target", category: "Enemy/Drone/Actions/Flight", id: "drone.action.flight.move_away_tick")]
 	public sealed class DroneMoveAwayTick : Action {
 		private DroneEnemy droneEnemy;
 
@@ -63,13 +64,12 @@ namespace Game.AI.Behavior.Drone {
 			}
 
 			if (droneEnemy.HasTarget == false) {
-				return Status.Failure;
+				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
 			droneEnemy.MoveAwayTick();
 
-			//return Status.Running;
-			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
+			return Status.Success; 
 		}
 
 		protected override Status OnUpdate() {
@@ -77,17 +77,16 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure;
 			}
 			if (droneEnemy.HasTarget == false) {
-				return Status.Failure;
+				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
 			droneEnemy.MoveAwayTick();
 
-			//return Status.Running;
-			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
+			return Status.Success; 
 		}
 	}
 
-	[NodeDescription(name: "Drone: Maintain Range (Tick)", description: "Maintains a desired distance band (hover/orbit style).", story: "Drone maintains range", category: "Enemy/Drone/Actions/Flight", id: "drone.action.flight.maintain_range_tick")]
+	[NodeDescription(name: "Drone: Maintain Range (Tick)", description: "Maintains a desired distance band (hover/orbit style).", story: "Drone enemy maintains range", category: "Enemy/Drone/Actions/Flight", id: "drone.action.flight.maintain_range_tick")]
 	public sealed class DroneMaintainRangeTick : Action {
 		private DroneEnemy droneEnemy;
 
@@ -99,13 +98,12 @@ namespace Game.AI.Behavior.Drone {
 			}
 
 			if (droneEnemy.HasTarget == false) {
-				return Status.Failure;
+				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
 			droneEnemy.MaintainRangeTick();
 
-			//return Status.Running;
-			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
+			return Status.Success; 
 		}
 
 		protected override Status OnUpdate() {
@@ -113,17 +111,16 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure;
 			}
 			if (droneEnemy.HasTarget == false) {
-				return Status.Failure;
+				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
 			droneEnemy.MaintainRangeTick();
 
-			//return Status.Running;
-			return Status.Success; // For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
+			return Status.Success; 
 		}
 	}
 
-	[NodeDescription(name: "Drone: Fire Projectile", description: "Fires a projectile and waits until firing is complete.", story: "Drone fires a projectile", category: "Enemy/Drone/Actions/Combat", id: "drone.action.combat.fire_projectile")]
+	[NodeDescription(name: "Drone: Fire Projectile", description: "Fires a projectile and waits until firing is complete.", story: "Drone enemy fires a projectile", category: "Enemy/Drone/Actions/Combat", id: "drone.action.combat.fire_projectile")]
 	public sealed class DroneFireProjectile : Action {
 		private DroneEnemy droneEnemy;
 

@@ -1,5 +1,3 @@
-using Unity.AppUI.Core;
-using UnityEditor.Playables;
 using UnityEngine;
 using Unity.Behavior;
 using Game.AI; // IEnemyAgent namespace
@@ -12,7 +10,8 @@ namespace Game.AI.Behavior.Shared {
 	// INFO: 'IEnemyAgent' is an interface implemented by all enemy types
 
 	// - ID INFORMATION -
-	//<scope>.<kind>.<domain>.<name>
+	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
 	//domain = core / combat / move / defense / flight / grapple / utility
@@ -39,8 +38,9 @@ namespace Game.AI.Behavior.Shared {
 
 	[NodeDescription(name: "Enemy: Die", description: "Runs the enemy death logic and stops movement.", story: "Enemy dies", category: "Enemy/Shared/Actions/Core", id: "enemy.action.core.die")]
 	public sealed class EnemyDie : Action {
+		private IEnemyAgent agent;
 		protected override Status OnStart() {
-			IEnemyAgent agent = GameObject.GetComponent<IEnemyAgent>();
+			agent = GameObject.GetComponent<IEnemyAgent>();
 			if (agent == null) {
 				LogFailure("IEnemyAgent not found on this GameObject.", isError: true);
 				return Status.Failure;
@@ -134,8 +134,10 @@ namespace Game.AI.Behavior.Shared {
 
 	[NodeDescription(name: "Enemy: Stop Move", description: "Stops movement immediately.", story: "Enemy stops moving", category: "Enemy/Shared/Actions/Movement", id: "enemy.action.move.stop")]
 	public sealed class EnemyStopMove : Action {
+		private IEnemyAgent agent;
+
 		protected override Status OnStart() {
-			IEnemyAgent agent = GameObject.GetComponent<IEnemyAgent>();
+			agent = GameObject.GetComponent<IEnemyAgent>();
 			if (agent == null) {
 				LogFailure("IEnemyAgent not found on this GameObject.", isError: true);
 				return Status.Failure;
@@ -149,8 +151,10 @@ namespace Game.AI.Behavior.Shared {
 
 	//[NodeDescription(name: "Enemy: Face Target", description: "Turns towards a target.", story: "Enemy faces target", category: "Enemy/Shared/Actions/Movement", id: "enemy.action.move.face_target")]
 	//public sealed class EnemyFaceTarget : Action {
+	//	private IEnemyAgent agent;
+	//
 	//	protected override Status OnStart() {
-	//		IEnemyAgent agent = GameObject.GetComponent<IEnemyAgent>();
+	//		agent = GameObject.GetComponent<IEnemyAgent>();
 	//		if (agent == null) {
 	//			LogFailure("IEnemyAgent not found on this GameObject.", isError: true);
 	//			return Status.Failure;
@@ -163,7 +167,7 @@ namespace Game.AI.Behavior.Shared {
 	//}
 
 	[NodeDescription(name: "Enemy: Primary Attack", description: "Starts primary attack and waits until it finishes.", story: "Enemy performs primary attack", category: "Enemy/Shared/Actions/Combat", id: "enemy.action.combat.primary_attack")]
-	public sealed class EnemyPrimaryAttack: Action {
+	public sealed class EnemyPrimaryAttack : Action {
 		private IEnemyAgent agent;
 
 		protected override Status OnStart() {

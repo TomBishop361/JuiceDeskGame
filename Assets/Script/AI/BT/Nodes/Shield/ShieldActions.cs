@@ -1,8 +1,8 @@
 using Unity.AppUI.Core;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 using Unity.Behavior;
-using Game.AI.Shield; // ShieldEnemy namespace
+using Game.AI.Shield;
+using UnityEditor; // ShieldEnemy namespace
 
 // ShieldActions.cs
 namespace Game.AI.Behavior.Shield {
@@ -10,7 +10,7 @@ namespace Game.AI.Behavior.Shield {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//<scope>.<kind>.<domain>.<name>
+	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
@@ -112,6 +112,8 @@ namespace Game.AI.Behavior.Shield {
 			return shieldEnemy.IsAttacking ? Status.Running : Status.Success;
 		}
 	}
+
+
 
 	// TODO: ADD ShieldBlockReact ACTION NODE CLASS
 

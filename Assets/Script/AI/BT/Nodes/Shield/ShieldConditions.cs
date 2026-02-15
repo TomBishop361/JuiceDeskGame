@@ -1,6 +1,4 @@
-using Unity.AppUI.Core;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 using Unity.Behavior;
 using Game.AI.Shield; // ShieldEnemy namespace
 
@@ -10,7 +8,7 @@ namespace Game.AI.Behavior.Shield {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//<scope>.<kind>.<domain>.<name>
+	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
@@ -18,7 +16,7 @@ namespace Game.AI.Behavior.Shield {
 	//name = the specific node name
 
 
-	[Condition(name: "Shield: In Punch Range", description: "True if target is within punch range.", story: "Shield enemy is in punch range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_punch_range")]
+	[Condition(name: "Shield: In Punch Range", description: "True if target is within punch range.", story: "Target is in punch range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_punch_range")]
 	public sealed class ShieldInPunchRange : Condition {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
@@ -27,12 +25,21 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
-	[Condition(name: "Shield: In Slam Range", description: "True if target is within slam range.", story: "Shield enemy is in slam range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_slam_range")]
+	[Condition(name: "Shield: In Slam Range", description: "True if target is within slam range.", story: "Target is in slam range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_slam_range")]
 	public sealed class ShieldInSlamRange : Condition {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
 			return shieldEnemy != null && shieldEnemy.InSlamRange;
+		}
+	}
+
+	[Condition(name: "Shield: Can Punch", description: "True if punch cooldown is ready and enemy can punch now.", story: "Shield enemy can punch", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.can_punch")]
+	public sealed class ShieldCanPunch : Condition {
+		public override bool IsTrue() {
+			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+
+			return shieldEnemy != null && shieldEnemy.CanPunch;
 		}
 	}
 
@@ -64,6 +71,7 @@ namespace Game.AI.Behavior.Shield {
 	// - SHIELD CONDITIONS ID NAMES -
 	// InPunchRange -> shield.condition.combat.in_punch_range - DONE
 	// InSlamRange -> shield.condition.combat.in_slam_range - DONE
+	// CanPunch -> shield.condition.combat.can_punch - DONE
 	// CanSlam -> shield.condition.combat.can_slam - DONE
 	// GrappleWindowOpen -> shield.condition.grapple.window_open - DONE
 	// (optional later) PlayerInFront -> shield.condition.defense.player_in_front

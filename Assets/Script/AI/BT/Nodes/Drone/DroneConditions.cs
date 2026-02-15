@@ -1,4 +1,3 @@
-using Unity.AppUI.Core;
 using UnityEngine;
 using Unity.Behavior;
 using Game.AI.Drone; // DroneEnemy namespace
@@ -9,7 +8,7 @@ namespace Game.AI.Behavior.Drone {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//<scope>.<kind>.<domain>.<name>
+	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
@@ -17,7 +16,7 @@ namespace Game.AI.Behavior.Drone {
 	//name = the specific node name
 
 
-	[Condition(name: "Drone: Is Knocked Down", description: "True if drone is knocked down (e.g. tasered).", story: "Drone is knocked down", category: "Enemy/Drone/Conditions/Core", id: "drone.condition.core.is_knocked_down")]
+	[Condition(name: "Drone: Is Knocked Down", description: "True if drone is knocked down (e.g. tasered).", story: "Drone enemy is knocked down", category: "Enemy/Drone/Conditions/Core", id: "drone.condition.core.is_knocked_down")]
 	public sealed class DroneIsKnockedDown : Condition {
 		public override bool IsTrue() {
 			DroneEnemy droneEnemy = GameObject.GetComponent<DroneEnemy>();
@@ -26,16 +25,16 @@ namespace Game.AI.Behavior.Drone {
 		}
 	}
 
-	[Condition(name: "Drone: Player Too Close", description: "True if target is closer than min range.", story: "Drone target is too close", category: "Enemy/Drone/Conditions/Flight", id: "drone.condition.flight.too_close")]
-	public sealed class DronePlayerTooClose : Condition {
+	[Condition(name: "Drone: Target Too Close", description: "True if target is closer than min range.", story: "Drone enemy target is too close", category: "Enemy/Drone/Conditions/Flight", id: "drone.condition.flight.too_close")]
+	public sealed class DroneTargetTooClose : Condition {
 		public override bool IsTrue() {
 			DroneEnemy droneEnemy = GameObject.GetComponent<DroneEnemy>();
 
-			return droneEnemy != null && droneEnemy.PlayerTooClose;
+			return droneEnemy != null && droneEnemy.TargetTooClose;
 		}
 	}
 
-	[Condition(name: "Drone: In Fire Range", description: "True if target is within firing range.", story: "Drone is in fire range", category: "Enemy/Drone/Conditions/Combat", id: "drone.condition.combat.in_fire_range")]
+	[Condition(name: "Drone: In Fire Range", description: "True if target is within firing range.", story: "Target is in fire range", category: "Enemy/Drone/Conditions/Combat", id: "drone.condition.combat.in_fire_range")]
 	public sealed class DroneInFireRange : Condition {
 		public override bool IsTrue() {
 			DroneEnemy droneEnemy = GameObject.GetComponent<DroneEnemy>();
@@ -44,7 +43,7 @@ namespace Game.AI.Behavior.Drone {
 		}
 	}
 
-	[Condition(name: "Drone: Can Fire", description: "True if drone can fire (cooldown ready, not stunned/knocked).", story: "Drone can fire", category: "Enemy/Drone/Conditions/Combat", id: "drone.condition.combat.can_fire")]
+	[Condition(name: "Drone: Can Fire", description: "True if drone enemy can fire (cooldown ready, not stunned/knocked).", story: "Drone enemy can fire", category: "Enemy/Drone/Conditions/Combat", id: "drone.condition.combat.can_fire")]
 	public sealed class DroneCanFire : Condition {
 		public override bool IsTrue() {
 			DroneEnemy droneEnemy = GameObject.GetComponent<DroneEnemy>();

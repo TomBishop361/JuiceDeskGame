@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System;
 using Game.AI; // IEnemyAgent namespace
 using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namespace
 
@@ -10,7 +8,7 @@ namespace Game.AI.Drone {
 
 		[Header("References")]
 		[SerializeField] private Transform target;
-		//[SerializeField] private NavMeshAgent navMeshAgent;
+		//[SerializeField] private NavMeshAgent navMeshAgent; // TODO: Might want nav mesh so it avoids obstacles + flies above them
 		[SerializeField] private Animator animator;
 
 		[Header("Stats")]
@@ -23,10 +21,11 @@ namespace Game.AI.Drone {
 		[SerializeField] private Transform projectileSpawn;
 
 		[Header("Ranges")]
+		// NOTE: Can use distance bands later -> Close, Short, Medium, Long, Extreme (not all of these but just for reference)
 		[SerializeField] private float minRange = 4.0f;   // too close -> move away
 		[SerializeField] private float fireRange = 10.0f; // in this range -> can fire
-		[SerializeField] private float desiredRange = 7.0f;
-		[SerializeField] private float rangeDeadzone = 0.75f; // deadzone where drone orbits instead of constantly re-adjusting (hysterisis prevents oscillation around target distance) 
+		[SerializeField] private float desiredRange = 7.0f; // aim to remain within this range
+		[SerializeField] private float rangeDeadzone = 0.75f; // deadzone where drone orbits instead of constantly re-adjusting (acts as hysterisis -> prevents oscillation around target distance) 
 
 		[Header("Cooldowns")]
 		[SerializeField] private float fireCooldown = 1.5f;
@@ -51,15 +50,18 @@ namespace Game.AI.Drone {
 		[Header("Knockdown")]
 		[SerializeField] private float knockdownDuration = 1.2f;
 
+		[Header("Attack Lock Times (prevents spam)")]
+		[SerializeField] private float fireLockTime = 0.50f; // anim length (approx)
+
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
 		public bool IsDead { get; private set; }
-		public bool IsStunned { get; private set; } // use knocked down as 'stunned' for shared nodes
+		public bool IsStunned { get; private set; } // shared 'IsStunned' node for drone enemy uses 'IsKnockedDown'
 		public bool HasTarget => target != null;
 		//public bool HasLOS =>{ get; private set; }
 
 		public float DistanceToTarget { get; private set; }
-		public bool InAttackRange => InFireRange; // Drone: 'attack range' = fire range
+		public bool InAttackRange => InFireRange; // shared 'InAttackRange' node for drone enemy means 'InFireRange'
 
 		public bool CanAttack => CanFire;
 		public bool IsAttacking { get; private set; }
@@ -71,22 +73,22 @@ namespace Game.AI.Drone {
 
 		public bool IsKnockedDown { get; private set; }
 		public bool InFireRange => HasTarget && DistanceToTarget <= fireRange;
-		public bool PlayerTooClose => HasTarget && DistanceToTarget < minRange;
+		public bool TargetTooClose => HasTarget && DistanceToTarget < minRange;
 		public bool CanFire => !IsDead && !IsKnockedDown && !IsAttacking && Time.time >= nextFireTime;
 
 		// - Drone Enemy Specific Properties [END] -
 
-		// Cooldown timers
+		// Cooldown/State timers
 		private float nextFireTime = -Mathf.Infinity;
 		private float knockdownEndTime = -Mathf.Infinity;
-		private float attackEndTime = -Mathf.Infinity; // enforce min attack time [DELETE LATER]
+		private float attackEndTime = -Mathf.Infinity; // enforce min attack time (safety for anim not firing)
 
 		// Animator IDs
-		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");
-		private static readonly int AnimFire = Animator.StringToHash("Fire");
-		private static readonly int AnimKnocked = Animator.StringToHash("KnockedDown");
-		private static readonly int AnimHit = Animator.StringToHash("Hit");
-		private static readonly int AnimDie = Animator.StringToHash("Die");
+		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
+		private static readonly int AnimFire = Animator.StringToHash("Fire"); // Trigger
+		private static readonly int AnimKnocked = Animator.StringToHash("KnockedDown"); // Trigger
+		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
+		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
 
 		// Runtime params
 		private float groundY;
@@ -104,7 +106,7 @@ namespace Game.AI.Drone {
 				return;
 			}
 
-			// Auto acquire target (in prototype)
+			// PROTOTYPE: Auto acquire target
 			if (target == null) {
 				TryFindPlayer();
 			}
@@ -130,38 +132,25 @@ namespace Game.AI.Drone {
 				FallToGround();
 			}
 
-			// DELETE LATER START
+			// Handle Attack lock timer (prevents immediate re-trigger spam even if anim event misfires)
+			// NOTE: THIS ANIM EVENT IS A SAFETY NET IN CASE ANIM DOES NOT FIRE OR ISN'T WIRED CORRECTLY
 			if (IsAttacking && Time.time >= attackEndTime) {
 				IsAttacking = false;
 			}
-			// DELETE LATER END
 
-			// Move speed (Prototype: simple debug)
 			if (animator != null) {
-				animator.SetFloat(AnimMoveSpeed, CurrentHorizontalSpeed());
+				// PROTOTYPE: Move speed (debug setter)
+				animator.SetFloat(AnimMoveSpeed, CurrentHorizontalSpeed() /*navMeshAgent.velocity.magnitude*/);
 			}		
 		}
 
-		// Find player automatically (in prototype)
+		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
 			}
 		}
-
-		// Called in Update() function (as long as drone is not knocked down)
-		//private void MaintainHoverHeightOld() {
-		//	Vector3 position = transform.position;
-		//	float targetY = groundY + hoverHeight;
-
-		//	// Attempt to maintain height (constantly attempt to reach target height - hovering)
-		//	// Drone is actively hovering whilst adjusting
-		//	position.y = Mathf.Lerp(position.y, targetY, Time.deltaTime * heightLerpSpeed);
-
-		//	// Move towards target height
-		//	transform.position = position;
-		//}
 
 		// Dynamically maintain hover height based on enemy movement
 		// Called in Update() function (as long as drone is not knocked down)
@@ -203,9 +192,10 @@ namespace Game.AI.Drone {
 			transform.position = position;
 		}
 
-		// Prototype: Called in Update() function
+		// PROTOTYPE: Called in Update() function
+		// NOTE: IF DRONE GETS NAV MESH THEN THIS IS NOT REQUIRED
 		private float CurrentHorizontalSpeed() {
-			// Prototype: not tracking velocity precisely
+			// PROTOTYPE: not tracking velocity precisely
 			// Instead return 0 or an estimate at the moment
 			return 0.0f;
 		}
@@ -247,8 +237,8 @@ namespace Game.AI.Drone {
 			// Required to implement it from IEnemyAgent
 		}
 
-		// Shared action node 'PrimaryAttack' can be used, but for drone we want
-		// firing so map primary attack to that instead
+		// Shared action node 'PrimaryAttack' can be used
+		// But for drone map primary attack to 'Fire' instead (default attack)
 		public bool TryStartPrimaryAttack() {
 			return TryStartFire();
 		}
@@ -310,8 +300,7 @@ namespace Game.AI.Drone {
 				return;
 			}
 
-			// Simple band control: if too far -> move closer | if too close -> move away |
-			// otherwise small orbit motion
+			// Distance band control: if too far -> move closer | if too close -> move away | otherwise small orbit motion
 			float distance = DistanceToTarget;
 
 			// Calculate direction from the drone to the target
@@ -353,13 +342,13 @@ namespace Game.AI.Drone {
 
 			IsAttacking = true;
 			nextFireTime = Time.time + fireCooldown;
-			attackEndTime = Time.time + 0.1f; // DELETE LATER (match potential animation length)
+			attackEndTime = Time.time + fireLockTime;
 
 			if (animator != null) {
 				animator.SetTrigger(AnimFire);
 			}
-				
-			// Prototype: Fire immediately (Move this to an Anim event later)
+
+			// PROTOTYPE: Fire immediately (Move this to an Anim event later)
 			FireProjectileNow();
 
 			return true;
@@ -464,3 +453,19 @@ namespace Game.AI.Drone {
 		}
 	}
 }
+
+// - DEPRECATED -
+
+// REASON: Have a solution to maintain hover height dynamically instead that is based on the players current height through platforming movement
+// Called in Update() function (as long as drone is not knocked down)
+//private void MaintainHoverHeightOld() {
+//	Vector3 position = transform.position;
+//	float targetY = groundY + hoverHeight;
+
+//	// Attempt to maintain height (constantly attempt to reach target height - hovering)
+//	// Drone is actively hovering whilst adjusting
+//	position.y = Mathf.Lerp(position.y, targetY, Time.deltaTime * heightLerpSpeed);
+
+//	// Move towards target height
+//	transform.position = position;
+//}

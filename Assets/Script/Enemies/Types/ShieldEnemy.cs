@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
-using System;
-using Game.AI; // IEnemyAgent namespace
+using Game.AI;
+using Game.AI.Behavior.Shield; // IEnemyAgent namespace
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
@@ -20,7 +19,9 @@ namespace Game.AI.Shield {
 		[SerializeField] private float damage = 1.0f; // TODO: punch dmg + slam dmg
 
 		[Header("Ranges")]
+		[Tooltip("Minimum range that shield enemy can perform punch attack (should be less than 'slam range'")]
 		[SerializeField] private float punchRange = 1.6f;
+		[Tooltip("Minimum range that shield enemy can perform slam attack (should be greater than 'punch range'")]
 		[SerializeField] private float slamRange = 2.4f;
 
 		[Header("Cooldowns")]
@@ -35,6 +36,10 @@ namespace Game.AI.Shield {
 		[Header("Stun")]
 		[SerializeField] private float hitStunDuration = 0.4f;
 
+		[Header("Attack Lock Times (prevents spam)")]
+		[SerializeField] private float punchLockTime = 0.85f; // anim length (approx)
+		[SerializeField] private float slamLockTime = 1.0f; // anim length (approx)
+
 		[Header("Grapple Window")]
 		[SerializeField] private float grappleWindowDuration = 1.0f;
 
@@ -46,11 +51,9 @@ namespace Game.AI.Shield {
 		//public bool HasLOS =>{ get; private set; }
 
 		public float DistanceToTarget { get; private set; }
-		// Shared nodes ask for 'InAttackRange' and 'CanAttack'
-		// For shield enemy, 'attack range' can mean punch OR slam
-		public bool InAttackRange => HasTarget && (InPunchRange || InSlamRange);
+		public bool InAttackRange => HasTarget && (InPunchRange || InSlamRange); // shared 'InAttackRange' node for shield enemy can mean 'InPunchRange' OR 'InSlamRange'
 
-		public bool CanAttack => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime; // used for punch
+		public bool CanAttack => CanPunch; // shared 'CanAttack' node for shield enemy can mean 'CanPunch' (default primary attack)
 		public bool IsAttacking { get; private set; }
 		//public bool IsTargetTooClose { get; private set; }
 
@@ -60,28 +63,28 @@ namespace Game.AI.Shield {
 
 		public bool InPunchRange => HasTarget && DistanceToTarget <= punchRange;
 		public bool InSlamRange => HasTarget && DistanceToTarget <= slamRange;
-
-		//public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
+		public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
 		public bool CanSlam => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSlamTime;
-
 		public bool GrappleWindowOpen { get; private set; }
-		[SerializeField] private float grappleWindowEndTime;
 
 		// - Shield Enemy Specific Properties [END] -
 
-		// Cooldown timers
+		// Exposed params (visible in the inspector)
+		[SerializeField] private float grappleWindowEndTime;
+
+		// Cooldown/State timers
 		private float nextPunchTime = -Mathf.Infinity;
 		private float nextSlamTime = -Mathf.Infinity;
 		private float stunEndTime = -Mathf.Infinity;
-		private float attackEndTime = -Mathf.Infinity; // enforce min attack time [DELETE LATER]
+		private float attackEndTime = -Mathf.Infinity; // enforce min attack time (safety for anim not firing)
 
 		// Animator IDs
-		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed");
-		private static readonly int AnimPunch = Animator.StringToHash("Punch");
-		private static readonly int AnimSlam = Animator.StringToHash("Slam");
-		private static readonly int AnimShieldRaised = Animator.StringToHash("ShieldRaised");
-		private static readonly int AnimHit = Animator.StringToHash("Hit");
-		private static readonly int AnimDie = Animator.StringToHash("Die");
+		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
+		private static readonly int AnimPunch = Animator.StringToHash("Punch"); // Trigger
+		private static readonly int AnimSlam = Animator.StringToHash("Slam"); // Trigger
+		private static readonly int AnimShieldRaised = Animator.StringToHash("ShieldRaised"); // Bool
+		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
+		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
 
 		// Reset to default values
 		private void Reset() {
@@ -104,7 +107,7 @@ namespace Game.AI.Shield {
 				return;
 			}
 
-			// Auto acquire target (in prototype)
+			// PROTOTYPE: Auto acquire target
 			if (target == null) {
 				TryFindPlayer();
 			}
@@ -120,15 +123,17 @@ namespace Game.AI.Shield {
 			}
 
 			// Handle grapple window timer
+			// NOTE: SHIELD ENEMY WILL DECIDE WHETHER PLAYER CAN GRAPPLE
+			// IDEA: GRAPPLING COULD BE LIKE DEALING DAMAGE -> THE SHIELD ENEMY'S HURTBOX CAN DECIDE THE OUTCOME
 			if (GrappleWindowOpen == true && Time.time >= grappleWindowEndTime) {
 				GrappleWindowOpen = false;
 			}
 
-			// DELETE LATER START
+			// Handle Attack lock timer (prevents immediate re-trigger spam even if anim event misfires)
+			// NOTE: THIS ANIM EVENT IS A SAFETY NET IN CASE ANIM DOES NOT FIRE OR ISN'T WIRED CORRECTLY
 			if (IsAttacking && Time.time >= attackEndTime) {
 				IsAttacking = false;
 			}
-			// DELETE LATER END
 
 			// Animator movement speed
 			if (navMeshAgent != null && animator != null) {
@@ -136,7 +141,7 @@ namespace Game.AI.Shield {
 			}
 		}
 
-		// Find player automatically (in prototype)
+		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
@@ -191,16 +196,12 @@ namespace Game.AI.Shield {
 				navMeshAgent.isStopped = true;
 			}
 		}
+		// Shared action node 'PrimaryAttack' can be used
+		// But for sword map primary attack to 'Swing' instead
 
-		// Shared action node 'PrimaryAttack' can be used, but for shield we want
-		// punch vs slam selection in the BT for shield enemy combat actions
+		// Shared action node 'PrimaryAttack' can be used
+		// But for shield we want 'Punch' Vs 'Slam' selection in the BT for shield enemy combat actions
 		public bool TryStartPrimaryAttack() {
-			// Prototype fallback: if slam is ready and not too close to target -> slam, otherwise punch
-			if (CanSlam == true && InSlamRange == true && InPunchRange == false) {
-				return TryStartSlam();
-			}
-				
-			// Punch if not in slam attack range
 			return TryStartPunch();
 		}
 
@@ -230,7 +231,6 @@ namespace Game.AI.Shield {
 			}
 		}
 
-		// Called by TryStartPrimaryAttack() function as fallback if slam attack is not possible
 		public bool TryStartPunch() {
 			// Punch interrupts
 			if (IsDead == true || IsStunned == true || IsAttacking == true) {
@@ -253,7 +253,7 @@ namespace Game.AI.Shield {
 
 			IsAttacking = true;
 			nextPunchTime = Time.time + punchCooldown;
-			attackEndTime = Time.time + 0.3f; // DELETE LATER (match potential animation length)
+			attackEndTime = Time.time + punchLockTime;
 
 			if (animator != null) {
 				animator.SetBool(AnimShieldRaised, true);
@@ -263,7 +263,6 @@ namespace Game.AI.Shield {
 			return true;
 		}
 
-		// Called by TryStartPrimaryAttack() function if slam attack is possible
 		public bool TryStartSlam() {
 			// Slam interrupts
 			if (IsDead == true || IsStunned == true || IsAttacking == true) {
@@ -286,9 +285,9 @@ namespace Game.AI.Shield {
 
 			IsAttacking = true;
 			nextSlamTime = Time.time + slamCooldown;
-			attackEndTime = Time.time + 0.8f; // DELETE LATER (match potential animation length)
+			attackEndTime = Time.time + slamLockTime;
 
-			// Prototype: Open grapple window immediately (or trigger it via anim event)
+			// PROTOTYPE: Open grapple window immediately (or trigger it via anim event)
 			GrappleWindowOpen = true;
 			grappleWindowEndTime = Time.time + grappleWindowDuration;
 
@@ -339,8 +338,8 @@ namespace Game.AI.Shield {
 		// Call this at end of attack animation
 		public void AnimEvent_AttackFinished() {
 			IsAttacking = false;
-			// Prototype: keep shield raised during combat
-			// To lower it, set 'ShieldRaised' false somewhere
+			// PROTOTYPE: keep shield raised during combat
+			// To lower it -> set 'ShieldRaised' FALSE somewhere
 		}
 
 		// Hitbox toggles (call inside anim event)
@@ -378,3 +377,18 @@ namespace Game.AI.Shield {
 		}
 	}
 }
+
+// - DEPRECATED -
+
+// REASON: No longer needed as TryStartPunch() & TryStartSlam() are exposed to BT -> BT decides which attack not C#
+// Shared action node 'PrimaryAttack' can be used
+// But for shield we want 'Punch' Vs 'Slam' selection in the BT for shield enemy combat actions
+//public bool TryStartPrimaryAttack() {
+//	// PROTOTYPE fallback: if slam is ready and not too close to target -> slam, otherwise punch
+//	if (CanSlam == true && InSlamRange == true && InPunchRange == false) {
+//		return TryStartSlam();
+//	}
+
+//	// Punch if not in slam attack range
+//	return TryStartPunch();
+//}
