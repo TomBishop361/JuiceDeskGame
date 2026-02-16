@@ -4,9 +4,13 @@ using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namesp
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class DroneEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner {
+	public class DroneEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
+
+		// Implement IHealthSettings
+		public float MaxHealth => maxHealth;
+		public float LowHealthThreshold => 0.1f; // TODO: CHANGE THIS FROM MAGIC NUMBER
 
 		[Header("References")]
 		[SerializeField] private Transform target;
@@ -14,11 +18,12 @@ namespace Game.AI.Drone {
 		[SerializeField] private Animator animator;
 
 		[Header("Stats")]
-		[SerializeField] private int health = 1;
+		[SerializeField] private int maxHealth = 1;
 
 		[Header("Combat")]
 		//[SerializeField] private float damage = 1.0f; // USED IN DroneProjectile.cs
 		//[SerializeField] private float projectileSpeed = 14.0f; // USED IN DroneProjectile.cs
+		[SerializeField] private AttackData projectielAttackData = new AttackData();
 		[SerializeField] private GameObject projectilePrefab;
 		[SerializeField] private Transform projectileSpawn;
 
@@ -92,10 +97,19 @@ namespace Game.AI.Drone {
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
 
+		// - Cached Components -
+		private Health healthComponent;
+
 		// Runtime params
 		private float groundY;
+		[SerializeField] private float currentHealth;
+		[SerializeField] private float previousHealthValue = 0.0f;
+		[SerializeField] private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 
 		private void Awake() {
+			// Sync health
+			currentHealth = maxHealth;
+
 			groundY = transform.position.y;
 
 			if (animator == null) {
@@ -360,7 +374,17 @@ namespace Game.AI.Drone {
 			// Get aim direction towards target (aim at chest height -> + Vector3.up * 1.0f)
 			Vector3 direction = (target.position + Vector3.up * 1.0f - projectileSpawn.position);
 
+			// Spawm projectile
 			GameObject projectileObj = Instantiate(projectilePrefab, projectileSpawn.position, Quaternion.identity);
+
+			// Supply projectile hitbox with attack data
+			ProjectileHitbox projectileHitbox = projectileObj.GetComponentInChildren<ProjectileHitbox>();
+			if (projectileHitbox != null) {
+				projectileHitbox.Initialise(projectielAttackData);
+			}
+			else {
+				Debug.Log("DroneEnemy: ProjectileHitbox cannot be found on instantiated projectile object " + projectileObj.name);
+			}
 
 			// Launch projectile
 			//if (projectileObj.TryGetComponent(out DroneProjectile droneProjectile)) {
@@ -391,10 +415,10 @@ namespace Game.AI.Drone {
 			}
 
 			// Decrement health by 'x' amount
-			health -= amount;
+			currentHealth -= amount;
 
 			// Death on 0 health
-			if (health <= 0) {
+			if (currentHealth <= 0) {
 				Die();
 				return;
 			}
@@ -452,6 +476,29 @@ namespace Game.AI.Drone {
 				// Responsive rotation towards target direction (using RotateTowards)
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
+		}
+
+		// - Event & Callback handlers -
+
+		private void OnEnable() {
+			if (healthComponent != null) {
+				previousHealthValue = healthComponent.CurrentHealth;
+				healthComponent.OnHealthChanged += OnHealthChanged;
+			}
+		}
+		private void OnDisable() {
+			if (healthComponent != null) {
+				healthComponent.OnHealthChanged -= OnHealthChanged;
+			}
+		}
+
+		private void OnHealthChanged(float current, float max) {
+			// Damage only if health has gone down
+			if (current < previousHealthValue) {
+				// Reset regen delay timer - only regen when out of combat
+				lastDamageTime = Time.time;
+			}
+			previousHealthValue = current;
 		}
 	}
 }

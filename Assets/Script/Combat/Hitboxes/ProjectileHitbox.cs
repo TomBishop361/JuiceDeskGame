@@ -1,16 +1,74 @@
+using Game.Combat.Projectiles;
+using System;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
-public class ProjectileHitbox : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+// Shared Projectile Hitbox for Drone especially but can be used for any entity that uses projectiles
+// Determines where a projectile attack hits
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+// NOTE: Should be applied to each Projectile GameObject
+public class ProjectileHitbox : MonoBehaviour {
+	private DroneHomingProjectile parentProjectile;
+	private AttackData attackData;
+	private bool hasHit = false;
+
+	public event Action<AttackData, IDamageable, Vector3> OnProjectileHitImpact;
+
+	private void Awake() {
+		parentProjectile = GetComponentInParent<DroneHomingProjectile>();
+	}
+
+	// This is called by the ranged attack in order to configure this hitbox
+	public void Initialise(AttackData attackData) {
+		this.attackData = attackData;
+	}
+
+	private void OnTriggerEnter(Collider other) {
+		if (hasHit == true) {
+			return;
+		}
+
+		hasHit = true;
+
+		Vector3 hitPoint = other.ClosestPoint(parentProjectile.transform.position);
+
+		// IDamageable is implemented inside Hurtbox.cs (which is on root parent gameobject)
+		//IDamageable target = other.GetComponentInParent<IDamageable>();
+		//if (target == null) {
+		//	Debug.LogError("IDamageable: not found in parent of: " + other.gameObject.name);
+		//	Debug.Log(other.gameObject.name);
+		//	return;
+		//}
+
+
+		// Dictates if a direct or in-direct hit was made based on whether IDamageable exists on the collided object
+		IDamageable target = other.TryGetComponent(out IDamageable damageable) ? damageable : null;
+		Debug.Log("TARGET =  " + other.name);
+
+
+		// Notify executors that projectile hit something
+		// They handle damage dealing due to projectiles dealing either direct or in-direct splash damage (For drone homing projectiles only at the moment)
+		OnProjectileHitImpact?.Invoke(attackData, target, hitPoint);
+
+		//// Inform Projectile.cs script that a collision has occured
+		//// It will deal with damage handling because there is falloff based on AOE impact
+		//if (other.TryGetComponent(out IDamageable damageableInterface) == true) {
+		//	// Direct hit
+		//	Vector3 hitPoint = other.ClosestPoint(parentProjectile.transform.position);
+
+		//	// Notify executors that projectile made a direct hit
+		//	OnProjectileHitImpact?.Invoke(attackData, damageableInterface, hitPoint);
+
+		//	//parentProjectile.OnHit(attackData, damageableInterface, hitPoint);
+		//}
+		//else {
+		//	// In-direct hit
+		//	Vector3 hitPoint = parentProjectile.transform.position;
+
+		//	// Notify executors that projectile made an in-direct hit
+		//	OnProjectileHitImpact?.Invoke(attackData, null, hitPoint);
+
+		//	//parentProjectile.OnHit(attackData, null, parentProjectile.transform.position);
+		//}
+	}
 }

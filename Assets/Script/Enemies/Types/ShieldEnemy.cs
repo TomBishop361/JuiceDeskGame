@@ -19,6 +19,7 @@ namespace Game.AI.Shield {
 
 		[Header("Combat")]
 		[SerializeField] private float damage = 1.0f; // TODO: punch dmg + slam dmg
+		[SerializeField] private AttackData bulletAttackData = new AttackData();
 
 		[Header("Ranges")]
 		[Tooltip("Minimum range that shield enemy can perform punch attack (should be less than 'slam range'")]

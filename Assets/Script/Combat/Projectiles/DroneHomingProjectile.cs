@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using UnityEngine;
 
 // DroneHomingProjectile:
@@ -28,6 +27,10 @@ namespace Game.Combat.Projectiles {
 		[SerializeField] private int homingProjectileDamage = 1;
 		[Tooltip("Hit radius of homing projectile")]
 		[SerializeField] private float hitRadius = 0.15f;
+		[Tooltip("If true, exploding on lifetime expiry can deal splash damage")]
+		[SerializeField] private bool explodeOnTimeout = true;
+		[Tooltip("Attack data to use when projectile times out and explodes - for now copy the same values used for drone projectile attack data on the Drone Gameobject")]
+		[SerializeField] private AttackData timeoutAttackData;
 		[Tooltip("Layers that the homing projectile can interact with")]
 		[SerializeField] private LayerMask hitLayers = ~0;
 
@@ -47,9 +50,10 @@ namespace Game.Combat.Projectiles {
 		private Transform target;
 		private float deathTime;
 		private float homingEndTime;
-		//private bool hasHit;
+		private bool hasHit = false;
 		private bool hasExpired = false;
 		private Vector3 velocityDirection;
+		private ProjectileHitbox projectileHitbox;
 
 		private void Reset() {
 			rb = GetComponent<Rigidbody>();
@@ -61,7 +65,7 @@ namespace Game.Combat.Projectiles {
 			}
 
 			if (homingActiveMaterial != null) {
-				gameObject.GetComponent<MeshRenderer>().material = homingActiveMaterial;
+				gameObject.GetComponentInChildren<MeshRenderer>().material = homingActiveMaterial;
 			}
 		
 			deathTime = Time.time + homingProjectileLifetime;
@@ -74,6 +78,12 @@ namespace Game.Combat.Projectiles {
 				rb.useGravity = false;
 				rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 				rb.interpolation = RigidbodyInterpolation.Interpolate;
+			}
+
+			projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
+			if (projectileHitbox != null) {
+				// Subscribe to event handler from the hit box event
+				projectileHitbox.OnProjectileHitImpact += HandleProjectileHitImpact;
 			}
 		}
 
@@ -105,10 +115,31 @@ namespace Game.Combat.Projectiles {
 
 		private void Update() {
 			if (Time.time >= deathTime) {
-				Destroy(gameObject);
+				// Allows projectile to still deal damage to player if it reaches the deathtime
+				if (explodeOnTimeout == true) {
+					ExplodeOnTimeout();
+				}
+				else {
+					Destroy(gameObject);
+				}
 				return;
 			}
 
+			SteerProjectile();
+
+
+			// Hit check (using custom sphere cast)
+			//if (target != null) {
+			//	Vector3 toTarget = (target.position + Vector3.up * 1.0f) - transform.position;
+
+			//	if (toTarget.sqrMagnitude <= hitRadius * hitRadius) {
+			//		TryDamage(target.gameObject);
+			//		Destroy(gameObject);
+			//	}
+			//}
+		}
+
+		public void SteerProjectile() {
 			// Homing projectile steering
 			if (target != null && Time.time <= homingEndTime) {
 				// Aim towards chest height of target
@@ -123,9 +154,9 @@ namespace Game.Combat.Projectiles {
 			// Change visual of homing projectile (expired - no longer locked on to target)
 			else if (hasExpired == false) {
 				if (homingExpiredMaterial != null) {
-					gameObject.GetComponent<MeshRenderer>().material = homingExpiredMaterial;
+					gameObject.GetComponentInChildren<MeshRenderer>().material = homingExpiredMaterial;
 				}
-				hasExpired = false;
+				hasExpired = true;
 			}
 
 			// Move forward
@@ -134,29 +165,130 @@ namespace Game.Combat.Projectiles {
 			if (velocityDirection.sqrMagnitude > 0.0001f) {
 				transform.rotation = Quaternion.LookRotation(velocityDirection);
 			}
-			
-			// Hit check (using custom sphere cast)
-			if (target != null) {
-				Vector3 toTarget = (target.position + Vector3.up * 1.0f) - transform.position;
-
-				if (toTarget.sqrMagnitude <= hitRadius * hitRadius) {
-					TryDamage(target.gameObject);
-					Destroy(gameObject);
-				}
-			}
 		}
 
-		private void TryDamage(GameObject other) {
-			if (LayerAllowed(other) == false) {
+		// Event Handler for projectile impact - invoked from inside TBD when a projectile hits a trigger
+		// Deals damage based on direct or in-direct hit and plays effects
+		public void HandleProjectileHitImpact(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
+			if (hasHit == true) {
 				return;
 			}
 
-			// Prototype: if hit object implements IDamageable then call it
-			if (other.TryGetComponent(out IDamageableHomingTemp damageable)) {
-				damageable.TakeDamage(homingProjectileDamage);
+			hasHit = true;
+
+			// Direct hit = Full damage (check if target contains a HurtBox)
+			if (directReceiver != null) {
+				Debug.Log("DIRECT DAMAGE = " + attackData.Damage);
+				directReceiver.TakeDamage(attackData);
 			}
-			
+
+			// In-Direct hit = Splash Damage
+			DealSplashDamage(attackData, directReceiver, hitPoint);
+
+			// TODO: Play Camera shake + SFX + VFX regardless
+			Explode(/*hitPoint*/);
 		}
+
+		// Deals splash damage to any in-direct hits that contain a HurtBox
+		private void DealSplashDamage(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
+			Collider[] colliderOverlapsArray = Physics.OverlapSphere(hitPoint, hitRadius, hitLayers);
+
+			foreach (Collider hit in colliderOverlapsArray) {
+
+				// Check if hits inside splash radius contains a HurtBox
+				if (hit.TryGetComponent(out IDamageable damageable) == false) {
+					continue;
+				}
+
+				// Prevent any double damage on direct hits
+				if (directReceiver != null && damageable == directReceiver) {
+					continue;
+				}
+
+				// Distance from damage target and projectile impact point
+				float distance = Vector3.Distance(hit.ClosestPoint(hitPoint), hitPoint);
+
+				float finalDamage = CalculateDamageFalloff(distance);
+
+				if (finalDamage <= 0.0f) {
+					continue;
+				}
+
+				AttackData splashAttack = attackData;
+				splashAttack.Damage = finalDamage;
+
+				Debug.Log("SPLASH DAMAGE = " + finalDamage);
+
+				// Deal splash damage to in-direct hits (must contain a HurtBox)
+				damageable.TakeDamage(splashAttack);
+			}
+		}
+
+		// Calculate damage falloff based on distance of explosion to the hit target
+		private float CalculateDamageFalloff(float distance) {
+			float t = Mathf.Clamp01(distance / hitRadius);
+
+			return Mathf.Lerp(homingProjectileDamage, 0.0f, t);
+		}
+
+		// TODO: Play Camera shake + SFX + VFX + Destroy projectile regardless of hit
+		private void Explode(/*Vector3 explosionPoint*/) {
+			// Play projectile explosion Camera shake + SFX + VFX at explosion point
+			//CameraShakeManager.Instance.TriggerCameraShakeAtPosition(CameraShakeType.BossProjectileHit, explosionPoint);
+			//SFXController.Instance.PlayProjectileExplosion(explosionPoint);
+			//VFXController.Instance.SpawnProjectileExplosion(explosionPointl);
+			Debug.Log("HOMING PROJECTILE EXPLODED");
+			// Destroy once explosion effects have been started 
+			Destroy(gameObject);
+		}
+
+		// Explodes if no collision was made and lifetime timer expired - allows it to still deal damage to player
+		private void ExplodeOnTimeout() {
+			// Prevents double explosion damage in the case of a collision
+			if (hasHit == true) {
+				return;        
+			}
+			hasHit = true;
+
+			Vector3 explosionPoint = transform.position;
+
+			// Timeout explosion has no directReceiver since no collision was made so it’s just splash damage
+			DealSplashDamage(timeoutAttackData, null, explosionPoint);
+
+			Explode();
+		}
+
+		// Shows explosion hit radius as a gizmo (scene view only)
+		// TODO: Show explosion predicted impact point as a gizmo (scene view only)
+		// NOTE: DEBUG HIT RADIUS (DIRECT = DIRECT DAMAGE | ANYTHING ELSE BUT STILL IN HIT RADIUS IS SPLASH DAMAGE)
+		private void OnDrawGizmos() {
+			//if (hasPredictedHit == false) {
+			//	return;
+			//}
+
+			Gizmos.color = Color.red;
+			Gizmos.DrawWireSphere(transform.position, hitRadius);
+			//Gizmos.DrawSphere(transform.position, hitRadius);
+		}
+
+		// - Events and Callback handlers -
+
+		private void OnDestroy() {
+			if (projectileHitbox != null) {
+				projectileHitbox.OnProjectileHitImpact -= HandleProjectileHitImpact;
+			}
+		}
+
+		//private void TryDamage(GameObject other) {
+		//	if (LayerAllowed(other) == false) {
+		//		return;
+		//	}
+
+		//	// Prototype: if hit object implements IDamageable then call it
+		//	if (other.TryGetComponent(out IDamageable damageable)) {
+		//		damageable.TakeDamage(homingProjectileDamage);
+		//	}
+		//}
 
 		//private void FixedUpdate() {
 		//	if (Time.time >= deathTime) {
@@ -199,10 +331,10 @@ namespace Game.Combat.Projectiles {
 		//	}
 		//}
 
-		private bool LayerAllowed(GameObject other) {
-			// Uses bitmask check so there can be multiple projectile damage/hit layers 
-			return (hitLayers.value & (1 << other.layer)) != 0;
-		}
+		//private bool LayerAllowed(GameObject other) {
+		//	// Uses bitmask check so there can be multiple projectile damage/hit layers 
+		//	return (hitLayers.value & (1 << other.layer)) != 0;
+		//}
 		
 		//private void OnTriggerEnter(Collider other) {
 		//	if (useTrigger == false) {
@@ -237,10 +369,5 @@ namespace Game.Combat.Projectiles {
 
 		//	Destroy(gameObject);
 		//}
-	}
-
-	// Prototype: Fallback interface - DELETE LATER
-	public interface IDamageableHomingTemp {
-		void TakeDamage(float amount);
 	}
 }
