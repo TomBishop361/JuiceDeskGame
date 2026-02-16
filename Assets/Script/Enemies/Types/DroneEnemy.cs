@@ -4,7 +4,9 @@ using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namesp
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class DroneEnemy : MonoBehaviour, IEnemyAgent {
+	public class DroneEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner {
+		// Implement IFactionOwner
+		public Faction OwnerFaction => Faction.Enemy;
 
 		[Header("References")]
 		[SerializeField] private Transform target;
@@ -245,7 +247,7 @@ namespace Game.AI.Drone {
 
 		// - Implement IEnemyAgent Methods [END] -
 
-		// - Drone Enemy Specifc Action Node Execution -
+		// - Drone Enemy Specifc BT Action Node Execution -
 
 		public void RecoverFromKnockdownTick() {
 			//// While knocked down, remain at ground height

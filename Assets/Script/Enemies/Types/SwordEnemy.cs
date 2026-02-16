@@ -1,38 +1,50 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
-using Game.AI; // IEnemyAgent namespace
+using Game.AI;
+using UnityEngine.InputSystem; // IEnemyAgent namespace
 
 namespace Game.AI.Sword {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class SwordEnemy : MonoBehaviour, IEnemyAgent {
+	public class SwordEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner, IHealthSettings {
+		// Implement IFactionOwner
+		public Faction OwnerFaction => Faction.Enemy;
+
+		// Implement IHealthSettings
+		public float MaxHealth => maxHealth;
+		public float LowHealthThreshold => 1; // TODO: CHANGE THIS FROM MAGIC NUMBER
 
 		[Header("References")]
 		[SerializeField] private Transform target;
 		[SerializeField] private NavMeshAgent navMeshAgent;
-		//[SerializeField] private Rigidbody rb; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
+		[SerializeField] private MeleeHitbox meleeHitbox; // Shared Melee Hitbox (on sword object)
+		[SerializeField] private MeleeHitbox swingHitbox; // TEMP
+		[SerializeField] private MeleeHitbox lungeHitbox; // TEMP
+		[SerializeField] private Rigidbody rb; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
 		[SerializeField] private Animator animator;
 
 		[Header("Stats")]
-		[SerializeField] private int health = 3;
-		[SerializeField] private float defaultSpeed = 3.5f;
-		[SerializeField] private float defaultAcceleration = 8.0f;
+		[SerializeField] private int maxHealth = 3;
+		[SerializeField] private float defaultSpeed = 7.0f;
+		[SerializeField] private float defaultAcceleration = 16.0f;
 
 		[Header("Combat")]
 		[SerializeField] private float damage = 2.0f; // TODO: different attack damages (swing: 1 + lunge: 2)
+		[SerializeField] private AttackData swingAttackData = new AttackData();
+		[SerializeField] private AttackData lungeAttackData = new AttackData();
 
 		[Header("Ranges")]
 		[SerializeField] private float swingRange = 1.8f;
-		[SerializeField] private float lungeMinRange = 3.2f; // start lunge attack if player is at least this far
-		[SerializeField] private float lungeMaxRange = 5.2f; // don't lunge attack if player exceeds this range
+		[SerializeField] private float lungeMinRange = 2.8f; // start lunge attack if player is at least this far
+		[SerializeField] private float lungeMaxRange = 6.5f; // don't lunge attack if player exceeds this range
 
 		[Header("Cooldowns")]
 		[SerializeField] private float swingCooldown = 1.0f;
-		[SerializeField] private float lungeCooldown = 2.0f; // good ranges: 1.8-2.5
+		[SerializeField] private float lungeCooldown = 2.2f; // good ranges: 1.8-2.5
 
 		[Header("Movement")]
 		[SerializeField] private bool toggleSmoothRotation = false; // toggle between reactive rotation & smooth rotation
-		[SerializeField] private float rotationSpeed = 360.0f; // degrees per second
+		[SerializeField] private float rotationSpeed = 440.0f; // degrees per second (360 - 480 good range for responsive melee speed)
 		[SerializeField] private float rotationSmoothing = 12.0f; // smoothing multiplier (12 - 15 good range)
 
 		[Header("Stun")]
@@ -42,18 +54,21 @@ namespace Game.AI.Sword {
 		[SerializeField] private float swingLockTime = 0.55f; // anim length (approx)
 		[SerializeField] private float lungeLockTime = 0.75f; // anim length (approx)
 
-		[Header("Lunge Settings")]
-		[SerializeField] private float lungeSpeed = 8.0f; // good ranges: 7-10 [NOTE: 20 for extreme difficulty)
-		[SerializeField] private float lungeAcceleration = 16.0f;
-		[SerializeField] private float lungeDistance = 1.5f; // distance to lunge forward (uses stopping distance below to ensure no overshooting)
-		[SerializeField] private float lungeStopDistance = 0.6f; // makes sure to not overshoot into the player | good ranges: 0.6-0.9
-		[SerializeField] private float lungeDuration = 0.3f; // good ranges: 0.18-0.30
-		[SerializeField] private LayerMask lungeBlockers; // use for walls and obstacles 
-		//[SerializeField] private float lungeForce = 15.0f; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
-		//[SerializeField] private float lungePastPlayer = 1.0f; // lunge overshoot amount
-		//[SerializeField] private float lungeWindupTime  = 0.1f; // telegraphs lunge attack - so player can react
-		//[SerializeField] private float lungeRecoverTime = 0.6f;
-		
+		//[Header("Lunge Settings")]
+		//[SerializeField] private float lungeSpeed = 8.0f; // good ranges: 7-10 [NOTE: 20 for extreme difficulty)
+		//[SerializeField] private float lungeAcceleration = 16.0f;
+		//[SerializeField] private float lungeDistance = 1.5f; // distance to lunge forward (uses stopping distance below to ensure no overshooting)
+		//[SerializeField] private float lungeStopDistance = 0.6f; // makes sure to not overshoot into the player | good ranges: 0.6-0.9
+		//[SerializeField] private float lungeDuration = 0.3f; // good ranges: 0.18-0.30 (match active lunge part of anim clip)
+		//[SerializeField] private LayerMask lungeBlockers; // use for walls and obstacles 
+
+		[Header("Lunge Physics (Method)")]
+		[SerializeField] private float lungeForce = 30.0f; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
+		[SerializeField] private float lungeWindupTime = 0.20f; // telegraphs lunge attack - so player can react (match windup part of lunge anim clip)
+		[SerializeField] private float lungeLeadTime = 0.15f; // good ranges: 0.10–0.18
+		[SerializeField] private float lungeMaxLaunchAngle = 45.0f; // degrees (good range: 0.35–0.55) // facing direction angle
+		[SerializeField] private float lungeDuration = 0.22f; // good ranges: 0.18-0.30 (match active part of lunge anim clip)
+		[SerializeField] private float lungeRecoveryTime = 0.4f; // (match downtime part of lunge anim clip)
 
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
@@ -95,34 +110,101 @@ namespace Game.AI.Sword {
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
 
+		// - Cached Components -
+		private Health healthComponent;
+
 		// Runtime params
+		// (NOTE: SerializeField atm for tracking in inspector)
 		[SerializeField] private bool isLunging = false;
+		[SerializeField] private float currentHealth;
+		[SerializeField] private float previousHealthValue = 0.0f;
+		[SerializeField] private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		private Coroutine lungeRoutine = null;
+		private bool lungeInProgress = false;
+		private Vector3 lungeDirection;
+		private bool AgentReady => navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh;
+		//[SerializeField] private AttackData attackData = new AttackData(); // configured at start of each attack via animation event (if using one melee hitbox for both swing and lunge)
+
+		// Helpers for ensuring that NavMesh agent functions can carry out 
+		// TODO: CREATE NAVMESHAGENT HELPER SCRIPT WITH THESE
+		private void SafeSetDestination(Vector3 pos) {
+			if (AgentReady == false) {
+				return;
+			}
+			navMeshAgent.SetDestination(pos);
+		}
+
+		private void SafeStopAgent() {
+			if (AgentReady == false) {
+				return;
+			}
+			navMeshAgent.isStopped = true;
+		}
+
+		private void SafeResumeAgent() {
+			if (AgentReady == false) {
+				return;
+			}
+			navMeshAgent.isStopped = false;
+		}
 
 		// Reset to default values
 		private void Reset() {
 			navMeshAgent = GetComponent<NavMeshAgent>();
 			// rb = GetComponent<Rigidbody>(); // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
+			meleeHitbox = GetComponentInChildren<MeleeHitbox>(true);
+			swingHitbox = GetComponentInChildren<MeleeHitbox>(true);
+			lungeHitbox = GetComponentInChildren<MeleeHitbox>(true);
 			animator = GetComponentInChildren<Animator>();
 		}
 
 		private void Awake() {
+			CacheComponents();
+			ResetRuntimeToBaseValues();
+			InitialRuntimeSetup();
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [START] -
+
+		private void CacheComponents() {
 			if (navMeshAgent == null) {
 				navMeshAgent = GetComponent<NavMeshAgent>();
 			}
-
-			//if (rb == null) {
-			//	rb = GetComponent<Rigidbody>(); // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
-			//	rb.isKinematic = true; // NavMesh controls movement
-			//}
-
+			if (rb == null) {
+				rb = GetComponent<Rigidbody>(); // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
+				rb.isKinematic = true; // NavMesh controls movement
+			}
+			if (meleeHitbox == null) {
+				meleeHitbox = gameObject.GetComponentInChildren<MeleeHitbox>(true);
+			}
+			if (swingHitbox == null) {
+				swingHitbox = gameObject.GetComponentInChildren<MeleeHitbox>(true);
+			}
+			if (lungeHitbox == null) {
+				lungeHitbox = gameObject.GetComponentInChildren<MeleeHitbox>(true);
+			}
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
+		}
 
-			// Set Default values (NOTE: put in a function later)
+		private void ResetRuntimeToBaseValues() {
+			// Set Default values
 			navMeshAgent.speed = defaultSpeed;
 			navMeshAgent.acceleration = defaultAcceleration;
+			navMeshAgent.angularSpeed = rotationSpeed;
 		}
+
+		private void InitialRuntimeSetup() {
+			// Sync health
+			currentHealth = maxHealth;
+
+			// Configure melee swing & lunge hit box's with data
+			swingHitbox.Initialise(swingAttackData);
+			lungeHitbox.Initialise(lungeAttackData);
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [END] -
 
 		private void Update() {
 			if (IsDead == true) {
@@ -150,10 +232,10 @@ namespace Game.AI.Sword {
 				IsAttacking = false;
 			}
 
-			// Perform lunge attack
-			if (isLunging == true) {
-				LungeTick();
-			}
+			// Perform lunge attack - NavMesh Method
+			//if (isLunging == true) {
+			//	LungeTick();
+			//}
 
 			// Animator movement speed
 			// NOTE: Can do Root motion lunge attack where animation drives movement for more precision (requires good animations but is typically the most polished)
@@ -162,66 +244,219 @@ namespace Game.AI.Sword {
 			}		
 		}
 
-		private void LungeTick() {
-			if (navMeshAgent == null) {
-				isLunging = false;
-				return;
-			}
-			// IMPORTANT NOTE: CONDITIONS LIKE THIS SHOULD BE CHECKED IN ONE PLACE (SOME ARE BEING CHECKED IN BT AND CODE ATM I BELIVE)
-			if (HasTarget == false) {
-				isLunging = false;
-				return;
-			}
+		// Lunge Windup/Rotation Coroutine
+		private IEnumerator LungeCoroutine() {
+			Debug.Log("LUNGE ATTACK");
 
-			// Finish lunge attack before 'lungeEndTime' (safety for anim not firing correctly)
-			if (Time.time >= lungeEndTime) {
-				isLunging = false;
-				return;
-			}
+			SafeStopAgent();
+			navMeshAgent.updateRotation = false;
 
-			// Don't overshoot into the player
-			if (DistanceToTarget <= lungeStopDistance) {
-				isLunging = false;
-				return;
-			}
+			// Windup
+			float windupTimer = 0.0f;
+			while (windupTimer < lungeWindupTime) {
+				// Interrupt Lunge (also done in BT but here acts as safety)
+				if (IsDead == true || IsStunned == true || target == null) {
+					EndLunge();
+					yield break;
+				}
 
-			// Get forward direction
-			Vector3 forward = transform.forward;
+				// Face target during windup -> micro adjustments = fast enemy reaction time
+				//toggleSmoothRotation = false; // reactive rotation for lunge windup - have seperate functions for facing on windup + chase
+				FaceTarget(target.position);
 
-			// OPTIONAL: Stop lunging if there is a wall in front of the sword enemy
-			// 0.8f = height offset to check for obstacles | 0.6f = max ray distance
-			if (Physics.Raycast(transform.position + Vector3.up * 0.8f, forward, 0.6f, lungeBlockers)) {
-				isLunging = false;
-				return;
+				// Increment windup timer
+				windupTimer += Time.deltaTime;
+
+				yield return null;
 			}
 
-			// Calculate target point (past the player for commitment - deliberate overshoot on miss)
-			//Vector3 direction = (target.position - transform.position).normalized;
-			//Vector3 lungeTarget = target.position + direction * lungePastPlayer;
+			// Wait until animation event ends lunge attack
+			while (IsAttacking == true) {
+				yield return null;
+			}
 
-			// #1 Lunge forward (sword enemy remains on navmesh)
-			// + Best way to work with NavMesh since using '.Move' and keeping nav active | - idk at the moment
-			//navMeshAgent.speed = lungeSpeed;
-			//navMeshAgent.acceleration = lungeAcceleration;
-			navMeshAgent.isStopped = true;
-			navMeshAgent.Move(forward * (lungeSpeed * Time.deltaTime)); // set speed + accel to test (possibly)
-
-			// #2 Increase NavMesh agent speed and set lunge destination (bursts forward - but uses normal pathing)
-			// + Simple | - Pathfinding can curve the lunge if NavMesh agent is avoiding obstacles
-			//navMeshAgent.speed = lungeSpeed * 1.5f;// 150% of default speed
-			//navMeshAgent.acceleration = acceleration * 1.5f; // 150% of default acceleration
-			//navMeshAgent.SetDestination(transform.position + forward * lungeDistance);
-			// NOTE: USING RestoreSpeedAccel() with the above method (#2)
-
-			// #3 Disable NavMesh agent + use Rigidbody to dash
-			// + Uses physics | - Have to resync NavMesh agent afte (can be difficult to get right)
-			//navMeshAgent.enabled = false;
-			// Use Rigidbody here
-
-			// Restore normal stats
-			//navMeshAgent.speed = defaultSpeed;
-			//navMeshAgent.acceleration = defaultAcceleration;
+			EndLunge();
 		}
+
+		// Predict the player position using player velocity alongside a time lead (predicat ahead of time)
+		private Vector3 PredictAimPoint() {
+			// Aim at players chest (0.8 - 1.2 for the multiplier depending on player height)
+			Vector3 baseAim = target.position + Vector3.up * 1.0f;
+
+			if (target.TryGetComponent(out Rigidbody rb) == true) {
+				return baseAim + rb.linearVelocity * lungeLeadTime;
+			}
+
+			// TODO: Expose velocity & use that instead
+			return baseAim; 
+		}
+
+		// Ensure that enemy is facing their targets direction within a given angle (prevents side-ways lunging)
+		private bool IsFacingDirection(Vector3 worldDirection) {
+			if (target == null) {
+				return false;
+			}
+
+			worldDirection.y = 0.0f;
+			if (worldDirection.sqrMagnitude < 0.001f) {
+				return true;
+			}
+
+			float facingAngle = Vector3.Angle(transform.forward, worldDirection);
+
+			return facingAngle <= lungeMaxLaunchAngle;
+		}
+
+		// Lunge dash start called by animation event at the beginning of stab clip
+		// Calculate dash direction at exact launch moment + ensure enemy is facing within a given angle
+		public void OnLungeDashStart() {
+			// Stop lunge
+			if (target == null || rb == null) {
+				return;
+			}
+
+			// Compute the lunge dash direction (this is locked at launch to prevent aimbot-like tracking)
+			Vector3 aim = PredictAimPoint();
+			Vector3 direction = aim - transform.position;
+			direction.y = 0.0f;
+
+			if (direction.sqrMagnitude < 0.001f) {
+				direction = transform.forward;
+			}
+			else {
+				lungeDirection = direction.normalized;
+			}
+
+			// Check if sword enemy is facing enough within a given angle
+			// If not, snap rotation to the dash direction before launch
+			if (IsFacingDirection(lungeDirection) == false) {
+				Quaternion desiredRotation = Quaternion.LookRotation(lungeDirection);
+				transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime);
+			}
+
+			// Disable NavMesh agent (for physX lunge movement)
+			if (navMeshAgent != null) {
+				navMeshAgent.enabled = false;
+			}
+
+			rb.isKinematic = false;
+			rb.linearVelocity = Vector3.zero;
+			//rb.angularVelocity = Vector3.zero;
+
+			Debug.Log("DashStart");
+
+			// Dash in the same direction used for enemy facing 
+			rb.AddForce(lungeDirection * lungeForce, ForceMode.VelocityChange);
+		}
+
+		// Lunge dash end called by animation event when dash motion is over in stab clip (same time as hitbox being disabled) 
+		public void OnLungeDashEnd() {
+			Debug.Log("DashEnd");
+
+			rb.linearVelocity = Vector3.zero;
+			//rb.angularVelocity = Vector3.zero;
+			rb.isKinematic = true;
+
+			navMeshAgent.enabled = true;
+			navMeshAgent.Warp(transform.position);
+			SafeResumeAgent();
+			//navMeshAgent.updatePosition = true;
+			navMeshAgent.updateRotation = true; // if you want agent rotation again
+		}
+
+		// Cleanup Lunge attack
+		// NOTE: CALL ON STUN INTERRUPTS LATER (will interrupt lunge attack motion)
+		private void EndLunge() {
+			// PhysX cleanup
+			//if (rb != null) {
+			//	rb.linearVelocity = Vector3.zero;
+			//	rb.angularVelocity = Vector3.zero;
+			//	rb.isKinematic = true;
+			//}
+			// NavMesh cleanup - re-sync NavMesh agent after applying Rigidbody physics
+			//if (navMeshAgent != null) {
+			//	if (navMeshAgent.enabled == false) {
+			//		navMeshAgent.enabled = true;
+			//	}
+			//	SafeResumeAgent();
+			//	navMeshAgent.updatePosition = true;
+			//	navMeshAgent.updateRotation = true;
+			//	navMeshAgent.Warp(transform.position);
+			//}
+
+			// NOTE: Safety for disabling melee hitbox in case it wasn't inside the animation (delete later)
+			if (meleeHitbox != null) {
+				meleeHitbox.Disable();
+			}
+
+			// Runtime param cleanup
+			isLunging = false;
+			IsAttacking = false;
+			lungeInProgress = false;
+
+			lungeRoutine = null;
+		}
+
+		//private void LungeTick() {
+		//	if (navMeshAgent == null) {
+		//		isLunging = false;
+		//		return;
+		//	}
+		//	// IMPORTANT NOTE: CONDITIONS LIKE THIS SHOULD BE CHECKED IN ONE PLACE (SOME ARE BEING CHECKED IN BT AND CODE ATM I BELIVE)
+		//	if (HasTarget == false) {
+		//		isLunging = false;
+		//		return;
+		//	}
+
+		//	// Finish lunge attack before 'lungeEndTime' (safety for anim not firing correctly)
+		//	if (Time.time >= lungeEndTime) {
+		//		isLunging = false;
+		//		return;
+		//	}
+
+		//	// Don't overshoot into the player
+		//	if (DistanceToTarget <= lungeStopDistance) {
+		//		isLunging = false;
+		//		return;
+		//	}
+
+		//	// Get forward direction
+		//	Vector3 forward = transform.forward;
+
+		//	// OPTIONAL: Stop lunging if there is a wall in front of the sword enemy
+		//	// 0.8f = height offset to check for obstacles | 0.6f = max ray distance
+		//	if (Physics.Raycast(transform.position + Vector3.up * 0.8f, forward, 0.6f, lungeBlockers)) {
+		//		isLunging = false;
+		//		return;
+		//	}
+
+		//	// Calculate target point (past the player for commitment - deliberate overshoot on miss)
+		//	//Vector3 direction = (target.position - transform.position).normalized;
+		//	//Vector3 lungeTarget = target.position + direction * lungePastPlayer;
+
+		//	// #1 Lunge forward (sword enemy remains on navmesh)
+		//	// + Best way to work with NavMesh since using '.Move' and keeping nav active | - idk at the moment
+		//	//navMeshAgent.speed = lungeSpeed;
+		//	//navMeshAgent.acceleration = lungeAcceleration;
+		//	navMeshAgent.isStopped = true;
+		//	navMeshAgent.Move(forward * (lungeSpeed * Time.deltaTime)); // set speed + accel to test (possibly)
+
+		//	// #2 Increase NavMesh agent speed and set lunge destination (bursts forward - but uses normal pathing)
+		//	// + Simple | - Pathfinding can curve the lunge if NavMesh agent is avoiding obstacles
+		//	//navMeshAgent.speed = lungeSpeed * 1.5f;// 150% of default speed
+		//	//navMeshAgent.acceleration = acceleration * 1.5f; // 150% of default acceleration
+		//	//navMeshAgent.SetDestination(transform.position + forward * lungeDistance);
+		//	// NOTE: USING RestoreSpeedAccel() with the above method (#2)
+
+		//	// #3 Disable NavMesh agent + use Rigidbody to dash
+		//	// + Uses physics | - Have to resync NavMesh agent afte (can be difficult to get right)
+		//	//navMeshAgent.enabled = false;
+		//	// Use Rigidbody here
+
+		//	// Restore normal stats
+		//	//navMeshAgent.speed = defaultSpeed;
+		//	//navMeshAgent.acceleration = defaultAcceleration;
+		//}
 
 		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
@@ -248,7 +483,7 @@ namespace Game.AI.Sword {
 
 			// Disable nav mesh agent upon death
 			if (navMeshAgent != null) {
-				navMeshAgent.isStopped = true;
+				SafeStopAgent();
 				navMeshAgent.enabled = false;
 			}
 
@@ -275,17 +510,21 @@ namespace Game.AI.Sword {
 			if (HasTarget == false || navMeshAgent == null) {
 				return;
 			}
-				
-			navMeshAgent.isStopped = false;
-			navMeshAgent.SetDestination(target.position);
+			if (AgentReady == false) {
+				return;
+			}
+
+			SafeResumeAgent();
+			SafeSetDestination(target.position);
 
 			// Continuously adjust direction when chasing target
+			//toggleSmoothRotation = true; // smooth rotation for chase - lunges sideways due to slow turning from chase
 			FaceTarget(target.position);
 		}
 
 		public void StopMove() {
 			if (navMeshAgent != null) {
-				navMeshAgent.isStopped = true;
+				SafeStopAgent();
 			}	
 		}
 
@@ -297,13 +536,13 @@ namespace Game.AI.Sword {
 
 		// - Implement IEnemyAgent Methods [END] -
 
-		// - Sword Enemy Specifc Action Node Execution -
+		// - Sword Enemy Specifc BT Action Node Execution -
 
 		public bool TryStartSwing() {
 			if (CanSwing == false) {
 				return false;
 			}
-			// OPTIONAL: Remove if you want swing attack to begin slightly out of range
+			// OPTIONAL: Remove if you want swing attack to begin slightly out of range as player may move out of range in that small window
 			if (InSwingRange == false) {
 				return false;
 			}
@@ -315,6 +554,8 @@ namespace Game.AI.Sword {
 			attackEndTime = Time.time + swingLockTime;
 
 			if (animator != null) {
+				// Set Swing anim trigger (plays swing anim)
+				animator.ResetTrigger(AnimLunge);
 				animator.SetTrigger(AnimSwing);
 			}
 				
@@ -322,10 +563,10 @@ namespace Game.AI.Sword {
 		}
 
 		public bool TryStartLunge() {
-			if (CanLunge == false) {
+			if (CanLunge == false || InLungeRange == false) {
 				return false;
 			}
-			if (InLungeRange == false) {
+			if (lungeInProgress == true) {
 				return false;
 			}
 
@@ -333,14 +574,25 @@ namespace Game.AI.Sword {
 
 			IsAttacking = true;
 			isLunging = true;
-			lungeEndTime = Time.time + lungeDuration;
 
+			lungeEndTime = Time.time + lungeDuration; // NOTE: NEEDED?
 			nextLungeTime = Time.time + lungeCooldown;
-			attackEndTime = Time.time + lungeLockTime;
+			attackEndTime = Time.time + lungeLockTime; // NOTE: NEEDED? (Anim event no longer decides when to stop attack - PhysX method)
+
+			// Begin lunge attack Coroutine (PhysX method)
+			lungeInProgress = true;
+			lungeRoutine = StartCoroutine(LungeCoroutine());
 
 			if (animator != null) {
+				// Set Lunge anim trigger (plays windup anim -> stab anim)
+				animator.ResetTrigger(AnimSwing);
 				animator.SetTrigger(AnimLunge);
 			}
+			
+			// NOTE: PHYSX METHOD HANDLES WINDUP ANIM - WHICH USES THIS TRIGGER
+			//if (animator != null) {
+			//	animator.SetTrigger(AnimLunge);
+			//}
 
 			return true;
 		}
@@ -353,10 +605,10 @@ namespace Game.AI.Sword {
 			}
 
 			// Decrement health by 'x' amount
-			health -= amount;
+			currentHealth -= amount;
 
 			// Death on 0 health
-			if (health <= 0) {
+			if (currentHealth <= 0) {
 				Die();
 				return;
 			}
@@ -383,21 +635,64 @@ namespace Game.AI.Sword {
 
 		// - Animation Events -
 
-		// Call this at end of attack animation
+		// NOTE: DONT CALL IN ANIM EVENT (makes adding new anims later easier) 
+		// Call this at start of attack animation via event - 
+		//public void AnimEvent_AttackStart() {
+		//	IsAttacking = true;
+		//}
+
+		// NOTE: DONT CALL IN ANIM EVENT (makes adding new anims later easier) - Do this for Swing for now
+		// Call this at end of attack animation via event
 		public void AnimEvent_AttackFinished() {
 			IsAttacking = false;
 		}
 
-		// Hitbox toggles (call inside anim event)
+		// Hitbox toggles (call inside animation event)
 		public void AnimEvent_EnableHitbox() {
+			meleeHitbox.Enable();
 			// TODO: ADD LOGIC TO AnimEvent_EnableHitbox()
 		}
 		public void AnimEvent_DisableHitbox() {
+			meleeHitbox.Disable();
 			// TODO: ADD LOGIC TO AnimEvent_DisableHitbox()
+		}
+		public void AnimEvent_EnableSwingHitbox() {
+			// TEMP
+			swingHitbox.Enable();
+		}
+		public void AnimEvent_DisableSwingHitbox() {
+			// TEMP
+			swingHitbox.Disable();
+		}
+		public void AnimEvent_EnableLungeHitbox() {
+			// TEMP
+			// NOTE: Can Drive movement from animation instead
+			// Forward lunge for melee attack
+			//Vector3 meleeLunge = transform.position += transform.forward * 0.6f;
+			//navMeshAgent.Move(meleeLunge);
+			lungeHitbox.Enable();
+		}
+		public void AnimEvent_DisableLungeHitbox() {
+			// TEMP
+			lungeHitbox.Disable();
+		}
+
+		// - Setup Melee Attack Data (Swing + Lunge) -
+
+		// Swing attack animation event calls this at the beginning of the animation
+		public void AnimEvent_SetupSwingData() {
+			// Configure melee hitbox with swing attack data
+			meleeHitbox.Initialise(swingAttackData);
+		}
+		// Lunge attack animation event calls this at the beginning of the animation
+		public void AnimEvent_SetupLungeData() {
+			// Configure melee hitbox with lunge attack data
+			meleeHitbox.Initialise(lungeAttackData);
 		}
 
 		// - Movement Helpers -
 		// TODO: Place inside MovementHelpers.cs script later
+		// NOTE: Might need to replace NavMesh angular speed with rotation speed
 
 		// Turn to face the targets direction (used when chasing to maintain LOS)
 		private void FaceTarget(Vector3 worldPos) {
@@ -409,10 +704,11 @@ namespace Game.AI.Sword {
 				return;
 			}
 			
-			Quaternion targetRotation = Quaternion.LookRotation(direction);
+			Quaternion targetRotation = Quaternion.LookRotation(direction/*.normalized*/); // NOTE:ADD normalised for other enemies here as well
 
 			if (toggleSmoothRotation == true) {
 				// Smooth rotation towards target direction (using Slerp)
+				// NOTE: USE SMOOTH ROTATION FOR CHASING THEN ROTATETOWARDS FOR WINDUP
 				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
 			} else {
 				// Responsive rotation towards target direction (using RotateTowards)
@@ -420,14 +716,129 @@ namespace Game.AI.Sword {
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
 		}
+
+		// - Event & Callback handlers -
+
+		private void OnEnable() {
+			if (healthComponent != null) {
+				previousHealthValue = healthComponent.CurrentHealth;
+				healthComponent.OnHealthChanged += OnHealthChanged;
+			}
+		}
+		private void OnDisable() {
+			if (healthComponent != null) {
+				healthComponent.OnHealthChanged -= OnHealthChanged;
+			}
+		}
+
+		private void OnHealthChanged(float current, float max) {
+			// Damage only if health has gone down
+			if (current < previousHealthValue) {
+				// Reset regen delay timer - only regen when out of combat
+				lastDamageTime = Time.time;
+			}
+			previousHealthValue = current;
+		}
 	}
 }
+
+// NOTE: LATEST LUNGE ATTACK Physics Method -> Currently using Animation events to call lunge windup and stab animation instead for consistency 
+// But using Anim events means less freedom in tuning -> can use windup + duration + recovery variables to test feel for correct lunge phase timings
+
+//// Lunge Windup + Dash + Recovery (uses Rigidbody physX)
+//private IEnumerator LungeCoroutine() {
+//	Debug.Log("LUNGE ATTACK");
+
+//	// Windup
+//	navMeshAgent.isStopped = true;
+//	navMeshAgent.updatePosition = false;
+//	navMeshAgent.updateRotation = false;
+//	rb.isKinematic = true;
+
+//	// Set Lunge anim trigger (plays windup anim -> stab anim)
+//	animator.ResetTrigger(AnimSwing);
+//	animator.SetTrigger(AnimLunge);
+
+//	float windupTimer = 0.0f;
+//	while (windupTimer < lungeWindupTime) {
+//		// Interrupt Lunge (also done in BT, but here acts as safety)
+//		if (IsDead == true || IsStunned == true  || target == null) { 
+//			EndLunge(); 
+//			yield break; 
+//		}
+
+//		// Face target during windup -> micro adjustments = fast enemy reaction time
+//		//toggleSmoothRotation = false; // reactive rotation for lunge windup - have seperate functions for facing on windup + chase
+//		FaceTarget(target.position);
+
+//		// Increment windup timer
+//		windupTimer += Time.deltaTime;
+
+//		yield return null;
+//	}
+
+//	// Lock direction at lunge - commit to attack
+//	Vector3 lungeDirection = target.position - transform.position;
+//	lungeDirection.y = 0.0f;
+
+//	// If lunge direction is not much change from current direction (lunge forward)
+//	if (lungeDirection.sqrMagnitude < 0.0001f) {
+//		// Face forward only
+//		lungeDirection = transform.forward;
+//	}
+
+//	lungeDirection.Normalize();
+
+//	// Lunge
+//	// Disable NavMesh + enable physics
+//	navMeshAgent.enabled = false;
+//	rb.isKinematic = false;
+
+//	RigidbodyConstraints previousConstraints = rb.constraints;
+//	rb.constraints |= RigidbodyConstraints.FreezeRotation;
+
+//	// Clear previous movement before lunge
+//	rb.linearVelocity = Vector3.zero;
+//	rb.angularVelocity = Vector3.zero;
+
+//	// Apply lunge force
+//	rb.AddForce(lungeDirection * lungeForce, ForceMode.VelocityChange);
+//	// NavMesh method - TODO: TRY AND MAKE THIS HAPPEN INSTEAD
+//	//navMeshAgent.Move(lungeDirection * lungeSpeed * Time.deltaTime);
+
+//	yield return new WaitForSeconds(lungeDuration);
+
+//	// Recovery
+//	rb.linearVelocity = Vector3.zero;
+//	rb.angularVelocity = Vector3.zero;
+//	rb.constraints = previousConstraints;
+//	rb.isKinematic = true;
+
+//	// Re-enable NavMesh (NOTE: Can warp to a valid position - but may look too much like teleporting)
+//	// NOTE: Using warp is better than sampling + setting position
+//	//if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2.0f, NavMesh.AllAreas)) {
+//	//	transform.position = hit.position;
+//	//}
+
+
+//	navMeshAgent.enabled = true;
+//	//navMeshAgent.Warp(transform.position);
+//	//navMeshAgent.updatePosition = true;
+//	//navMeshAgent.updateRotation = true;
+//	//navMeshAgent.isStopped = false;
+
+//	// Downtime after lunging
+//	yield return new WaitForSeconds(lungeRecoveryTime);
+
+//	EndLunge();
+//}
 
 // NOTE: CAN USE LATER FOR LUNGE ATTACK - Physics Method
 
 //public void StartLungeAttack() {
-//	if (isLunging == true)
+//	if (isLunging == true) {
 //		StartCoroutine(LungeCoroutine());
+//	}
 //}
 
 //private IEnumerator LungeCoroutine() {
@@ -494,7 +905,7 @@ namespace Game.AI.Sword {
 //	navMeshAgent.enabled = true;
 //	navMeshAgent.isStopped = false;
 
-//	yield return new WaitForSeconds(lungeRecoverTime);
+//	yield return new WaitForSeconds(lungeRecoveryTime);
 
 //	isLunging = false;
 //}

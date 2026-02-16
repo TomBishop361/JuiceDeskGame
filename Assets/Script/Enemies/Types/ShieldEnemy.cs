@@ -5,7 +5,9 @@ using Game.AI.Behavior.Shield; // IEnemyAgent namespace
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class ShieldEnemy : MonoBehaviour, IEnemyAgent {
+	public class ShieldEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner {
+		// Implement IFactionOwner
+		public Faction OwnerFaction => Faction.Enemy;
 
 		[Header("References")]
 		[SerializeField] private Transform target;
@@ -207,7 +209,7 @@ namespace Game.AI.Shield {
 
 		// - Implement IEnemyAgent Methods [END] -
 
-		// - Shield Enemy Specifc Action Node Execution -
+		// - Shield Enemy Specifc BT Action Node Execution -
 
 		public void AdvanceRaisedTick() {
 			// Advanced raised interrupts
