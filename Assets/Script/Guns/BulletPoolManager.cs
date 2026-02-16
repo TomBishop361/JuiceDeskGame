@@ -11,9 +11,9 @@ public class BulletPoolManager : MonoBehaviour
     [SerializeField]
     int bulletPoolSize = 40;
     [SerializeField]
-    List<Bullet> bullets = new List<Bullet>();
+    List<ProjectileBase> bullets = new List<ProjectileBase>();
     [SerializeField]
-    List<Bullet> inUse = new List<Bullet>();
+    List<ProjectileBase> inUse = new List<ProjectileBase>();
 
 
 
@@ -30,7 +30,7 @@ public class BulletPoolManager : MonoBehaviour
         GameObject Bullet = Instantiate(bulletPrefab, transform);
         bullets.Add(Bullet.GetComponent<Bullet>());
         Bullet.SetActive(false);
-        Bullet.GetComponent<Bullet>().onBulletHit += returnBulletToPool;
+        Bullet.GetComponent<ProjectileBase>().onBulletHit += returnBulletToPool;
     }
 
     public void ShootBullet(Vector3 direction, Vector3 origin, float speed, int dmg)
@@ -39,13 +39,13 @@ public class BulletPoolManager : MonoBehaviour
         {
             createBullet();
         }
-        Bullet Bullet = bullets[0];
+        ProjectileBase Bullet = bullets[0];
         bullets.Remove(Bullet);        
         inUse.Add(Bullet);
-        Bullet.fire(direction,origin,speed,dmg);
+        Bullet.Fire(direction,origin,speed,dmg);
     }
 
-    void returnBulletToPool(Bullet bullet)
+    void returnBulletToPool(ProjectileBase bullet)
     {
         inUse.Remove(bullet);
         bullets.Add(bullet);
