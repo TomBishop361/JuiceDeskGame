@@ -1,55 +1,62 @@
 using System;
 using System.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Bullet : MonoBehaviour
+public class Bullet : ProjectileBase
 {
     
-    Rigidbody rb;
-    int Damage;
+    Rigidbody rb;    
 
     Vector3 direction;
     [SerializeField]
     GameObject testHitParticle;
+
+    [SerializeField] float lifeTime = 2f;
+
+    float lifeTimer;
+    bool isActive;
     
-    //public delegate void BulletHit(Bullet bullet);
-    public event Action<Bullet> onBulletHit = delegate(Bullet bullet) { } ;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    public void fire(Vector3 direction, Vector3 origin, float speed, int damage)
+    public override void Fire(Vector3 direction, Vector3 origin, float speed, int damage)
     {
-        Damage = damage;   
-        this.direction = direction;
-        transform.position = origin;        
-        gameObject.SetActive(true);
+        base.Fire(direction, origin, speed, damage);
+        this.direction = direction;                
         rb.linearVelocity = direction * speed;
-        StartCoroutine("bulletTimeOut");
-    }   
-    
-    //Destroy bullet if it hits nothing after timelimit
-    IEnumerator bulletTimeOut()
+
+        lifeTimer = lifeTime;
+        isActive = true;            
+    }
+
+
+    private void Update()
     {
-        yield return new WaitForSeconds(2f);
-        onBulletHit?.Invoke(this);       
-        yield return null;
+        LifeTimer();
+    }
+
+    void LifeTimer()
+    {
+        if (!isActive) return;
+        lifeTimer -= Time.deltaTime;
+        if (lifeTimer <= 0) OnBulletHit(this);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        StopCoroutine(bulletTimeOut());
-        IDamageable hit;
-        //Debug.Log("Hit");
+        isActive = false;
+        IDamageable hit;        
         if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
         {
             hit.adjustHealth(Damage);
         }
-        onBulletHit?.Invoke(this);
+        OnBulletHit(this);
         Instantiate(testHitParticle,transform.position,Quaternion.LookRotation(-direction));
     }
 }
