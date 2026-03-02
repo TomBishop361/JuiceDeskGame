@@ -392,7 +392,7 @@ public class InputController : MonoBehaviour
     }
     private void Update()
     {        
-        VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
+       // VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
             
     }
     private void FixedUpdate()
