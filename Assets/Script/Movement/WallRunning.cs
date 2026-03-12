@@ -21,6 +21,9 @@ public class WallRunning : MonoBehaviour
     float wallRunTimer;
     private RaycastHit leftWallCheck;
     private RaycastHit rightWallCheck;
+    public float SameWallTime =5;
+    float sameWallTimer;
+    public Transform LastWall;
     private bool wallLeft;
     private bool wallRight;
 
@@ -111,12 +114,26 @@ public class WallRunning : MonoBehaviour
             if (controller.wallRunning) StopWallRun();
         }
     }
+    void lastWallTimeCounter()
+    {
+        if(sameWallTimer <= 0)
+        {
+            LastWall = null;
+        }
+        else
+        {
+            sameWallTimer -= Time.deltaTime;    
+        }
+    }
 
     void startWallRun()
     {
-        controller.wallRunning = true;
+        Transform wall = wallRight ? rightWallCheck.transform : leftWallCheck.transform;
+        if(wall == LastWall) return;
+        LastWall = wall;
+        sameWallTimer = SameWallTime;
+        controller.wallRunning = true;                
         OnWallRunStart?.Invoke(wallRight);
-
         wallRunTimer = wallRunTime;
     }
 
@@ -133,7 +150,7 @@ public class WallRunning : MonoBehaviour
         rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
 
         Vector3 wallNoral = wallRight ? rightWallCheck.normal : leftWallCheck.normal;
-
+        
         Vector3 wallForward = Vector3.Cross(wallNoral, transform.up);
 
         if((orientation.forward - wallForward).magnitude > (orientation.forward - -wallForward).magnitude)
@@ -163,6 +180,7 @@ public class WallRunning : MonoBehaviour
     {
      CheckForWall();
         StateMachine();
+        lastWallTimeCounter();
     }
 
     private void WallJump()
