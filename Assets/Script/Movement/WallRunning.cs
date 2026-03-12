@@ -116,7 +116,7 @@ public class WallRunning : MonoBehaviour
     }
     void lastWallTimeCounter()
     {
-        if(sameWallTimer <= 0)
+        if(sameWallTimer <= 0 || !AboveGround())
         {
             LastWall = null;
         }
