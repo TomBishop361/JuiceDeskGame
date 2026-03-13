@@ -12,9 +12,12 @@ public interface IInputManager
 
     float slide { get; }
 
+    bool grapple { get; }
+
     event Action<Vector2> OnMoveReceived;
     event Action<Vector2> OnLookReceived;
     event Action<bool> OnJumpReceived;
+    event Action<bool> OnGrappleReceived;
     event Action<bool> OnSprintReceived;
     event Action<float> OnCrouchReceived;
     event Action<float> OnSlideReceived;

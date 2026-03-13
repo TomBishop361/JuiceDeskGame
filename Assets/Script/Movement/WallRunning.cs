@@ -146,6 +146,7 @@ public class WallRunning : MonoBehaviour
 
     void wallRunMove()
     {
+        if (controller.activeGrapple) return;
         rb.useGravity = false;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
 
