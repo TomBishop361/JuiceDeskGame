@@ -65,7 +65,7 @@ namespace Game.AI.Drone {
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; } // shared 'IsStunned' node for drone enemy uses 'IsKnockedDown'
 		public bool HasTarget => target != null;
-		//public bool HasLOS =>{ get; private set; }
+		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
 		public bool InAttackRange => InFireRange; // shared 'InAttackRange' node for drone enemy means 'InFireRange'

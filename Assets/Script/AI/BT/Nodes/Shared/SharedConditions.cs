@@ -44,15 +44,6 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-	//[Condition(name: "Enemy: Has LOS", description: "True if enemy has a line of sight.", story: "Enemy has LOS", category: "Enemy/Shared/Conditions/Core", id: "enemy.condition.core.has_los")]
-	//public sealed class EnemyHasLOS : Condition {
-	//	public override bool IsTrue() {
-	//		IEnemyAgent agent = GameObject.GetComponent<IEnemyAgent>();
-
-	//		return agent != null && agent.HasLOS;
-	//	}
-	//}
-
 	[Condition(name: "Enemy: In Attack Range", description: "True if the enemy is within its attack range of target.", story: "Enemy is in attack range", category: "Enemy/Shared/Conditions/Combat", id: "enemy.condition.combat.in_attack_range")]
 	public sealed class EnemyInAttackRange : Condition {
 		public override bool IsTrue() {
@@ -84,11 +75,11 @@ namespace Game.AI.Behavior.Shared {
 	// - SHARED CONDITIONS ID NAMES -
 	// IsDead -> enemy.condition.core.is_dead - DONE
 	// IsStunned -> enemy.condition.core.is_stunned - DONE
-	// HasTarget -> enemy.condition.core.has_target (optional) - DONE
+	// HasTarget -> enemy.condition.core.has_target (optional) - DONE - NOTE: THIS IS THE AWARENESS VISION LOS 
 	// InAttackRange -> enemy.condition.combat.in_attack_range - DONE
 	// CanAttack -> enemy.condition.combat.can_attack - DONE
 	// TargetTooClose -> enemy.condition.combat.too_close (optional)
-	// HasLOS -> enemy.condition.core.has_los (optional) (Same as HasTarget?)
+
 
 	// - SHARED CONDITIONS CATEGORY SCRIPT NAMES -
 	// SharedConditions_Core.cs

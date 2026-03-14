@@ -75,7 +75,7 @@ namespace Game.AI.Sword {
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; }
 		public bool HasTarget => target != null;
-		//public bool HasLOS =>{ get; private set; }
+		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
 		public bool InAttackRange => HasTarget && (InSwingRange || InLungeRange); // shared 'InAttackRange' node for sword enemy can mean 'InSwingRange' OR 'InLungeRange'

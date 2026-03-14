@@ -1,31 +1,40 @@
 using UnityEngine;
 using UnityEngine.AI;
-using Game.AI;
-using Game.AI.Behavior.Shield; // IEnemyAgent namespace
+using System.Collections;
+using Game.AI; // IEnemyAgent namespace
+using Game.AI.Behavior.Shield;
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class ShieldEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner {
+	public class ShieldEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
+		// Implement IHealthSettings
+		public float MaxHealth => maxHealth;
+		public float LowHealthThreshold => 1.0f; // TODO: CHANGE THIS FROM MAGIC NUMBER
 
 		[Header("References")]
 		[SerializeField] private Transform target;
 		[SerializeField] private NavMeshAgent navMeshAgent;
+		[SerializeField] private HitScanHitbox hitScanHitbox; // Shared HitScan Hitbox (on root object)
 		[SerializeField] private Animator animator;
 
 		[Header("Stats")]
-		[SerializeField] private int health = 5;
+		[SerializeField] private int maxHealth = 5;
 
 		[Header("Combat")]
 		[SerializeField] private float damage = 1.0f; // TODO: punch dmg + slam dmg
-		[SerializeField] private AttackData bulletAttackData = new AttackData();
+		[SerializeField] private AttackData minigunAttackData = new AttackData();
+		[SerializeField] private AttackData shockwaveAttackData = new AttackData();
 
 		[Header("Ranges")]
 		[Tooltip("Minimum range that shield enemy can perform punch attack (should be less than 'slam range'")]
 		[SerializeField] private float punchRange = 1.6f;
+		[SerializeField] private float fireMinRange = 3.0f; // in this range -> can fire
+		[SerializeField] private float fireMaxRange = 45.0f; // don't fire if player exceeds this range
+		[SerializeField] private float desiredRange = 15.0f; // aim to remain within this range
 		[Tooltip("Minimum range that shield enemy can perform slam attack (should be greater than 'punch range'")]
-		[SerializeField] private float slamRange = 2.4f;
+		[SerializeField] private float slamRange = 4.0f;
 
 		[Header("Cooldowns")]
 		[SerializeField] private float punchCooldown = 1.0f;
@@ -39,6 +48,35 @@ namespace Game.AI.Shield {
 		[Header("Stun")]
 		[SerializeField] private float hitStunDuration = 0.4f;
 
+		[Header("Minigun")]
+		[SerializeField] private Transform minigunBarrel;
+		[SerializeField] private Transform minigunMuzzle;
+		[SerializeField] private LineRenderer minigunBulletTracer;
+		[SerializeField] private float minigunBulletLifetime;
+		[SerializeField] private float minigunFireRate = 18.0f; // shots per second
+		[SerializeField] private float minigunMaxRange = 45.0f;
+		[SerializeField] private float minigunMidRange = 35.0f;
+		[SerializeField] private float minigunLowRange = 20.0f;
+		//[SerializeField] private float minigunRange = 25.0f;
+		[SerializeField] private float minigunInaccuracyDegrees = 2.5f; // bullet spread for inaccuracy
+		[SerializeField] private LayerMask minigunHitMask;
+
+		[Header("Slam Shockwave")]
+		[SerializeField] private float shockwaveRadius = 6.2f;
+		[SerializeField] private LayerMask shockwaveHitMask; // TEMP SO I CAN SET FLOOR SO VISUAL SLAM IS SHOWN
+		[SerializeField] private LayerMask shockwaveDamageMask;
+
+		[Header("Shockwave Debug FX")]
+		[SerializeField] private bool spawnShockwaveDebugRing = true;
+		[SerializeField] private ShockwaveDebugRing shockwaveRingPrefab;
+		[SerializeField] private float shockwaveRingExpandDuration = 0.6f;
+		[SerializeField] private float shockwaveRingHoldDuration = 0.5f;
+		[SerializeField] private float shockwaveRingYThickness = 0.05f;
+
+		[Header("Shield Block")]
+		[SerializeField] private Collider shieldBlockCollider; // put on a child object in front of enemy
+		[SerializeField] private float blockArcDegrees = 120.0f; // frontal cone for blocking
+
 		[Header("Attack Lock Times (prevents spam)")]
 		[SerializeField] private float punchLockTime = 0.85f; // anim length (approx)
 		[SerializeField] private float slamLockTime = 1.0f; // anim length (approx)
@@ -51,12 +89,11 @@ namespace Game.AI.Shield {
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; }
 		public bool HasTarget => target != null;
-		//public bool HasLOS =>{ get; private set; }
 
 		public float DistanceToTarget { get; private set; }
 		public bool InAttackRange => HasTarget && (InPunchRange || InSlamRange); // shared 'InAttackRange' node for shield enemy can mean 'InPunchRange' OR 'InSlamRange'
 
-		public bool CanAttack => CanPunch; // shared 'CanAttack' node for shield enemy can mean 'CanPunch' (default primary attack)
+		public bool CanAttack => CanFireMinigun /*CanPunch*/; // shared 'CanAttack' node for shield enemy can mean 'CanPunch' (default primary attack)
 		public bool IsAttacking { get; private set; }
 		//public bool IsTargetTooClose { get; private set; }
 
@@ -66,11 +103,20 @@ namespace Game.AI.Shield {
 
 		public bool InPunchRange => HasTarget && DistanceToTarget <= punchRange;
 		public bool InSlamRange => HasTarget && DistanceToTarget <= slamRange;
+		public bool InFireRange => HasTarget && DistanceToTarget >= fireMinRange && DistanceToTarget <= fireMaxRange;
 		public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
 		public bool CanSlam => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSlamTime;
+		public bool CanFireMinigun => !IsDead && !IsStunned && !IsAttacking && HasTarget;
+		public bool HasMuzzleLOS => IsTargetInMuzzleLOS(); /*{ get; private set; }*/
 		public bool GrappleWindowOpen { get; private set; }
+		public bool PlayerInFront => IsPlayerInFront();
+		public bool ShieldRaised { get; private set; }
 
 		// - Shield Enemy Specific Properties [END] -
+
+		// Properties
+		// TODO: MAKE A LOT OF VARIABLES IN THIS AND OTHER SCRIPTS USE PROPERTIES LIKE THIS e.g ShieldEnemy can only change 'IsFiringMinigun'
+		public bool IsFiringMinigun { get; private set; } // NOTE: Can use for Minigun firing animation + can another attack occur etc
 
 		// Exposed params (visible in the inspector)
 		[SerializeField] private float grappleWindowEndTime;
@@ -78,6 +124,8 @@ namespace Game.AI.Shield {
 		// Cooldown/State timers
 		private float nextPunchTime = -Mathf.Infinity;
 		private float nextSlamTime = -Mathf.Infinity;
+		private float nextMinigunShotTime = -Mathf.Infinity;
+		private float nextBlockReactTime = -Mathf.Infinity;
 		private float stunEndTime = -Mathf.Infinity;
 		private float attackEndTime = -Mathf.Infinity; // enforce min attack time (safety for anim not firing)
 
@@ -85,9 +133,20 @@ namespace Game.AI.Shield {
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
 		private static readonly int AnimPunch = Animator.StringToHash("Punch"); // Trigger
 		private static readonly int AnimSlam = Animator.StringToHash("Slam"); // Trigger
+		private static readonly int AnimFire = Animator.StringToHash("IsFiring"); // Bool
 		private static readonly int AnimShieldRaised = Animator.StringToHash("ShieldRaised"); // Bool
+		private static readonly int AnimBlockReact = Animator.StringToHash("BlockReact"); // Trigger
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
+
+		// - Cached Components -
+		private Health healthComponent;
+
+		// Runtime params
+		[SerializeField] private float currentHealth;
+		[SerializeField] private float previousHealthValue = 0.0f;
+		[SerializeField] private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		[SerializeField] private bool shockwaveActive = false;
 
 		// Reset to default values
 		private void Reset() {
@@ -96,6 +155,9 @@ namespace Game.AI.Shield {
 		}
 
 		private void Awake() {
+			// Sync health
+			currentHealth = maxHealth;
+
 			if (navMeshAgent == null) {
 				navMeshAgent = GetComponent<NavMeshAgent>();
 			}
@@ -132,6 +194,9 @@ namespace Game.AI.Shield {
 				GrappleWindowOpen = false;
 			}
 
+			// Dynamically update shield blocking state
+			//UpdateShieldBlockState();
+
 			// Handle Attack lock timer (prevents immediate re-trigger spam even if anim event misfires)
 			// NOTE: THIS ANIM EVENT IS A SAFETY NET IN CASE ANIM DOES NOT FIRE OR ISN'T WIRED CORRECTLY
 			if (IsAttacking && Time.time >= attackEndTime) {
@@ -143,6 +208,82 @@ namespace Game.AI.Shield {
 				animator.SetFloat(AnimMoveSpeed, navMeshAgent.velocity.magnitude);
 			}
 		}
+
+		private void LateUpdate() {
+			if (minigunBarrel == null) {
+				return;
+			}
+
+			if (IsFiringMinigun == false) {
+				return;
+			}
+
+			minigunBarrel.Rotate(0.0f, 0.0f, 2000.0f * Time.deltaTime, Space.Self);
+		}
+
+		// Enable blocking only if the shield is raised and the player is in front
+		private void UpdateShieldBlockState() {
+			if (shieldBlockCollider == null) {
+				return;
+			}
+
+			bool shouldBlock = ShieldRaised && PlayerInFront;
+
+			shieldBlockCollider.enabled = shouldBlock;
+		}
+
+		// TODO: SUBHEADING FOR THESE -> THEY ARE CONDITIONS BUT DON'T JUST USE SIMPLE BOOLEAN VARIABLES - THEY USE FUNCTION LOGIC TO DETECT WHETHER TRUE/FALSE INSTEAD
+
+		// Check if the player is in front of the shield enemy (used to initiate shield raised for blocking action)
+		private bool IsPlayerInFront() {
+			if (HasTarget == false) {
+				return false;
+			}
+
+			Vector3 toTarget = target.position - transform.position;
+			toTarget.y = 0.0f;
+
+			if (toTarget.sqrMagnitude < 0.0001f) {
+				return false;
+			}
+
+			float angle = Vector3.Angle(transform.forward, toTarget.normalized);
+
+			// Half to get the front angle
+			return angle <= blockArcDegrees * 0.5f;
+		}
+
+		// Uses the muzzle to determine whether the shield enemy should fire the minigun based on a raycast
+		private bool IsTargetInMuzzleLOS() {
+			if (HasTarget == false) {
+				return false;
+			}
+
+			// Check if minigun muzzle has been assigned in inspector otherwise use the shield enemy as the ray origin
+			Transform origin = minigunMuzzle != null ? minigunMuzzle : transform;
+			// Get target chest height
+			// TODO: Might need to change this as player height may differ in future (or just don't have this line))
+			Vector3 targetPos = target.position + Vector3.up * 1.0f;
+
+			Vector3 direction = targetPos - origin.position;
+			float distance = direction.magnitude;
+
+			// Target is very close so don't bother raycasting
+			if (distance < 0.01f) {
+				return true;
+			}
+
+			// Raycast to target from muzzle origin
+			// If something blocks that ray then there is no LOS
+			if (Physics.Raycast(origin.position, direction.normalized, out RaycastHit hit, distance, minigunHitMask, QueryTriggerInteraction.Ignore)) {
+				// LOS only if the ray hits the player
+				// TODO: Adjust tag/layer matrix for this to work properly - for now using exclude/include layers on the colliders
+				return hit.collider.CompareTag("Player");
+			}
+
+			// Nothing hit - No muzzle LOS
+			return false;
+		} 
 
 		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
@@ -229,11 +370,11 @@ namespace Game.AI.Shield {
 			FaceTarget(target.position);
 
 			// Play shield raised animation whilst advancing
-			if (animator != null) {
-				animator.SetBool(AnimShieldRaised, true);
-			}
+			SetShieldRaised(true);
 		}
 
+		// NOTE: NOT BEING USED ATM - SHIELD ENEMY FIRES MINIGUN INSTEAD AS OF RIGHT NOW
+		// TODO: THESE GATES CAN BE SIMPLIFIED TO USE THE BOOLEANS AT THE TOP OF THE SCRIPTS - FOR ALL ENEMIES!
 		public bool TryStartPunch() {
 			// Punch interrupts
 			if (IsDead == true || IsStunned == true || IsAttacking == true) {
@@ -266,6 +407,7 @@ namespace Game.AI.Shield {
 			return true;
 		}
 
+		// NOTE: NOT BEING USED ATM - SHIELD ENEMY USES SHIELD SLAM SHOCKWAVE - RATHER THAN THE GRAPPLE OPENER SLAM AS OF RIGHT NOW
 		public bool TryStartSlam() {
 			// Slam interrupts
 			if (IsDead == true || IsStunned == true || IsAttacking == true) {
@@ -302,6 +444,182 @@ namespace Game.AI.Shield {
 			return true;
 		}
 
+		public bool TryStartSlamShockwave() {
+			// Slam interrupts
+			if (IsDead == true || IsStunned == true || IsAttacking == true) {
+				return false;
+			}
+			// No target
+			if (HasTarget == false) {
+				return false;
+			}
+			// Slam shockwave is out of range
+			if (InSlamRange == false) {
+				return false;
+			}
+			// Slam shockwave is still on cooldown
+			if (Time.time < nextSlamTime) {
+				return false;
+			}
+				
+			StopMove();
+
+			IsAttacking = true;
+			nextSlamTime = Time.time + slamCooldown;
+			attackEndTime = Time.time + slamLockTime;
+
+			// PROTOTYPE: Open grapple window immediately (or trigger it via anim event)
+			GrappleWindowOpen = true;
+			grappleWindowEndTime = Time.time + grappleWindowDuration;
+
+			SetShieldRaised(true);
+
+			if (animator != null) {
+				animator.SetTrigger(AnimSlam);
+			}
+
+			return true;
+		}
+
+		public bool FireMinigunTick() {
+			if (CanFireMinigun == false) {
+				return false;
+			}
+			if (InFireRange == false) {
+				return false;
+			}
+			//if (HasMuzzleLOS == false) {
+			//	return false;
+			//}
+
+
+			// Advance & Hold shield whilst firing - NOTE: DO WE WANT THIS DESIGN?
+			SetShieldRaised(true);
+
+			IsFiringMinigun = true;
+			FaceTarget(target.position);
+			// Control fire rate
+			// Increment time for next minigun shot
+			float shotInterval = 1.0f / Mathf.Max(1.0f, minigunFireRate);
+			// Still firing (waiting for the next shot)
+			if (Time.time < nextMinigunShotTime) {
+				return true;
+			}
+
+			nextMinigunShotTime = Time.time + shotInterval;
+			DoHitscanShot();
+
+			if (animator != null) {
+				animator.SetBool(AnimFire, true);
+			}
+
+			return true;
+		}
+
+		public void StopMinigun() {
+			IsFiringMinigun = false;
+
+			if (animator != null) {
+				animator.SetBool(AnimFire, false);
+			}
+		}
+
+		// TODO: PUT LOGIC INSIDE A HitScan.cs script later (can be used by anyone that does hitscan (player, shield enemy etc)
+		private void DoHitscanShot() {
+			if (minigunMuzzle == null || target == null) {
+				return;
+			}
+
+			Vector3 bulletOrigin = minigunMuzzle.position;
+
+			// PROTOTYPE: Basic bullet spread for now
+			// TODO: DIRECTION TO TARGET HELPER FUNCTION BC CONSTANTLY USING IT
+			Vector3 direction = (target.position - bulletOrigin).normalized;
+
+			// Calculate small random euler angle offset (this represents inaccuracy)
+			// Create new quaternion direction for each bullet - allows deviation from center aim point
+			direction = Quaternion.Euler(Random.Range(-minigunInaccuracyDegrees, minigunInaccuracyDegrees), 
+										 Random.Range(-minigunInaccuracyDegrees, minigunInaccuracyDegrees), 0.0f) * direction;
+
+			Vector3 endPoint = bulletOrigin + direction * minigunMaxRange;
+
+			// Cast ray towards bullet direction - check for contact
+			if (Physics.Raycast(bulletOrigin, direction, out RaycastHit hit, minigunMaxRange, minigunHitMask, QueryTriggerInteraction.Ignore)) {
+				// Adjust minigun bullet tracer to match hit point
+				endPoint = hit.point;
+
+				// Damage falloff based on distance to hit point
+				minigunAttackData.Damage = CalculateDamageFalloff(bulletOrigin);
+
+				// Notify HitScanHitbox of a successful hit
+				hitScanHitbox.ApplyHitScanHit(hit, minigunAttackData);
+			}
+
+			SpawnHitScanTracer(bulletOrigin, endPoint);
+
+			// OPTIONAL: Debug hitscan ray
+			Debug.DrawRay(bulletOrigin, direction * minigunMaxRange, Color.red, 0.05f);
+		}
+
+		// Distance-based damage falloff
+		private float CalculateDamageFalloff(Vector3 origin) {
+			float distanceToHit = Vector3.Distance(origin, target.position);
+			float finalDamage = minigunAttackData.Damage;
+
+			// Damage Falloff
+			// 0–20m = 100% damage
+			if (distanceToHit <= minigunLowRange) {
+				finalDamage = minigunAttackData.Damage;
+				Debug.Log("APPLY MAX MINIGUN DAMAGE");
+			}
+			// 20–35m = 75% damage
+			else if (distanceToHit <= minigunMidRange) {
+				finalDamage = minigunAttackData.Damage * 0.75f;
+				Debug.Log("APPLY MID MINIGUN DAMAGE");
+			}
+			// 35–45m = 50% damage
+			else if (distanceToHit <= minigunMaxRange) {
+				finalDamage = minigunAttackData.Damage * 0.50f;
+				Debug.Log("APPLY LOW MINIGUN DAMAGE");
+			}
+			// 45m+ = 50% damage
+			else {
+				finalDamage = minigunAttackData.Damage * 0.50f;
+				Debug.Log("APPLY LOW MINIGUN DAMAGE ABOVE MAX RANGE");
+			}
+
+			return finalDamage;
+		}
+
+		// Visual tracer for minigun bullets
+		private void SpawnHitScanTracer(Vector3 start, Vector3 end) {
+			LineRenderer minigunTracer = Instantiate(minigunBulletTracer);
+
+			minigunTracer.positionCount = 2;
+
+			// Set constant width for Minigun tracer
+			minigunTracer.startWidth = 0.025f;
+			minigunTracer.endWidth = 0.025f;
+
+			minigunTracer.SetPosition(0, start);
+			minigunTracer.SetPosition(1, end);
+
+			Destroy(minigunTracer.gameObject, minigunBulletLifetime);
+		}
+
+		public void SetShieldRaised(bool isRaised) {
+			ShieldRaised = isRaised;
+
+			if (animator != null) {
+				animator.SetBool(AnimShieldRaised, isRaised);
+			}
+
+			// Only enable bullet blocking when shield is raised
+			if (shieldBlockCollider != null) {
+				shieldBlockCollider.enabled = isRaised;
+			}	
+		}
+
 		// - Damge / Stun -
 
 		public void TakeDamage(int amount) {
@@ -310,10 +628,10 @@ namespace Game.AI.Shield {
 			}
 
 			// Decrement health by 'x' amount
-			health -= amount;
+			currentHealth -= amount;
 
 			// Death on 0 health
-			if (health <= 0) {
+			if (currentHealth <= 0) {
 				Die();
 				return;
 			}
@@ -335,6 +653,62 @@ namespace Game.AI.Shield {
 
 			StopMove();
 		}
+		
+		// Handles Slam Shockwave ring expansion
+		// Shockwave ring gradually grows and deals AOE damage to anything in its current radius
+		private IEnumerator ShockwaveRoutine() {
+			shockwaveActive = true;
+
+			// Snap to ground for the center of the shockwave ring
+			// Cast a ray downwards to find the ground
+			Vector3 center = transform.position;
+			if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 5.0f)) {
+				center = hit.point;
+			}
+
+			// Spawn Shockwave Debug ring to visualise the AOE on the ground
+			if (spawnShockwaveDebugRing && shockwaveRingPrefab != null) {
+				ShockwaveDebugRing shockwaveRing = Instantiate(shockwaveRingPrefab, center + Vector3.up * 0.02f, Quaternion.identity);
+				shockwaveRing.Init(shockwaveRadius, shockwaveRingExpandDuration, shockwaveRingHoldDuration, shockwaveRingYThickness);
+			}
+
+			float elapsed = 0f;
+			bool hasHitPlayer = false;
+
+			while (elapsed < shockwaveRingExpandDuration) {
+				elapsed += Time.deltaTime;
+				float t = Mathf.Clamp01(elapsed / shockwaveRingExpandDuration);
+				float currentRadius = Mathf.Lerp(0f, shockwaveRadius, t);
+
+				// // Get colliders that overlap the Shockwave Slam AOE - only hit objects near the current radius (not the entire shockwave disc)
+				Collider[] hits = Physics.OverlapSphere(center, currentRadius, shockwaveHitMask, QueryTriggerInteraction.Ignore);
+
+				foreach (var h in hits) {
+					// Only apply damage once
+					if (hasHitPlayer == true) {
+						break;
+					}
+
+					// Check distance band (using ring thickness)
+					float distance = Vector3.Distance(center, h.ClosestPoint(center));
+					if (Mathf.Abs(distance - currentRadius) <= shockwaveRingYThickness * 0.5f) {
+						// Check if colliders in AOE contains a hurtbox (can it take damage)
+						IDamageable damageableInterface = h.GetComponentInParent<IDamageable>();
+						if (damageableInterface == null) {
+							Debug.LogError("IDamageable: not found in parent of: " + h.gameObject.name);
+							yield return null;
+						}
+
+						// Damage handling for Shockwave Slam AOE 
+						damageableInterface.TakeDamage(shockwaveAttackData);
+
+						hasHitPlayer = true;
+					}
+				}
+					yield return null;
+			}
+			shockwaveActive = false;
+		}
 
 		// - Animation Events -
 
@@ -343,6 +717,83 @@ namespace Game.AI.Shield {
 			IsAttacking = false;
 			// PROTOTYPE: keep shield raised during combat
 			// To lower it -> set 'ShieldRaised' FALSE somewhere
+		}
+
+		// Call this at the impact frame for the slam shockwave animation
+		public void AnimEvent_DoShockwave() {
+			if (IsDead == true) {
+				return;
+			}
+			//if (shockwaveActive == true) {
+			//	return;
+			//}
+			//StartCoroutine(ShockwaveRoutine());
+
+			Vector3 center = transform.position;
+			// Cast a ray downwards to find the ground
+			if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 5.0f, shockwaveHitMask)) {
+				center = hit.point;
+			}
+			// Spawn Shockwave Debug ring to visualise the AOE on the ground
+			if (spawnShockwaveDebugRing && shockwaveRingPrefab != null) {
+				ShockwaveDebugRing shockwaveRing = Instantiate(shockwaveRingPrefab, center + Vector3.up * 0.02f, Quaternion.identity);
+				shockwaveRing.Init(shockwaveRadius, shockwaveRingExpandDuration, shockwaveRingHoldDuration, shockwaveRingYThickness);
+			}
+
+			//// Snap to ground for the center of the shockwave ring
+			//// Cast a ray downwards to find the ground
+			//Vector3 center = transform.position;
+			//if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 5.0f)) {
+			//	center = hit.point;
+			//}
+
+			//// Spawn Shockwave Debug ring to visualise the AOE on the ground
+			//if (spawnShockwaveDebugRing && shockwaveRingPrefab != null) {
+			//	ShockwaveDebugRing shockwaveRing = Instantiate(shockwaveRingPrefab, center + Vector3.up * 0.02f, Quaternion.identity);
+			//	shockwaveRing.Init(shockwaveRadius, shockwaveRingExpandDuration, shockwaveRingHoldDuration, shockwaveRingYThickness);
+			//}
+
+			// Get colliders that overlap the Shockwave Slam AOE
+			Collider[] hits = Physics.OverlapSphere(center, shockwaveRadius, shockwaveDamageMask, QueryTriggerInteraction.Ignore);
+
+			foreach (var h in hits) {
+				// Check if colliders in AOE contains a hurtbox (can it take damage)
+				IDamageable damageableInterface = h.GetComponentInParent<IDamageable>();
+				if (damageableInterface == null) {
+					Debug.LogError("IDamageable: not found in parent of: " + h.gameObject.name);
+					return;
+				}
+
+				//Debug.DrawLine(transform.position + Vector3.up * 0.2f, h.transform.position, Color.white, 0.2f);
+				// Damage handling for Shockwave Slam AOE 
+				damageableInterface.TakeDamage(shockwaveAttackData);
+
+				// Knockback
+				//Rigidbody rb = hit.attachedRigidbody;
+				//if (rb != null) {
+				//	Vector3 away = hit.transform.position - center;
+				//	away.y = 0.2f;
+				//	if (away.sqrMagnitude > 0.0001f) {
+				//		rb.AddForce(away.normalized * shockwaveAttackData.Knockback.Force, ForceMode.VelocityChange);
+				//	}
+				//}
+				//}
+			}
+		}
+
+		// Called in ShieldBlockReceiver.cs to trigger the block react animation when the player shoots the shield
+		public void TriggerBlockReact() {
+			if (animator == null) {
+				return;
+			}
+
+			if (Time.time < nextBlockReactTime) {
+				return;
+			}
+
+			// Small delay so shield block react doesn't spam
+			nextBlockReactTime = Time.time + 0.15f; 
+			animator.SetTrigger(AnimBlockReact);
 		}
 
 		// Hitbox toggles (call inside anim event)
@@ -377,6 +828,28 @@ namespace Game.AI.Shield {
 				// [BETTER FOR SHIELD since heavy, deliberate]
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
+		}
+		// - Event & Callback handlers -
+
+		private void OnEnable() {
+			if (healthComponent != null) {
+				previousHealthValue = healthComponent.CurrentHealth;
+				healthComponent.OnHealthChanged += OnHealthChanged;
+			}
+		}
+		private void OnDisable() {
+			if (healthComponent != null) {
+				healthComponent.OnHealthChanged -= OnHealthChanged;
+			}
+		}
+
+		private void OnHealthChanged(float current, float max) {
+			// Damage only if health has gone down
+			if (current < previousHealthValue) {
+				// Reset regen delay timer - only regen when out of combat
+				lastDamageTime = Time.time;
+			}
+			previousHealthValue = current;
 		}
 	}
 }

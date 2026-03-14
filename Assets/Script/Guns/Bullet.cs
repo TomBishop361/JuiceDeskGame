@@ -5,10 +5,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Bullet : ProjectileBase
-{
-    
-    Rigidbody rb;    
+public class Bullet : ProjectileBase {
+
+    Rigidbody rb;
 
     Vector3 direction;
     [SerializeField]
@@ -18,45 +17,52 @@ public class Bullet : ProjectileBase
 
     float lifeTimer;
     bool isActive;
-    
 
-    private void Awake()
-    {
+
+    private void Awake() {
         rb = GetComponent<Rigidbody>();
     }
 
-    public override void Fire(Vector3 direction, Vector3 origin, float speed, int damage)
-    {
+    public override void Fire(Vector3 direction, Vector3 origin, float speed, float damage) {
         base.Fire(direction, origin, speed, damage);
-        this.direction = direction;                
+        this.direction = direction;
         rb.linearVelocity = direction * speed;
 
         lifeTimer = lifeTime;
-        isActive = true;            
+        isActive = true;
     }
 
 
-    private void Update()
-    {
+    private void Update() {
         LifeTimer();
     }
 
-    void LifeTimer()
-    {
+    void LifeTimer() {
         if (!isActive) return;
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0) OnBulletHit(this);
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
+    private void OnCollisionEnter(Collision collision) {
         isActive = false;
-        IDamageable hit;        
-        if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
-        {
-            hit.adjustHealth(Damage);
+        IDamageable hit;
+        if (collision.gameObject.TryGetComponent<IDamageable>(out hit)) {
+            AttackData attackData = new AttackData {
+                Attacker = gameObject,
+                AttackerFaction = Faction.Player,
+                Damage = 0.1f,
+                Knockback = new KnockbackData {
+                    Force = 2.0f,
+                    UpwardModifier = 0.0f,
+                    TorqueStrength = 0.0f
+                },
+                Type = DamageType.Ranged
+            };
+
+            hit.TakeDamage(attackData);
         }
         OnBulletHit(this);
-        Instantiate(testHitParticle,transform.position,Quaternion.LookRotation(-direction));
+        Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
     }
+
 }

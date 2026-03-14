@@ -33,7 +33,7 @@ public class BulletPoolManager : MonoBehaviour
         Bullet.GetComponent<ProjectileBase>().onBulletHit += returnBulletToPool;
     }
 
-    public void ShootBullet(Vector3 direction, Vector3 origin, float speed, int dmg)
+    public void ShootBullet(Vector3 direction, Vector3 origin, float speed, float dmg)
     {
         if (bullets.Count <= 0)
         {
