@@ -18,6 +18,7 @@ namespace Game.AI.Shield {
 		[SerializeField] private NavMeshAgent navMeshAgent;
 		[SerializeField] private HitScanHitbox hitScanHitbox; // Shared HitScan Hitbox (on root object)
 		[SerializeField] private Animator animator;
+		[SerializeField] private LOSSensor losSensor;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 5;
@@ -84,11 +85,16 @@ namespace Game.AI.Shield {
 		[Header("Grapple Window")]
 		[SerializeField] private float grappleWindowDuration = 1.0f;
 
+		[Header("LOS Memory")]
+		[SerializeField] private float targetMemoryDuration = 1.0f;
+
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; }
-		public bool HasTarget => target != null;
+		//public bool HasTarget => target != null;
+		public bool HasTarget { get; private set; }
+		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
 		public bool InAttackRange => HasTarget && (InPunchRange || InSlamRange); // shared 'InAttackRange' node for shield enemy can mean 'InPunchRange' OR 'InSlamRange'
@@ -111,6 +117,7 @@ namespace Game.AI.Shield {
 		public bool GrappleWindowOpen { get; private set; }
 		public bool PlayerInFront => IsPlayerInFront();
 		public bool ShieldRaised { get; private set; }
+		public bool HasLineOfSight { get; private set; }
 
 		// - Shield Enemy Specific Properties [END] -
 
@@ -119,7 +126,7 @@ namespace Game.AI.Shield {
 		public bool IsFiringMinigun { get; private set; } // NOTE: Can use for Minigun firing animation + can another attack occur etc
 
 		// Exposed params (visible in the inspector)
-		[SerializeField] private float grappleWindowEndTime;
+		/*[SerializeField]*/ private float grappleWindowEndTime;
 
 		// Cooldown/State timers
 		private float nextPunchTime = -Mathf.Infinity;
@@ -128,6 +135,7 @@ namespace Game.AI.Shield {
 		private float nextBlockReactTime = -Mathf.Infinity;
 		private float stunEndTime = -Mathf.Infinity;
 		private float attackEndTime = -Mathf.Infinity; // enforce min attack time (safety for anim not firing)
+		private float lastSeenTime = -Mathf.Infinity;
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
@@ -143,10 +151,10 @@ namespace Game.AI.Shield {
 		private Health healthComponent;
 
 		// Runtime params
-		[SerializeField] private float currentHealth;
-		[SerializeField] private float previousHealthValue = 0.0f;
-		[SerializeField] private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
-		[SerializeField] private bool shockwaveActive = false;
+		/*[SerializeField]*/ private float currentHealth;
+		/*[SerializeField]*/ private float previousHealthValue = 0.0f;
+		/*[SerializeField]*/ private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		/*[SerializeField]*/ private bool shockwaveActive = false;
 
 		// Reset to default values
 		private void Reset() {
@@ -165,6 +173,10 @@ namespace Game.AI.Shield {
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
+
+			if (losSensor == null) {
+				losSensor = GetComponent<LOSSensor>();
+			}
 		}
 
 		private void Update() {
@@ -172,10 +184,13 @@ namespace Game.AI.Shield {
 				return;
 			}
 
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+			// LOS checker
+			UpdateTargetAwareness();
+
+			//// PROTOTYPE: Auto acquire target
+			//if (target == null) {
+			//	TryFindPlayer();
+			//}
 
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
@@ -206,6 +221,34 @@ namespace Game.AI.Shield {
 			// Animator movement speed
 			if (navMeshAgent != null && animator != null) {
 				animator.SetFloat(AnimMoveSpeed, navMeshAgent.velocity.magnitude);
+			}
+		}
+
+		// Update drone enemy awareness state (uses LOS to determine this)
+		private void UpdateTargetAwareness() {
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
+
+			if (target == null) {
+				HasLineOfSight = false;
+				HasTarget = false;
+				DistanceToTarget = Mathf.Infinity;
+				return;
+			}
+
+			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+
+			if (losSensor != null && losSensor.HasLOS()) {
+				HasLineOfSight = true;
+				HasTarget = true;
+				lastSeenTime = Time.time;
+			}
+			else {
+				// fallback if sensor missing
+				HasLineOfSight = false;
+				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
 			}
 		}
 
@@ -319,6 +362,9 @@ namespace Game.AI.Shield {
 			if (animator != null) {
 				animator.SetTrigger(AnimDie);
 			}
+
+			// NOTE: This is temporary
+			Destroy(gameObject);
 		}
 
 		public void RecoverTick() {
@@ -486,6 +532,9 @@ namespace Game.AI.Shield {
 				return false;
 			}
 			if (InFireRange == false) {
+				return false;
+			}
+			if (HasLineOfSight == false) {
 				return false;
 			}
 			//if (HasMuzzleLOS == false) {

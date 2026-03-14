@@ -1,6 +1,7 @@
 using UnityEngine;
 using Game.AI; // IEnemyAgent namespace
 using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namespace
+using UnityEngine.AI;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
@@ -16,6 +17,7 @@ namespace Game.AI.Drone {
 		[SerializeField] private Transform target;
 		//[SerializeField] private NavMeshAgent navMeshAgent; // TODO: Might want nav mesh so it avoids obstacles + flies above them
 		[SerializeField] private Animator animator;
+		[SerializeField] private LOSSensor losSensor;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 1;
@@ -46,6 +48,7 @@ namespace Game.AI.Drone {
 		[SerializeField] private float hoverHeight = 3.0f;
 		[SerializeField] private float flightMoveSpeed = 4.0f;
 		[SerializeField] private float heightLerpSpeed = 8.0f;
+		[SerializeField] private float visualFollowSpeed = 4.0f;
 
 		[Header("Dynamic Height")]
 		[SerializeField] private bool matchPlayerHeight = true;
@@ -60,11 +63,23 @@ namespace Game.AI.Drone {
 		[Header("Attack Lock Times (prevents spam)")]
 		[SerializeField] private float fireLockTime = 0.50f; // anim length (approx)
 
+		[Header("LOS Memory")]
+		[SerializeField] private float targetMemoryDuration = 1.0f;
+
+		//[Header("Obstacle Avoidance")]
+		//[SerializeField] private LayerMask obstacleMask;
+		//[SerializeField] private float obstacleCheckDistance = 1.5f;
+		//[SerializeField] private float obstacleAvoidanceRadius = 0.4f;
+		//[SerializeField] private float obstacleSteerAngle = 35.0f;
+		//[SerializeField] private float obstacleSideProbeDistance = 1.25f;
+		//[SerializeField] private float obstacleBuffer = 0.05f;
+
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; } // shared 'IsStunned' node for drone enemy uses 'IsKnockedDown'
-		public bool HasTarget => target != null;
+		//public bool HasTarget => target != null;
+		public bool HasTarget { get; private set; }
 		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
@@ -82,6 +97,7 @@ namespace Game.AI.Drone {
 		public bool InFireRange => HasTarget && DistanceToTarget <= fireRange;
 		public bool TargetTooClose => HasTarget && DistanceToTarget < minRange;
 		public bool CanFire => !IsDead && !IsKnockedDown && !IsAttacking && Time.time >= nextFireTime;
+		public bool HasLineOfSight { get; private set; }
 
 		// - Drone Enemy Specific Properties [END] -
 
@@ -89,6 +105,7 @@ namespace Game.AI.Drone {
 		private float nextFireTime = -Mathf.Infinity;
 		private float knockdownEndTime = -Mathf.Infinity;
 		private float attackEndTime = -Mathf.Infinity; // enforce min attack time (safety for anim not firing)
+		private float lastSeenTime = -Mathf.Infinity;
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
@@ -102,9 +119,9 @@ namespace Game.AI.Drone {
 
 		// Runtime params
 		private float groundY;
-		[SerializeField] private float currentHealth;
-		[SerializeField] private float previousHealthValue = 0.0f;
-		[SerializeField] private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		/*[SerializeField]*/ private float currentHealth;
+		/*[SerializeField]*/ private float previousHealthValue = 0.0f;
+		/*[SerializeField]*/ private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 
 		private void Awake() {
 			// Sync health
@@ -115,6 +132,10 @@ namespace Game.AI.Drone {
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
+
+			if (losSensor == null) {
+				losSensor = GetComponent<LOSSensor>();
+			}
 		}
 
 		private void Update() {
@@ -122,10 +143,14 @@ namespace Game.AI.Drone {
 				return;
 			}
 
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+			// LOS checker
+			UpdateTargetAwareness();
+
+			//// PROTOTYPE: Auto acquire target
+			//if (target == null) {
+			//	TryFindPlayer();
+			//}
+
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
@@ -157,7 +182,35 @@ namespace Game.AI.Drone {
 			if (animator != null) {
 				// PROTOTYPE: Move speed (debug setter)
 				animator.SetFloat(AnimMoveSpeed, CurrentHorizontalSpeed() /*navMeshAgent.velocity.magnitude*/);
-			}		
+			}
+		}
+
+		// Update drone enemy awareness state (uses LOS to determine this)
+		private void UpdateTargetAwareness() {
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
+
+			if (target == null) {
+				HasLineOfSight = false;
+				HasTarget = false;
+				DistanceToTarget = Mathf.Infinity;
+				return;
+			}
+
+			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+
+			if (losSensor != null && losSensor.HasLOS()) {
+				HasLineOfSight = true;
+				HasTarget = true;
+				lastSeenTime = Time.time;
+			}
+			else {
+				// fallback if sensor missing
+				HasLineOfSight = false;
+				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+			}
 		}
 
 		// PROTOTYPE: Find player automatically
@@ -211,12 +264,19 @@ namespace Game.AI.Drone {
 		// PROTOTYPE: Called in Update() function
 		// NOTE: IF DRONE GETS NAV MESH THEN THIS IS NOT REQUIRED
 		private float CurrentHorizontalSpeed() {
+			return 0.0f;
 			// PROTOTYPE: not tracking velocity precisely
 			// Instead return 0 or an estimate at the moment
-			return 0.0f;
+			//return 0.0f;
 		}
 
 		// - Implement IEnemyAgent Methods [START] -
+
+		//public void CheckLOS() {
+		//	if (gameObject.TryGetComponent(out LOSSensor losSensor)) {
+		//		HasTarget = losSensor.HasLOS();
+		//	}
+		//}
 
 		public void AcquireTarget() {
 			TryFindPlayer();
@@ -235,6 +295,9 @@ namespace Game.AI.Drone {
 			if (animator != null) {
 				animator.SetTrigger(AnimDie);
 			}
+
+			// NOTE: This is temporary
+			Destroy(gameObject);
 		}
 
 		public void RecoverTick() {
@@ -301,8 +364,16 @@ namespace Game.AI.Drone {
 			awayDirection.Normalize();
 
 			// Move towards away direction
-			Vector3 move = awayDirection * flightMoveSpeed * Time.deltaTime;
-			transform.position += move;
+			transform.position += awayDirection * flightMoveSpeed * Time.deltaTime;
+
+			// Pick a point away from the target instead of moving directly by transform.position
+			//Vector3 desiredPoint = transform.position + awayDirection * 3.0f;
+
+			//MoveToNavPoint(desiredPoint);
+
+			// Avoid obstacles movement temp
+			//Vector3 moveDir = GetAvoidedDirection(awayDirection);
+			//transform.position += moveDir * flightMoveSpeed * Time.deltaTime;
 
 			FaceTarget(target.position);
 		}
@@ -324,6 +395,10 @@ namespace Game.AI.Drone {
 			Vector3 toTarget = target.position - transform.position;
 			toTarget.y = 0.0f;
 
+			if (toTarget.sqrMagnitude < 0.0001f) {
+				return;
+			}
+
 			Vector3 direction;
 			if (distance > desiredRange + rangeDeadzone) {
 				direction = toTarget.normalized; // move closer
@@ -335,18 +410,28 @@ namespace Game.AI.Drone {
 				// Create vector perpendicular to target direction (circles rather than moving directly in/out)
 				direction = Vector3.Cross(Vector3.up, toTarget.normalized); // orbit sideways
 			}
-			
+
+			// Avoid obstacles movement temp
+			//Vector3 moveDir = GetAvoidedDirection(direction);
+			//transform.position += moveDir * flightMoveSpeed * Time.deltaTime;
+
 			// Move towwards direction
 			transform.position += direction * flightMoveSpeed * Time.deltaTime;
 
+			// Instead of moving every frame manually, choose a world-space goal for the agent
+			//Vector3 desiredPoint = transform.position + direction * 2.5f;
+
 			FaceTarget(target.position);
 		}
-
+		
 		public bool TryStartFire() {
 			if (CanFire == false) {
 				return false;
 			}
 			if (HasTarget == false) {
+				return false;
+			}
+			if (HasLineOfSight == false) {
 				return false;
 			}
 			if (InFireRange == false) {
