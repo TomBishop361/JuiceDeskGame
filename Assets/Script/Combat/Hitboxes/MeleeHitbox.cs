@@ -11,7 +11,7 @@ public class MeleeHitbox : MonoBehaviour {
 	private bool canDealDamage = true;
 	private AttackData attackData;
 
-	public event Action<GameObject, Vector3, GameObject> OnMeleeHit;
+	public event Action<GameObject, Vector3, GameObject> OnMeleeHit; // TODO: use later
 
 	// This is called by the melee attack in order to configure this hitbox
 	// NOTE: Sword enemy calls this at the beginning of their melee attacks via an animation event (supplies swing or lunger attack data)
@@ -25,12 +25,10 @@ public class MeleeHitbox : MonoBehaviour {
 			return;
 		}
 
-	
 		// IDamageable is implemented inside Hurtbox.cs (which is on root parent gameobject)
 		IDamageable damageableInterface = other.GetComponentInParent<IDamageable>();
 		if (damageableInterface == null) {
 			Debug.LogError("IDamageable: not found in parent of: " + other.gameObject.name);
-			Debug.Log(other.gameObject.name);
 			return;
 		}
 

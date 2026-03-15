@@ -3,7 +3,7 @@ using System;
 
 public class ProjectileBase : MonoBehaviour
 {
-    protected int Damage;    
+    protected float Damage;    
     public event Action<ProjectileBase> onBulletHit = delegate (ProjectileBase bullet) { };    
 
     protected virtual void OnBulletHit(ProjectileBase val)
@@ -11,7 +11,7 @@ public class ProjectileBase : MonoBehaviour
         onBulletHit?.Invoke(val);
     }
 
-    public virtual void Fire(Vector3 direction, Vector3 origin, float speed, int damage)
+    public virtual void Fire(Vector3 direction, Vector3 origin, float speed, float damage)
     {
         Damage = damage;
         transform.position = origin;

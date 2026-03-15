@@ -1,8 +1,6 @@
-using Unity.AppUI.Core;
 using UnityEngine;
 using Unity.Behavior;
-using Game.AI.Shield;
-using UnityEditor; // ShieldEnemy namespace
+using Game.AI.Shield; // ShieldEnemy namespace
 
 // ShieldActions.cs
 namespace Game.AI.Behavior.Shield {
@@ -113,6 +111,90 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	[NodeDescription(name: "Shield: Slam Shockwave", description: "Triggers slam animation and expects shockwave to occur via animation event. Opens grapple window.", story: "Shield slams a shockwave", category: "Enemy/Shield/Actions/Combat", id: "shield.action.combat.slam_shockwave")]
+	public sealed class ShieldSlamShockwave : Action {
+		private ShieldEnemy shieldEnemy;
+
+		protected override Status OnStart() {
+			shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+			if (shieldEnemy == null) {
+				LogFailure("ShieldEnemy component missing.", isError: true);
+				return Status.Failure;
+			}
+
+			bool hasStartedSlamShockwave = shieldEnemy.TryStartSlamShockwave();
+
+			return hasStartedSlamShockwave ? Status.Running : Status.Failure;
+		}
+
+		protected override Status OnUpdate() {
+			if (shieldEnemy == null) {
+				return Status.Failure;
+			}
+
+			return shieldEnemy.IsAttacking ? Status.Running : Status.Success;
+		}
+	}
+
+	[NodeDescription(name: "Shield: Fire Minigun (Tick)", description: "Fires minigun while running. Returns Running while firing is possible. Failure if cannot fire. Success if target lost.", story: "Shield fires minigun", category: "Enemy/Shield/Actions/Combat", id: "shield.action.combat.fire_minigun_tick")]
+	public sealed class ShieldFireMinigunTick : Action {
+		private ShieldEnemy shieldEnemy;
+
+		protected override Status OnStart() {
+			shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+			if (shieldEnemy == null) {
+				LogFailure("ShieldEnemy component missing.", isError: true);
+				return Status.Failure;
+			}
+
+			if (shieldEnemy.HasTarget == false) {
+				return Status.Failure;
+			}
+
+			// Start firing immediately (PROTOTYPE: no spin-up)
+			bool canFireMinigun = shieldEnemy.FireMinigunTick();
+
+			return canFireMinigun ? Status.Running : Status.Failure;
+		}
+
+		protected override Status OnUpdate() {
+			if (shieldEnemy == null) {
+				return Status.Failure;
+			}
+			if (shieldEnemy.HasTarget == false) {
+				return Status.Failure;
+			}
+
+			bool canFireMinigun = shieldEnemy.FireMinigunTick();
+
+			return canFireMinigun ? Status.Running : Status.Success; //RETRUN SUCCESS?
+		}
+
+		protected override void OnEnd() {
+			if (shieldEnemy != null) {
+				shieldEnemy.StopMinigun();
+			}
+		}
+	}
+
+	[NodeDescription(name: "Shield: Set Shield Raised", description: "Enables/disables shield raised state (and bullet blocking collider).", story: "Shield is raised set to [Raised]", category: "Enemy/Shield/Actions/Defense", id: "shield.action.defense.set_shield_raised")]
+	public sealed class ShieldSetShieldRaised : Action {
+		[SerializeReference] public BlackboardVariable<bool> Raised;
+
+		private ShieldEnemy shieldEnemy;
+
+		protected override Status OnStart() {
+			shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+			if (shieldEnemy == null) {
+				LogFailure("ShieldEnemy component missing.", isError: true);
+				return Status.Failure;
+			}
+
+			shieldEnemy.SetShieldRaised(Raised);
+
+			return Status.Success;
+		}
+	}
 
 
 	// TODO: ADD ShieldBlockReact ACTION NODE CLASS
@@ -124,9 +206,12 @@ namespace Game.AI.Behavior.Shield {
 	// AdvanceRaised -> shield.action.move.advance_raised - DONE
 	// Punch -> shield.action.combat.punch - DONE
 	// Slam -> shield.action.combat.slam - DONE
+	// SlamShockwave -> shield.action.combat.slam_shockwave - DONE
+	// FireMinigun -> shield.action.combat.fire_minigun_tick - DONE
 	// OpenGrappleWindow (if separate) -> shield.action.grapple.open_window - DONE
 	// CloseGrappleWindow -> shield.action.grapple.close_window
-	// BlockReact -> shield.action.defense.block_react (optional later) 
+	// ShieldRaised -> shield.action.defense.set_shield_raised - DONE
+	// BlockReact -> shield.action.defense.block_react (optional later) // SAME AS SHIELD RAISED (BLOCKS)
 
 	// - SHIELD ACTION CATEGORY SCRIPT NAMES -
 	// ShieldActions_Movement.cs (chase but plays 'raised shield' locomotion

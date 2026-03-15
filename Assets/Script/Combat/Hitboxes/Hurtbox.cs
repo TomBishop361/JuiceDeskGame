@@ -71,7 +71,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 
 	private void ApplyKnockback(AttackData attackData) {
 		if (transform.gameObject.TryGetComponent(out Rigidbody rigidbody) == false) {
-			Debug.LogError("Hurtbox: Rigidbody component not found on " + gameObject.name);
+			Debug.LogWarning("Hurtbox: Rigidbody component not found on " + gameObject.name);
 			return;
 		}
 

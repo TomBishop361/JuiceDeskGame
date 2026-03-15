@@ -22,6 +22,7 @@ namespace Game.AI.Sword {
 		[SerializeField] private MeleeHitbox lungeHitbox; // TEMP
 		[SerializeField] private Rigidbody rb; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
 		[SerializeField] private Animator animator;
+		[SerializeField] private LOSSensor losSensor;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 3;
@@ -70,12 +71,16 @@ namespace Game.AI.Sword {
 		[SerializeField] private float lungeDuration = 0.22f; // good ranges: 0.18-0.30 (match active part of lunge anim clip)
 		[SerializeField] private float lungeRecoveryTime = 0.4f; // (match downtime part of lunge anim clip)
 
+		[Header("LOS Memory")]
+		[SerializeField] private float targetMemoryDuration = 1.0f;
+
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; }
-		public bool HasTarget => target != null;
-		//public bool HasLOS =>{ get; private set; }
+		//public bool HasTarget => target != null;
+		public bool HasTarget { get; private set; }
+		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
 		public bool InAttackRange => HasTarget && (InSwingRange || InLungeRange); // shared 'InAttackRange' node for sword enemy can mean 'InSwingRange' OR 'InLungeRange'
@@ -93,6 +98,7 @@ namespace Game.AI.Sword {
 		public bool ShouldLunge => InLungeRange && !InSwingRange;
 		public bool CanSwing => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSwingTime;
 		public bool CanLunge => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextLungeTime;
+		public bool HasLineOfSight { get; private set; }
 
 		// - Sword Enemy Specific Properties [END] -
 
@@ -115,15 +121,20 @@ namespace Game.AI.Sword {
 
 		// Runtime params
 		// (NOTE: SerializeField atm for tracking in inspector)
-		[SerializeField] private bool isLunging = false;
-		[SerializeField] private float currentHealth;
-		[SerializeField] private float previousHealthValue = 0.0f;
-		[SerializeField] private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		/*[SerializeField]*/ private bool isLunging = false;
+		/*[SerializeField]*/ private float currentHealth;
+		/*[SerializeField]*/ private float previousHealthValue = 0.0f;
+		/*[SerializeField]*/ private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		/*[SerializeField]*/ private float lastSeenTime = -Mathf.Infinity;
 		private Coroutine lungeRoutine = null;
 		private bool lungeInProgress = false;
 		private Vector3 lungeDirection;
 		private bool AgentReady => navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh;
 		//[SerializeField] private AttackData attackData = new AttackData(); // configured at start of each attack via animation event (if using one melee hitbox for both swing and lunge)
+
+		// TEMP
+		private int normalLayer;
+		private int lungeLayer;
 
 		// Helpers for ensuring that NavMesh agent functions can carry out 
 		// TODO: CREATE NAVMESHAGENT HELPER SCRIPT WITH THESE
@@ -162,6 +173,13 @@ namespace Game.AI.Sword {
 			CacheComponents();
 			ResetRuntimeToBaseValues();
 			InitialRuntimeSetup();
+
+			if (losSensor == null) {
+				losSensor = GetComponent<LOSSensor>();
+			}
+
+			normalLayer = LayerMask.NameToLayer("Enemy");
+			lungeLayer = LayerMask.NameToLayer("EnemyNoPush");
 		}
 
 		// - Initialisation Functions (Called inside Awake()) [START] -
@@ -211,10 +229,13 @@ namespace Game.AI.Sword {
 				return;
 			}
 
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+			// LOS checker
+			UpdateTargetAwareness();
+
+			//// PROTOTYPE: Auto acquire target
+			//if (target == null) {
+			//	TryFindPlayer();
+			//}
 			
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
@@ -242,6 +263,34 @@ namespace Game.AI.Sword {
 			if (navMeshAgent != null && animator != null) {
 				animator.SetFloat(AnimMoveSpeed, navMeshAgent.velocity.magnitude);
 			}		
+		}
+
+		// Update drone enemy awareness state (uses LOS to determine this)
+		private void UpdateTargetAwareness() {
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
+
+			if (target == null) {
+				HasLineOfSight = false;
+				HasTarget = false;
+				DistanceToTarget = Mathf.Infinity;
+				return;
+			}
+
+			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+
+			if (losSensor != null && losSensor.HasLOS()) {
+				HasLineOfSight = true;
+				HasTarget = true;
+				lastSeenTime = Time.time;
+			}
+			else {
+				// fallback if sensor missing
+				HasLineOfSight = false;
+				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+			}
 		}
 
 		// Lunge Windup/Rotation Coroutine
@@ -315,6 +364,8 @@ namespace Game.AI.Sword {
 				return;
 			}
 
+			gameObject.layer = lungeLayer;
+
 			// Compute the lunge dash direction (this is locked at launch to prevent aimbot-like tracking)
 			Vector3 aim = PredictAimPoint();
 			Vector3 direction = aim - transform.position;
@@ -343,19 +394,31 @@ namespace Game.AI.Sword {
 			rb.linearVelocity = Vector3.zero;
 			//rb.angularVelocity = Vector3.zero;
 
+			SetLayerRecursively(gameObject, lungeLayer);
+
 			Debug.Log("DashStart");
 
 			// Dash in the same direction used for enemy facing 
 			rb.AddForce(lungeDirection * lungeForce, ForceMode.VelocityChange);
 		}
 
+		void SetLayerRecursively(GameObject obj, int layer) {
+			obj.layer = layer;
+			foreach (Transform child in obj.transform)
+				SetLayerRecursively(child.gameObject, layer);
+		}
+
 		// Lunge dash end called by animation event when dash motion is over in stab clip (same time as hitbox being disabled) 
 		public void OnLungeDashEnd() {
+			gameObject.layer = normalLayer;
+
 			Debug.Log("DashEnd");
 
 			rb.linearVelocity = Vector3.zero;
 			//rb.angularVelocity = Vector3.zero;
 			rb.isKinematic = true;
+
+			SetLayerRecursively(gameObject, normalLayer);
 
 			navMeshAgent.enabled = true;
 			navMeshAgent.Warp(transform.position);
@@ -491,6 +554,9 @@ namespace Game.AI.Sword {
 			if (animator != null) {
 				animator.SetTrigger(AnimDie);
 			}
+
+			// NOTE: This is temporary
+			Destroy(gameObject);
 		}
 
 		public void RecoverTick() {

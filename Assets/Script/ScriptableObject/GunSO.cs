@@ -17,7 +17,7 @@ public class GunSO : ScriptableObject
 
     public float muzzleVilocity ;
     
-    public int damage ;
+    public float damage ;
     
     public int effectiveRange ;
     
