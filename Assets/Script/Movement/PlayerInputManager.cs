@@ -69,4 +69,9 @@ public class PlayerInputManager : InputManagerBase, IInputManager
         grapple = (inputvalue.Get<float>() == 1);
         OnGrappleReceived(grapple);
     }
+
+    void OnSecondFire(InputValue inputvalue)
+    {
+
+    }
 }
