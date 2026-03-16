@@ -10,16 +10,7 @@ public class DemoTarget : MonoBehaviour, IDamageable
     // Needed to implement interface
 	public void TakeDamage(AttackData attackData) {
 		// Configure Attack data for sword enemy
-		attackData = new AttackData {
-			Attacker = gameObject,
-			AttackerFaction = Faction.Player,
-			Damage = 1,
-			Knockback = new KnockbackData {
-				Force = 0.0f,
-				UpwardModifier = 0.0f,
-				TorqueStrength = 0.0f
-			},
-			Type = DamageType.Ranged
-		};
-	}
+		
+        Destroy(gameObject);
+    }
 }

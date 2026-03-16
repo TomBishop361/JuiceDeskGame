@@ -8,6 +8,7 @@ using UnityEngine;
 
 // NOTE: PLACE HURTBOX.cs ON ROOT PARENT GAMEOBJECT
 // NOTE: PLACE HURTBOX COLLIDER ON CHILD OF ROOT PARENT GAMEOBJECT
+[RequireComponent(typeof(Health))]
 public class Hurtbox : MonoBehaviour, IDamageable {
 	[SerializeField] private Animator animator;
 	private IFactionOwner factionOwner;
@@ -22,6 +23,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 	}
 
 	public void TakeDamage(AttackData attackData) {
+		
 		// Ignore damaging own faction
 		if (CanBeDamaged(attackData.AttackerFaction) == false) {
 			Debug.LogError("Hurtbox: " + gameObject.name + "Cannot be damaged by " + attackData.Attacker.name);

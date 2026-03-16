@@ -107,7 +107,7 @@ public class InputController : MonoBehaviour
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
         InputManager.OnSprintReceived += SprintPressed;
-        InputManager.OnCrouchReceived += CrouchPressed;
+        InputManager.OnCrouchReceived += CrouchPressed;        
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         startScaleYscale = transform.localScale.y;
@@ -441,7 +441,7 @@ public class InputController : MonoBehaviour
         InputManager.OnCrouchReceived -= CrouchPressed;
     }
 
-    void ResetRestrictions()
+    public void ResetRestrictions()
     {
         activeGrapple = false;
     }

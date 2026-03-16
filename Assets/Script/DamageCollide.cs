@@ -4,8 +4,14 @@ public class DamageCollide : MonoBehaviour
 {
     public AttackData AttackData;
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        collision.gameObject.GetComponent<IDamageable>().TakeDamage(AttackData);
+        IDamageable damageable;
+        if (other.gameObject.TryGetComponent<IDamageable>(out damageable))
+        {
+            damageable.TakeDamage(AttackData);
+        }
     }
+
+   
 }

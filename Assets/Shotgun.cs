@@ -7,13 +7,14 @@ public class Shotgun : MonoBehaviour
     [SerializeField]
     GunInputManagerBase _gunInputManager;
     IGunInputManager gunInputManager => _gunInputManager.InputManager;
-
-
+    [SerializeField] float shotGunKnockBackMulti = 10;
+    
 
     bool shootinput;
 
     [Header("References")]
-    [SerializeField] Transform OrientationObj;
+    [SerializeField] InputController playerController;
+
     [SerializeField] GameObject ShotgunhitBox;
 
     [Header("Shotgun")]    
@@ -26,7 +27,7 @@ public class Shotgun : MonoBehaviour
     bool OnCoolDown;
     bool shooting;
 
-
+    [SerializeField] Rigidbody rb;    
 
     private void OnEnable()
     {
@@ -44,19 +45,25 @@ public class Shotgun : MonoBehaviour
         shootinput = value;
     }
 
+    void ApplyKnockBack()
+    {
+        Vector3 forceToApply = -ShotgunhitBox.transform.up * 10;
+        float maxYVelocity = 14;
+        if (forceToApply.y > maxYVelocity) forceToApply.y = maxYVelocity;
+        rb.AddForce(forceToApply, ForceMode.Impulse);
+    }
+
     void Timers()
     {
         if(hitboxTimer > 0)
         {
-            hitboxTimer -= Time.deltaTime;
-            
+            hitboxTimer -= Time.deltaTime;            
         }
         else if (shooting) {
             ShotgunhitBox.SetActive(false);
             ShotgunCooldownTimer = ShotgunCoolDownTime;
             shooting = false;
         }
-
         if (ShotgunCooldownTimer > 0)
         {
             ShotgunCooldownTimer -= Time.deltaTime;
@@ -77,12 +84,11 @@ public class Shotgun : MonoBehaviour
     private void HandleShoot()
     {
         if (OnCoolDown || !shootinput) return;
+        ApplyKnockBack();
+        playerController.ResetRestrictions();
         OnCoolDown = true;
         shooting = true;
         ShotgunhitBox.SetActive(true);
         hitboxTimer = hitboxTime;
-        
-
-        
     }
 }
