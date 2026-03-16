@@ -8,19 +8,35 @@ using UnityEngine.ProBuilder;
 
 // NOTE: Should be applied to each Projectile GameObject
 public class ProjectileHitbox : MonoBehaviour {
-	private DroneHomingProjectile parentProjectile;
+	//private ProjectileBase parentProjectile;
+	private MonoBehaviour parentProjectile;
 	private AttackData attackData;
 	private bool hasHit = false;
+	//private bool isDrone = false;
 
 	public event Action<AttackData, IDamageable, Vector3> OnProjectileHitImpact;
 
 	private void Awake() {
-		parentProjectile = GetComponentInParent<DroneHomingProjectile>();
+		//// TODO: search only for ProjectileBase when drones use the base script
+		//if (parentProjectile == null) {
+		//	parentProjectile = GetComponentInParent<DroneHomingProjectile>();
+		//	//isDrone = true;
+		//}
+		// NOTE: TEMP WORKAROUND - Tries to get player bullet, if not then tried drone bullet
+		// TODO: search only for ProjectileBase when drones use the base script
+		if (parentProjectile == null) {
+			parentProjectile = GetComponentInParent<ProjectileBase>();
+			if (parentProjectile == null) {
+				parentProjectile = GetComponentInParent<DroneHomingProjectile>();
+			}
+
+		}
 	}
 
 	// This is called by the ranged attack in order to configure this hitbox
 	public void Initialise(AttackData attackData) {
 		this.attackData = attackData;
+		hasHit = false;
 	}
 
 	private void OnTriggerEnter(Collider other) {
@@ -33,6 +49,10 @@ public class ProjectileHitbox : MonoBehaviour {
 		Vector3 hitPoint = other.ClosestPoint(parentProjectile.transform.position);
 
 		// IDamageable is implemented inside Hurtbox.cs (which is on root parent gameobject)
+		// Hurtbox exists on enemies, but environment usually won't have one
+		IDamageable target = other.GetComponentInParent<IDamageable>();
+
+		// IDamageable is implemented inside Hurtbox.cs (which is on root parent gameobject)
 		//IDamageable target = other.GetComponentInParent<IDamageable>();
 		//if (target == null) {
 		//	Debug.LogError("IDamageable: not found in parent of: " + other.gameObject.name);
@@ -40,10 +60,15 @@ public class ProjectileHitbox : MonoBehaviour {
 		//	return;
 		//}
 
-
+		Debug.Log("parent = " + parentProjectile.gameObject.name);
 		// Dictates if a direct or in-direct hit was made based on whether IDamageable exists on the collided object
-		IDamageable target = other.TryGetComponent(out IDamageable damageable) ? damageable : null;
-		Debug.Log("TARGET =  " + other.name);
+		//IDamageable target = other.TryGetComponent(out IDamageable damageable) ? damageable : null;
+		//Debug.Log("TARGET =  " + other.name);
+
+		//if (isDrone == false) {
+		//	target.TakeDamage(attackData);
+		//}
+		
 
 
 		// Notify executors that projectile hit something

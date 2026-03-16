@@ -173,7 +173,7 @@ namespace Game.Combat.Projectiles {
 			if (hasHit == true) {
 				return;
 			}
-
+			Debug.Log("PLAYER DESTORY DRONE PROJ");
 			hasHit = true;
 
 			// Direct hit = Full damage (check if target contains a HurtBox)
@@ -195,8 +195,14 @@ namespace Game.Combat.Projectiles {
 
 			foreach (Collider hit in colliderOverlapsArray) {
 
+				//// Check if hits inside splash radius contains a HurtBox
+				//if (hit.TryGetComponent(out IDamageable damageable) == false) {
+				//	continue;
+				//}
+
 				// Check if hits inside splash radius contains a HurtBox
-				if (hit.TryGetComponent(out IDamageable damageable) == false) {
+				IDamageable damageable = hit.GetComponentInParent<IDamageable>();
+				if (damageable == null) {
 					continue;
 				}
 

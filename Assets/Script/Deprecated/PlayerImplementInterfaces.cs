@@ -1,5 +1,7 @@
 using UnityEngine;
 
+//DEPRECATED
+
 // TODO: Add IFactionOwner + IHealthSettings interface implementations to the PlayerController.cs
 // Reason I did this: prevent conflicts w/ same script commits
 public class PlayerImplementInterfaces : MonoBehaviour, IFactionOwner, IHealthSettings {

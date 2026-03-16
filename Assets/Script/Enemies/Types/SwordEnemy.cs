@@ -23,6 +23,7 @@ namespace Game.AI.Sword {
 		[SerializeField] private Rigidbody rb; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
 		[SerializeField] private Animator animator;
 		[SerializeField] private LOSSensor losSensor;
+		[SerializeField] private Health healthComponent;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 3;
@@ -115,9 +116,6 @@ namespace Game.AI.Sword {
 		private static readonly int AnimLunge = Animator.StringToHash("Lunge"); // Trigger
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
-
-		// - Cached Components -
-		private Health healthComponent;
 
 		// Runtime params
 		// (NOTE: SerializeField atm for tracking in inspector)

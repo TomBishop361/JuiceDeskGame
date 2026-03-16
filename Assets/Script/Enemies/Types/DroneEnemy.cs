@@ -18,6 +18,7 @@ namespace Game.AI.Drone {
 		//[SerializeField] private NavMeshAgent navMeshAgent; // TODO: Might want nav mesh so it avoids obstacles + flies above them
 		[SerializeField] private Animator animator;
 		[SerializeField] private LOSSensor losSensor;
+		[SerializeField] private Health healthComponent;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 1;
@@ -25,7 +26,7 @@ namespace Game.AI.Drone {
 		[Header("Combat")]
 		//[SerializeField] private float damage = 1.0f; // USED IN DroneProjectile.cs
 		//[SerializeField] private float projectileSpeed = 14.0f; // USED IN DroneProjectile.cs
-		[SerializeField] private AttackData projectielAttackData = new AttackData();
+		[SerializeField] private AttackData projectileAttackData = new AttackData();
 		[SerializeField] private GameObject projectilePrefab;
 		[SerializeField] private Transform projectileSpawn;
 
@@ -113,9 +114,6 @@ namespace Game.AI.Drone {
 		private static readonly int AnimKnocked = Animator.StringToHash("KnockedDown"); // Trigger
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
-
-		// - Cached Components -
-		private Health healthComponent;
 
 		// Runtime params
 		private float groundY;
@@ -465,7 +463,7 @@ namespace Game.AI.Drone {
 			// Supply projectile hitbox with attack data
 			ProjectileHitbox projectileHitbox = projectileObj.GetComponentInChildren<ProjectileHitbox>();
 			if (projectileHitbox != null) {
-				projectileHitbox.Initialise(projectielAttackData);
+				projectileHitbox.Initialise(projectileAttackData);
 			}
 			else {
 				Debug.Log("DroneEnemy: ProjectileHitbox cannot be found on instantiated projectile object " + projectileObj.name);

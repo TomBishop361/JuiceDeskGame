@@ -22,6 +22,13 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 	}
 
 	public void TakeDamage(AttackData attackData) {
+		// TODO: Figure out why attack is not set when drone homing projectile hits player
+		//Check if attacker is set
+		if (attackData.Attacker == null) {
+				Debug.LogError("Hurtbox:" + gameObject.name + "attackData.Attacker is null");
+				return;
+			}
+
 		// Ignore damaging own faction
 		if (CanBeDamaged(attackData.AttackerFaction) == false) {
 			Debug.LogError("Hurtbox: " + gameObject.name + "Cannot be damaged by " + attackData.Attacker.name);

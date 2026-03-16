@@ -19,6 +19,7 @@ namespace Game.AI.Shield {
 		[SerializeField] private HitScanHitbox hitScanHitbox; // Shared HitScan Hitbox (on root object)
 		[SerializeField] private Animator animator;
 		[SerializeField] private LOSSensor losSensor;
+		[SerializeField] private Health healthComponent;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 5;
@@ -146,9 +147,6 @@ namespace Game.AI.Shield {
 		private static readonly int AnimBlockReact = Animator.StringToHash("BlockReact"); // Trigger
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
-
-		// - Cached Components -
-		private Health healthComponent;
 
 		// Runtime params
 		/*[SerializeField]*/ private float currentHealth;

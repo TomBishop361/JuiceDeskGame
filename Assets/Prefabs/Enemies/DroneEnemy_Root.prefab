@@ -124,7 +124,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4561105293921960453}
-  - {fileID: 7293579730755629061}
   - {fileID: 4988024605273340105}
   - {fileID: 8493237602375101654}
   - {fileID: 4871523958215517550}
@@ -167,16 +166,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  navAnchor: {fileID: 3123007382037382250}
-  navMeshAgent: {fileID: 5213800853939246106}
   animator: {fileID: 9042224668430253850}
   losSensor: {fileID: 8371648096448308422}
+  healthComponent: {fileID: 5188941369594005820}
   maxHealth: 2
-  projectielAttackData:
-    Damage: 1
+  projectileAttackData:
+    Damage: 3
     Knockback:
-      Force: 15
-      UpwardModifier: 6
+      Force: 0
+      UpwardModifier: 0
       TorqueStrength: 0
     Attacker: {fileID: 1136600960583451685}
     Type: 1
@@ -528,12 +526,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1829322590977388498}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.6766}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7161593470570398074}
+  m_Father: {fileID: 4561105293921960453}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1872594448663750034
 GameObject:
@@ -1433,6 +1431,7 @@ Transform:
   - {fileID: 6457199016112216292}
   - {fileID: 8976530467029237428}
   - {fileID: 4399146090983487735}
+  - {fileID: 7293579730755629061}
   m_Father: {fileID: 7161593470570398074}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8434928407839239547
@@ -1558,7 +1557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4871523958215517550
 Transform:
   m_ObjectHideFlags: 0

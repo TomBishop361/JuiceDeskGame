@@ -711,7 +711,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2262400151946653406}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.9667138, z: -0, w: 0.25586033}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -721,7 +721,7 @@ Transform:
   - {fileID: 8927096217970467424}
   - {fileID: 4166526269560175843}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 150.351, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &3336640791856733462
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -814,6 +814,7 @@ MonoBehaviour:
   rb: {fileID: 2001483471632426427}
   animator: {fileID: 7135050395248741609}
   losSensor: {fileID: 4028784406532282084}
+  healthComponent: {fileID: 1072683807792024947}
   maxHealth: 3
   defaultSpeed: 5.5
   defaultAcceleration: 30
@@ -1774,7 +1775,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.9
+  m_Radius: 1.2
   m_Height: 2.2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

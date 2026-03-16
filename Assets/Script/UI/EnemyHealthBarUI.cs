@@ -12,19 +12,26 @@ public class EnemyHealthBarUI : MonoBehaviour {
 	[SerializeField] private Color lowHealthColor = Color.red;
 
 	private void Awake() {
-		if (gameObject.tag != "Player") {
-			mainCamera = Camera.main;
-		}
+		// TODO: ADD BACK LATER WHEN PLAYER DOES NOT USE THIS SCRIPT FOR THEIR HP BAR
+		//if (gameObject.tag != "Player") {
+		//	mainCamera = Camera.main;
+		//}
 
+		mainCamera = Camera.main;
+		
 		health.OnHealthChanged += UpdateHealthBar;
 		health.OnDeath += HideHealthBar;
 	}
 
 	private void LateUpdate() {
 		transform.position = health.transform.position + uiOffset;
-		if (gameObject.tag != "Player") {
-			transform.forward = mainCamera.transform.forward;
-		}
+
+		// TODO: ADD BACK LATER WHEN PLAYER DOES NOT USE THIS SCRIPT FOR THEIR HP BAR
+		//if (gameObject.tag != "Player") {
+		//	transform.forward = mainCamera.transform.forward;
+		//}
+
+		transform.forward = mainCamera.transform.forward;
 	}
 
 	private void UpdateHealthBar(float currentHealth, float maxHealth) {
