@@ -6,7 +6,7 @@ using UnityEngine.InputSystem; // IEnemyAgent namespace
 
 namespace Game.AI.Sword {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class SwordEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner, IHealthSettings {
+	public class SwordEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -553,8 +553,10 @@ namespace Game.AI.Sword {
 				animator.SetTrigger(AnimDie);
 			}
 
+			TrackDeath();
+
 			// NOTE: This is temporary
-			Destroy(gameObject);
+			//Destroy(gameObject);
 		}
 
 		public void RecoverTick() {

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class DroneEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner, IHealthSettings {
+	public class DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -294,8 +294,10 @@ namespace Game.AI.Drone {
 				animator.SetTrigger(AnimDie);
 			}
 
+			TrackDeath();
+
 			// NOTE: This is temporary
-			Destroy(gameObject);
+			//Destroy(gameObject);
 		}
 
 		public void RecoverTick() {

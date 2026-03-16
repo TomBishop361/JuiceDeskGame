@@ -6,7 +6,7 @@ using Game.AI.Behavior.Shield;
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class ShieldEnemy : MonoBehaviour, IEnemyAgent, IFactionOwner, IHealthSettings {
+	public class ShieldEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 		// Implement IHealthSettings
@@ -361,8 +361,10 @@ namespace Game.AI.Shield {
 				animator.SetTrigger(AnimDie);
 			}
 
+			TrackDeath();
+
 			// NOTE: This is temporary
-			Destroy(gameObject);
+			//Destroy(gameObject);
 		}
 
 		public void RecoverTick() {
