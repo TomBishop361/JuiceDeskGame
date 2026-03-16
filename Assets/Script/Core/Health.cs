@@ -47,7 +47,7 @@ public class Health : MonoBehaviour {
 		}
 
 		CurrentHealth = Mathf.Clamp(CurrentHealth - damageAmount, 0.0f, MaxHealth);
-
+		Debug.Log("CURRENT HP = " + CurrentHealth);
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
 

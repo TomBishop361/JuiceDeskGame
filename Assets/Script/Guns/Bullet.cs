@@ -35,6 +35,8 @@ public class Bullet : ProjectileBase {
 
 	private void Awake() {
 		rb = GetComponent<Rigidbody>();
+
+		projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
 	}
 
 	public override void Fire(Vector3 direction, Vector3 origin, float speed, float damage) {

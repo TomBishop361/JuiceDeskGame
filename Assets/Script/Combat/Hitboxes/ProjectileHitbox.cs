@@ -52,7 +52,7 @@ public class ProjectileHitbox : MonoBehaviour {
 		// Hurtbox exists on enemies, but environment usually won't have one
 		IDamageable target = other.GetComponentInParent<IDamageable>();
 
-		// IDamageable is implemented inside Hurtbox.cs (which is on root parent gameobject)
+		////IDamageable is implemented inside Hurtbox.cs(which is on root parent gameobject)
 		//IDamageable target = other.GetComponentInParent<IDamageable>();
 		//if (target == null) {
 		//	Debug.LogError("IDamageable: not found in parent of: " + other.gameObject.name);
