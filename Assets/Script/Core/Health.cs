@@ -1,4 +1,6 @@
+using Game.AI.Shield;
 using System;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public class Health : MonoBehaviour {
@@ -10,6 +12,8 @@ public class Health : MonoBehaviour {
 	// Non-AI gameplay events
 	public event Action<float, float> OnHealthChanged;
 	public event Action OnDeath;
+
+	[SerializeField] private Animator animator; // TEMPORARY
 
 	private void Awake() {
 		// Health settings (shared between Player & Enemies)
@@ -48,8 +52,15 @@ public class Health : MonoBehaviour {
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
 
 		if (CurrentHealth <= 0.0f) {
+			Debug.Log("APPLYING DAMAGE");
 			OnDeath?.Invoke();
+			animator.SetTrigger("Die");
+			animator.SetBool("IsFiring", false);
+			//if (gameObject.TryGetComponent(out ShieldEnemy shield) != null) {
+			//	shield.StopMinigun();
+			//}
 			Debug.Log(gameObject + "died");
 		}
 	}
+
 }

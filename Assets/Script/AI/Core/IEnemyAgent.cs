@@ -6,7 +6,7 @@ namespace Game.AI {
 		bool IsDead { get; }
 		bool IsStunned { get; }
 		bool HasTarget { get; }
-		// bool HasLOS { get; } // OPTIONAL (Same as HasTarget?)
+		//bool HasLOS { get; } // OPTIONAL (Same as HasTarget?)
 
 		// Targeting / Ranges
 		float DistanceToTarget { get; }

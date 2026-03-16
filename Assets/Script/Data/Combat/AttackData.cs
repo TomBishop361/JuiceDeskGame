@@ -6,4 +6,6 @@ public struct AttackData {
 	public GameObject Attacker;
 	public DamageType Type;
 	public Faction AttackerFaction;
+
+	// TODO: ADD DAMAGE LAYERMASK TO THIS STRUCT ALSO ADD STUN (DONT HAVE TO FILL IT IN FOR THOSE THAT DONT DEAL IT)
 }

@@ -23,7 +23,7 @@ public class GunBase : MonoBehaviour
 
     public int maxAmmoReserve { get; private set; }
     public float muzzleVilocity { get; private set; }
-    public int damage { get; private set; }
+    public float damage { get; private set; }
     public int effectiveRange { get; private set; }
     public int meleeDamage { get; private set; }
     public float reloadSpeed { get; private set; }
