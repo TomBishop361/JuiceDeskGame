@@ -22,7 +22,6 @@ public class PlayerSettings : MonoBehaviour, IFactionOwner, IHealthSettings {
 	private float previousHealthValue = 0.0f;
 	private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 
-
 	private void Awake() {
 		// Sync health
 		currentHealth = maxHealth;

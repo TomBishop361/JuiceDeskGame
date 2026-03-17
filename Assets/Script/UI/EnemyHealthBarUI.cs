@@ -75,7 +75,7 @@ public class EnemyHealthBarUI : MonoBehaviour {
 		if (hpText != null) {
 			//string currentHPText = currentHealth.ToString("F2");
 			//hpText.text = $"{currentHealth.ToString("F2")} / {(int)maxHealth}";
-			hpText.text = $"{Mathf.Max(1, Mathf.CeilToInt(currentHealth))} / {(int)maxHealth}";
+			hpText.text = $"{Mathf.Max(0, Mathf.CeilToInt(currentHealth))} / {(int)maxHealth}";
 		}
 		//image.fillAmount = healthPercent;
 		//image.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercent);
