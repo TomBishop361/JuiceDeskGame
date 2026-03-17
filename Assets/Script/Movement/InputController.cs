@@ -23,7 +23,7 @@ public class InputController : MonoBehaviour
     [SerializeField] float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
     [SerializeField] float slideSpeed = 30;
-
+    
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
     [Header("Slope Slide Multiplier")]
@@ -64,7 +64,10 @@ public class InputController : MonoBehaviour
     public bool wallRunning;
     public bool IsJumpReady;
     public bool isOnCoolDown;
+    public bool freeze;
+    public bool activeGrapple;
     bool exitingSlope;
+    bool enableMoveOnNextTouch;
     private Vector3 velocity;
     
     private Vector2 lastInputEvent;
@@ -87,6 +90,7 @@ public class InputController : MonoBehaviour
     public MovementState state;
     public enum MovementState
     {
+        freeze,
         walking,
         sprinting,
         wallRunning,
@@ -94,7 +98,7 @@ public class InputController : MonoBehaviour
         sliding,
         air
     }
-    
+  
 
     private void OnEnable()
     {       
@@ -103,7 +107,7 @@ public class InputController : MonoBehaviour
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
         InputManager.OnSprintReceived += SprintPressed;
-        InputManager.OnCrouchReceived += CrouchPressed;
+        InputManager.OnCrouchReceived += CrouchPressed;        
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         startScaleYscale = transform.localScale.y;
@@ -148,7 +152,14 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
-        if (wallRunning) // Movement needs to change to be body relative instead of camera
+        //Freeze for grapple;
+        if (freeze)
+        {
+            state = MovementState.freeze;
+            desiredMoveSpeed = 0;
+            rb.linearVelocity = Vector3.zero;
+        }
+        else if (wallRunning) // Movement needs to change to be body relative instead of camera
         {
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
@@ -229,7 +240,7 @@ public class InputController : MonoBehaviour
 
     private void MovePressed(Vector2 vector)
     {
-        
+        if (activeGrapple) return;
         MoveDirection = vector;
     }
 
@@ -268,13 +279,28 @@ public class InputController : MonoBehaviour
         return false;
     }
 
-    public Vector3 GetSlopeMoveDirection( Vector3 Direction)
+    public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
     {
+        activeGrapple = true;
+        velocityToSet = JumpVelocityCalc.CalculateJumpVelocity(transform.position,targetPos, trajectoryHeight);
+        Invoke(nameof(setVelocity),0.1f);
+    }
+    Vector3 velocityToSet;
+    void setVelocity()
+    {
+        rb.linearVelocity = velocityToSet;
+        enableMoveOnNextTouch = true;
+    }
+
+    public Vector3 GetSlopeMoveDirection( Vector3 Direction)
+    {        
         return Vector3.ProjectOnPlane(Direction, slopeHit.normal).normalized;
     }
 
     void HandleMove(Vector2 Direction)
     {
+        if (activeGrapple) return;
+
         //Converts direction according to camera Direction
         Vector3 desiredvelocity;
         if (wallRunning) desiredvelocity = (transform.forward * Direction.y + transform.right * Direction.x).normalized * moveSpeed;
@@ -413,6 +439,21 @@ public class InputController : MonoBehaviour
         InputManager.OnJumpReceived -= JumpPressed;
         InputManager.OnSprintReceived -= SprintPressed;
         InputManager.OnCrouchReceived -= CrouchPressed;
+    }
+
+    public void ResetRestrictions()
+    {
+        activeGrapple = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (enableMoveOnNextTouch)
+        {
+            enableMoveOnNextTouch = false;
+            ResetRestrictions();
+            GetComponent<Grapple>().StopGrapple();
+        }
     }
 
 #if UNITY_EDITOR

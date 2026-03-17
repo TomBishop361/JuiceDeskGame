@@ -12,6 +12,8 @@ public class PlayerInputManager : InputManagerBase, IInputManager
     public float crouch{ get; private set; }
     public float slide{ get; private set; }
 
+    public bool grapple { get; private set; }
+
 
     //Movement
     public event Action<Vector2> OnMoveReceived = delegate (Vector2 vector2) { };
@@ -20,7 +22,8 @@ public class PlayerInputManager : InputManagerBase, IInputManager
     public event Action<float> OnCrouchReceived = delegate (float value ) { };
     public event Action<float> OnSlideReceived = delegate (float value ) { };
     public event Action<Vector2> OnLookReceived = delegate (Vector2 vector2) { };
-   
+    public event Action<bool> OnGrappleReceived = delegate (bool value) { };
+
 
 
     //Movement
@@ -61,5 +64,14 @@ public class PlayerInputManager : InputManagerBase, IInputManager
         OnSlideReceived(slide);
     }
 
-   
+   void OnGrapple(InputValue inputvalue)
+    {
+        grapple = (inputvalue.Get<float>() == 1);
+        OnGrappleReceived(grapple);
+    }
+
+    void OnSecondFire(InputValue inputvalue)
+    {
+
+    }
 }
