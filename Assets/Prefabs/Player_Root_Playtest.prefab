@@ -188,6 +188,7 @@ GameObject:
   - component: {fileID: 4100942907095511024}
   - component: {fileID: 7672335164421206941}
   - component: {fileID: 6540626192559797785}
+  - component: {fileID: 5004051856835289450}
   - component: {fileID: 8510124203444011290}
   - component: {fileID: 2432806210263854788}
   - component: {fileID: 8385307436966667247}
@@ -407,6 +408,37 @@ MonoBehaviour:
   wallJumpSideForce: 20
   exitWallTime: 0.5
   forceMode: 1
+--- !u!114 &5004051856835289450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2867513514670234524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3697cb46ebfa5f24e8f40eebe6bc5ff6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 6846038956571617460}
+  manager: {fileID: 8385307436966667247}
+  Camera: {fileID: 0}
+  GrappleOrigin: {fileID: 9148617013883643677}
+  Grappleable:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  lineRenderer: {fileID: 0}
+  overshootYAxis: 1
+  maxGrappleDist: 10
+  grappleDelayTime: 0.1
+  AnimCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  grapplePoint: {x: 0, y: 0, z: 0}
+  grapplingCoolDown: 0
 --- !u!114 &8510124203444011290
 MonoBehaviour:
   m_ObjectHideFlags: 0
