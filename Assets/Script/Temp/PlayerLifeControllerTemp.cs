@@ -99,23 +99,31 @@ public class PlayerLifeControllerTemp : MonoBehaviour {
 	private IEnumerator RespawnCoroutine() {
 		yield return new WaitForSeconds(respawnDelay);
 
-		// Choose respawn position
-		Vector3 spawnPosition = transform.position;
-		Quaternion spawnRotation = transform.rotation;
+		CharacterController cc = GetComponent<CharacterController>();
+		if (cc != null) cc.enabled = false;
 
-		if (respawnPoint != null) {
-			spawnPosition = respawnPoint.position;
-			spawnRotation = respawnPoint.rotation;
-		}
+		//// Choose respawn position
+		//Vector3 spawnPosition = respawnPoint.position /*= transform.position*/;
+		//Quaternion spawnRotation = respawnPoint.rotation /*= transform.rotation*/;
+
+		//if (respawnPoint != null) {
+		//	spawnPosition = respawnPoint.position;
+		//	spawnRotation = respawnPoint.rotation;
+		//}
 
 		// Move player to respawn point
-		transform.SetPositionAndRotation(spawnPosition, spawnRotation);
+		transform.SetPositionAndRotation(respawnPoint.position /*spawnPosition*/, respawnPoint.rotation /*spawnRotation*/);
 
-		// Restore health to full
-		float missingHealth = health.MaxHealth - health.CurrentHealth;
-		if (missingHealth > 0f) {
-			health.RegenerateHealth(missingHealth);
-		}
+		//// Restore health to full
+		//float missingHealth = health.MaxHealth - health.CurrentHealth;
+		//if (missingHealth >= 0f) {
+		
+		//	//health.RegenerateHealth(missingHealth);
+		//}
+
+		health.PlayerRespawn();
+
+		if (cc != null) cc.enabled = true;
 
 		// Reset death state
 		isDead = false;

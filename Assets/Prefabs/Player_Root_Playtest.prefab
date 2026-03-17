@@ -192,11 +192,11 @@ GameObject:
   - component: {fileID: 2432806210263854788}
   - component: {fileID: 8385307436966667247}
   - component: {fileID: 1650735733591127778}
+  - component: {fileID: 3003889795558770123}
   - component: {fileID: 956335443405471916}
   - component: {fileID: 7999844528419453303}
   - component: {fileID: 8155582859328823689}
   - component: {fileID: 149826704265840801}
-  - component: {fileID: 3003889795558770123}
   m_Layer: 7
   m_Name: Player_Root_Playtest
   m_TagString: Player
@@ -465,13 +465,34 @@ MonoBehaviour:
   health: {fileID: 956335443405471916}
   animator: {fileID: 0}
   playerModel: {fileID: 9157473013676708914}
-  scriptsToDisableOnDeath: []
+  scriptsToDisableOnDeath:
+  - {fileID: 149826704265840801}
+  - {fileID: 6846038956571617460}
   enableRegen: 1
   regenDelay: 3
   regenPerSecond: 1
   disableInputOnDeath: 1
-  respawnDelay: 2.5
+  respawnDelay: 2
   respawnPoint: {fileID: 0}
+--- !u!114 &3003889795558770123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2867513514670234524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3614a712bde7bda4bb0dc358e1de64dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 956335443405471916}
+  animator: {fileID: 0}
+  scriptsToDisableOnDeath: []
+  enableRegen: 1
+  regenDelay: 3
+  regenPerSecond: 0.5
+  disableInputOnDeath: 1
 --- !u!114 &956335443405471916
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,25 +561,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &3003889795558770123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2867513514670234524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3614a712bde7bda4bb0dc358e1de64dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: {fileID: 956335443405471916}
-  animator: {fileID: 0}
-  scriptsToDisableOnDeath: []
-  enableRegen: 1
-  regenDelay: 3
-  regenPerSecond: 1
-  disableInputOnDeath: 1
 --- !u!1 &4240362781774533397
 GameObject:
   m_ObjectHideFlags: 0

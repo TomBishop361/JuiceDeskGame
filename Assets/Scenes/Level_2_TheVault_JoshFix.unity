@@ -8874,9 +8874,17 @@ PrefabInstance:
       propertyPath: segmentsContainer
       value: 
       objectReference: {fileID: 2049332087}
+    - target: {fileID: 1650735733591127778, guid: 10a7f6d657e7b124a91e2fcd8fe53768, type: 3}
+      propertyPath: respawnPoint
+      value: 
+      objectReference: {fileID: 1275212764}
     - target: {fileID: 2867513514670234524, guid: 10a7f6d657e7b124a91e2fcd8fe53768, type: 3}
       propertyPath: m_Name
       value: Player_Root_Playtest
+      objectReference: {fileID: 0}
+    - target: {fileID: 3003889795558770123, guid: 10a7f6d657e7b124a91e2fcd8fe53768, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8510124203444011290, guid: 10a7f6d657e7b124a91e2fcd8fe53768, type: 3}
       propertyPath: AimOrigin
@@ -96582,6 +96590,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!4 &491336915 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3432793512728236847, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
+  m_PrefabInstance: {fileID: 1444928636}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &491561551
 Mesh:
   m_ObjectHideFlags: 0
@@ -188562,6 +188575,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8371648096448308422, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      propertyPath: detectionRange
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -219702,6 +219719,7 @@ Transform:
   - {fileID: 1195054413}
   - {fileID: 1216319430}
   - {fileID: 1985571092}
+  - {fileID: 491336915}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1045889625
@@ -303497,6 +303515,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8371648096448308422, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      propertyPath: detectionRange
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -307775,7 +307797,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1044469643}
     m_Modifications:
     - target: {fileID: 3432793512728236847, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -307795,15 +307817,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3432793512728236847, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3432793512728236847, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3432793512728236847, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3432793512728236847, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -438681,6 +438703,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8371648096448308422, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      propertyPath: detectionRange
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -459226,7 +459252,6 @@ SceneRoots:
   - {fileID: 110581279}
   - {fileID: 829996354}
   - {fileID: 44116291}
-  - {fileID: 1444928636}
   - {fileID: 2049332085}
   - {fileID: 1608250139}
   - {fileID: 1535402130}

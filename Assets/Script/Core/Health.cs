@@ -63,4 +63,18 @@ public class Health : MonoBehaviour {
 		}
 	}
 
+	public void PlayerRespawn() {
+		// Health settings (shared between Player & Enemies)
+		if (TryGetComponent(out IHealthSettings healthSettingsInterface) == false) {
+			Debug.LogError("Health requires IHealthSettings on " + gameObject.name);
+			return;
+		}
+
+		MaxHealth = healthSettingsInterface.MaxHealth;
+		CurrentHealth = MaxHealth;
+
+		// Notify any listener of health change
+		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+	}
+
 }
