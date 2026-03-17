@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 8510124203444011290}
   - component: {fileID: 2432806210263854788}
   - component: {fileID: 8385307436966667247}
+  - component: {fileID: 1650735733591127778}
   - component: {fileID: 956335443405471916}
   - component: {fileID: 7999844528419453303}
   - component: {fileID: 8155582859328823689}
@@ -271,7 +272,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!114 &1210983191380870436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,6 +331,8 @@ MonoBehaviour:
   wallRunning: 0
   IsJumpReady: 0
   isOnCoolDown: 0
+  freeze: 0
+  activeGrapple: 0
   rb: {fileID: 964100676913678549}
   state: 0
 --- !u!114 &4100942907095511024
@@ -398,6 +401,7 @@ MonoBehaviour:
   minJumpHeight: 2
   wallRunTime: 1.5
   SameWallTime: 5
+  sameWallTimer: 0
   LastWall: {fileID: 0}
   wallJumpUpForce: 5
   wallJumpSideForce: 20
@@ -446,6 +450,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 757d90cd0ee3f454d8dd8b559252610e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1650735733591127778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2867513514670234524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af11fd4e6598af44e8a87661088a0b30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 956335443405471916}
+  animator: {fileID: 0}
+  playerModel: {fileID: 9157473013676708914}
+  scriptsToDisableOnDeath: []
+  enableRegen: 1
+  regenDelay: 3
+  regenPerSecond: 1
+  disableInputOnDeath: 1
+  respawnDelay: 2.5
+  respawnPoint: {fileID: 0}
 --- !u!114 &956335443405471916
 MonoBehaviour:
   m_ObjectHideFlags: 0

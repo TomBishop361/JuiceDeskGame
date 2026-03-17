@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class EnemyHealthBarUI : MonoBehaviour {
 	[Header("References")]
@@ -72,7 +73,9 @@ public class EnemyHealthBarUI : MonoBehaviour {
 			fillImage.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercent);
 		}
 		if (hpText != null) {
-			hpText.text = $"{(int)currentHealth} / {(int)maxHealth}";
+			//string currentHPText = currentHealth.ToString("F2");
+			//hpText.text = $"{currentHealth.ToString("F2")} / {(int)maxHealth}";
+			hpText.text = $"{Mathf.Max(1, Mathf.CeilToInt(currentHealth))} / {(int)maxHealth}";
 		}
 		//image.fillAmount = healthPercent;
 		//image.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercent);
