@@ -20019,6 +20019,8 @@ MonoBehaviour:
   wallRunning: 0
   IsJumpReady: 0
   isOnCoolDown: 0
+  freeze: 0
+  activeGrapple: 0
   rb: {fileID: 236212044}
   state: 0
 --- !u!114 &236212046
@@ -20058,6 +20060,8 @@ MonoBehaviour:
   wallCheckDist: 0.7
   minJumpHeight: 2
   wallRunTime: 4
+  SameWallTime: 5
+  LastWall: {fileID: 0}
   wallJumpUpForce: 30
   wallJumpSideForce: 150
   exitWallTime: 0.5
