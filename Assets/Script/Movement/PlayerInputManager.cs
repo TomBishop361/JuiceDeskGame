@@ -40,8 +40,7 @@ public class PlayerInputManager : InputManagerBase, IInputManager
     }   
 
     void OnJump(InputValue inputValue)
-    {
-        
+    {        
         jump = (inputValue.Get<float>() == 1);
         OnJumpReceived(jump);
     }

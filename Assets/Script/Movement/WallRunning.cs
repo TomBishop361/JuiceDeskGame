@@ -22,7 +22,7 @@ public class WallRunning : MonoBehaviour
     private RaycastHit leftWallCheck;
     private RaycastHit rightWallCheck;
     public float SameWallTime =5;
-    public float sameWallTimer;
+    float sameWallTimer;
     public Transform LastWall;
     private bool wallLeft;
     private bool wallRight;
@@ -59,7 +59,10 @@ public class WallRunning : MonoBehaviour
 
     void JumpInput(bool input)
     {
-        jump = input;
+        if (input)
+        {
+            WallJump();
+        }
     }
 
     void CheckForWall()
@@ -90,7 +93,7 @@ public class WallRunning : MonoBehaviour
                 exitWallTimer = exitWallTime;
             }
 
-            if (jump) WallJump();
+            
 
         }
         else if (exitingWall)
@@ -129,19 +132,16 @@ public class WallRunning : MonoBehaviour
     void startWallRun()
     {
         Transform wall = wallRight ? rightWallCheck.transform : leftWallCheck.transform;
-        if (wall == LastWall)
+        if (wall != LastWall)
         {
-            Debug.Log("TEST");
-            return;
-        }
-        else
-        {
-            LastWall = wall;
-            sameWallTimer = SameWallTime;
-            controller.wallRunning = true;
-            OnWallRunStart?.Invoke(wallRight);
             wallRunTimer = wallRunTime;
-        }
+        }        
+        LastWall = wall;
+        sameWallTimer = SameWallTime;
+        controller.wallRunning = true;
+        OnWallRunStart?.Invoke(wallRight);
+            
+        
     }
 
     void StopWallRun()

@@ -379,6 +379,7 @@ public class InputController : MonoBehaviour
     {
         if (jump && isGrounded && IsJumpReady)
         {
+            
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();
