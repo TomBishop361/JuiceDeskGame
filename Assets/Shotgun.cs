@@ -47,10 +47,32 @@ public class Shotgun : MonoBehaviour
 
     void ApplyKnockBack()
     {
-        Vector3 forceToApply = -ShotgunhitBox.transform.up * 10;
-        float maxYVelocity = 14;
-        if (forceToApply.y > maxYVelocity) forceToApply.y = maxYVelocity;
-        rb.AddForce(forceToApply, ForceMode.Impulse);
+        
+        Vector3 knockbackDir = -ShotgunhitBox.transform.up.normalized;
+
+        
+        float blastForce = 15f; 
+        float verticalLift = 1.2f; 
+
+        // 3. Calculate the new velocity
+        Vector3 newVelocity = knockbackDir * blastForce;
+
+       
+        if (newVelocity.y > 0)
+        {
+            newVelocity.y *= verticalLift;
+            newVelocity.y = Mathf.Min(newVelocity.y, 14f);
+        }
+
+      
+        Vector3 currentHorizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        
+        
+        rb.linearVelocity = new Vector3(newVelocity.x, newVelocity.y, newVelocity.z);
+
+      
+        playerController.ResetRestrictions();
     }
 
     void Timers()
