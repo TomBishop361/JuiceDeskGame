@@ -255,7 +255,7 @@ public class InputController : MonoBehaviour
 
     private void MovePressed(Vector2 vector)
     {
-        if (activeGrapple) return;
+       // if (activeGrapple) return;
         MoveDirection = vector;
     }
 

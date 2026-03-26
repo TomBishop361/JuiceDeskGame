@@ -31,12 +31,12 @@ public class Shotgun : MonoBehaviour
 
     private void OnEnable()
     {
-        gunInputManager.onSecondFire += shoot;
+        //gunInputManager.onSecondFire += shoot;
     }
 
     private void OnDisable()
     {
-        gunInputManager.onSecondFire -= shoot;
+        //gunInputManager.onSecondFire -= shoot;
     }
 
     void shoot(bool value)

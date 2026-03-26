@@ -16,12 +16,10 @@ public class BouncePad : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         Rigidbody rb;
-        if (other.TryGetComponent<Rigidbody>(out rb)){
-            Debug.Log("Timer BP");
+        if (other.TryGetComponent<Rigidbody>(out rb)){            
             bounceDelayTimer -= Time.deltaTime;
             if (bounceDelayTimer <= 0)
-            {
-                Debug.Log("Timer BP COMPLETE");
+            {                
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, bounceAmount, rb.linearVelocity.z);
             }
         }
