@@ -46,10 +46,8 @@ public class Shotgun : MonoBehaviour
     }
 
     void ApplyKnockBack()
-    {
-        
+    {        
         Vector3 knockbackDir = -ShotgunhitBox.transform.up.normalized;
-
         
         float blastForce = 15f; 
         float verticalLift = 1.2f; 
@@ -60,8 +58,8 @@ public class Shotgun : MonoBehaviour
        
         if (newVelocity.y > 0)
         {
-            newVelocity.y *= verticalLift;
-            newVelocity.y = Mathf.Min(newVelocity.y, 14f);
+           // newVelocity.y *= verticalLift;
+            //newVelocity.y = Mathf.Min(newVelocity.y, 14f);
         }
 
       
