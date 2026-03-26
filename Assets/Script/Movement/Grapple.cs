@@ -103,6 +103,12 @@ public class Grapple : MonoBehaviour
         //    grappleDelayTimer = grappleDelayTime;
         //    grappleHit = false;
         //}
+
+
+        //Ray cast , if no hit then clear path
+       // launch player after graple complete
+       // idfk
+       // make grapple selector script
         grapplePoint = GrappleAnchor.transform.position - (Vector3.down*-1)*4;
         grappleDelayTimer = grappleDelayTime;
         grappleHit = true;
