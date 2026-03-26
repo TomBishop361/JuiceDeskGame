@@ -39,6 +39,13 @@ public class InputController : MonoBehaviour
     [SerializeField] public float maxSlopeAngle;
     private RaycastHit slopeHit;
 
+    [Header("Grappling Feel")]
+    [SerializeField] float grappleSpeedBoost = 1.5f; // Multiplier for speed after grapple
+    [SerializeField] float airControlDuringGrapple = 0.5f; // How much you can steer mid-air
+    [SerializeField] float grapplePullForce = 20f; // Continuous pull toward target
+    private Vector3 grappleTargetPos;
+
+
     [Header("Misc")]
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
@@ -69,7 +76,9 @@ public class InputController : MonoBehaviour
     bool exitingSlope;
     bool enableMoveOnNextTouch;
     private Vector3 velocity;
-    
+
+
+
     private Vector2 lastInputEvent;
     private float InputLagTimer;
 
@@ -155,6 +164,7 @@ public class InputController : MonoBehaviour
         //Freeze for grapple;
         if (freeze)
         {
+            
             state = MovementState.freeze;
             desiredMoveSpeed = 0;
             rb.linearVelocity = Vector3.zero;
@@ -196,7 +206,7 @@ public class InputController : MonoBehaviour
             state = MovementState.air;
         }
 
-        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 8f && moveSpeed != 0)
+        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
         {
             if(speedLerpCoroutine != null)
                 StopCoroutine(speedLerpCoroutine);
@@ -211,13 +221,17 @@ public class InputController : MonoBehaviour
 
     private IEnumerator SmoothLerpSpeed()
     {
-        float t = 0;
+        float t = 0;        
         float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
         float startValue = moveSpeed;
         while (t < difference)
         {
+            if (state == MovementState.air)
+            {
+                yield return null;
+                continue;
+            }
             moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, t / difference);
-
             if (OnSlope())
             {
                 float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
@@ -225,6 +239,7 @@ public class InputController : MonoBehaviour
 
                 t += Time.deltaTime * speedIncreaseMultiplier * slopeIncreaseMultiplier * slopeAngleIncrease;
             }
+           
             else
                 t += Time.deltaTime * speedIncreaseMultiplier;
             
@@ -240,7 +255,7 @@ public class InputController : MonoBehaviour
 
     private void MovePressed(Vector2 vector)
     {
-        if (activeGrapple) return;
+       // if (activeGrapple) return;
         MoveDirection = vector;
     }
 
@@ -279,17 +294,29 @@ public class InputController : MonoBehaviour
         return false;
     }
 
+   
+    
+
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
     {
         activeGrapple = true;
-        velocityToSet = JumpVelocityCalc.CalculateJumpVelocity(transform.position,targetPos, trajectoryHeight);
-        Invoke(nameof(setVelocity),0.1f);
+        grappleTargetPos = targetPos; // Store this for the pull force
+
+        // Calculate initial burst
+        velocityToSet = JumpVelocityCalc.CalculateJumpVelocity(transform.position, targetPos, trajectoryHeight);
+
+        // Slight delay to allow the "launch" to feel distinct
+        Invoke(nameof(setVelocity), 0.05f);
     }
+
     Vector3 velocityToSet;
     void setVelocity()
     {
         rb.linearVelocity = velocityToSet;
         enableMoveOnNextTouch = true;
+
+        // Boost max speed so the lerp doesn't immediately throttle us
+        moveSpeed = sprintSpeed * grappleSpeedBoost;
     }
 
     public Vector3 GetSlopeMoveDirection( Vector3 Direction)
@@ -299,17 +326,21 @@ public class InputController : MonoBehaviour
 
     void HandleMove(Vector2 Direction)
     {
-        if (activeGrapple) return;
+        // 1. Calculate desired velocity based on camera
+        Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
+        Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
 
-        //Converts direction according to camera Direction
-        Vector3 desiredvelocity;
-        if (wallRunning) desiredvelocity = (transform.forward * Direction.y + transform.right * Direction.x).normalized * moveSpeed;
-
-        else {
-            Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
-            desiredvelocity = ( cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
-        }
+        // 2. grapple-specific logic
+        if (activeGrapple)
+        {
             
+            Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
+            rb.AddForce(pullDir * grapplePullForce, ForceMode.Acceleration);
+
+            // Allow slight steering (Air Control)
+            rb.AddForce(desiredvelocity * airControlDuringGrapple, ForceMode.Acceleration);
+            return;
+        }
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
 
@@ -317,7 +348,7 @@ public class InputController : MonoBehaviour
 
         if (OnSlope() && !exitingSlope && !sliding)
         {
-            Debug.Log("OnSlope");
+            
 
             // Project the desired velocity onto the slope and scale it by movement speed
             Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed * 20;
@@ -325,8 +356,7 @@ public class InputController : MonoBehaviour
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
             rb.linearVelocity = new Vector3(slopeVel.x , rb.linearVelocity.y, slopeVel.z);
 
-            // Apply an extra force to keep the player grounded
-          //rb.AddForce(Vector3.down, ForceMode.Force);
+            // Apply an extra force to keep the player grounded          
             rb.AddForce(-slopeHit.normal * 80, ForceMode.Force);
 
         }
@@ -379,7 +409,6 @@ public class InputController : MonoBehaviour
     {
         if (jump && isGrounded && IsJumpReady)
         {
-            
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();
@@ -389,8 +418,12 @@ public class InputController : MonoBehaviour
             sliding = false;
             rb.useGravity = true;
 
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z); // Clear vertical
-            rb.AddForce(Vector3.up * jumpForce * slideJumpMultiplier, ForceMode.Impulse);            
+            // Directly set the Y velocity. 
+            // We keep the current X and Z (horizontal) velocity so you don't lose momentum.
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce * slideJumpMultiplier, rb.linearVelocity.z);
+
+            // Reset the jump trigger so we don't double jump if the button is held
+            jump = false;
         }
     }
 
@@ -418,9 +451,9 @@ public class InputController : MonoBehaviour
         HandleLook(LookDirection);
     }
     private void Update()
-    {        
+    {
        // VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-            
+        
     }
     private void FixedUpdate()
     {
@@ -429,7 +462,7 @@ public class InputController : MonoBehaviour
         HandleMove(MoveDirection);        
         StateHandler();
         HandleCrouch();
-        Debug.Log("SprintPressed? " + sprint);
+        
     }
 
 
@@ -442,20 +475,28 @@ public class InputController : MonoBehaviour
         InputManager.OnCrouchReceived -= CrouchPressed;
     }
 
+  
+
     public void ResetRestrictions()
     {
         activeGrapple = false;
     }
 
-    private void OnCollisionEnter(Collision collision)
+
+
+private void OnCollisionEnter(Collision collision)
+{
+    if (enableMoveOnNextTouch)
     {
-        if (enableMoveOnNextTouch)
-        {
-            enableMoveOnNextTouch = false;
-            ResetRestrictions();
-            GetComponent<Grapple>().StopGrapple();
-        }
+        enableMoveOnNextTouch = false;
+        
+        // Instead of instant reset, let the SpeedLerp handle the slowdown
+        // This keeps the "Zoom" feeling when you hit the ground
+        ResetRestrictions();
+        
+        if(TryGetComponent<Grapple>(out var g)) g.StopGrapple();
     }
+}
 
 #if UNITY_EDITOR
 

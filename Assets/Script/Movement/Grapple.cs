@@ -30,6 +30,9 @@ public class Grapple : MonoBehaviour
 
     bool grappleHit;
 
+    //TEST 
+    public GameObject GrappleAnchor;
+
     private void OnEnable()
     {
         inputManager.OnGrappleReceived += StartGrapple;
@@ -68,7 +71,7 @@ public class Grapple : MonoBehaviour
         Vector3 position = Vector3.Lerp(lineRenderer.GetPosition(1), grapplePoint,t );
         float yDisplace = AnimCurve.Evaluate(t);
         position = new Vector3(position.x ,position.y+yDisplace,position.z);        
-        lineRenderer.SetPosition(1, position);
+        lineRenderer.SetPosition(1, GrappleAnchor.transform.position);
     }
 
     
@@ -86,20 +89,29 @@ public class Grapple : MonoBehaviour
 
         controller.freeze = true;
 
-        RaycastHit hit;
-        if(Physics.Raycast(Camera.position, Camera.forward, out hit, maxGrappleDist, Grappleable)){
-            grapplePoint = hit.point;
+        //RaycastHit hit;
+        //if(Physics.Raycast(Camera.position, Camera.forward, out hit, maxGrappleDist, Grappleable)){
+        //    grapplePoint = hit.point;
 
-            grappleDelayTimer = grappleDelayTime;
-            grappleHit = true;
-        }
-        else
-        {
-            grapplePoint = Camera.position + Camera.forward * maxGrappleDist;
+        //    grappleDelayTimer = grappleDelayTime;
+        //    grappleHit = true;
+        //}
+        //else
+        //{
+        //    grapplePoint = Camera.position + Camera.forward * maxGrappleDist;
 
-            grappleDelayTimer = grappleDelayTime;
-            grappleHit = false;
-        }
+        //    grappleDelayTimer = grappleDelayTime;
+        //    grappleHit = false;
+        //}
+
+
+        //Ray cast , if no hit then clear path
+       // launch player after graple complete
+       // idfk
+       // make grapple selector script
+        grapplePoint = GrappleAnchor.transform.position - (Vector3.down*-1)*4;
+        grappleDelayTimer = grappleDelayTime;
+        grappleHit = true;
         lineRenderer.enabled = true;
         //lineRenderer.SetPosition(1, grapplePoint);
     }
@@ -111,12 +123,12 @@ public class Grapple : MonoBehaviour
         Vector3 lowestPoint = new Vector3(transform.position.x,transform.position.y -1,transform.position.z);
 
         float grapplePointRelativeY = grapplePoint.y - lowestPoint.y;
-        float highestPointOnArc = grapplePointRelativeY + overshootYAxis;
+        float highestPointOnArc =  grapplePointRelativeY + overshootYAxis;
 
         if(grapplePointRelativeY < 0) highestPointOnArc = overshootYAxis;
 
         controller.JumpToPosition(grapplePoint, highestPointOnArc);
-        Invoke(nameof(StopGrapple), 1f);
+        Invoke(nameof(StopGrapple), 1.1f);
     }
 
     public void StopGrapple()
@@ -128,5 +140,8 @@ public class Grapple : MonoBehaviour
         grapplingCoolDownTimer = grapplingCoolDown;
 
         lineRenderer.enabled = false;
+
+        controller.ResetRestrictions();
+        
     }
 }
