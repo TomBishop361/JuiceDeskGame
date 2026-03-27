@@ -62,7 +62,7 @@ public class InputController : MonoBehaviour
     [SerializeField] float inputLagPeriod = 0.0001f;
     [SerializeField] TextMeshProUGUI VelocityUI;
 
-    public const float gravity = -9.81f;
+    
     public bool jump;
     private bool sprint;
     private float crouch;
@@ -302,6 +302,11 @@ public class InputController : MonoBehaviour
         activeGrapple = true;
         grappleTargetPos = targetPos; // Store this for the pull force
 
+
+        Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(pullDir - (Vector3.up * pullDir.y), Vector3.up);
+        transform.rotation = targetRotation;
+
         // Calculate initial burst
         velocityToSet = JumpVelocityCalc.CalculateJumpVelocity(transform.position, targetPos, trajectoryHeight);
 
@@ -324,22 +329,34 @@ public class InputController : MonoBehaviour
         return Vector3.ProjectOnPlane(Direction, slopeHit.normal).normalized;
     }
 
+
+    public void AnchorLaunch()
+    {
+        Debug.Log("LAUNCH");
+        Vector3 launchDir = _camera.transform.forward;
+        launchDir.y = 0f;         
+        rb.AddForce(launchDir.normalized * 60f, ForceMode.VelocityChange);
+    }
+
+    //Need to re-do this part
     void HandleMove(Vector2 Direction)
     {
-        // 1. Calculate desired velocity based on camera
+        //Calculate desired velocity based on camera
         Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
         Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
 
-        // 2. grapple-specific logic
+        // grapple-specific logic
         if (activeGrapple)
         {
             
-            Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
-            rb.AddForce(pullDir * grapplePullForce, ForceMode.Acceleration);
+            Vector3 dirToTarget = (grappleTargetPos - transform.position).normalized;
+            dirToTarget.y = 0; // Keep rotation upright
+            if (dirToTarget != Vector3.zero)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirToTarget), 15 * Time.deltaTime);
+            }           
 
-            // Allow slight steering (Air Control)
-            rb.AddForce(desiredvelocity * airControlDuringGrapple, ForceMode.Acceleration);
-            return;
+            return; 
         }
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
@@ -462,6 +479,7 @@ public class InputController : MonoBehaviour
         HandleMove(MoveDirection);        
         StateHandler();
         HandleCrouch();
+
         
     }
 
@@ -490,10 +508,10 @@ private void OnCollisionEnter(Collision collision)
     {
         enableMoveOnNextTouch = false;
         
-        // Instead of instant reset, let the SpeedLerp handle the slowdown
-        // This keeps the "Zoom" feeling when you hit the ground
+        
         ResetRestrictions();
         
+            //yuck please change,future me
         if(TryGetComponent<Grapple>(out var g)) g.StopGrapple();
     }
 }
