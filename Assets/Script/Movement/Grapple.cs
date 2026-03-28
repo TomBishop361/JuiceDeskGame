@@ -8,6 +8,8 @@ public class Grapple : MonoBehaviour
     [SerializeField] InputManagerBase manager;
     IInputManager inputManager => manager.InputManager;
 
+   [SerializeField] GrappleAnchorSelector selector;
+
     public Transform Camera;
     public Transform GrappleOrigin;
     public LayerMask Grappleable;
@@ -36,6 +38,7 @@ public class Grapple : MonoBehaviour
     private void OnEnable()
     {
         inputManager.OnGrappleReceived += StartGrapple;
+        selector.OnAnchorFound += setAnchorPoint;
     }
 
     private void OnDisable()
@@ -62,7 +65,7 @@ public class Grapple : MonoBehaviour
             }
             
         }
-        
+
     }
 
     void RopeAnim()
@@ -74,7 +77,11 @@ public class Grapple : MonoBehaviour
         lineRenderer.SetPosition(1, GrappleAnchor.transform.position);
     }
 
-
+    void setAnchorPoint(AnchorPoint anchor)
+    {
+        if(anchor != null) GrappleAnchor = anchor.gameObject;
+        else GrappleAnchor = null;  
+    }
 
     private void FixedUpdate()
     {
@@ -94,29 +101,9 @@ public class Grapple : MonoBehaviour
     //Edge case, IF grapple misses, then hits, Invoke StopGrapple Still calls
     void StartGrapple(bool value)
     {
-        if(grapplingCoolDownTimer > 0 || grappling) return;
-       
+        if (grapplingCoolDownTimer > 0 || grappling) return;
 
-        //RaycastHit hit;
-        //if(Physics.Raycast(Camera.position, Camera.forward, out hit, maxGrappleDist, Grappleable)){
-        //    grapplePoint = hit.point;
-
-        //    grappleDelayTimer = grappleDelayTime;
-        //    grappleHit = true;
-        //}
-        //else
-        //{
-        //    grapplePoint = Camera.position + Camera.forward * maxGrappleDist;
-
-        //    grappleDelayTimer = grappleDelayTime;
-        //    grappleHit = false;
-        //}
-
-
-        //Ray cast , if no hit then clear path
-        // launch player after graple complete
-        // idfk
-        // make grapple selector script
+        if (GrappleAnchor == null) return;
         if (Vector3.Distance(GrappleAnchor.transform.position, transform.position) < 30)
         {
            
@@ -127,7 +114,7 @@ public class Grapple : MonoBehaviour
              grappling = true;
 
             controller.freeze = true;
-            grapplePoint = GrappleAnchor.transform.position - (Vector3.down * -2) ;
+            grapplePoint = GrappleAnchor.transform.position - (Vector3.down* -2) ;
             grappleDelayTimer = grappleDelayTime;
             grappleHit = true;
             lineRenderer.enabled = true;
@@ -157,23 +144,20 @@ public class Grapple : MonoBehaviour
         Invoke(nameof(StopGrapple), 2.0f);
     }
 
-
-
     public void StopGrapple()
     {
         if (!grappling) return;
         controller.freeze = false;
         grappling = false;
 
-        
-        grapplingCoolDownTimer = grapplingCoolDown;
+
+
 
         lineRenderer.enabled = false;
+            CancelInvoke(nameof(StopGrapple));
 
-        CancelInvoke(nameof(StopGrapple));
-
-        controller.ResetRestrictions();
-
-        controller.AnchorLaunch();
+    controller.ResetRestrictions();
+       controller.AnchorLaunch();
     }
+
 }
