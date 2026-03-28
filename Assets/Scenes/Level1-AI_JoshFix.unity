@@ -30741,6 +30741,9 @@ MonoBehaviour:
   crouchYscale: 0.5
   startScaleYscale: 1
   maxSlopeAngle: 45
+  grappleSpeedBoost: 1.5
+  airControlDuringGrapple: 0.5
+  grapplePullForce: 20
   acceleration: 45
   groundFriction: 9
   Ground:
@@ -292998,7 +293001,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   lineRenderer: {fileID: 2107423721}
   overshootYAxis: 1
-  maxGrappleDist: 10
+  maxGrappleDist: 30
   grappleDelayTime: 0.1
   AnimCurve:
     serializedVersion: 2
@@ -293007,7 +293010,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   grapplePoint: {x: 0, y: 0, z: 0}
-  grapplingCoolDown: 5
+  grapplingCoolDown: 2
 --- !u!4 &6121677202287725278
 Transform:
   m_ObjectHideFlags: 0
@@ -293204,6 +293207,9 @@ MonoBehaviour:
   crouchYscale: 0.5
   startScaleYscale: 1
   maxSlopeAngle: 45
+  grappleSpeedBoost: 1.5
+  airControlDuringGrapple: 0.5
+  grapplePullForce: 20
   acceleration: 45
   groundFriction: 9
   Ground:
@@ -293212,7 +293218,7 @@ MonoBehaviour:
   CharacterHeight: 2
   CoyoteTime: 0.1
   Sensitivity: 0.15
-  jumpForce: 30
+  jumpForce: 8
   jumpCoolDown: 0.3
   isGrounded: 0
   inputLagPeriod: 0.0001
