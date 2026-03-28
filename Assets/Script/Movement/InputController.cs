@@ -166,8 +166,7 @@ public class InputController : MonoBehaviour
     {
         //Freeze for grapple;
         if (freeze)
-        {
-            
+        {            
             state = MovementState.freeze;
             desiredMoveSpeed = 0;
             rb.linearVelocity = Vector3.zero;
@@ -309,6 +308,7 @@ public class InputController : MonoBehaviour
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
     {
         activeGrapple = true;
+        rb.linearDamping = 0;
         grappleTargetPos = targetPos; // Store this for the pull force
 
         Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
@@ -357,7 +357,7 @@ public class InputController : MonoBehaviour
 
 
 
-           // return;
+            return;
         }
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
@@ -388,7 +388,7 @@ public class InputController : MonoBehaviour
                 // Apply friction/deceleration when on ground with no input
                 Vector3 horizontal = Vector3.Lerp(new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z), Vector3.zero, groundFriction * Time.deltaTime);
                 rb.linearVelocity = new Vector3(horizontal.x, rb.linearVelocity.y, horizontal.z);
-                velocity = Vector3.zero; 
+               // velocity = Vector3.zero; 
             }
             else
             {                
@@ -398,6 +398,7 @@ public class InputController : MonoBehaviour
         }
         else
         {
+            
             // AIR LOGIC: Only apply force if there is input.             
             if (Direction != Vector2.zero)
             {
@@ -513,6 +514,7 @@ public class InputController : MonoBehaviour
     public void ResetRestrictions()
     {
         activeGrapple = false;
+        rb.linearDamping = 0.75f;
     }
 
 

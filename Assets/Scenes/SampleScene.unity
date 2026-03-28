@@ -450,6 +450,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 13888070988371887, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: m_Drag
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217658194101100017, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: grapplePullForce
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217658194101100017, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: AnchorLaunchAmount
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 1623776242580891429, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
       propertyPath: cineCam
       value: 
@@ -474,6 +486,26 @@ PrefabInstance:
       propertyPath: segmentsContainer
       value: 
       objectReference: {fileID: 1642594090}
+    - target: {fileID: 2744207654464071693, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: Camera
+      value: 
+      objectReference: {fileID: 330585546}
+    - target: {fileID: 2744207654464071693, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: selector
+      value: 
+      objectReference: {fileID: 723534028}
+    - target: {fileID: 2744207654464071693, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: overshootYAxis
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744207654464071693, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: grapplingCoolDown
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744207654464071693, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: Grappleable.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5362281485848141616, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
       propertyPath: m_Name
       value: Player_Root_Playtest
@@ -529,7 +561,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5362281485848141616, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 723534028}
   m_SourcePrefab: {fileID: 100100000, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
 --- !u!1 &254566016
 GameObject:
@@ -760,8 +795,9 @@ GameObject:
   - component: {fileID: 272322509}
   - component: {fileID: 272322508}
   - component: {fileID: 272322507}
+  - component: {fileID: 272322511}
   m_Layer: 0
-  m_Name: Cube (5)
+  m_Name: AnchorPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -856,6 +892,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &272322511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272322506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28c7d956e6f5a5a44a5e28b1d6c451cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &290525331
 GameObject:
   m_ObjectHideFlags: 0
@@ -7166,6 +7214,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &723534009 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5362281485848141616, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+  m_PrefabInstance: {fileID: 252592316}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &723534028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723534009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fddcecda0da73e44880ef3cab41bc05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewThreshold: 0.92
+  anchorPoints:
+  - {fileID: 272322511}
+  _camera: {fileID: 330585545}
+  bestAnchor: {fileID: 0}
 --- !u!1 &900091289
 GameObject:
   m_ObjectHideFlags: 0
@@ -32391,7 +32461,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1748225205
 MonoBehaviour:
   m_ObjectHideFlags: 0

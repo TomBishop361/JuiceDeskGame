@@ -8,6 +8,8 @@ public class Grapple : MonoBehaviour
     [SerializeField] InputManagerBase manager;
     IInputManager inputManager => manager.InputManager;
 
+   [SerializeField] GrappleAnchorSelector selector;
+
     public Transform Camera;
     public Transform GrappleOrigin;
     public LayerMask Grappleable;
@@ -36,6 +38,7 @@ public class Grapple : MonoBehaviour
     private void OnEnable()
     {
         inputManager.OnGrappleReceived += StartGrapple;
+        selector.OnAnchorFound += setAnchorPoint;
     }
 
     private void OnDisable()
@@ -74,7 +77,11 @@ public class Grapple : MonoBehaviour
         lineRenderer.SetPosition(1, GrappleAnchor.transform.position);
     }
 
-
+    void setAnchorPoint(AnchorPoint anchor)
+    {
+        if(anchor != null) GrappleAnchor = anchor.gameObject;
+        else GrappleAnchor = null;  
+    }
 
     private void FixedUpdate()
     {
@@ -94,24 +101,25 @@ public class Grapple : MonoBehaviour
     //Edge case, IF grapple misses, then hits, Invoke StopGrapple Still calls
     void StartGrapple(bool value)
     {
-        if(grapplingCoolDownTimer > 0 || grappling) return;
+        if (grapplingCoolDownTimer > 0 || grappling) return;
 
-        Debug.Log("STARTGRAPPLE");
+        if (GrappleAnchor == null) return;
         if (Vector3.Distance(GrappleAnchor.transform.position, transform.position) < 30)
         {
-
-            if (Physics.Raycast(transform.position, (GrappleAnchor.transform.position - transform.position).normalized, 30, Grappleable))
+           
+            if (Physics.Raycast(transform.position, (GrappleAnchor.transform.position - transform.position).normalized, 30,Grappleable))
             {
                 return;
             }
-            grappling = true;
+             grappling = true;
 
             controller.freeze = true;
-            grapplePoint = GrappleAnchor.transform.position - (Vector3.down * -2);
+            grapplePoint = GrappleAnchor.transform.position - (Vector3.down* -2) ;
             grappleDelayTimer = grappleDelayTime;
             grappleHit = true;
             lineRenderer.enabled = true;
         }
+        
         //lineRenderer.SetPosition(1, grapplePoint);
     }
 
