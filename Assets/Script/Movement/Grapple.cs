@@ -74,74 +74,82 @@ public class Grapple : MonoBehaviour
         lineRenderer.SetPosition(1, GrappleAnchor.transform.position);
     }
 
-    
+
 
     private void FixedUpdate()
     {
-        if(grappling) lineRenderer.SetPosition(0,GrappleOrigin.position);
+        if (grappling)
+        {
+            lineRenderer.SetPosition(0, GrappleOrigin.position);
+
+            // Better exit condition: If we are close to the point OR flying past it
+            float distToPoint = Vector3.Distance(transform.position, grapplePoint);
+            if (distToPoint < 1.5f)
+            {
+                StopGrapple();
+            }
+        }
     }
 
     //Edge case, IF grapple misses, then hits, Invoke StopGrapple Still calls
     void StartGrapple(bool value)
     {
         if(grapplingCoolDownTimer > 0 || grappling) return;
-        grappling = true;
 
-        controller.freeze = true;
+        Debug.Log("STARTGRAPPLE");
+        if (Vector3.Distance(GrappleAnchor.transform.position, transform.position) < 30)
+        {
 
-        //RaycastHit hit;
-        //if(Physics.Raycast(Camera.position, Camera.forward, out hit, maxGrappleDist, Grappleable)){
-        //    grapplePoint = hit.point;
+            if (Physics.Raycast(transform.position, (GrappleAnchor.transform.position - transform.position).normalized, 30, Grappleable))
+            {
+                return;
+            }
+            grappling = true;
 
-        //    grappleDelayTimer = grappleDelayTime;
-        //    grappleHit = true;
-        //}
-        //else
-        //{
-        //    grapplePoint = Camera.position + Camera.forward * maxGrappleDist;
-
-        //    grappleDelayTimer = grappleDelayTime;
-        //    grappleHit = false;
-        //}
-
-
-        //Ray cast , if no hit then clear path
-       // launch player after graple complete
-       // idfk
-       // make grapple selector script
-        grapplePoint = GrappleAnchor.transform.position - (Vector3.down*-1)*4;
-        grappleDelayTimer = grappleDelayTime;
-        grappleHit = true;
-        lineRenderer.enabled = true;
+            controller.freeze = true;
+            grapplePoint = GrappleAnchor.transform.position - (Vector3.down * -2);
+            grappleDelayTimer = grappleDelayTime;
+            grappleHit = true;
+            lineRenderer.enabled = true;
+        }
         //lineRenderer.SetPosition(1, grapplePoint);
     }
 
     void ExecuteGrapple()
     {
+        // Cancel the "safety" stop timer if it exists
+        CancelInvoke(nameof(StopGrapple));
+
         controller.freeze = false;
+        Vector3 lowestPoint = transform.position; // Simplify reference
 
-        Vector3 lowestPoint = new Vector3(transform.position.x,transform.position.y -1,transform.position.z);
+        float distance = Vector3.Distance(transform.position, grapplePoint);
+        // Dynamic height: short grapples don't need a massive arc
+        float dynamicHeight = Mathf.Clamp(distance * 0.5f, 2f, overshootYAxis);
 
-        float grapplePointRelativeY = grapplePoint.y - lowestPoint.y;
-        float highestPointOnArc =  grapplePointRelativeY + overshootYAxis;
+        Vector3 velocity = JumpVelocityCalc.CalculateJumpVelocity(transform.position, grapplePoint, dynamicHeight);
 
-        if(grapplePointRelativeY < 0) highestPointOnArc = overshootYAxis;
+        // Launch immediately rather than using Invoke
+        controller.JumpToPosition(grapplePoint, dynamicHeight);
 
-        controller.JumpToPosition(grapplePoint, highestPointOnArc);
-        Invoke(nameof(StopGrapple), 1.1f);
+        // Safety timeout in case we never reach the point
+        Invoke(nameof(StopGrapple), 2.0f);
     }
 
     public void StopGrapple()
     {
+        if (!grappling) return;
         controller.freeze = false;
         grappling = false;
 
 
-        grapplingCoolDownTimer = grapplingCoolDown;
+
 
         lineRenderer.enabled = false;
+            CancelInvoke(nameof(StopGrapple));
 
-        controller.ResetRestrictions();
-        
+    controller.ResetRestrictions();
+       controller.AnchorLaunch();
     }
+
 }

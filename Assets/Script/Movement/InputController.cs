@@ -294,13 +294,24 @@ public class InputController : MonoBehaviour
         return false;
     }
 
-   
-    
+
+    public void AnchorLaunch()
+    {
+        Debug.Log("LAUNCH");
+        Vector3 launchDir = _camera.transform.forward;
+        launchDir.y = 0f;
+        rb.AddForce(launchDir.normalized * 60f, ForceMode.VelocityChange);
+    }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
     {
         activeGrapple = true;
         grappleTargetPos = targetPos; // Store this for the pull force
+
+        Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(pullDir - (Vector3.up * pullDir.y), Vector3.up);
+        transform.rotation = targetRotation;
+
 
         // Calculate initial burst
         velocityToSet = JumpVelocityCalc.CalculateJumpVelocity(transform.position, targetPos, trajectoryHeight);
@@ -333,12 +344,16 @@ public class InputController : MonoBehaviour
         // 2. grapple-specific logic
         if (activeGrapple)
         {
-            
-            Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
-            rb.AddForce(pullDir * grapplePullForce, ForceMode.Acceleration);
 
-            // Allow slight steering (Air Control)
-            rb.AddForce(desiredvelocity * airControlDuringGrapple, ForceMode.Acceleration);
+            Vector3 dirToTarget = (grappleTargetPos - transform.position).normalized;
+            dirToTarget.y = 0; // Keep rotation upright
+            if (dirToTarget != Vector3.zero)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirToTarget), 15 * Time.deltaTime);
+            }
+
+
+
             return;
         }
 
