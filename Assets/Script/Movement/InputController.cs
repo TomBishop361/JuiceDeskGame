@@ -37,6 +37,7 @@ public class InputController : MonoBehaviour
 
     [Header("Slope Handling")]
     [SerializeField] public float maxSlopeAngle;
+    [SerializeField] float Slopeforce;
     private RaycastHit slopeHit;
 
     [Header("Grappling Feel")]
@@ -44,11 +45,13 @@ public class InputController : MonoBehaviour
     [SerializeField] float airControlDuringGrapple = 0.5f; // How much you can steer mid-air
     [SerializeField] float grapplePullForce = 20f; // Continuous pull toward target
     private Vector3 grappleTargetPos;
+    [SerializeField] float AnchorLaunchAmount;
 
 
     [Header("Misc")]
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
+    [SerializeField] float airAcceleration = 25;
     [SerializeField] float groundFriction = 0.4f;
     [SerializeField] LayerMask Ground;
     [SerializeField] float CharacterHeight = 2;
@@ -300,7 +303,7 @@ public class InputController : MonoBehaviour
         Debug.Log("LAUNCH");
         Vector3 launchDir = _camera.transform.forward;
         launchDir.y = 0f;
-        rb.AddForce(launchDir.normalized * 60f, ForceMode.VelocityChange);
+        rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
     }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
@@ -354,48 +357,62 @@ public class InputController : MonoBehaviour
 
 
 
-            return;
+           // return;
         }
 
         velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
 
-        Vector3 horizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
+        
+        //3. Slop Logic
         if (OnSlope() && !exitingSlope && !sliding)
         {
             
 
             // Project the desired velocity onto the slope and scale it by movement speed
-            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed * 20;
+            Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
 
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
             rb.linearVelocity = new Vector3(slopeVel.x , rb.linearVelocity.y, slopeVel.z);
 
             // Apply an extra force to keep the player grounded          
-            rb.AddForce(-slopeHit.normal * 80, ForceMode.Force);
+            rb.AddForce(-slopeHit.normal * Slopeforce, ForceMode.Force);
 
+           
         }
 
-        if (isGrounded && Direction == Vector2.zero)
+        // 4. Ground vs Air Movement Logic
+        if (isGrounded)
         {
-
-            horizontal = Vector3.Lerp(rb.linearVelocity, Vector3.zero, groundFriction * Time.deltaTime);
-            rb.linearVelocity = new Vector3(horizontal.x, rb.linearVelocity.y, horizontal.z);
+            if (Direction == Vector2.zero)
+            {
+                // Apply friction/deceleration when on ground with no input
+                Vector3 horizontal = Vector3.Lerp(new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z), Vector3.zero, groundFriction * Time.deltaTime);
+                rb.linearVelocity = new Vector3(horizontal.x, rb.linearVelocity.y, horizontal.z);
+                velocity = Vector3.zero; 
+            }
+            else
+            {                
+                velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
+                rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+            }
         }
-
         else
         {
-            rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
-
-            if (horizontal != Vector3.zero)
+            // AIR LOGIC: Only apply force if there is input.             
+            if (Direction != Vector2.zero)
             {
                 
-                Quaternion targetRotation = Quaternion.LookRotation(horizontal, Vector3.up);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+                velocity = Vector3.MoveTowards(new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z), desiredvelocity, airAcceleration * Time.deltaTime);
+                rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
             }
-            
-            
         }
+
+        // 5. Rotation Logic
+        Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        
+            Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        
         rb.useGravity = !OnSlope();
     }
 
@@ -467,7 +484,8 @@ public class InputController : MonoBehaviour
     }
     private void Update()
     {
-       // VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
+        if(VelocityUI == null) return;
+       VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
         
     }
     private void FixedUpdate()
