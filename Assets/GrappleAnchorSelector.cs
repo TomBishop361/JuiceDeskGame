@@ -7,18 +7,35 @@ public class GrappleAnchorSelector : MonoBehaviour
     [SerializeField] float viewThreshold = 0.92f; // 1.0 is center, 0.9 is roughly the inner screen area
     [SerializeField] AnchorPoint[] anchorPoints;
     [SerializeField] Camera _camera;
+    LayerMask _layerMask;
 
     public AnchorPoint bestAnchor;
 
     public delegate void anchorFound(AnchorPoint anchor);
     public event anchorFound OnAnchorFound;
 
+
     
+
 
 
     private void Update()
     {
-        GetBestAnchorInView(out bestAnchor);
+        
+        GetBestAnchorInView(out AnchorPoint newAnchor);
+        if (newAnchor != bestAnchor && newAnchor != null)
+        {            
+            if(bestAnchor != null) bestAnchor.deactivate();
+            bestAnchor = newAnchor;
+            bestAnchor.activate();
+            
+        }
+        else if (newAnchor == null)
+        {
+            if (bestAnchor != null) bestAnchor.deactivate();
+            bestAnchor = null;
+            
+        }
         OnAnchorFound(bestAnchor);
     }
 
@@ -39,7 +56,7 @@ public class GrappleAnchorSelector : MonoBehaviour
             if (dot > viewThreshold && dot > closestToCenter)
             {
                 // ensure the anchor isn't behind a wall
-                 //if (Physics.Linecast(_camera.transform.position, anchor.position, Ground)) continue;
+                 if (Physics.Linecast(_camera.transform.position, anchor.transform.position, _layerMask)) continue;
 
                 closestToCenter = dot;
                 bestTarget = anchor;

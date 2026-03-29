@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class AnchorPoint : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public GameObject UIOBJ;
+
+    public void activate()
     {
-        
+        UIOBJ.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void deactivate()
     {
-        
+        UIOBJ.SetActive(false);
     }
 }
