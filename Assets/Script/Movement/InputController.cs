@@ -78,7 +78,7 @@ public class InputController : MonoBehaviour
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
-    private Vector3 velocity;
+   
 
 
 
@@ -303,6 +303,9 @@ public class InputController : MonoBehaviour
         Vector3 launchDir = _camera.transform.forward;
         launchDir.y = 0f;
         rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
+
+        //Weird fix look into later
+        isGrounded = true;
     }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
@@ -360,7 +363,7 @@ public class InputController : MonoBehaviour
             return;
         }
 
-        velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
+        Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
         
         //3. Slop Logic
@@ -392,21 +395,23 @@ public class InputController : MonoBehaviour
             }
             else
             {                
-                velocity = Vector3.MoveTowards(velocity, desiredvelocity, acceleration * Time.deltaTime);
-                rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+                moveDir =  Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
+                rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
             }
         }
-        else
-        {
-            
-            // AIR LOGIC: Only apply force if there is input.             
-            if (Direction != Vector2.zero)
-            {
-                
-                velocity = Vector3.MoveTowards(new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z), desiredvelocity, airAcceleration * Time.deltaTime);
-                rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
-            }
-        }
+      else // AIR LOGIC
+{
+    if (Direction != Vector2.zero)
+    {
+        // Use the desiredvelocity (which is based on input) 
+        // instead of just lerping from current velocity
+        Vector3 currentHorizontalVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        // Ensure airAcceleration is high enough to overcome gravity's feel
+        moveDir = Vector3.MoveTowards(currentHorizontalVel, desiredvelocity, airAcceleration * Time.deltaTime);
+        rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
+    }
+}
 
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);

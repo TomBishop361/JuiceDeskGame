@@ -32,7 +32,7 @@ public class Grapple : MonoBehaviour
 
     bool grappleHit;
 
-    //TEST 
+    
     public GameObject GrappleAnchor;
 
     private void OnEnable()
