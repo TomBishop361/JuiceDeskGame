@@ -8,16 +8,12 @@ public class GrappleAnchorSelector : MonoBehaviour
     [SerializeField] AnchorPoint[] anchorPoints;
     [SerializeField] Camera _camera;
     LayerMask _layerMask;
+    [SerializeField] float grappleMaxDist;
 
     public AnchorPoint bestAnchor;
 
     public delegate void anchorFound(AnchorPoint anchor);
-    public event anchorFound OnAnchorFound;
-
-
-    
-
-
+    public event anchorFound OnAnchorFound; 
 
     private void Update()
     {
@@ -36,7 +32,7 @@ public class GrappleAnchorSelector : MonoBehaviour
             bestAnchor = null;
             
         }
-        OnAnchorFound(bestAnchor);
+        OnAnchorFound?.Invoke(bestAnchor);
     }
 
     public AnchorPoint GetBestAnchorInView(out AnchorPoint result)
@@ -46,6 +42,7 @@ public class GrappleAnchorSelector : MonoBehaviour
 
         foreach (AnchorPoint anchor in anchorPoints)
         {
+            if(Vector3.Distance(_camera.transform.position,anchor.transform.position) > grappleMaxDist) continue;
             // 1. Get direction from camera to the anchor
             Vector3 dirToAnchor = (anchor.transform.position - _camera.transform.position).normalized;
 

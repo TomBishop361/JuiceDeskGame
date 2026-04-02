@@ -19,7 +19,7 @@ public class Grapple : MonoBehaviour
 
     [Header("Grapple")]
     bool grappling;
-    public float maxGrappleDist;
+    
     public float grappleDelayTime;
     float grappleDelayTimer;
     [SerializeField] AnimationCurve AnimCurve;
