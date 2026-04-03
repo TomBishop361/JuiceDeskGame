@@ -61,7 +61,7 @@ public class PlayerGrind : MonoBehaviour
             Vector3 worldPos = currentRailScript.LocalToWorldConversion(pos);
             Vector3 nextPos = currentRailScript.LocalToWorldConversion(nextPosFloat);
 
-            rb.linearVelocity =  worldPos + (transform.up * heightOffset);
+            transform.position =  worldPos + (transform.up * heightOffset);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(nextPos- worldPos), lerpSpeed * Time.deltaTime);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up, up) * transform.rotation, lerpSpeed * Time.deltaTime);
 
