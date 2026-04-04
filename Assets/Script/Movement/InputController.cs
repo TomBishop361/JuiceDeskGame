@@ -51,11 +51,14 @@ public class InputController : MonoBehaviour
 
     [Header("Grinding")]
     public bool onRail;
+    bool canRailGrind = true;
+    public float railGrindTime = 1;
+    float railGrindTimer;
+
     [SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2
     float timeForFullSpline;
-    float elapsdTime;
-    [SerializeField] float lerpSpeed = 10;
+    float elapsdTime;    
     [SerializeField] RailScript currentRailScript;
 
     [Header("Misc")]
@@ -180,7 +183,7 @@ public class InputController : MonoBehaviour
         if (isRailGrinding) {
             state = MovementState.railGrinding;
             desiredMoveSpeed = 0;
-            rb.linearVelocity = Vector3.zero;
+            rb.useGravity = false;
         }
         else if (freeze)
         {
@@ -433,8 +436,8 @@ public class InputController : MonoBehaviour
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         
-            Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
         
         rb.useGravity = !OnSlope();
     }
@@ -461,8 +464,13 @@ public class InputController : MonoBehaviour
 
     private void Jump()
     {
-        if (jump && isGrounded && IsJumpReady)
+        
+        if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
         {
+            Debug.Log("");
+            if (isRailGrinding) throwOffRail();
+           
+
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();
@@ -518,7 +526,14 @@ public class InputController : MonoBehaviour
         StateHandler();
         HandleCrouch();
         movePlayerAlongRail();
-
+        if(railGrindTimer > 0)
+        {
+            railGrindTimer -= Time.deltaTime;
+            if(railGrindTimer <= 0)
+            {
+                canRailGrind = true;
+            }
+        }
 
     }
 
@@ -549,7 +564,7 @@ private void OnCollisionEnter(Collision collision)
         
         if(TryGetComponent<Grapple>(out var g)) g.StopGrapple();
     }
-    if (collision.gameObject.tag == "Rail")
+    if (collision.gameObject.tag == "Rail" && !isRailGrinding && canRailGrind)
         {
             isRailGrinding = true;
             onRail = true;
@@ -563,41 +578,54 @@ private void OnCollisionEnter(Collision collision)
 
     private void movePlayerAlongRail()
     {
-        if (!isRailGrinding) return;
-        if (currentRailScript != null && onRail)
+        if (!isRailGrinding || currentRailScript == null || !onRail) return;
+
+        float progess = elapsdTime / timeForFullSpline;
+        if (progess < 0 || progess > 1)
         {
-            float progess = elapsdTime / timeForFullSpline;
-            if (progess < 0 || progess > 1)
-            {
-                throwOffRail();
-                return;
-            }
-            float nextTimeNormalised;
-            if (currentRailScript.normalDir)
-            {
-                nextTimeNormalised = (elapsdTime + Time.deltaTime) / timeForFullSpline;
-            }
-            else
-            {
-                nextTimeNormalised = (elapsdTime - Time.deltaTime) / timeForFullSpline;
-            }
-
-            float3 pos, tangent, up;
-            float3 nextPosFloat, nextTan, nextUp;
-            SplineUtility.Evaluate(currentRailScript.railSpline.Spline, progess, out pos, out tangent, out up);
-            SplineUtility.Evaluate(currentRailScript.railSpline.Spline, nextTimeNormalised, out nextPosFloat, out nextTan, out nextUp);
-
-            Vector3 worldPos = currentRailScript.LocalToWorldConversion(pos);
-            Vector3 nextPos = currentRailScript.LocalToWorldConversion(nextPosFloat);
-
-            transform.position = worldPos + (transform.up * heightOffset);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(nextPos - worldPos), lerpSpeed * Time.deltaTime);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up, up) * transform.rotation, lerpSpeed * Time.deltaTime);
-
-            if (currentRailScript.normalDir)
-                elapsdTime += Time.deltaTime;
-            else elapsdTime -= Time.deltaTime;
+            throwOffRail();
+            return;
         }
+
+        // 1. Calculate current and next positions exactly like your smooth version
+        float nextTime;
+        if (currentRailScript.normalDir)
+            nextTime = (elapsdTime + Time.fixedDeltaTime);
+        else
+            nextTime = (elapsdTime - Time.fixedDeltaTime);
+
+        float3 pos, tan, up;
+        float3 nextPosFloat, nextTan, nextUp;
+        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, progess, out pos, out tan, out up);
+        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, nextTime / timeForFullSpline, out nextPosFloat, out nextTan, out nextUp);
+
+        Vector3 worldPos = currentRailScript.LocalToWorldConversion(pos);
+        Vector3 nextPos = currentRailScript.LocalToWorldConversion(nextPosFloat);
+        Vector3 worldUp = currentRailScript.transform.TransformDirection(up);
+
+        //The Target: where the player SHOULD be
+        Vector3 targetSnapPos = worldPos + (worldUp * heightOffset);
+
+        //correct the velocity        
+        Vector3 correctionDir = (targetSnapPos - transform.position);
+
+        //keep smooth forward velocity
+        Vector3 forwardVel = (nextPos - worldPos).normalized * grindSpeed;
+
+        //add the correction but multiply it to make it "snappy" without jitter        
+        rb.linearVelocity = forwardVel + (correctionDir * 0.75f);
+
+        //Rotation
+        Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+
+        //Update Time
+        if (currentRailScript.normalDir)
+            elapsdTime += Time.fixedDeltaTime;
+        else
+            elapsdTime -= Time.fixedDeltaTime;
     }
 
     private void CalculateAndSetRailPosition()
@@ -618,8 +646,12 @@ private void OnCollisionEnter(Collision collision)
         isRailGrinding = false;
         onRail = false;
         rb.useGravity = true;
+        isGrounded = true;
         currentRailScript = null;
         transform.position += transform.forward * 1;
+        canRailGrind= false;
+        railGrindTimer = railGrindTime;
+        
     }
 
 

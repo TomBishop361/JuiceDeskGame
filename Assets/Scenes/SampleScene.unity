@@ -561,6 +561,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1217658194101100017, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: grindSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217658194101100017, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
+      propertyPath: heightOffset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217658194101100017, guid: 3119bf5a9b5fd894ca5f279118927bd0, type: 3}
       propertyPath: grapplePullForce
       value: 100
       objectReference: {fileID: 0}
@@ -32925,9 +32933,10 @@ GameObject:
   - component: {fileID: 1616402126}
   - component: {fileID: 1616402125}
   - component: {fileID: 1616402130}
+  - component: {fileID: 1616402131}
   m_Layer: 0
   m_Name: Spline
-  m_TagString: Untagged
+  m_TagString: Rail
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33187,6 +33196,28 @@ MonoBehaviour:
   normalDir: 0
   railSpline: {fileID: 1616402128}
   totalSplineLength: 0
+--- !u!64 &1616402131
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616402124}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &1623625604
 GameObject:
   m_ObjectHideFlags: 0
