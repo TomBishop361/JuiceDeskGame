@@ -8,7 +8,7 @@ public class Door : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            door.SetActive(false);
+            GetComponent<Animator>().SetTrigger("Open");
         }
     }
 
