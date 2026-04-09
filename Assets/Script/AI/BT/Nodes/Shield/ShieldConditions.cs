@@ -99,6 +99,15 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	[Condition(name: "Shield: Is Exposed", description: "True if the shield enemy is currently exposed and vulnerable.", story: "Shield enemy is exposed", category: "Enemy/Shield/Conditions/Defense", id: "shield.condition.defense.is_exposed")]
+	public sealed class ShieldIsExposed : Condition {
+		public override bool IsTrue() {
+			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+
+			return shieldEnemy != null && shieldEnemy.IsExposed;
+		}
+	}
+
 	// TODO: ADD ShieldPlayerBehind CONDITION NODE CLASS
 
 

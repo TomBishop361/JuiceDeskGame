@@ -75,6 +75,13 @@ namespace Game.AI.Shield {
 		[Tooltip("Limits how quickly the aim can correct itself between shots. Prevents snapping directly to the player.")]
 		[SerializeField] private float minigunMaxAimSnapPerShot = 1.2f;
 
+		[Header("Minigun Heat Visuals")]
+		[SerializeField] private Renderer minigunRenderer;
+		[Tooltip("Base emission when not firing")]
+		[SerializeField] private Color baseEmissionColor = Color.black;
+		[Tooltip("Maximum emission color when fully overheated")]
+		[SerializeField] private Color maxEmissionColor = new Color(1.5f, 0.4f, 0.1f); // bright orange
+
 		[Header("Slam Shockwave")]
 		[SerializeField] private float shockwaveRadius = 6.2f;
 		[SerializeField] private LayerMask shockwaveHitMask; // TEMP SO I CAN SET FLOOR SO VISUAL SLAM IS SHOWN
@@ -86,6 +93,15 @@ namespace Game.AI.Shield {
 		[SerializeField] private float shockwaveRingExpandDuration = 0.6f;
 		[SerializeField] private float shockwaveRingHoldDuration = 0.5f;
 		[SerializeField] private float shockwaveRingYThickness = 0.05f;
+
+		[Header("Exposure")]
+		[Tooltip("How long the shield enemy is exposed after minigun overheating")]
+		[SerializeField] private float minigunExposeDuration = 2.0f;
+		[Tooltip("How long the shield enemy is exposed after performing the slam shockwave")]
+		[SerializeField] private float slamExposeDuration = 1.25f;
+		[Tooltip("How long the minigun can fire continuously before overheating")]
+		[SerializeField] private float minigunOverheatDuration = 3.0f;
+
 
 		[Header("Shield Block")]
 		[SerializeField] private Collider shieldBlockCollider; // put on a child object in front of enemy
@@ -99,6 +115,10 @@ namespace Game.AI.Shield {
 
 		[Header("LOS Memory")]
 		[SerializeField] private float targetMemoryDuration = 1.0f;
+
+		[SerializeField] private float postExposeRecoveryTime = 0.4f;
+
+		private float postExposeEndTime = -Mathf.Infinity;
 
 		// - Implement IEnemyAgent Properties (Blackboard flags for BT) [START] -
 
@@ -122,8 +142,8 @@ namespace Game.AI.Shield {
 		public bool InSlamRange => HasTarget && DistanceToTarget <= slamRange;
 		public bool InFireRange => HasTarget && DistanceToTarget >= fireMinRange && DistanceToTarget <= minigunMaxRange;
 		//public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
-		public bool CanSlam => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSlamTime;
-		public bool CanFireMinigun => !IsDead && !IsStunned && !IsAttacking && HasTarget;
+		public bool CanSlam => !IsDead && !IsStunned && !IsExposed && Time.time >= postExposeEndTime && !IsAttacking && Time.time >= nextSlamTime;
+		public bool CanFireMinigun => !IsDead && !IsStunned && !IsExposed && Time.time >= postExposeEndTime && !IsAttacking && HasTarget;
 		//public bool HasMuzzleLOS => IsTargetInMuzzleLOS(); /*{ get; private set; }*/
 		public bool GrappleWindowOpen { get; private set; }
 		public bool PlayerInFront => IsPlayerInFront();
@@ -135,9 +155,11 @@ namespace Game.AI.Shield {
 		// Properties
 		// TODO: MAKE A LOT OF VARIABLES IN THIS AND OTHER SCRIPTS USE PROPERTIES LIKE THIS e.g ShieldEnemy can only change 'IsFiringMinigun'
 		public bool IsFiringMinigun { get; private set; } // NOTE: Can use for Minigun firing animation + can another attack occur etc
+		public bool IsExposed { get; private set; }
 
 		// Exposed params (visible in the inspector)
-		/*[SerializeField]*/ private float grappleWindowEndTime;
+		/*[SerializeField]*/
+		private float grappleWindowEndTime;
 
 		// Cooldown/State timers
 		private float nextPunchTime = -Mathf.Infinity;
@@ -147,6 +169,8 @@ namespace Game.AI.Shield {
 		private float stunEndTime = -Mathf.Infinity;
 		private float attackEndTime = -Mathf.Infinity; // enforce min attack time (safety for anim not firing)
 		private float lastSeenTime = -Mathf.Infinity;
+		private float exposedEndTime = -Mathf.Infinity;
+		private float minigunFireStartTime = -Mathf.Infinity;
 
 		// Animator IDs
 		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
@@ -155,6 +179,7 @@ namespace Game.AI.Shield {
 		private static readonly int AnimFire = Animator.StringToHash("IsFiring"); // Bool
 		private static readonly int AnimShieldRaised = Animator.StringToHash("ShieldRaised"); // Bool
 		private static readonly int AnimBlockReact = Animator.StringToHash("BlockReact"); // Trigger
+		private static readonly int AnimExposed = Animator.StringToHash("IsExposed"); // Bool
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
 
@@ -180,6 +205,8 @@ namespace Game.AI.Shield {
 		/*[SerializeField]*/ private bool shockwaveActive = false;
 		private Vector3 lastMinigunAimPoint;
 		private bool hasLastMinigunAimPoint = false;
+		private Material minigunMaterial;
+		[SerializeField] private string emissionColorProperty = "_EmissionColor";
 
 		// Reset to default values
 		private void Reset() {
@@ -201,6 +228,10 @@ namespace Game.AI.Shield {
 
 			if (losSensor == null) {
 				losSensor = GetComponent<LOSSensor>();
+			}
+
+			if (minigunRenderer != null) {
+				minigunMaterial = minigunRenderer.material;
 			}
 		}
 
@@ -234,6 +265,11 @@ namespace Game.AI.Shield {
 				IsStunned = false;
 			}
 
+			// Handle exposed timer
+			if (IsExposed == true && Time.time >= exposedEndTime) {
+				ExitExposedState();
+			}
+
 			// Handle grapple window timer
 			// NOTE: SHIELD ENEMY WILL DECIDE WHETHER PLAYER CAN GRAPPLE
 			// IDEA: GRAPPLING COULD BE LIKE DEALING DAMAGE -> THE SHIELD ENEMY'S HURTBOX CAN DECIDE THE OUTCOME
@@ -249,6 +285,8 @@ namespace Game.AI.Shield {
 			if (IsAttacking && Time.time >= attackEndTime) {
 				IsAttacking = false;
 			}
+
+			UpdateMinigunEmission();
 
 			// Animator movement speed
 			if (navMeshAgent != null && animator != null) {
@@ -317,7 +355,10 @@ namespace Game.AI.Shield {
 				return;
 			}
 
-			minigunBarrel.Rotate(0.0f, 0.0f, 2000.0f * Time.deltaTime, Space.Self);
+			float heatPercent = GetMinigunHeatPercent();
+			float spinSpeed = Mathf.Lerp(1500f, 3000f, heatPercent);
+
+			minigunBarrel.Rotate(0.0f, 0.0f, spinSpeed * Time.deltaTime, Space.Self);
 		}
 
 		// Enable blocking only if the shield is raised and the player is in front
@@ -329,6 +370,40 @@ namespace Game.AI.Shield {
 			bool shouldBlock = ShieldRaised && PlayerInFront;
 
 			shieldBlockCollider.enabled = shouldBlock;
+		}
+
+		private void UpdateMinigunEmission() {
+			if (minigunMaterial == null) {
+				return;
+			}
+
+			float heatPercent = GetMinigunHeatPercent();
+
+			// Smooth curve - quadratic ramp
+			heatPercent = heatPercent * heatPercent;
+
+			Color finalEmission = Color.Lerp(baseEmissionColor, maxEmissionColor, heatPercent);
+
+			// Pulse near overheat
+			if (heatPercent > 0.65f) {
+				float pulse = Mathf.Sin(Time.time * 20f) * 0.2f + 1f;
+				finalEmission *= pulse;
+			}
+
+			minigunMaterial.SetColor(emissionColorProperty, finalEmission);
+
+			// Enable emission keyword
+			minigunMaterial.EnableKeyword("_EMISSION");
+		}
+
+		private float GetMinigunHeatPercent() {
+			if (IsFiringMinigun == false || minigunFireStartTime == -Mathf.Infinity) {
+				return 0.0f;
+			}
+
+			float elapsed = Time.time - minigunFireStartTime;
+
+			return Mathf.Clamp01(elapsed / minigunOverheatDuration);
 		}
 
 		// TODO: SUBHEADING FOR THESE -> THEY ARE CONDITIONS BUT DON'T JUST USE SIMPLE BOOLEAN VARIABLES - THEY USE FUNCTION LOGIC TO DETECT WHETHER TRUE/FALSE INSTEAD
@@ -407,6 +482,7 @@ namespace Game.AI.Shield {
 			IsStunned = false;
 			IsAttacking = false;
 			GrappleWindowOpen = false;
+			ExitExposedState();
 
 			// Disable nav mesh agent upon death
 			if (navMeshAgent != null) {
@@ -416,6 +492,7 @@ namespace Game.AI.Shield {
 
 			// Play death animation for shield enemy
 			if (animator != null) {
+				animator.SetBool(AnimExposed, false);
 				animator.SetTrigger(AnimDie);
 			}
 
@@ -459,7 +536,7 @@ namespace Game.AI.Shield {
 
 		public void AdvanceRaisedTick() {
 			// Advanced raised interrupts
-			if (IsDead == true || IsStunned == true || IsAttacking == true) {
+			if (IsDead == true || IsStunned == true || IsExposed == true || IsAttacking == true) {
 				return;
 			}
 			// No target
@@ -599,12 +676,20 @@ namespace Game.AI.Shield {
 			//	return false;
 			//}
 
+			BeginMinigunFiring();
+
+			// Overheat check
+			if (HasMinigunOverheated() == true) {
+				EnterExposedState(minigunExposeDuration);
+				return false;
+			}
 
 			// Advance & Hold shield whilst firing - NOTE: DO WE WANT THIS DESIGN?
 			SetShieldRaised(true);
 
 			IsFiringMinigun = true;
 			FaceTarget(target.position);
+
 			// Control fire rate
 			// Increment time for next minigun shot
 			float shotInterval = 1.0f / Mathf.Max(1.0f, minigunFireRate);
@@ -623,9 +708,56 @@ namespace Game.AI.Shield {
 			return true;
 		}
 
-		public void StopMinigun() {
+		private void BeginMinigunFiring() {
+			if (IsFiringMinigun == false) {
+				minigunFireStartTime = Time.time;
+			}
+		}
+
+		private bool HasMinigunOverheated() {
+			if (IsFiringMinigun == false) {
+				return false;
+			}
+
+			return Time.time >= minigunFireStartTime + minigunOverheatDuration;
+		}
+
+		public void EnterExposedState(float duration) {
+			if (IsDead == true) {
+				return;
+			}
+
+			IsExposed = true;
+			exposedEndTime = Time.time + duration;
+
+			IsAttacking = false;
+			StopMinigunFiring();
+			StopMove();
+			SetShieldRaised(false);
+
+			if (animator != null) {
+				animator.SetBool(AnimExposed, true);
+			}
+		}
+
+		private void ExitExposedState() {
+			IsExposed = false;
+			postExposeEndTime = Time.time + postExposeRecoveryTime;
+
+			if (animator != null) {
+				animator.SetBool(AnimExposed, false);
+			}
+		}
+
+		public void StopMinigunFiring() {
 			IsFiringMinigun = false;
 			hasLastMinigunAimPoint = false;
+			minigunFireStartTime = -Mathf.Infinity;
+
+			// Reset emission on stop / overheat
+			if (minigunMaterial != null) {
+				minigunMaterial.SetColor(emissionColorProperty, baseEmissionColor);
+			}
 
 			if (animator != null) {
 				animator.SetBool(AnimFire, false);
@@ -929,6 +1061,8 @@ namespace Game.AI.Shield {
 				//}
 				//}
 			}
+
+			EnterExposedState(slamExposeDuration);
 		}
 
 		// Called in ShieldBlockReceiver.cs to trigger the block react animation when the player shoots the shield

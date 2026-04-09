@@ -173,7 +173,7 @@ namespace Game.AI.Behavior.Shield {
 
 		protected override void OnEnd() {
 			if (shieldEnemy != null) {
-				shieldEnemy.StopMinigun();
+				shieldEnemy.StopMinigunFiring();
 			}
 		}
 	}
@@ -193,6 +193,24 @@ namespace Game.AI.Behavior.Shield {
 
 			shieldEnemy.SetShieldRaised(Raised);
 
+			return Status.Success;
+		}
+	}
+
+	[NodeDescription(name: "Shield: Enter Exposed State", description: "Makes the shield enemy vulnerable for a duration.", story: "Shield enemy becomes exposed for [Duration] seconds", category: "Enemy/Shield/Actions/Defense", id: "shield.action.defense.enter_exposed_state")]
+	public sealed class ShieldEnterExposedState : Action {
+		[SerializeReference] public BlackboardVariable<float> Duration;
+
+		private ShieldEnemy shieldEnemy;
+
+		protected override Status OnStart() {
+			shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+			if (shieldEnemy == null) {
+				LogFailure("ShieldEnemy component missing.", isError: true);
+				return Status.Failure;
+			}
+
+			shieldEnemy.EnterExposedState(Duration);
 			return Status.Success;
 		}
 	}
