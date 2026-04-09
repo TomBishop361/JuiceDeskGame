@@ -31019,7 +31019,13 @@ MonoBehaviour:
   crouchYscale: 0.5
   startScaleYscale: 1
   maxSlopeAngle: 45
+  Slopeforce: 0
+  grappleSpeedBoost: 1.5
+  airControlDuringGrapple: 0.5
+  grapplePullForce: 20
+  AnchorLaunchAmount: 0
   acceleration: 45
+  airAcceleration: 25
   groundFriction: 9
   Ground:
     serializedVersion: 2
@@ -156668,10 +156674,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 714646197}
-  image: {fileID: 1412633873}
+  healthSlider: {fileID: 0}
+  fillImage: {fileID: 0}
+  hpText: {fileID: 0}
+  followTarget: 1
   uiOffset: {x: 0, y: 2, z: 0}
   fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
+  segmentsContainer: {fileID: 0}
+  segmentDividerPrefab: {fileID: 0}
 --- !u!43 &1057527019
 Mesh:
   m_ObjectHideFlags: 0
@@ -172198,10 +172209,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 236212052}
-  image: {fileID: 1854117103}
+  healthSlider: {fileID: 0}
+  fillImage: {fileID: 0}
+  hpText: {fileID: 0}
+  followTarget: 1
   uiOffset: {x: 0, y: 2, z: 0}
   fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
+  segmentsContainer: {fileID: 0}
+  segmentDividerPrefab: {fileID: 0}
 --- !u!4 &1211127006
 Transform:
   m_ObjectHideFlags: 0
