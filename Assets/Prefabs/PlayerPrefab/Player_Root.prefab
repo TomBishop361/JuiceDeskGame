@@ -232,6 +232,7 @@ GameObject:
   - component: {fileID: 1722320851548434718}
   - component: {fileID: 6559390991075414141}
   - component: {fileID: 5582597780173297066}
+  - component: {fileID: 1481754788809115855}
   m_Layer: 7
   m_Name: Player_Root
   m_TagString: Player
@@ -247,7 +248,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5362281485848141616}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071064, z: -0, w: 0.7071072}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 2.0202265, y: 1.3275999, z: -1.0957031}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -361,8 +362,8 @@ MonoBehaviour:
   CharacterHeight: 2
   CoyoteTime: 0.1
   Sensitivity: 0.15
-  jumpForce: 8
-  jumpCoolDown: 0.3
+  jumpForce: 10
+  jumpCoolDown: 0
   isGrounded: 0
   inputLagPeriod: 0.0001
   VelocityUI: {fileID: 0}
@@ -413,7 +414,7 @@ MonoBehaviour:
   controller: {fileID: 1217658194101100017}
   maxSlideTime: 0.75
   SlideDownforce: 2
-  slideForce: 350
+  slideForce: 35
   slideYScale: 0.5
 --- !u!114 &2737366482705217093
 MonoBehaviour:
@@ -442,7 +443,7 @@ MonoBehaviour:
   wallRunTime: 4
   SameWallTime: 5
   LastWall: {fileID: 0}
-  wallJumpUpForce: 30
+  wallJumpUpForce: 40
   wallJumpSideForce: 20
   exitWallTime: 0.5
   forceMode: 1
@@ -460,14 +461,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 1217658194101100017}
   manager: {fileID: 3422815711289434995}
+  selector: {fileID: 1481754788809115855}
   Camera: {fileID: 0}
   GrappleOrigin: {fileID: 1925260408915921172}
   Grappleable:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
   lineRenderer: {fileID: 2785746629931228013}
-  overshootYAxis: 1
-  maxGrappleDist: 30
+  overshootYAxis: 30
   grappleDelayTime: 0.1
   AnimCurve:
     serializedVersion: 2
@@ -476,7 +477,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   grapplePoint: {x: 0, y: 0, z: 0}
-  grapplingCoolDown: 2
+  grapplingCoolDown: 1
   GrappleAnchor: {fileID: 0}
 --- !u!114 &5706047046153122416
 MonoBehaviour:
@@ -552,7 +553,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5362281485848141616}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3614a712bde7bda4bb0dc358e1de64dd, type: 3}
   m_Name: 
@@ -632,6 +633,30 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1481754788809115855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5362281485848141616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fddcecda0da73e44880ef3cab41bc05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewThreshold: 0.92
+  anchorPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _camera: {fileID: 0}
+  grappleMaxDist: 20
+  bestAnchor: {fileID: 0}
 --- !u!1 &5635177817222094823
 GameObject:
   m_ObjectHideFlags: 0
