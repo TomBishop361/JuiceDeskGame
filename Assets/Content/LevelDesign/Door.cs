@@ -12,4 +12,12 @@ public class Door : MonoBehaviour
         }
     }
 
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            GetComponent<Animator>().SetTrigger("Close");
+        }
+    }
+
 }
