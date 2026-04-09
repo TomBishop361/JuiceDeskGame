@@ -814,6 +814,7 @@ MonoBehaviour:
   rb: {fileID: 2001483471632426427}
   animator: {fileID: 7135050395248741609}
   losSensor: {fileID: 4028784406532282084}
+  healthComponent: {fileID: 1072683807792024947}
   maxHealth: 1
   defaultSpeed: 5.5
   defaultAcceleration: 30
@@ -1146,10 +1147,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 1072683807792024947}
-  image: {fileID: 4954268738409958550}
+  healthSlider: {fileID: 0}
+  fillImage: {fileID: 0}
+  hpText: {fileID: 0}
+  followTarget: 1
   uiOffset: {x: 0, y: 2.5, z: 0}
   fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
+  segmentsContainer: {fileID: 0}
+  segmentDividerPrefab: {fileID: 0}
 --- !u!1 &2997652330002691088
 GameObject:
   m_ObjectHideFlags: 0

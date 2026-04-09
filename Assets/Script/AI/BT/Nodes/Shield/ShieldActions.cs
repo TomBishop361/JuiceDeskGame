@@ -31,8 +31,8 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			// If already in punch range, allow combat to take over
-			if (shieldEnemy.InPunchRange == true || shieldEnemy.InSlamRange == true) {
+			// If already in slam range, allow combat to take over
+			if (shieldEnemy.InSlamRange == true) {
 				return Status.Success;
 			}
 
@@ -49,7 +49,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			if (shieldEnemy.InPunchRange == true || shieldEnemy.InSlamRange == true) {
+			if (shieldEnemy.InSlamRange == true) {
 				return Status.Success;
 			}
 
@@ -59,6 +59,7 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
 	[NodeDescription(name: "Shield: Punch Attack", description: "Triggers punch attack and waits until finished.", story: "Shield enemy punches", category: "Enemy/Shield/Actions/Combat", id: "shield.action.combat.punch")]
 	public sealed class ShieldPunchAttack : Action {
 		private ShieldEnemy shieldEnemy;
@@ -70,7 +71,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			bool hasStartedPunchAttack = shieldEnemy.TryStartPunch();
+			bool hasStartedPunchAttack = false/*shieldEnemy.TryStartPunch()*/;
 
 			return hasStartedPunchAttack ? Status.Running : Status.Failure;
 		}

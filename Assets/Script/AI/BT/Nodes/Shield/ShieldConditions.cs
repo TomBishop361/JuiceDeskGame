@@ -15,13 +15,13 @@ namespace Game.AI.Behavior.Shield {
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
 
-
+	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
 	[Condition(name: "Shield: In Punch Range", description: "True if target is within punch range.", story: "Target is in punch range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_punch_range")]
 	public sealed class ShieldInPunchRange : Condition {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
-			return shieldEnemy != null && shieldEnemy.InPunchRange;
+			return shieldEnemy != null /*&& shieldEnemy.InPunchRange*/;
 		}
 	}
 
@@ -43,12 +43,13 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
 	[Condition(name: "Shield: Can Punch", description: "True if punch cooldown is ready and enemy can punch now.", story: "Shield enemy can punch", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.can_punch")]
 	public sealed class ShieldCanPunch : Condition {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
-			return shieldEnemy != null && shieldEnemy.CanPunch;
+			return shieldEnemy != null /*&& shieldEnemy.CanPunch*/;
 		}
 	}
 
@@ -70,12 +71,13 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
 	[Condition(name: "Shield: Has Muzzle LOS", description: "True if shield enemy muzzle has a line of sight .", story: "Shield has muzzle LOS", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.has_muzzle_los")]
 	public sealed class ShieldHasMuzzleLOS : Condition {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
-			return shieldEnemy != null && shieldEnemy.HasMuzzleLOS;
+			return shieldEnemy != null /*&& shieldEnemy.HasMuzzleLOS*/;
 		}
 	}
 

@@ -164,7 +164,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -890,12 +890,8 @@ MonoBehaviour:
     Attacker: {fileID: 6796640669372964979}
     Type: 0
     AttackerFaction: 1
-  punchRange: 1.6
   fireMinRange: 3
-  fireMaxRange: 45
-  desiredRange: 15
   slamRange: 7
-  punchCooldown: 1
   slamCooldown: 3
   toggleSmoothRotation: 1
   rotationSpeed: 180
@@ -906,13 +902,16 @@ MonoBehaviour:
   minigunBulletTracer: {fileID: 8346758640552866426, guid: 10d60da6f83739c41be049e395b04306, type: 3}
   minigunBulletLifetime: 0.05
   minigunFireRate: 5
+  minigunFullDamageRange: 20
+  minigunMediumDamageRange: 35
   minigunMaxRange: 45
-  minigunMidRange: 35
-  minigunLowRange: 20
-  minigunInaccuracyDegrees: 4.5
   minigunHitMask:
     serializedVersion: 2
     m_Bits: 128
+  minigunAimDelay: 0.12
+  minigunAimOffsetRadius: 0.5
+  minigunInaccuracyDegrees: 2
+  minigunMaxAimSnapPerShot: 1.5
   shockwaveRadius: 6.5
   shockwaveHitMask:
     serializedVersion: 2

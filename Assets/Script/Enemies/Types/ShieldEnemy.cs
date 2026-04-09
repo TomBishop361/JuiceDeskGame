@@ -3,6 +3,8 @@ using UnityEngine.AI;
 using System.Collections;
 using Game.AI; // IEnemyAgent namespace
 using Game.AI.Behavior.Shield;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
@@ -30,16 +32,14 @@ namespace Game.AI.Shield {
 		[SerializeField] private AttackData shockwaveAttackData = new AttackData();
 
 		[Header("Ranges")]
-		[Tooltip("Minimum range that shield enemy can perform punch attack (should be less than 'slam range'")]
-		[SerializeField] private float punchRange = 1.6f;
-		[SerializeField] private float fireMinRange = 3.0f; // in this range -> can fire
-		[SerializeField] private float fireMaxRange = 45.0f; // don't fire if player exceeds this range
-		[SerializeField] private float desiredRange = 15.0f; // aim to remain within this range
-		[Tooltip("Minimum range that shield enemy can perform slam attack (should be greater than 'punch range'")]
+		[Tooltip("Minimum range that shield enemy will consider firing the minigun (should be less than 'minigunMaxRange')")]
+		[SerializeField] private float fireMinRange = 3.0f; // in this range -> can fireminigunMaxRange
+		//[Tooltip("Desired range that shield enemy will prioritise remaining within when attacking the player")]
+		//[SerializeField] private float desiredRange = 15.0f; // aim to remain within this range
+		[Tooltip("Minimum range that the shield enemy will consider performing a slam attack")]
 		[SerializeField] private float slamRange = 4.0f;
 
 		[Header("Cooldowns")]
-		[SerializeField] private float punchCooldown = 1.0f;
 		[SerializeField] private float slamCooldown = 3.0f;
 
 		[Header("Movement")]
@@ -54,14 +54,26 @@ namespace Game.AI.Shield {
 		[SerializeField] private Transform minigunBarrel;
 		[SerializeField] private Transform minigunMuzzle;
 		[SerializeField] private LineRenderer minigunBulletTracer;
-		[SerializeField] private float minigunBulletLifetime;
-		[SerializeField] private float minigunFireRate = 18.0f; // shots per second
+		[SerializeField] private float minigunBulletLifetime = 0.06f;
+		[Tooltip("Fire rate of minigun (shots per second)")]
+		[SerializeField] private float minigunFireRate = 5.0f; // shots per second
+		[Tooltip("0m -> this value: 100% damage.")]
+		[SerializeField] private float minigunFullDamageRange = 20.0f;
+		[Tooltip("FullDamageRange -> this value: 75% damage.")]
+		[SerializeField] private float minigunMediumDamageRange = 35.0f;
+		[Tooltip("MediumDamageRange -> this value: 50% damage. Also the maximum firing range. (should be greater than 'fireMinRange')")]
 		[SerializeField] private float minigunMaxRange = 45.0f;
-		[SerializeField] private float minigunMidRange = 35.0f;
-		[SerializeField] private float minigunLowRange = 20.0f;
-		//[SerializeField] private float minigunRange = 25.0f;
-		[SerializeField] private float minigunInaccuracyDegrees = 2.5f; // bullet spread for inaccuracy
 		[SerializeField] private LayerMask minigunHitMask;
+
+		[Header("Minigun Aim")]
+		[Tooltip("Time delay before aiming at the player's previous position. Controls how much the minigun 'lags behind' the player.")]
+		[SerializeField] private float minigunAimDelay = 0.18f;
+		[Tooltip("Maximum random offset applied to the aim point. Controls how far shots deviate from the target.")]
+		[SerializeField] private float minigunAimOffsetRadius = 0.6f;
+		[Tooltip("Small random spread applied per shot. Adds micro variation to the minigun stream.")]
+		[SerializeField] private float minigunInaccuracyDegrees = 2.0f;
+		[Tooltip("Limits how quickly the aim can correct itself between shots. Prevents snapping directly to the player.")]
+		[SerializeField] private float minigunMaxAimSnapPerShot = 1.2f;
 
 		[Header("Slam Shockwave")]
 		[SerializeField] private float shockwaveRadius = 6.2f;
@@ -80,7 +92,6 @@ namespace Game.AI.Shield {
 		[SerializeField] private float blockArcDegrees = 120.0f; // frontal cone for blocking
 
 		[Header("Attack Lock Times (prevents spam)")]
-		[SerializeField] private float punchLockTime = 0.85f; // anim length (approx)
 		[SerializeField] private float slamLockTime = 1.0f; // anim length (approx)
 
 		[Header("Grapple Window")]
@@ -98,9 +109,9 @@ namespace Game.AI.Shield {
 		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
-		public bool InAttackRange => HasTarget && (InPunchRange || InSlamRange); // shared 'InAttackRange' node for shield enemy can mean 'InPunchRange' OR 'InSlamRange'
+		public bool InAttackRange => HasTarget && InSlamRange; // shared 'InAttackRange' node for shield enemy can mean 'InSlamRange' (secondary attack)
 
-		public bool CanAttack => CanFireMinigun /*CanPunch*/; // shared 'CanAttack' node for shield enemy can mean 'CanPunch' (default primary attack)
+		public bool CanAttack => CanFireMinigun; // shared 'CanAttack' node for shield enemy can mean 'CanFireMinigun' (default primary attack)
 		public bool IsAttacking { get; private set; }
 		//public bool IsTargetTooClose { get; private set; }
 
@@ -108,13 +119,12 @@ namespace Game.AI.Shield {
 
 		// - Shield Enemy Specific Properties [START] -
 
-		public bool InPunchRange => HasTarget && DistanceToTarget <= punchRange;
 		public bool InSlamRange => HasTarget && DistanceToTarget <= slamRange;
-		public bool InFireRange => HasTarget && DistanceToTarget >= fireMinRange && DistanceToTarget <= fireMaxRange;
-		public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
+		public bool InFireRange => HasTarget && DistanceToTarget >= fireMinRange && DistanceToTarget <= minigunMaxRange;
+		//public bool CanPunch => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextPunchTime;
 		public bool CanSlam => !IsDead && !IsStunned && !IsAttacking && Time.time >= nextSlamTime;
 		public bool CanFireMinigun => !IsDead && !IsStunned && !IsAttacking && HasTarget;
-		public bool HasMuzzleLOS => IsTargetInMuzzleLOS(); /*{ get; private set; }*/
+		//public bool HasMuzzleLOS => IsTargetInMuzzleLOS(); /*{ get; private set; }*/
 		public bool GrappleWindowOpen { get; private set; }
 		public bool PlayerInFront => IsPlayerInFront();
 		public bool ShieldRaised { get; private set; }
@@ -148,11 +158,28 @@ namespace Game.AI.Shield {
 		private static readonly int AnimHit = Animator.StringToHash("Hit"); // Trigger
 		private static readonly int AnimDie = Animator.StringToHash("Die"); // Trigger
 
+		// Structs
+		// Stores historical target positions with timestamps - so the minigun can aim at a delayed target position
+		private struct AimSample {
+			public Vector3 Position;
+			public float Time;
+
+			public AimSample(Vector3 position, float time) {
+				Position = position;
+				Time = time;
+			}
+		}
+		// Queue of recent target positions (FIFO)
+		private readonly Queue<AimSample> minigunAimHistory = new Queue<AimSample>();
+
 		// Runtime params
-		/*[SerializeField]*/ private float currentHealth;
+		/*[SerializeField]*/
+		private float currentHealth;
 		/*[SerializeField]*/ private float previousHealthValue = 0.0f;
 		/*[SerializeField]*/ private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 		/*[SerializeField]*/ private bool shockwaveActive = false;
+		private Vector3 lastMinigunAimPoint;
+		private bool hasLastMinigunAimPoint = false;
 
 		// Reset to default values
 		private void Reset() {
@@ -193,6 +220,13 @@ namespace Game.AI.Shield {
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
+			}
+
+			if (HasTarget && target != null) {
+				RecordMinigunAimSample();
+			} 
+			else {
+				ClearMinigunAimHistory();
 			}
 
 			// Handle stun timer
@@ -250,6 +284,30 @@ namespace Game.AI.Shield {
 			}
 		}
 
+		// Updates the current target position into a time-based history buffer
+		// This allows the minigun to aim at a delayed position instead of the live target
+		private void RecordMinigunAimSample() {
+			Vector3 samplePos = target.position;
+
+			// Store position + timestamp
+			minigunAimHistory.Enqueue(new AimSample(samplePos, Time.time));
+
+			// Remove old samples beyond the history window (acts like a rolling buffer)
+			// Ensures delayed lookup remains relevant
+			while (minigunAimHistory.Count > 0 && Time.time - minigunAimHistory.Peek().Time > 0.75f) {
+				minigunAimHistory.Dequeue();
+			}
+		}
+
+		// Clears all stored aim history
+		// Called when target is lost or firing stops to prevent redundant aim data
+		private void ClearMinigunAimHistory() {
+			minigunAimHistory.Clear();
+
+			// Reset smoothing so next shot doesn't interpolate from an old position
+			hasLastMinigunAimPoint = false;
+		}
+
 		private void LateUpdate() {
 			if (minigunBarrel == null) {
 				return;
@@ -294,37 +352,37 @@ namespace Game.AI.Shield {
 			return angle <= blockArcDegrees * 0.5f;
 		}
 
-		// Uses the muzzle to determine whether the shield enemy should fire the minigun based on a raycast
-		private bool IsTargetInMuzzleLOS() {
-			if (HasTarget == false) {
-				return false;
-			}
+		//// Uses the muzzle to determine whether the shield enemy should fire the minigun based on a raycast
+		//private bool IsTargetInMuzzleLOS() {
+		//	if (HasTarget == false) {
+		//		return false;
+		//	}
 
-			// Check if minigun muzzle has been assigned in inspector otherwise use the shield enemy as the ray origin
-			Transform origin = minigunMuzzle != null ? minigunMuzzle : transform;
-			// Get target chest height
-			// TODO: Might need to change this as player height may differ in future (or just don't have this line))
-			Vector3 targetPos = target.position + Vector3.up * 1.0f;
+		//	// Check if minigun muzzle has been assigned in inspector otherwise use the shield enemy as the ray origin
+		//	Transform origin = minigunMuzzle != null ? minigunMuzzle : transform;
+		//	// Get target chest height
+		//	// TODO: Might need to change this as player height may differ in future (or just don't have this line))
+		//	Vector3 targetPos = target.position + Vector3.up * 1.0f;
 
-			Vector3 direction = targetPos - origin.position;
-			float distance = direction.magnitude;
+		//	Vector3 direction = targetPos - origin.position;
+		//	float distance = direction.magnitude;
 
-			// Target is very close so don't bother raycasting
-			if (distance < 0.01f) {
-				return true;
-			}
+		//	// Target is very close so don't bother raycasting
+		//	if (distance < 0.01f) {
+		//		return true;
+		//	}
 
-			// Raycast to target from muzzle origin
-			// If something blocks that ray then there is no LOS
-			if (Physics.Raycast(origin.position, direction.normalized, out RaycastHit hit, distance, minigunHitMask, QueryTriggerInteraction.Ignore)) {
-				// LOS only if the ray hits the player
-				// TODO: Adjust tag/layer matrix for this to work properly - for now using exclude/include layers on the colliders
-				return hit.collider.CompareTag("Player");
-			}
+		//	// Raycast to target from muzzle origin
+		//	// If something blocks that ray then there is no LOS
+		//	if (Physics.Raycast(origin.position, direction.normalized, out RaycastHit hit, distance, minigunHitMask, QueryTriggerInteraction.Ignore)) {
+		//		// LOS only if the ray hits the player
+		//		// TODO: Adjust tag/layer matrix for this to work properly - for now using exclude/include layers on the colliders
+		//		return hit.collider.CompareTag("Player");
+		//	}
 
-			// Nothing hit - No muzzle LOS
-			return false;
-		} 
+		//	// Nothing hit - No muzzle LOS
+		//	return false;
+		//} 
 
 		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
@@ -390,9 +448,9 @@ namespace Game.AI.Shield {
 		// But for sword map primary attack to 'Swing' instead
 
 		// Shared action node 'PrimaryAttack' can be used
-		// But for shield we want 'Punch' Vs 'Slam' selection in the BT for shield enemy combat actions
+		// TODO: Use this later and remove ShieldSlamShockwave
 		public bool TryStartPrimaryAttack() {
-			return TryStartPunch();
+			return TryStartSlamShockwave();
 		}
 
 		// - Implement IEnemyAgent Methods [END] -
@@ -419,39 +477,39 @@ namespace Game.AI.Shield {
 			SetShieldRaised(true);
 		}
 
-		// NOTE: NOT BEING USED ATM - SHIELD ENEMY FIRES MINIGUN INSTEAD AS OF RIGHT NOW
-		// TODO: THESE GATES CAN BE SIMPLIFIED TO USE THE BOOLEANS AT THE TOP OF THE SCRIPTS - FOR ALL ENEMIES!
-		public bool TryStartPunch() {
-			// Punch interrupts
-			if (IsDead == true || IsStunned == true || IsAttacking == true) {
-				return false;
-			}
-			// No target
-			if (HasTarget == false) {
-				return false;
-			}
-			// Punch is out of range
-			if (InPunchRange == false) {
-				return false;
-			}
-			// Punch is still on cooldown
-			if (Time.time < nextPunchTime) {
-				return false;
-			}
+		//// NOTE: NOT BEING USED ATM - SHIELD ENEMY FIRES MINIGUN INSTEAD AS OF RIGHT NOW
+		//// TODO: THESE GATES CAN BE SIMPLIFIED TO USE THE BOOLEANS AT THE TOP OF THE SCRIPTS - FOR ALL ENEMIES!
+		//public bool TryStartPunch() {
+		//	// Punch interrupts
+		//	if (IsDead == true || IsStunned == true || IsAttacking == true) {
+		//		return false;
+		//	}
+		//	// No target
+		//	if (HasTarget == false) {
+		//		return false;
+		//	}
+		//	//// Punch is out of range
+		//	//if (InPunchRange == false) {
+		//	//	return false;
+		//	//}
+		//	// Punch is still on cooldown
+		//	if (Time.time < nextPunchTime) {
+		//		return false;
+		//	}
 
-			StopMove();
+		//	StopMove();
 
-			IsAttacking = true;
-			nextPunchTime = Time.time + punchCooldown;
-			attackEndTime = Time.time + punchLockTime;
+		//	IsAttacking = true;
+		//	nextPunchTime = Time.time + punchCooldown;
+		//	attackEndTime = Time.time + punchLockTime;
 
-			if (animator != null) {
-				animator.SetBool(AnimShieldRaised, true);
-				animator.SetTrigger(AnimPunch);
-			}
+		//	if (animator != null) {
+		//		animator.SetBool(AnimShieldRaised, true);
+		//		animator.SetTrigger(AnimPunch);
+		//	}
 
-			return true;
-		}
+		//	return true;
+		//}
 
 		// NOTE: NOT BEING USED ATM - SHIELD ENEMY USES SHIELD SLAM SHOCKWAVE - RATHER THAN THE GRAPPLE OPENER SLAM AS OF RIGHT NOW
 		public bool TryStartSlam() {
@@ -567,13 +625,14 @@ namespace Game.AI.Shield {
 
 		public void StopMinigun() {
 			IsFiringMinigun = false;
+			hasLastMinigunAimPoint = false;
 
 			if (animator != null) {
 				animator.SetBool(AnimFire, false);
 			}
 		}
 
-		// TODO: PUT LOGIC INSIDE A HitScan.cs script later (can be used by anyone that does hitscan (player, shield enemy etc)
+		//// TODO: PUT LOGIC INSIDE A HitScan.cs script later (can be used by anyone that does hitscan (player, shield enemy etc)
 		private void DoHitscanShot() {
 			if (minigunMuzzle == null || target == null) {
 				return;
@@ -581,18 +640,24 @@ namespace Game.AI.Shield {
 
 			Vector3 bulletOrigin = minigunMuzzle.position;
 
-			// PROTOTYPE: Basic bullet spread for now
-			// TODO: DIRECTION TO TARGET HELPER FUNCTION BC CONSTANTLY USING IT
-			Vector3 direction = (target.position - bulletOrigin).normalized;
+			// Resolve imperfect aim point instead of aiming directly at the player
+			// This makes the minigun dodgeable and prevents guaranteed hits
+			Vector3 imperfectAimPoint = GetImperfectMinigunAimPoint();
+
+			Vector3 direction = imperfectAimPoint - bulletOrigin;
+			if (direction.sqrMagnitude < 0.0001f) {
+				direction = transform.forward;
+			}
+			direction.Normalize();
 
 			// Calculate small random euler angle offset (this represents inaccuracy)
-			// Create new quaternion direction for each bullet - allows deviation from center aim point
-			direction = Quaternion.Euler(Random.Range(-minigunInaccuracyDegrees, minigunInaccuracyDegrees), 
-										 Random.Range(-minigunInaccuracyDegrees, minigunInaccuracyDegrees), 0.0f) * direction;
+				// Create new quaternion direction for each bullet - allows deviation from center aim point
+				direction = Quaternion.Euler(Random.Range(-minigunInaccuracyDegrees, minigunInaccuracyDegrees),
+											 Random.Range(-minigunInaccuracyDegrees, minigunInaccuracyDegrees), 0.0f) * direction;
 
 			Vector3 endPoint = bulletOrigin + direction * minigunMaxRange;
 
-			// Cast ray towards bullet direction - check for contact
+			//	// Cast ray towards bullet tracer direction - check for contact
 			if (Physics.Raycast(bulletOrigin, direction, out RaycastHit hit, minigunMaxRange, minigunHitMask, QueryTriggerInteraction.Ignore)) {
 				// Adjust minigun bullet tracer to match hit point
 				endPoint = hit.point;
@@ -610,6 +675,41 @@ namespace Game.AI.Shield {
 			Debug.DrawRay(bulletOrigin, direction * minigunMaxRange, Color.red, 0.05f);
 		}
 
+		// Calculates the final aim point used for the minigun shot
+		// Combines delayed tracking, random offset, and smoothing
+		private Vector3 GetImperfectMinigunAimPoint() {
+			// Default fallback (if history is empty)
+			Vector3 delayedAimPoint = target.position + Vector3.up;
+
+			// Find the sample closest to (current time - delay)
+			float targetTime = Time.time - minigunAimDelay;
+
+			foreach (AimSample sample in minigunAimHistory) {
+				delayedAimPoint = sample.Position;
+
+				// Stop once we reach the desired delayed timestamp
+				if (sample.Time >= targetTime) {
+					break;
+				}
+			}
+
+			// Apply random offset in a circular area
+			// This creates a clustered spray instead of perfect tracking
+			Vector2 randomCircle = Random.insideUnitCircle * minigunAimOffsetRadius;
+			delayedAimPoint += new Vector3(randomCircle.x, randomCircle.y * 0.35f, randomCircle.y);
+
+			// Smooth aim movement between shots to avoid snapping
+			if (hasLastMinigunAimPoint == true) {
+				delayedAimPoint = Vector3.MoveTowards(lastMinigunAimPoint, delayedAimPoint, minigunMaxAimSnapPerShot);
+			}
+
+			// Store for next frame smoothing
+			lastMinigunAimPoint = delayedAimPoint;
+			hasLastMinigunAimPoint = true;
+
+			return delayedAimPoint;
+		}
+
 		// Distance-based damage falloff
 		private float CalculateDamageFalloff(Vector3 origin) {
 			float distanceToHit = Vector3.Distance(origin, target.position);
@@ -617,19 +717,19 @@ namespace Game.AI.Shield {
 
 			// Damage Falloff
 			// 0–20m = 100% damage
-			if (distanceToHit <= minigunLowRange) {
+			if (distanceToHit <= minigunFullDamageRange) {
 				finalDamage = minigunAttackData.Damage;
-				Debug.Log("APPLY MAX MINIGUN DAMAGE");
+				Debug.Log("Minigun Damage: FULL (0–20m)");
 			}
 			// 20–35m = 75% damage
-			else if (distanceToHit <= minigunMidRange) {
+			else if (distanceToHit <= minigunMediumDamageRange) {
 				finalDamage = minigunAttackData.Damage * 0.75f;
-				Debug.Log("APPLY MID MINIGUN DAMAGE");
+				Debug.Log("Minigun Damage: MEDIUM (20–35m)");
 			}
 			// 35–45m = 50% damage
 			else if (distanceToHit <= minigunMaxRange) {
 				finalDamage = minigunAttackData.Damage * 0.50f;
-				Debug.Log("APPLY LOW MINIGUN DAMAGE");
+				Debug.Log("Minigun Damage: LOW (35–45m)");
 			}
 			// 45m+ = 50% damage
 			else {
@@ -671,6 +771,7 @@ namespace Game.AI.Shield {
 
 		// - Damge / Stun -
 
+		// TODO: Remove since we have Damage system now
 		public void TakeDamage(int amount) {
 			if (IsDead == true) {
 				return;
