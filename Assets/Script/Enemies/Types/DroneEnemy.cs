@@ -5,7 +5,8 @@ using UnityEngine.AI;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
+	[RequireComponent(typeof(PooledObject))]
+	public class DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -117,24 +118,83 @@ namespace Game.AI.Drone {
 
 		// Runtime params
 		private float groundY;
-		/*[SerializeField]*/ private float currentHealth;
-		/*[SerializeField]*/ private float previousHealthValue = 0.0f;
-		/*[SerializeField]*/ private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		//private float currentHealth;
+		private float previousHealthValue = 0.0f;
+		private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 
-		private void Awake() {
-			// Sync health
-			currentHealth = maxHealth;
+		// Misc
+		private PooledObject pooledObject;
+
+		// Implement IPoolSpawnHandler
+		public void OnSpawned() {
+			ResetRuntimeToBaseValues();
+
+			// Restore health
+			if (healthComponent != null) {
+				healthComponent.PlayerRespawn();
+				previousHealthValue = healthComponent.CurrentHealth;
+			}
+		}
+
+		public void OnDespawned() {
+			// Cleanup temporary effects, target refs etc.
+			HasTarget = false;
+			HasLineOfSight = false;
+		}
+
+		private void ResetRuntimeToBaseValues() {
+			//currentHealth = maxHealth;
+
+			IsDead = false;
+			IsKnockedDown = false;
+			IsAttacking = false;
+			HasTarget = false;
+			HasLineOfSight = false;
+			DistanceToTarget = Mathf.Infinity;
+
+			nextFireTime = -Mathf.Infinity;
+			knockdownEndTime = -Mathf.Infinity;
+			attackEndTime = -Mathf.Infinity;
+			lastSeenTime = -Mathf.Infinity;
+			lastDamageTime = -Mathf.Infinity;
 
 			groundY = transform.position.y;
 
+			if (animator != null) {
+				animator.ResetTrigger(AnimFire);
+				animator.ResetTrigger(AnimHit);
+				animator.ResetTrigger(AnimDie);
+				animator.SetBool(AnimKnocked, false);
+				//animator.Play(0, 0, 0f); // optional - depends on controller setup
+			}
+		}
+
+		private void Awake() {
+			CacheComponents();
+			InitialRuntimeSetup();
+
+			pooledObject = GetComponent<PooledObject>();
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [START] -
+
+		private void CacheComponents() {
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
-
 			if (losSensor == null) {
 				losSensor = GetComponent<LOSSensor>();
 			}
 		}
+
+		private void InitialRuntimeSetup() {
+			// Sync health
+			//currentHealth = maxHealth;
+			// Reset ground position
+			groundY = transform.position.y;
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [END] -
 
 		private void Update() {
 			if (IsDead == true) {
@@ -289,15 +349,19 @@ namespace Game.AI.Drone {
 			IsKnockedDown = false;
 			IsAttacking = false;
 
+			// TODO: UNCOMMENT THIS OUT AGAIN WHEN YOU WANT TO CHANGE LEVELS WHEN ALL ENEMIES ARE DEAD OR WE COULD REMOVE THIS AND HAVE A DOOR TO TRAVEL TO NEXT LEVEL
+			// TrackDeath();
+
 			// Play death animation for drone enemy
 			if (animator != null) {
 				animator.SetTrigger(AnimDie);
 			}
 
-			TrackDeath();
-
-			// NOTE: This is temporary
-			//Destroy(gameObject);
+			// NOTE: Immediate despawn - no visible death animation
+			// TODO: Use AnimEvent_DeathFinished and remove this
+			if (pooledObject != null && gameObject.activeInHierarchy) {
+				pooledObject.ReturnToPool();
+			}
 		}
 
 		public void RecoverTick() {
@@ -500,13 +564,13 @@ namespace Game.AI.Drone {
 			}
 
 			// Decrement health by 'x' amount
-			currentHealth -= amount;
+			//currentHealth -= amount;
 
-			// Death on 0 health
-			if (currentHealth <= 0) {
-				Die();
-				return;
-			}
+			//// Death on 0 health
+			//if (currentHealth <= 0) {
+			//	Die();
+			//	return;
+			//}
 
 			if (animator != null) {
 				animator.SetTrigger(AnimHit);
@@ -536,6 +600,15 @@ namespace Game.AI.Drone {
 		// Call this at end of attack animation
 		public void AnimEvent_AttackFinished() {
 			IsAttacking = false;
+		}
+
+		// TODO: Call this at the end of death animation
+		public void AnimEvent_DeathFinished() {
+			if (pooledObject == null || gameObject == null) {
+				return;
+			}
+
+			pooledObject.ReturnToPool();
 		}
 
 		// - Movement Helpers -
@@ -578,6 +651,17 @@ namespace Game.AI.Drone {
 		}
 
 		private void OnHealthChanged(float current, float max) {
+			// Death on 0 health
+			if (current <= 0) {
+				Die();
+				return;
+			}
+
+			// Trigger hit animation
+			if (animator != null) {
+				animator.SetTrigger(AnimHit);
+			}
+
 			// Damage only if health has gone down
 			if (current < previousHealthValue) {
 				// Reset regen delay timer - only regen when out of combat
