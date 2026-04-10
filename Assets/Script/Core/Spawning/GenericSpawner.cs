@@ -24,10 +24,18 @@ public class GenericSpawner : MonoBehaviour {
 	[Tooltip("Maximum number of active objects at once")]
 	[SerializeField] private int maxAlive = 10;
 
+	[Header("Spawn Clearance")]
+	[Tooltip("Radius used to check if a spawn point is free of other colliders")]
+	[SerializeField] private float spawnCheckRadius = 1.5f;
+	[Tooltip("Layers that block spawning. If any collider in these layers is inside the radius, spawn is prevented")]
+	[SerializeField] private LayerMask spawnBlockingLayers;
+	[Tooltip("Whether trigger colliders should be considered when checking spawn space")]
+	[SerializeField] private QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
+
 	[Header("Pool Settings")]
-	[Tooltip("Initial pool size")]
+	[Tooltip("Initial number of objects pre-created in the pool (when needed)")]
 	[SerializeField] private int defaultCapacity = 10;
-	[Tooltip("Maximum number of pooled objects allowed")]
+	[Tooltip("Maximum number of pooled objects allowed before extra ones are destroyed")]
 	[SerializeField] private int maxPoolSize = 20;
 
 	private IObjectPool<PooledObject> pool;
@@ -95,11 +103,47 @@ public class GenericSpawner : MonoBehaviour {
 
 	// Spawns a single object (if under maxAlive limit)
 	public PooledObject Spawn() {
-		if (aliveObjects.Count >= maxAlive) {
+		if (aliveObjects.Count >= maxAlive)
+			return null;
+
+		if (TryGetFreeSpawnPoint(out Transform point) == false) {
 			return null;
 		}
+			
+		PooledObject item = pool.Get();
+		item.transform.SetPositionAndRotation(point.position, point.rotation);
 
-		return pool.Get();
+		return item;
+	}
+
+	// Attempts to get a spawn point that is available based on a given radius and layer check
+	private bool TryGetFreeSpawnPoint(out Transform chosenPoint) {
+		chosenPoint = null;
+
+		if (spawnPoints == null || spawnPoints.Length == 0) {
+			if (Physics.CheckSphere(transform.position, spawnCheckRadius, spawnBlockingLayers, triggerInteraction) == false) {
+				chosenPoint = transform;
+				return true;
+			}
+
+			return false;
+		}
+
+		int startIndex = Random.Range(0, spawnPoints.Length);
+
+		for (int i = 0; i < spawnPoints.Length; i++) {
+			int index = (startIndex + i) % spawnPoints.Length;
+			Transform point = spawnPoints[index];
+
+			bool blocked = Physics.CheckSphere(point.position, spawnCheckRadius, spawnBlockingLayers, triggerInteraction);
+
+			if (blocked == false) {
+				chosenPoint = point;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	// Despawns all active objects
@@ -139,20 +183,26 @@ public class GenericSpawner : MonoBehaviour {
 
 	// Called when an object is taken from the pool (spawned)
 	private void OnTakeFromPool(PooledObject item) {
-		// Move to a spawn position
-		Transform point = GetSpawnPoint();
-		item.transform.SetPositionAndRotation(point.position, point.rotation);
-
-		// Track active object
 		aliveObjects.Add(item);
-
-		// Enable the object
 		item.gameObject.SetActive(true);
 
-		// Notify any components that are subscribed to spawn events
-		foreach (var handler in item.GetComponents<IPoolSpawnHandler>()) {
+		foreach (var handler in item.GetComponents<IPoolSpawnHandler>())
 			handler.OnSpawned();
-		}
+
+		//// Move to a spawn position
+		//Transform point = GetSpawnPoint();
+		//item.transform.SetPositionAndRotation(point.position, point.rotation);
+
+		//// Track active object
+		//aliveObjects.Add(item);
+
+		//// Enable the object
+		//item.gameObject.SetActive(true);
+
+		//// Notify any components that are subscribed to spawn events
+		//foreach (var handler in item.GetComponents<IPoolSpawnHandler>()) {
+		//	handler.OnSpawned();
+		//}
 	}
 
 	// Called when an object is returned to the pool
@@ -203,4 +253,7 @@ public class GenericSpawner : MonoBehaviour {
 
 		aliveObjects.Clear();
 	}
+
+
+	
 }

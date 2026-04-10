@@ -41,10 +41,6 @@ public class EnemyHealthBarUI : MonoBehaviour {
 	}
 	private void Start() {
 		ResetRuntimeToBaseValues();
-
-		//currentHealth = maxHealth;// new
-		//healthSlider.maxValue = health.MaxHealth; // new
-		//healthSlider.value = health.CurrentHealth; // new
 	}
 
 	private void ResetRuntimeToBaseValues() {

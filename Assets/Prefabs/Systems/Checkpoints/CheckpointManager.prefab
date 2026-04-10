@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3019592971638469007
+--- !u!1 &2321720035309346247
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3082072486342608435}
-  - component: {fileID: 6699387248970615212}
+  - component: {fileID: 43062937616232643}
+  - component: {fileID: 1730014864899252984}
   m_Layer: 0
-  m_Name: DroneSpawner
+  m_Name: CheckpointManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3082072486342608435
+--- !u!4 &43062937616232643
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3019592971638469007}
+  m_GameObject: {fileID: 2321720035309346247}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,22 +32,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6699387248970615212
+--- !u!114 &1730014864899252984
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3019592971638469007}
+  m_GameObject: {fileID: 2321720035309346247}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9688846f8380a74b87100402d524637, type: 3}
+  m_Script: {fileID: 11500000, guid: 374ea84a33538fe418b76c89ca868bc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
-  spawnPoints: []
-  autoSpawn: 1
-  spawnInterval: 2
-  maxAlive: 10
-  defaultCapacity: 10
-  maxPoolSize: 20
+  player: {fileID: 0}
+  currentCheckpoint: {x: 0, y: 0, z: 0}
+  hasCheckpoint: 0

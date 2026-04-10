@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
+	[RequireComponent(typeof(Hurtbox))]
 	public class ShieldEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
@@ -1118,16 +1119,16 @@ namespace Game.AI.Shield {
 		private void OnEnable() {
 			if (healthComponent != null) {
 				previousHealthValue = healthComponent.CurrentHealth;
-				healthComponent.OnHealthChanged += OnHealthChanged;
+				healthComponent.OnHealthChanged += HandleHealthChanged;
 			}
 		}
 		private void OnDisable() {
 			if (healthComponent != null) {
-				healthComponent.OnHealthChanged -= OnHealthChanged;
+				healthComponent.OnHealthChanged -= HandleHealthChanged;
 			}
 		}
 
-		private void OnHealthChanged(float current, float max) {
+		private void HandleHealthChanged(float current, float max) {
 			// Damage only if health has gone down
 			if (current < previousHealthValue) {
 				// Reset regen delay timer - only regen when out of combat

@@ -223,16 +223,16 @@ GameObject:
   - component: {fileID: 754120553905400527}
   - component: {fileID: 2737366482705217093}
   - component: {fileID: 2744207654464071693}
+  - component: {fileID: 1481754788809115855}
   - component: {fileID: 5706047046153122416}
   - component: {fileID: 8400700820253014844}
+  - component: {fileID: 8418241938434337311}
   - component: {fileID: 3422815711289434995}
-  - component: {fileID: 8432115786534501286}
-  - component: {fileID: 6643270198160408578}
   - component: {fileID: 7402101148403768252}
   - component: {fileID: 1722320851548434718}
+  - component: {fileID: 8781292322152212533}
   - component: {fileID: 6559390991075414141}
   - component: {fileID: 5582597780173297066}
-  - component: {fileID: 1481754788809115855}
   m_Layer: 7
   m_Name: Player_Root
   m_TagString: Player
@@ -320,10 +320,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c75462de12a77b844a9237f7fb87dd8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthComponent: {fileID: 7402101148403768252}
+  playerHealthComponent: {fileID: 7402101148403768252}
+  playerAnimator: {fileID: 0}
   maxHealth: 10
   lowHealth: 3
-  currentHealth: 0
 --- !u!114 &1217658194101100017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,6 +479,30 @@ MonoBehaviour:
   grapplePoint: {x: 0, y: 0, z: 0}
   grapplingCoolDown: 1
   GrappleAnchor: {fileID: 0}
+--- !u!114 &1481754788809115855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5362281485848141616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fddcecda0da73e44880ef3cab41bc05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewThreshold: 0.92
+  anchorPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _camera: {fileID: 0}
+  grappleMaxDist: 20
+  bestAnchor: {fileID: 0}
 --- !u!114 &5706047046153122416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,6 +534,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2280ca9627c4a4b439c23ef730b6bd6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8418241938434337311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5362281485848141616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36b4dd06c0dedc74c8db4fecad1eed61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 7402101148403768252}
+  rb: {fileID: 13888070988371887}
+  playerModel: {fileID: 965589878671572553}
+  enableRegen: 1
+  regenDelay: 3
+  regenPerSecond: 0.5
+  respawnDelay: 1
+  respawnInvulnerability: 1.5
 --- !u!114 &3422815711289434995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,49 +566,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 757d90cd0ee3f454d8dd8b559252610e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8432115786534501286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5362281485848141616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af11fd4e6598af44e8a87661088a0b30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: {fileID: 7402101148403768252}
-  animator: {fileID: 0}
-  playerModel: {fileID: 965589878671572553}
-  scriptsToDisableOnDeath:
-  - {fileID: 5582597780173297066}
-  - {fileID: 1217658194101100017}
-  enableRegen: 1
-  regenDelay: 3
-  regenPerSecond: 1
-  disableInputOnDeath: 1
-  respawnDelay: 2
-  respawnPoint: {fileID: 0}
---- !u!114 &6643270198160408578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5362281485848141616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3614a712bde7bda4bb0dc358e1de64dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: {fileID: 7402101148403768252}
-  animator: {fileID: 0}
-  scriptsToDisableOnDeath: []
-  enableRegen: 1
-  regenDelay: 3
-  regenPerSecond: 0.5
-  disableInputOnDeath: 1
 --- !u!114 &7402101148403768252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -577,7 +578,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ed8bcf79dbaa24c909e52aad77b000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
 --- !u!114 &1722320851548434718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,6 +591,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+--- !u!114 &8781292322152212533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5362281485848141616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ac0faa089907d341b812b501c2e68c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6559390991075414141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,30 +645,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &1481754788809115855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5362281485848141616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fddcecda0da73e44880ef3cab41bc05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewThreshold: 0.92
-  anchorPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _camera: {fileID: 0}
-  grappleMaxDist: 20
-  bestAnchor: {fileID: 0}
 --- !u!1 &5635177817222094823
 GameObject:
   m_ObjectHideFlags: 0

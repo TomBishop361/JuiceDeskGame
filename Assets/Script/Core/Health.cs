@@ -14,6 +14,7 @@ public class Health : MonoBehaviour {
 	public event Action OnDeath;
 
 	private Animator animator;
+	private bool isInvulnerable = false;
 
 	private void Awake() {
 		// Health settings (shared between Player & Enemies)
@@ -50,13 +51,17 @@ public class Health : MonoBehaviour {
 			return;
 		}
 
+		if (isInvulnerable == true) {
+			return;
+		}
+
 		CurrentHealth = Mathf.Clamp(CurrentHealth - damageAmount, 0.0f, MaxHealth);
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
 
 		if (CurrentHealth <= 0.0f) {
 			// Player only
-			OnDeath?.Invoke(); // TODO: REMOVE THIS SINCE OnHealthChanged should handle death
+			OnDeath?.Invoke(); // TODO: REMOVE THIS ONLY IF OnHealthChanged should handle death OR KEEP AND LET Health.cs handle death instead
 
 			//// AI only
 			//if (animator != null) {
@@ -71,7 +76,7 @@ public class Health : MonoBehaviour {
 		}
 	}
 
-	public void PlayerRespawn() {
+	public void RestoreFullHealth() {
 		// Health settings (shared between Player & Enemies)
 		if (TryGetComponent(out IHealthSettings healthSettingsInterface) == false) {
 			Debug.LogError("Health requires IHealthSettings on " + gameObject.name);
@@ -83,6 +88,10 @@ public class Health : MonoBehaviour {
 
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+	}
+
+	public void SetInvulnerable(bool value) {
+		isInvulnerable = value;
 	}
 
 }

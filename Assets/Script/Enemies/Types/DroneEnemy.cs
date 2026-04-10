@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
+	[RequireComponent(typeof(Hurtbox))]
 	[RequireComponent(typeof(PooledObject))]
 	public class DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
 		// Implement IFactionOwner
@@ -131,7 +132,7 @@ namespace Game.AI.Drone {
 
 			// Restore health
 			if (healthComponent != null) {
-				healthComponent.PlayerRespawn();
+				healthComponent.RestoreFullHealth();
 				previousHealthValue = healthComponent.CurrentHealth;
 			}
 		}
@@ -641,16 +642,16 @@ namespace Game.AI.Drone {
 		private void OnEnable() {
 			if (healthComponent != null) {
 				previousHealthValue = healthComponent.CurrentHealth;
-				healthComponent.OnHealthChanged += OnHealthChanged;
+				healthComponent.OnHealthChanged += HandleHealthChanged;
 			}
 		}
 		private void OnDisable() {
 			if (healthComponent != null) {
-				healthComponent.OnHealthChanged -= OnHealthChanged;
+				healthComponent.OnHealthChanged -= HandleHealthChanged;
 			}
 		}
 
-		private void OnHealthChanged(float current, float max) {
+		private void HandleHealthChanged(float current, float max) {
 			// Death on 0 health
 			if (current <= 0) {
 				Die();

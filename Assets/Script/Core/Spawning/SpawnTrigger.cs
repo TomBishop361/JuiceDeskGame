@@ -25,7 +25,7 @@ public class SpawnTrigger : MonoBehaviour {
 		//	spawner.Spawn();
 		//}
 
-		if (spawner.CanSpawn()) {
+		if (spawner.CanSpawn() == true) {
 			spawner.SpawnBurst(this, spawnCount, delayBetweenSpawns);
 		}
 		
