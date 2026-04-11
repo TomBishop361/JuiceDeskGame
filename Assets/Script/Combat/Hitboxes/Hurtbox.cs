@@ -33,6 +33,12 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		ApplyDamage(attackData);
 		ApplyKnockback(attackData);
 
+		// TODO: REMOVE this later once we have death animations playing and pooling drones are not done immediately 
+		// Checks if the object has been disabled in the hierarchy (e.g. pooled)
+		if (gameObject.activeInHierarchy == false) {
+			return;
+		}
+
 		// Notify executors that damage has been received
 		OnAnyDamaged?.Invoke(this, attackData);
 
@@ -132,6 +138,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 
 	// TODO: REMOVE LATER -> REPLACED WITH TakeDamage()
 	// FOR NOW COPIED OVER SOME LOGIC FROM TakeDamage above
+	// This is because the DemoTarget uses this still
 	public void adjustHealth(int damage) {
 		// Ignore damaging own faction
 		//if (CanBeDamaged(attackData.AttackerFaction)) {

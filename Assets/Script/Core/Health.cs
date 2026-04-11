@@ -13,13 +13,18 @@ public class Health : MonoBehaviour {
 	public event Action<float, float> OnHealthChanged;
 	public event Action OnDeath;
 
-	[SerializeField] private Animator animator; // TEMPORARY
+	private Animator animator;
+	private bool isInvulnerable = false;
 
 	private void Awake() {
 		// Health settings (shared between Player & Enemies)
 		if (TryGetComponent(out IHealthSettings healthSettingsInterface) == false) {
 			Debug.LogError("Health requires IHealthSettings on " + gameObject.name);
 			return;
+		}
+		// Get Animator for AI (to trigger death animation)
+		if (TryGetComponent(out Animator anim) == true) {
+			animator = anim;
 		}
 
 		MaxHealth = healthSettingsInterface.MaxHealth;
@@ -46,16 +51,24 @@ public class Health : MonoBehaviour {
 			return;
 		}
 
+		if (isInvulnerable == true) {
+			return;
+		}
+
 		CurrentHealth = Mathf.Clamp(CurrentHealth - damageAmount, 0.0f, MaxHealth);
-		Debug.Log("CURRENT HP = " + CurrentHealth);
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
 
 		if (CurrentHealth <= 0.0f) {
-			Debug.Log("APPLYING DAMAGE");
-			OnDeath?.Invoke();
-			animator.SetTrigger("Die");
-			animator.SetBool("IsFiring", false);
+			// Player only
+			OnDeath?.Invoke(); // TODO: REMOVE THIS ONLY IF OnHealthChanged should handle death OR KEEP AND LET Health.cs handle death instead
+
+			//// AI only
+			//if (animator != null) {
+			//	animator.SetTrigger("Die");
+			//}
+
+			//animator.SetBool("IsFiring", false);
 			//if (gameObject.TryGetComponent(out ShieldEnemy shield) != null) {
 			//	shield.StopMinigun();
 			//}
@@ -63,7 +76,7 @@ public class Health : MonoBehaviour {
 		}
 	}
 
-	public void PlayerRespawn() {
+	public void RestoreFullHealth() {
 		// Health settings (shared between Player & Enemies)
 		if (TryGetComponent(out IHealthSettings healthSettingsInterface) == false) {
 			Debug.LogError("Health requires IHealthSettings on " + gameObject.name);
@@ -75,6 +88,10 @@ public class Health : MonoBehaviour {
 
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+	}
+
+	public void SetInvulnerable(bool value) {
+		isInvulnerable = value;
 	}
 
 }

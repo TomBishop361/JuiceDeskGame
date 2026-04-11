@@ -10,39 +10,47 @@ public class PlayerSettings : MonoBehaviour, IFactionOwner, IHealthSettings {
 	public float LowHealthThreshold => lowHealth;
 
 	[Header("References")]
-	[SerializeField] private Health healthComponent;
+	[SerializeField] private Health playerHealthComponent;
+	[SerializeField] private Animator playerAnimator;
 
 	[Header("Stats")]
+	[Tooltip("Maximum health for the player")]
 	[SerializeField] private int maxHealth = 10;
+	[Tooltip("Low health threshold for the player (once reached, low health indicator is activated)")]
 	[SerializeField] private int lowHealth = 3;
 
+	public Animator PlayerAnimator => playerAnimator;
+
 	// Runtime params
-	[Header("DEBUG: Runtime params")]
-	[SerializeField] private float currentHealth;
+	private float currentHealth;
 	private float previousHealthValue = 0.0f;
 	private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 
 	private void Awake() {
 		// Sync health
 		currentHealth = maxHealth;
+
+		if (playerAnimator == null) {
+			playerAnimator = GetComponent<Animator>();
+		}
 	}
 
 	private void Update() {
 		// Update health for debugging purposes
-		currentHealth = healthComponent.CurrentHealth;
+		currentHealth = playerHealthComponent.CurrentHealth;
 	}
 
 	// - Event & Callback handlers -
 
 	private void OnEnable() {
-		if (healthComponent != null) {
-			previousHealthValue = healthComponent.CurrentHealth;
-			healthComponent.OnHealthChanged += OnHealthChanged;
+		if (playerHealthComponent != null) {
+			previousHealthValue = playerHealthComponent.CurrentHealth;
+			playerHealthComponent.OnHealthChanged += OnHealthChanged;
 		}
 	}
 	private void OnDisable() {
-		if (healthComponent != null) {
-			healthComponent.OnHealthChanged -= OnHealthChanged;
+		if (playerHealthComponent != null) {
+			playerHealthComponent.OnHealthChanged -= OnHealthChanged;
 		}
 	}
 

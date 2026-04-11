@@ -31,8 +31,8 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			// If already in punch range, allow combat to take over
-			if (shieldEnemy.InPunchRange == true || shieldEnemy.InSlamRange == true) {
+			// If already in slam range, allow combat to take over
+			if (shieldEnemy.InSlamRange == true) {
 				return Status.Success;
 			}
 
@@ -49,7 +49,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			if (shieldEnemy.InPunchRange == true || shieldEnemy.InSlamRange == true) {
+			if (shieldEnemy.InSlamRange == true) {
 				return Status.Success;
 			}
 
@@ -59,6 +59,7 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
+	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
 	[NodeDescription(name: "Shield: Punch Attack", description: "Triggers punch attack and waits until finished.", story: "Shield enemy punches", category: "Enemy/Shield/Actions/Combat", id: "shield.action.combat.punch")]
 	public sealed class ShieldPunchAttack : Action {
 		private ShieldEnemy shieldEnemy;
@@ -70,7 +71,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			bool hasStartedPunchAttack = shieldEnemy.TryStartPunch();
+			bool hasStartedPunchAttack = false/*shieldEnemy.TryStartPunch()*/;
 
 			return hasStartedPunchAttack ? Status.Running : Status.Failure;
 		}
@@ -172,7 +173,7 @@ namespace Game.AI.Behavior.Shield {
 
 		protected override void OnEnd() {
 			if (shieldEnemy != null) {
-				shieldEnemy.StopMinigun();
+				shieldEnemy.StopMinigunFiring();
 			}
 		}
 	}
@@ -192,6 +193,24 @@ namespace Game.AI.Behavior.Shield {
 
 			shieldEnemy.SetShieldRaised(Raised);
 
+			return Status.Success;
+		}
+	}
+
+	[NodeDescription(name: "Shield: Enter Exposed State", description: "Makes the shield enemy vulnerable for a duration.", story: "Shield enemy becomes exposed for [Duration] seconds", category: "Enemy/Shield/Actions/Defense", id: "shield.action.defense.enter_exposed_state")]
+	public sealed class ShieldEnterExposedState : Action {
+		[SerializeReference] public BlackboardVariable<float> Duration;
+
+		private ShieldEnemy shieldEnemy;
+
+		protected override Status OnStart() {
+			shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
+			if (shieldEnemy == null) {
+				LogFailure("ShieldEnemy component missing.", isError: true);
+				return Status.Failure;
+			}
+
+			shieldEnemy.EnterExposedState(Duration);
 			return Status.Success;
 		}
 	}

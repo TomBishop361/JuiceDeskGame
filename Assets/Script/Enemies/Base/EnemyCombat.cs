@@ -9,6 +9,6 @@ public class EnemyCombat : MonoBehaviour {
 
 	public void TrackDeath() {
 		tracker.EnemyDied();
-		Destroy(gameObject);
+		//Destroy(gameObject);
 	}
 }
