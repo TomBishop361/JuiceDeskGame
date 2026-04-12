@@ -5,9 +5,9 @@ public class SpawnTrigger : MonoBehaviour {
 	[SerializeField] private string targetTag = "Player";
 	[SerializeField] private bool triggerOnce = true;
 
-	[Header("Burst Spawn")]
-	[SerializeField] private int spawnCount = 3;
-	[SerializeField] private float delayBetweenSpawns = 0.5f;
+	//[Header("Burst Spawn")]
+	//[SerializeField] private int spawnCount = 3;
+	//[SerializeField] private float delayBetweenSpawns = 0.5f;
 
 	private bool hasTriggered;
 
@@ -25,9 +25,15 @@ public class SpawnTrigger : MonoBehaviour {
 		//	spawner.Spawn();
 		//}
 
-		if (spawner.CanSpawn() == true) {
-			spawner.SpawnBurst(this, spawnCount, delayBetweenSpawns);
+		if (spawner.IsWaveRunning) {
+			return;
 		}
+			
+		spawner.StartWaveSequence();
+
+		//if (spawner.CanSpawn() == true) {
+		//	spawner.SpawnBurst(this, spawnCount, delayBetweenSpawns);
+		//}
 		
 		hasTriggered = true;
 
@@ -40,6 +46,13 @@ public class SpawnTrigger : MonoBehaviour {
 	// Visualise the spawn trigger gizmo in scene view
 	private void OnDrawGizmos() {
 		Gizmos.color = Color.green;
-		Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider>().size);
+
+		BoxCollider box = GetComponent<BoxCollider>();
+		if (box != null) {
+			Gizmos.matrix = transform.localToWorldMatrix;
+			Gizmos.DrawWireCube(box.center, box.size);
+		}
+
+		//Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider>().size);
 	}
 }

@@ -9,7 +9,8 @@ using Unity.VisualScripting;
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
 	[RequireComponent(typeof(Hurtbox))]
-	public class ShieldEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
+	[RequireComponent(typeof(PooledObject))]
+	public class ShieldEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 		// Implement IHealthSettings
@@ -209,6 +210,78 @@ namespace Game.AI.Shield {
 		private Material minigunMaterial;
 		[SerializeField] private string emissionColorProperty = "_EmissionColor";
 
+		// Misc
+		private PooledObject pooledObject;
+
+		// Implement IPoolSpawnHandler
+		public void OnSpawned() {
+			ResetRuntimeToBaseValues();
+			
+		}
+
+		public void OnDespawned() {
+			// Cleanup temporary effects, target refs etc.
+			//HasTarget = false;
+			//HasLineOfSight = false;
+		}
+
+		private void ResetRuntimeToBaseValues() {
+			// Reset state
+			IsDead = false;
+			IsFiringMinigun = false;
+			IsExposed = false;
+			IsAttacking = false;
+			//HasTarget = false;
+			//HasLineOfSight = false;
+			ShieldRaised = false;
+			GrappleWindowOpen = false;
+			DistanceToTarget = Mathf.Infinity;
+
+			// Restore nav mesh
+			if (navMeshAgent != null) {
+				navMeshAgent.enabled = true;
+
+				// Force agent onto NavMesh at current transform position
+				if (navMeshAgent.isOnNavMesh == false) {
+					navMeshAgent.Warp(transform.position);
+				}
+
+				navMeshAgent.isStopped = false;
+				navMeshAgent.ResetPath();
+			}
+
+			// Restore health
+			if (healthComponent != null) {
+				healthComponent.RestoreFullHealth();
+				previousHealthValue = healthComponent.CurrentHealth;
+			}
+
+			// Restore cooldowns/timers
+			nextPunchTime = -Mathf.Infinity;
+			nextSlamTime = -Mathf.Infinity;
+			nextMinigunShotTime = -Mathf.Infinity;
+			nextBlockReactTime = -Mathf.Infinity;
+			stunEndTime = -Mathf.Infinity;
+			exposedEndTime = -Mathf.Infinity;
+			minigunFireStartTime = -Mathf.Infinity;
+			attackEndTime = -Mathf.Infinity;
+			lastSeenTime = -Mathf.Infinity;
+			lastDamageTime = -Mathf.Infinity;
+
+			// Restore animation
+			if (animator != null) {
+				animator.ResetTrigger(AnimPunch);
+				animator.ResetTrigger(AnimSlam);
+				animator.SetBool(AnimFire, false);
+				animator.SetBool(AnimShieldRaised, false);
+				animator.ResetTrigger(AnimBlockReact);
+				animator.SetBool(AnimExposed, false);
+				animator.ResetTrigger(AnimHit);
+				animator.ResetTrigger(AnimDie);
+				//animator.Play(0, 0, 0f); // optional - depends on controller setup
+			}
+		}
+
 		// Reset to default values
 		private void Reset() {
 			navMeshAgent = GetComponent<NavMeshAgent>();
@@ -216,25 +289,35 @@ namespace Game.AI.Shield {
 		}
 
 		private void Awake() {
-			// Sync health
-			currentHealth = maxHealth;
+			CacheComponents();
+			InitialRuntimeSetup();
 
+			pooledObject = GetComponent<PooledObject>();
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [START] -
+
+		private void CacheComponents() {
 			if (navMeshAgent == null) {
 				navMeshAgent = GetComponent<NavMeshAgent>();
 			}
-
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
-
 			if (losSensor == null) {
 				losSensor = GetComponent<LOSSensor>();
 			}
+		}
 
+		private void InitialRuntimeSetup() {
+			// Sync health
+			//currentHealth = maxHealth;
 			if (minigunRenderer != null) {
 				minigunMaterial = minigunRenderer.material;
 			}
 		}
+
+		// - Initialisation Functions (Called inside Awake()) [END] -
 
 		private void Update() {
 			if (IsDead == true) {
@@ -242,12 +325,12 @@ namespace Game.AI.Shield {
 			}
 
 			// LOS checker
-			UpdateTargetAwareness();
+			//UpdateTargetAwareness();
 
-			//// PROTOTYPE: Auto acquire target
-			//if (target == null) {
-			//	TryFindPlayer();
-			//}
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
 
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
@@ -295,33 +378,33 @@ namespace Game.AI.Shield {
 			}
 		}
 
-		// Update drone enemy awareness state (uses LOS to determine this)
-		private void UpdateTargetAwareness() {
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+		//// Update drone enemy awareness state (uses LOS to determine this)
+		//private void UpdateTargetAwareness() {
+		//	// PROTOTYPE: Auto acquire target
+		//	if (target == null) {
+		//		TryFindPlayer();
+		//	}
 
-			if (target == null) {
-				HasLineOfSight = false;
-				HasTarget = false;
-				DistanceToTarget = Mathf.Infinity;
-				return;
-			}
+		//	if (target == null) {
+		//		HasLineOfSight = false;
+		//		HasTarget = false;
+		//		DistanceToTarget = Mathf.Infinity;
+		//		return;
+		//	}
 
-			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+		//	DistanceToTarget = Vector3.Distance(transform.position, target.position);
 
-			if (losSensor != null && losSensor.HasLOS()) {
-				HasLineOfSight = true;
-				HasTarget = true;
-				lastSeenTime = Time.time;
-			}
-			else {
-				// fallback if sensor missing
-				HasLineOfSight = false;
-				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
-			}
-		}
+		//	if (losSensor != null && losSensor.HasLOS()) {
+		//		HasLineOfSight = true;
+		//		HasTarget = true;
+		//		lastSeenTime = Time.time;
+		//	}
+		//	else {
+		//		// fallback if sensor missing
+		//		HasLineOfSight = false;
+		//		HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+		//	}
+		//}
 
 		// Updates the current target position into a time-based history buffer
 		// This allows the minigun to aim at a delayed position instead of the live target
@@ -465,6 +548,11 @@ namespace Game.AI.Shield {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
+				HasTarget = true;
+			}
+			else {
+				target = null;
+				HasTarget = false;
 			}
 		}
 
@@ -486,10 +574,13 @@ namespace Game.AI.Shield {
 			ExitExposedState();
 
 			// Disable nav mesh agent upon death
-			if (navMeshAgent != null) {
+			if (navMeshAgent != null && navMeshAgent.isOnNavMesh) {
 				navMeshAgent.isStopped = true;
 				navMeshAgent.enabled = false;
 			}
+
+			// TODO: UNCOMMENT THIS OUT AGAIN WHEN YOU WANT TO CHANGE LEVELS WHEN ALL ENEMIES ARE DEAD OR WE COULD REMOVE THIS AND HAVE A DOOR TO TRAVEL TO NEXT LEVEL
+			//TrackDeath();
 
 			// Play death animation for shield enemy
 			if (animator != null) {
@@ -497,10 +588,11 @@ namespace Game.AI.Shield {
 				animator.SetTrigger(AnimDie);
 			}
 
-			TrackDeath();
-
-			// NOTE: This is temporary
-			//Destroy(gameObject);
+			// NOTE: Immediate despawn - no visible death animation
+			// TODO: Use AnimEvent_DeathFinished and remove this
+			if (pooledObject != null && gameObject.activeInHierarchy) {
+				pooledObject.ReturnToPool();
+			}
 		}
 
 		public void RecoverTick() {
@@ -518,7 +610,7 @@ namespace Game.AI.Shield {
 		}
 
 		public void StopMove() {
-			if (navMeshAgent != null) {
+			if (navMeshAgent != null && navMeshAgent.isOnNavMesh) {
 				navMeshAgent.isStopped = true;
 			}
 		}
@@ -545,8 +637,10 @@ namespace Game.AI.Shield {
 				return;
 			}
 
-			navMeshAgent.isStopped = false;
-			navMeshAgent.SetDestination(target.position);
+			if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && navMeshAgent.isOnNavMesh) {
+				navMeshAgent.isStopped = false;
+				navMeshAgent.SetDestination(target.position);
+			}
 
 			// Continuously adjust direction when advanceing towards target
 			FaceTarget(target.position);
@@ -670,9 +764,9 @@ namespace Game.AI.Shield {
 			if (InFireRange == false) {
 				return false;
 			}
-			if (HasLineOfSight == false) {
-				return false;
-			}
+			//if (HasLineOfSight == false) {
+			//	return false;
+			//}
 			//if (HasMuzzleLOS == false) {
 			//	return false;
 			//}
@@ -911,19 +1005,19 @@ namespace Game.AI.Shield {
 			}
 
 			// Decrement health by 'x' amount
-			currentHealth -= amount;
+			//currentHealth -= amount;
 
-			// Death on 0 health
-			if (currentHealth <= 0) {
-				Die();
-				return;
-			}
+			//// Death on 0 health
+			//if (currentHealth <= 0) {
+			//	Die();
+			//	return;
+			//}
 
-			Stun(hitStunDuration);
+			//Stun(hitStunDuration);
 
-			if (animator != null) {
-				animator.SetTrigger(AnimHit);
-			}
+			//if (animator != null) {
+			//	animator.SetTrigger(AnimHit);
+			//}
 		}
 
 		// Prevent/Interrupt enemy from attacking once they take damage (for a 'short' time)
@@ -1129,6 +1223,17 @@ namespace Game.AI.Shield {
 		}
 
 		private void HandleHealthChanged(float current, float max) {
+			// Death on 0 health
+			if (current <= 0) {
+				Die();
+				return;
+			}
+
+			// Trigger hit animation
+			if (animator != null) {
+				animator.SetTrigger(AnimHit);
+			}
+
 			// Damage only if health has gone down
 			if (current < previousHealthValue) {
 				// Reset regen delay timer - only regen when out of combat

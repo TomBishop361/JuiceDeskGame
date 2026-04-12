@@ -26,7 +26,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		
 		// Ignore damaging own faction
 		if (CanBeDamaged(attackData.AttackerFaction) == false) {
-			Debug.LogError("Hurtbox: " + gameObject.name + "Cannot be damaged by " + attackData.Attacker.name);
+			Debug.LogWarning("Hurtbox: " + gameObject.name + "Cannot be damaged by " + attackData.Attacker.name);
 			return;
 		}
 
