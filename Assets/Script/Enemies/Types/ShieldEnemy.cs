@@ -581,7 +581,7 @@ namespace Game.AI.Shield {
 			}
 
 			// TODO: UNCOMMENT THIS OUT AGAIN WHEN YOU WANT TO CHANGE LEVELS WHEN ALL ENEMIES ARE DEAD OR WE COULD REMOVE THIS AND HAVE A DOOR TO TRAVEL TO NEXT LEVEL
-			//TrackDeath();
+			TrackDeath();
 
 			// Play death animation for shield enemy
 			if (animator != null) {
