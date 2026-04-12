@@ -138,14 +138,14 @@ public class GenericSpawner : MonoBehaviour {
 		return item;
 	}
 
-	// Spawns a burst of a specific prefab over time
-	public Coroutine SpawnBurst(MonoBehaviour runner, PooledObject prefab, int count, float delayBetweenSpawns) {
-		if (runner == null) {
-			return null;
-		}
+	//// Spawns a burst of a specific prefab over time
+	//public Coroutine SpawnBurst(MonoBehaviour runner, PooledObject prefab, int count, float delayBetweenSpawns) {
+	//	if (runner == null) {
+	//		return null;
+	//	}
 			
-		return runner.StartCoroutine(SpawnBurstRoutine(prefab, count, delayBetweenSpawns));
-	}
+	//	return runner.StartCoroutine(SpawnBurstRoutine(prefab, count, delayBetweenSpawns));
+	//}
 
 	// Returns TRUE if at least one more object can be spawned
 	public bool CanSpawn() {
@@ -294,23 +294,23 @@ public class GenericSpawner : MonoBehaviour {
 		return matches[Random.Range(0, matches.Count)];
 	}
 
-	// Spawns gradually based on delayBetweenSpawns
-	private IEnumerator SpawnBurstRoutine(PooledObject prefab, int count, float delayBetweenSpawns) {
-		if (prefab == null || count <= 0) {
-			yield break;
-		}
+	//// Spawns gradually based on delayBetweenSpawns
+	//private IEnumerator SpawnBurstRoutine(PooledObject prefab, int count, float delayBetweenSpawns) {
+	//	if (prefab == null || count <= 0) {
+	//		yield break;
+	//	}
 
-		float delay = Mathf.Max(0.0f, delayBetweenSpawns);
-		WaitForSeconds wait = new WaitForSeconds(delay);
+	//	float delay = Mathf.Max(0.0f, delayBetweenSpawns);
+	//	WaitForSeconds wait = new WaitForSeconds(delay);
 
-		for (int i = 0; i < count; i++) {
-			Spawn(prefab);
+	//	for (int i = 0; i < count; i++) {
+	//		Spawn(prefab);
 
-			if (i < count - 1 && delay > 0.0f) {
-				yield return wait;
-			}
-		}
-	}
+	//		if (i < count - 1 && delay > 0.0f) {
+	//			yield return wait;
+	//		}
+	//	}
+	//}
 
 	// Simple repeated auto-spawn loop
 	private IEnumerator SpawnLoop() {
