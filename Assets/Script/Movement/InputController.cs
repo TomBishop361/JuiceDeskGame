@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Splines;
 using UnityEngine.Windows;
 
 
@@ -47,6 +49,17 @@ public class InputController : MonoBehaviour
     private Vector3 grappleTargetPos;
     [SerializeField] float AnchorLaunchAmount;
 
+    [Header("Grinding")]
+    public bool onRail;
+    bool canRailGrind = true;
+    public float railGrindTime = 1;
+    float railGrindTimer;
+
+    [SerializeField] float grindSpeed;
+    [SerializeField] float heightOffset; // playerheight/2
+    float timeForFullSpline;
+    float elapsdTime;    
+    [SerializeField] RailScript currentRailScript;
 
     [Header("Misc")]
     [Tooltip("For instant movement set to 'Infinity'")]
@@ -75,6 +88,7 @@ public class InputController : MonoBehaviour
     public bool IsJumpReady;
     public bool isOnCoolDown;
     public bool freeze;
+    public bool isRailGrinding;
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
@@ -103,6 +117,7 @@ public class InputController : MonoBehaviour
     public enum MovementState
     {
         freeze,
+        railGrinding,
         walking,
         sprinting,
         wallRunning,
@@ -165,8 +180,13 @@ public class InputController : MonoBehaviour
     private void StateHandler()
     {
         //Freeze for grapple;
-        if (freeze)
-        {            
+        if (isRailGrinding) {
+            state = MovementState.railGrinding;
+            desiredMoveSpeed = 0;
+            rb.useGravity = false;
+        }
+        else if (freeze)
+        {
             state = MovementState.freeze;
             desiredMoveSpeed = 0;
             rb.linearVelocity = Vector3.zero;
@@ -183,9 +203,9 @@ public class InputController : MonoBehaviour
             {
                 desiredMoveSpeed = slideSpeed;
             }
-            
+
             else desiredMoveSpeed = sprintSpeed;
-            
+
         }
         else if (crouching)
         {
@@ -296,7 +316,6 @@ public class InputController : MonoBehaviour
         return false;
     }
 
-
     public void AnchorLaunch()
     {
         Debug.Log("LAUNCH");
@@ -343,6 +362,7 @@ public class InputController : MonoBehaviour
 
     void HandleMove(Vector2 Direction)
     {
+        if (isRailGrinding) return;
         // 1. Calculate desired velocity based on camera
         Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
         Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
@@ -416,13 +436,12 @@ public class InputController : MonoBehaviour
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         
-            Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
         
         rb.useGravity = !OnSlope();
     }
 
-    
     void HandleLook(Vector2 Direction)
     {
         InputLagTimer += Time.deltaTime;
@@ -445,8 +464,13 @@ public class InputController : MonoBehaviour
 
     private void Jump()
     {
-        if (jump && isGrounded && IsJumpReady)
+        
+        if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
         {
+            Debug.Log("");
+            if (isRailGrinding) throwOffRail();
+           
+
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();
@@ -501,9 +525,17 @@ public class InputController : MonoBehaviour
         HandleMove(MoveDirection);        
         StateHandler();
         HandleCrouch();
-        
-    }
+        movePlayerAlongRail();
+        if(railGrindTimer > 0)
+        {
+            railGrindTimer -= Time.deltaTime;
+            if(railGrindTimer <= 0)
+            {
+                canRailGrind = true;
+            }
+        }
 
+    }
 
     private void OnDisable()
     {
@@ -514,15 +546,11 @@ public class InputController : MonoBehaviour
         InputManager.OnCrouchReceived -= CrouchPressed;
     }
 
-  
-
     public void ResetRestrictions()
     {
         activeGrapple = false;
         rb.linearDamping = 0.75f;
     }
-
-
 
 private void OnCollisionEnter(Collision collision)
 {
@@ -536,7 +564,97 @@ private void OnCollisionEnter(Collision collision)
         
         if(TryGetComponent<Grapple>(out var g)) g.StopGrapple();
     }
-}
+    if (collision.gameObject.tag == "Rail" && !isRailGrinding && canRailGrind)
+        {
+            isRailGrinding = true;
+            onRail = true;
+
+            currentRailScript = collision.gameObject.GetComponent<RailScript>();
+            CalculateAndSetRailPosition();
+
+        }
+    }
+
+
+    private void movePlayerAlongRail()
+    {
+        if (!isRailGrinding || currentRailScript == null || !onRail) return;
+
+        float progess = elapsdTime / timeForFullSpline;
+        if (progess < 0 || progess > 1)
+        {
+            throwOffRail();
+            return;
+        }
+
+        // 1. Calculate current and next positions exactly like your smooth version
+        float nextTime;
+        if (currentRailScript.normalDir)
+            nextTime = (elapsdTime + Time.fixedDeltaTime);
+        else
+            nextTime = (elapsdTime - Time.fixedDeltaTime);
+
+        float3 pos, tan, up;
+        float3 nextPosFloat, nextTan, nextUp;
+        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, progess, out pos, out tan, out up);
+        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, nextTime / timeForFullSpline, out nextPosFloat, out nextTan, out nextUp);
+
+        Vector3 worldPos = currentRailScript.LocalToWorldConversion(pos);
+        Vector3 nextPos = currentRailScript.LocalToWorldConversion(nextPosFloat);
+        Vector3 worldUp = currentRailScript.transform.TransformDirection(up);
+
+        //The Target: where the player SHOULD be
+        Vector3 targetSnapPos = worldPos + (worldUp * heightOffset);
+
+        //correct the velocity        
+        Vector3 correctionDir = (targetSnapPos - transform.position);
+
+        //keep smooth forward velocity
+        Vector3 forwardVel = (nextPos - worldPos).normalized * grindSpeed;
+
+        //add the correction but multiply it to make it "snappy" without jitter        
+        rb.linearVelocity = forwardVel + (correctionDir * 0.75f);
+
+        //Rotation
+        Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+
+        //Update Time
+        if (currentRailScript.normalDir)
+            elapsdTime += Time.fixedDeltaTime;
+        else
+            elapsdTime -= Time.fixedDeltaTime;
+    }
+
+    private void CalculateAndSetRailPosition()
+    {
+        timeForFullSpline = currentRailScript.totalSplineLength / grindSpeed;
+        Vector3 splinePoint;
+        float normalisedTime = currentRailScript.calclulateTargetRailPoint(transform.position, out splinePoint);
+        elapsdTime = timeForFullSpline * normalisedTime;
+        float3 pos, forward, up;
+        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, normalisedTime, out pos, out forward, out up);
+        currentRailScript.CalculateDirection(forward, transform.forward);
+        transform.position = splinePoint + (transform.up * heightOffset);
+    }
+
+    //MoveToInputController?
+    void throwOffRail()
+    {
+        isRailGrinding = false;
+        onRail = false;
+        rb.useGravity = true;
+        isGrounded = true;
+        currentRailScript = null;
+        transform.position += transform.forward * 1;
+        canRailGrind= false;
+        railGrindTimer = railGrindTime;
+        
+    }
+
+
 
 #if UNITY_EDITOR
 

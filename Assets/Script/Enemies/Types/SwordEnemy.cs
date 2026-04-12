@@ -6,6 +6,7 @@ using UnityEngine.InputSystem; // IEnemyAgent namespace
 
 namespace Game.AI.Sword {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
+	[RequireComponent(typeof(Hurtbox))]
 	public class SwordEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
@@ -67,7 +68,7 @@ namespace Game.AI.Sword {
 		[Header("Lunge Physics (Method)")]
 		[SerializeField] private float lungeForce = 30.0f; // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
 		[SerializeField] private float lungeWindupTime = 0.20f; // telegraphs lunge attack - so player can react (match windup part of lunge anim clip)
-		[SerializeField] private float lungeLeadTime = 0.15f; // good ranges: 0.10–0.18
+		[SerializeField] private float lungeLeadTime = 0.15f; // good ranges: 0.10–0.18 - predicts player position ahead of time
 		[SerializeField] private float lungeMaxLaunchAngle = 45.0f; // degrees (good range: 0.35–0.55) // facing direction angle
 		[SerializeField] private float lungeDuration = 0.22f; // good ranges: 0.18-0.30 (match active part of lunge anim clip)
 		[SerializeField] private float lungeRecoveryTime = 0.4f; // (match downtime part of lunge anim clip)
@@ -524,7 +525,12 @@ namespace Game.AI.Sword {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
-			}		
+				HasTarget = true;
+			}
+			else {
+				target = null;
+				HasTarget = false;
+			}
 		}
 
 		// - Implement IEnemyAgent Methods [START] -
@@ -788,16 +794,26 @@ namespace Game.AI.Sword {
 		private void OnEnable() {
 			if (healthComponent != null) {
 				previousHealthValue = healthComponent.CurrentHealth;
-				healthComponent.OnHealthChanged += OnHealthChanged;
+				healthComponent.OnHealthChanged += HandleHealthChanged;
 			}
 		}
 		private void OnDisable() {
 			if (healthComponent != null) {
-				healthComponent.OnHealthChanged -= OnHealthChanged;
+				healthComponent.OnHealthChanged -= HandleHealthChanged;
 			}
 		}
 
-		private void OnHealthChanged(float current, float max) {
+		private void HandleHealthChanged(float current, float max) {
+			// Death on 0 health
+			if (current <= 0) {
+				Die();
+				return;
+			}
+
+			// Trigger hit animation
+			if (animator != null) {
+				animator.SetTrigger(AnimHit);
+			}
 			// Damage only if health has gone down
 			if (current < previousHealthValue) {
 				// Reset regen delay timer - only regen when out of combat

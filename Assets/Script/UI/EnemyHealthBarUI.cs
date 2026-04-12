@@ -37,17 +37,17 @@ public class EnemyHealthBarUI : MonoBehaviour {
 		healthSlider.interactable = false;
 
 		health.OnHealthChanged += UpdateHealthBar;
-		health.OnDeath += HideHealthBar;
+		health.OnDeath += ResetHealthBar; 
 	}
 	private void Start() {
+		ResetRuntimeToBaseValues();
+	}
+
+	private void ResetRuntimeToBaseValues() {
 		float maxHealth = health.MaxHealth;
 		float currentHealth = health.CurrentHealth;
 		BuildSegments((int)maxHealth);
 		UpdateHealthBar(currentHealth, maxHealth);
-
-		//currentHealth = maxHealth;// new
-		//healthSlider.maxValue = health.MaxHealth; // new
-		//healthSlider.value = health.CurrentHealth; // new
 	}
 
 	private void LateUpdate() {
@@ -105,7 +105,7 @@ public class EnemyHealthBarUI : MonoBehaviour {
 		}
 	}
 
-	private void HideHealthBar() {
-		gameObject.SetActive(false);
+	private void ResetHealthBar() {
+		ResetRuntimeToBaseValues();
 	}
 }

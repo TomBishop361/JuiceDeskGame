@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 7161593470570398074}
   - component: {fileID: 7513839780302595257}
   - component: {fileID: 2810503398047038648}
+  - component: {fileID: 1471610687534739882}
   - component: {fileID: 8371648096448308422}
   - component: {fileID: 2130006811022247965}
   - component: {fileID: 5188941369594005820}
@@ -150,7 +151,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1.25
   m_Height: 1.32
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -202,7 +203,7 @@ MonoBehaviour:
   knockdownDuration: 1.2
   fireLockTime: 0.2
   targetMemoryDuration: 3
---- !u!114 &8371648096448308422
+--- !u!114 &1471610687534739882
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -210,6 +211,19 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136600960583451685}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnCategory: 1
+--- !u!114 &8371648096448308422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136600960583451685}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bc985d2a972abc4ab910068296bdde5, type: 3}
   m_Name: 
@@ -227,7 +241,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136600960583451685}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d52986baa5dfb0a4d941a02ad9bb96db, type: 3}
   m_Name: 
@@ -247,7 +261,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ed8bcf79dbaa24c909e52aad77b000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 9042224668430253850}
 --- !u!114 &1260227270257372180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -499,7 +512,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1
+  m_Radius: 1.4
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1829322590977388498
 GameObject:
@@ -1358,13 +1371,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: HealthBar
       objectReference: {fileID: 0}
+    - target: {fileID: 1809188643361742138, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2045554695440734199, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: health
       value: 
       objectReference: {fileID: 5188941369594005820}
+    - target: {fileID: 2119413501553610204, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409389377900455977, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6365310899798308156, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1405,6 +1430,10 @@ PrefabInstance:
     - target: {fileID: 6365310899798308156, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7623899183179498142, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1487,6 +1516,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4e58018c44ddb4a9480d88766c94772f, type: 3}
       propertyPath: m_Name
       value: Drone3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4e58018c44ddb4a9480d88766c94772f, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
