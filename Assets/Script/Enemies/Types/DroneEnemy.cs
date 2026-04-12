@@ -81,8 +81,8 @@ namespace Game.AI.Drone {
 
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; } // shared 'IsStunned' node for drone enemy uses 'IsKnockedDown'
-		//public bool HasTarget => target != null;
-		public bool HasTarget { get; private set; }
+		public bool HasTarget => target != null;
+		//public bool HasTarget { get; private set; }
 		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
@@ -139,7 +139,7 @@ namespace Game.AI.Drone {
 
 		public void OnDespawned() {
 			// Cleanup temporary effects, target refs etc.
-			HasTarget = false;
+			//HasTarget = false;
 			HasLineOfSight = false;
 		}
 
@@ -149,7 +149,7 @@ namespace Game.AI.Drone {
 			IsDead = false;
 			IsKnockedDown = false;
 			IsAttacking = false;
-			HasTarget = false;
+			//HasTarget = false;
 			HasLineOfSight = false;
 			DistanceToTarget = Mathf.Infinity;
 
@@ -203,12 +203,12 @@ namespace Game.AI.Drone {
 			}
 
 			// LOS checker
-			UpdateTargetAwareness();
+			//UpdateTargetAwareness();
 
-			//// PROTOTYPE: Auto acquire target
-			//if (target == null) {
-			//	TryFindPlayer();
-			//}
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
 
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
@@ -244,33 +244,33 @@ namespace Game.AI.Drone {
 			}
 		}
 
-		// Update drone enemy awareness state (uses LOS to determine this)
-		private void UpdateTargetAwareness() {
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+		//// Update drone enemy awareness state (uses LOS to determine this)
+		//private void UpdateTargetAwareness() {
+		//	// PROTOTYPE: Auto acquire target
+		//	if (target == null) {
+		//		TryFindPlayer();
+		//	}
 
-			if (target == null) {
-				HasLineOfSight = false;
-				HasTarget = false;
-				DistanceToTarget = Mathf.Infinity;
-				return;
-			}
+		//	if (target == null) {
+		//		HasLineOfSight = false;
+		//		HasTarget = false;
+		//		DistanceToTarget = Mathf.Infinity;
+		//		return;
+		//	}
 
-			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+		//	DistanceToTarget = Vector3.Distance(transform.position, target.position);
 
-			if (losSensor != null && losSensor.HasLOS()) {
-				HasLineOfSight = true;
-				HasTarget = true;
-				lastSeenTime = Time.time;
-			}
-			else {
-				// fallback if sensor missing
-				HasLineOfSight = false;
-				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
-			}
-		}
+		//	if (losSensor != null && losSensor.HasLOS()) {
+		//		HasLineOfSight = true;
+		//		HasTarget = true;
+		//		lastSeenTime = Time.time;
+		//	}
+		//	else {
+		//		// fallback if sensor missing
+		//		HasLineOfSight = false;
+		//		HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+		//	}
+		//}
 
 		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
@@ -496,9 +496,9 @@ namespace Game.AI.Drone {
 			if (HasTarget == false) {
 				return false;
 			}
-			if (HasLineOfSight == false) {
-				return false;
-			}
+			//if (HasLineOfSight == false) {
+			//	return false;
+			//}
 			if (InFireRange == false) {
 				return false;
 			}
