@@ -291,8 +291,6 @@ namespace Game.AI.Shield {
 		private void Awake() {
 			CacheComponents();
 			InitialRuntimeSetup();
-
-			pooledObject = GetComponent<PooledObject>();
 		}
 
 		// - Initialisation Functions (Called inside Awake()) [START] -
@@ -312,9 +310,12 @@ namespace Game.AI.Shield {
 		private void InitialRuntimeSetup() {
 			// Sync health
 			//currentHealth = maxHealth;
+
 			if (minigunRenderer != null) {
 				minigunMaterial = minigunRenderer.material;
 			}
+
+			pooledObject = GetComponent<PooledObject>();
 		}
 
 		// - Initialisation Functions (Called inside Awake()) [END] -
@@ -580,7 +581,7 @@ namespace Game.AI.Shield {
 			}
 
 			// TODO: UNCOMMENT THIS OUT AGAIN WHEN YOU WANT TO CHANGE LEVELS WHEN ALL ENEMIES ARE DEAD OR WE COULD REMOVE THIS AND HAVE A DOOR TO TRAVEL TO NEXT LEVEL
-			TrackDeath();
+			//TrackDeath();
 
 			// Play death animation for shield enemy
 			if (animator != null) {

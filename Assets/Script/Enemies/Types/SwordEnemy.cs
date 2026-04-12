@@ -7,7 +7,8 @@ using UnityEngine.InputSystem; // IEnemyAgent namespace
 namespace Game.AI.Sword {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
 	[RequireComponent(typeof(Hurtbox))]
-	public class SwordEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
+	[RequireComponent(typeof(PooledObject))]
+	public class SwordEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -131,9 +132,94 @@ namespace Game.AI.Sword {
 		private bool AgentReady => navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh;
 		//[SerializeField] private AttackData attackData = new AttackData(); // configured at start of each attack via animation event (if using one melee hitbox for both swing and lunge)
 
+		// Misc
+		private PooledObject pooledObject;
+
 		// TEMP
 		private int normalLayer;
 		private int lungeLayer;
+
+		// Implement IPoolSpawnHandler
+		public void OnSpawned() {
+			ResetRuntimeToBaseValues();
+		}
+
+		public void OnDespawned() {
+			// Cleanup temporary effects, target refs etc.
+			//HasTarget = false;
+			//HasLineOfSight = false;
+		}
+
+		private void ResetRuntimeToBaseValues() {
+			// Reset core state
+			IsDead = false;
+			IsStunned = false;
+			IsAttacking = false;
+
+			// Reset targeting state
+			//target = null;
+			//HasTarget = false;
+			//HasLineOfSight = false;
+			DistanceToTarget = Mathf.Infinity;
+
+			// Reset timers
+			nextSwingTime = -Mathf.Infinity;
+			nextLungeTime = -Mathf.Infinity;
+			lungeEndTime = -Mathf.Infinity;
+			attackEndTime = -Mathf.Infinity;
+			lastSeenTime = -Mathf.Infinity;
+			lastDamageTime = -Mathf.Infinity;
+
+			// Reset Lunge / Attack Runtime
+			isLunging = false;
+			lungeInProgress = false;
+			if (lungeRoutine != null) {
+				StopCoroutine(lungeRoutine);
+				lungeRoutine = null;
+			}
+
+			// Reset Physics
+			rb.isKinematic = true;
+			rb.linearVelocity = Vector3.zero;
+
+			// Restore NavMesh
+			if (navMeshAgent != null) {
+				navMeshAgent.enabled = true;
+
+				// Force agent onto NavMesh at current transform position
+				if (navMeshAgent.isOnNavMesh == false) {
+					navMeshAgent.Warp(transform.position);
+				}
+				// Set Default values
+				navMeshAgent.speed = defaultSpeed;
+				navMeshAgent.acceleration = defaultAcceleration;
+				navMeshAgent.angularSpeed = rotationSpeed;
+
+				navMeshAgent.isStopped = false;
+				navMeshAgent.ResetPath();
+			}
+
+			// Reset layer (in case enemy dies mid-lunge)
+			SetLayerRecursively(gameObject, normalLayer);
+
+			// Reset Combat (all hitboxes)
+			meleeHitbox.Disable();
+			swingHitbox.Disable();
+
+			// Restore health
+			if (healthComponent != null) {
+				healthComponent.RestoreFullHealth();
+				previousHealthValue = healthComponent.CurrentHealth;
+			}
+
+			// Reset animation triggers
+			if (animator != null) {
+				animator.ResetTrigger(AnimSwing);
+				animator.ResetTrigger(AnimLunge);
+				animator.ResetTrigger(AnimHit);
+				animator.ResetTrigger(AnimDie);
+			}
+		}
 
 		// Helpers for ensuring that NavMesh agent functions can carry out 
 		// TODO: CREATE NAVMESHAGENT HELPER SCRIPT WITH THESE
@@ -158,19 +244,19 @@ namespace Game.AI.Sword {
 			navMeshAgent.isStopped = false;
 		}
 
-		// Reset to default values
-		private void Reset() {
-			navMeshAgent = GetComponent<NavMeshAgent>();
-			// rb = GetComponent<Rigidbody>(); // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
-			meleeHitbox = GetComponentInChildren<MeleeHitbox>(true);
-			swingHitbox = GetComponentInChildren<MeleeHitbox>(true);
-			lungeHitbox = GetComponentInChildren<MeleeHitbox>(true);
-			animator = GetComponentInChildren<Animator>();
-		}
+		//// Reset to default values
+		//private void Reset() {
+		//	navMeshAgent = GetComponent<NavMeshAgent>();
+		//	// rb = GetComponent<Rigidbody>(); // NOTE: ONLY NEED IF USING PHYSICS FOR LUNGE ATTACK
+		//	meleeHitbox = GetComponentInChildren<MeleeHitbox>(true);
+		//	swingHitbox = GetComponentInChildren<MeleeHitbox>(true);
+		//	lungeHitbox = GetComponentInChildren<MeleeHitbox>(true);
+		//	animator = GetComponentInChildren<Animator>();
+		//}
 
 		private void Awake() {
 			CacheComponents();
-			ResetRuntimeToBaseValues();
+			//ResetRuntimeToBaseValues();
 			InitialRuntimeSetup();
 
 			if (losSensor == null) {
@@ -205,20 +291,22 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		private void ResetRuntimeToBaseValues() {
-			// Set Default values
-			navMeshAgent.speed = defaultSpeed;
-			navMeshAgent.acceleration = defaultAcceleration;
-			navMeshAgent.angularSpeed = rotationSpeed;
-		}
+		//private void ResetRuntimeToBaseValues() {
+		//	// Set Default values
+		//	navMeshAgent.speed = defaultSpeed;
+		//	navMeshAgent.acceleration = defaultAcceleration;
+		//	navMeshAgent.angularSpeed = rotationSpeed;
+		//}
 
 		private void InitialRuntimeSetup() {
-			// Sync health
-			currentHealth = maxHealth;
+			//// Sync health
+			//currentHealth = maxHealth;
 
 			// Configure melee swing & lunge hit box's with data
 			swingHitbox.Initialise(swingAttackData);
 			lungeHitbox.Initialise(lungeAttackData);
+
+			pooledObject = GetComponent<PooledObject>();
 		}
 
 		// - Initialisation Functions (Called inside Awake()) [END] -
@@ -229,13 +317,13 @@ namespace Game.AI.Sword {
 			}
 
 			// LOS checker
-			UpdateTargetAwareness();
+			//UpdateTargetAwareness();
 
-			//// PROTOTYPE: Auto acquire target
-			//if (target == null) {
-			//	TryFindPlayer();
-			//}
-			
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
+
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
@@ -264,33 +352,33 @@ namespace Game.AI.Sword {
 			}		
 		}
 
-		// Update drone enemy awareness state (uses LOS to determine this)
-		private void UpdateTargetAwareness() {
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+		//// Update drone enemy awareness state (uses LOS to determine this)
+		//private void UpdateTargetAwareness() {
+		//	// PROTOTYPE: Auto acquire target
+		//	if (target == null) {
+		//		TryFindPlayer();
+		//	}
 
-			if (target == null) {
-				HasLineOfSight = false;
-				HasTarget = false;
-				DistanceToTarget = Mathf.Infinity;
-				return;
-			}
+		//	if (target == null) {
+		//		HasLineOfSight = false;
+		//		HasTarget = false;
+		//		DistanceToTarget = Mathf.Infinity;
+		//		return;
+		//	}
 
-			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+		//	DistanceToTarget = Vector3.Distance(transform.position, target.position);
 
-			if (losSensor != null && losSensor.HasLOS()) {
-				HasLineOfSight = true;
-				HasTarget = true;
-				lastSeenTime = Time.time;
-			}
-			else {
-				// fallback if sensor missing
-				HasLineOfSight = false;
-				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
-			}
-		}
+		//	if (losSensor != null && losSensor.HasLOS()) {
+		//		HasLineOfSight = true;
+		//		HasTarget = true;
+		//		lastSeenTime = Time.time;
+		//	}
+		//	else {
+		//		// fallback if sensor missing
+		//		HasLineOfSight = false;
+		//		HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+		//	}
+		//}
 
 		// Lunge Windup/Rotation Coroutine
 		private IEnumerator LungeCoroutine() {
@@ -548,9 +636,12 @@ namespace Game.AI.Sword {
 			IsStunned = false;
 			IsAttacking = false;
 
+			// TODO: UNCOMMENT THIS OUT AGAIN WHEN YOU WANT TO CHANGE LEVELS WHEN ALL ENEMIES ARE DEAD OR WE COULD REMOVE THIS AND HAVE A DOOR TO TRAVEL TO NEXT LEVEL
+			//TrackDeath();
+
 			// Disable nav mesh agent upon death
 			if (navMeshAgent != null) {
-				SafeStopAgent();
+				StopMove();
 				navMeshAgent.enabled = false;
 			}
 
@@ -559,10 +650,11 @@ namespace Game.AI.Sword {
 				animator.SetTrigger(AnimDie);
 			}
 
-			TrackDeath();
-
-			// NOTE: This is temporary
-			//Destroy(gameObject);
+			// NOTE: Immediate despawn - no visible death animation
+			// TODO: Use AnimEvent_DeathFinished and remove this
+			if (pooledObject != null && gameObject.activeInHierarchy) {
+				pooledObject.ReturnToPool();
+			}
 		}
 
 		public void RecoverTick() {
@@ -671,26 +763,26 @@ namespace Game.AI.Sword {
 
 		// - Damge / Stun -
 
-		public void TakeDamage(int amount) {
-			if (IsDead == true) {
-				return;
-			}
+		//public void TakeDamage(int amount) {
+		//	if (IsDead == true) {
+		//		return;
+		//	}
 
-			// Decrement health by 'x' amount
-			currentHealth -= amount;
+		//	// Decrement health by 'x' amount
+		//	//currentHealth -= amount;
 
-			// Death on 0 health
-			if (currentHealth <= 0) {
-				Die();
-				return;
-			}
+		//	//// Death on 0 health
+		//	//if (currentHealth <= 0) {
+		//	//	Die();
+		//	//	return;
+		//	//}
 
-			Stun(hitStunDuration);
+		//	Stun(hitStunDuration);
 
-			if (animator != null) {
-				animator.SetTrigger(AnimHit);
-			}
-		}
+		//	if (animator != null) {
+		//		animator.SetTrigger(AnimHit);
+		//	}
+		//}
 
 		// Prevent/Interrupt enemy from attacking once they take damage (for a 'short' time)
 		private void Stun(float duration) {
