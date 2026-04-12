@@ -525,7 +525,12 @@ namespace Game.AI.Sword {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
-			}		
+				HasTarget = true;
+			}
+			else {
+				target = null;
+				HasTarget = false;
+			}
 		}
 
 		// - Implement IEnemyAgent Methods [START] -
@@ -799,6 +804,16 @@ namespace Game.AI.Sword {
 		}
 
 		private void HandleHealthChanged(float current, float max) {
+			// Death on 0 health
+			if (current <= 0) {
+				Die();
+				return;
+			}
+
+			// Trigger hit animation
+			if (animator != null) {
+				animator.SetTrigger(AnimHit);
+			}
 			// Damage only if health has gone down
 			if (current < previousHealthValue) {
 				// Reset regen delay timer - only regen when out of combat

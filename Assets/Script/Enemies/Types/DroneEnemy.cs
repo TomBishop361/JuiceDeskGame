@@ -81,8 +81,8 @@ namespace Game.AI.Drone {
 
 		public bool IsDead { get; private set; }
 		public bool IsStunned { get; private set; } // shared 'IsStunned' node for drone enemy uses 'IsKnockedDown'
-		public bool HasTarget => target != null;
-		//public bool HasTarget { get; private set; }
+		//public bool HasTarget => target != null;
+		public bool HasTarget { get; private set; }
 		//public bool HasLOS { get; private set; }
 
 		public float DistanceToTarget { get; private set; }
@@ -129,28 +129,20 @@ namespace Game.AI.Drone {
 		// Implement IPoolSpawnHandler
 		public void OnSpawned() {
 			ResetRuntimeToBaseValues();
-
-			// Restore health
-			if (healthComponent != null) {
-				healthComponent.RestoreFullHealth();
-				previousHealthValue = healthComponent.CurrentHealth;
-			}
 		}
 
 		public void OnDespawned() {
 			// Cleanup temporary effects, target refs etc.
 			//HasTarget = false;
-			HasLineOfSight = false;
+			//HasLineOfSight = false;
 		}
 
 		private void ResetRuntimeToBaseValues() {
-			//currentHealth = maxHealth;
-
 			IsDead = false;
 			IsKnockedDown = false;
 			IsAttacking = false;
 			//HasTarget = false;
-			HasLineOfSight = false;
+			//HasLineOfSight = false;
 			DistanceToTarget = Mathf.Infinity;
 
 			nextFireTime = -Mathf.Infinity;
@@ -167,6 +159,12 @@ namespace Game.AI.Drone {
 				animator.ResetTrigger(AnimDie);
 				animator.SetBool(AnimKnocked, false);
 				//animator.Play(0, 0, 0f); // optional - depends on controller setup
+			}
+
+			// Restore health
+			if (healthComponent != null) {
+				healthComponent.RestoreFullHealth();
+				previousHealthValue = healthComponent.CurrentHealth;
 			}
 		}
 
@@ -277,6 +275,11 @@ namespace Game.AI.Drone {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
+				HasTarget = true;
+			}
+			else {
+				target = null;
+				HasTarget = false;
 			}
 		}
 

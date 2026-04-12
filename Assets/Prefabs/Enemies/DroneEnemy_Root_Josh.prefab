@@ -97,13 +97,13 @@ GameObject:
   - component: {fileID: 7161593470570398074}
   - component: {fileID: 7513839780302595257}
   - component: {fileID: 2810503398047038648}
+  - component: {fileID: 1471610687534739882}
   - component: {fileID: 8371648096448308422}
   - component: {fileID: 2130006811022247965}
   - component: {fileID: 5188941369594005820}
   - component: {fileID: 1260227270257372180}
   - component: {fileID: 2682551524234217684}
   - component: {fileID: 9042224668430253850}
-  - component: {fileID: 1471610687534739882}
   m_Layer: 8
   m_Name: DroneEnemy_Root_Josh
   m_TagString: Untagged
@@ -203,6 +203,19 @@ MonoBehaviour:
   knockdownDuration: 1.2
   fireLockTime: 0.2
   targetMemoryDuration: 3
+--- !u!114 &1471610687534739882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136600960583451685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnCategory: 1
 --- !u!114 &8371648096448308422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,18 +325,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1471610687534739882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1136600960583451685}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1535605336133714264
 GameObject:
   m_ObjectHideFlags: 0
