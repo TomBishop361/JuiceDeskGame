@@ -222,7 +222,7 @@ namespace Game.AI.Shield {
 		public void OnDespawned() {
 			// Cleanup temporary effects, target refs etc.
 			//HasTarget = false;
-			//HasLineOfSight = false;
+			HasLineOfSight = false;
 		}
 
 		private void ResetRuntimeToBaseValues() {
@@ -232,7 +232,7 @@ namespace Game.AI.Shield {
 			IsExposed = false;
 			IsAttacking = false;
 			//HasTarget = false;
-			//HasLineOfSight = false;
+			HasLineOfSight = false;
 			ShieldRaised = false;
 			GrappleWindowOpen = false;
 			DistanceToTarget = Mathf.Infinity;
@@ -326,7 +326,7 @@ namespace Game.AI.Shield {
 			}
 
 			// LOS checker
-			//UpdateTargetAwareness();
+			UpdateTargetAwareness();
 
 			// PROTOTYPE: Auto acquire target
 			if (target == null) {
@@ -379,33 +379,33 @@ namespace Game.AI.Shield {
 			}
 		}
 
-		//// Update drone enemy awareness state (uses LOS to determine this)
-		//private void UpdateTargetAwareness() {
-		//	// PROTOTYPE: Auto acquire target
-		//	if (target == null) {
-		//		TryFindPlayer();
-		//	}
+		// Update shield enemy awareness state (uses LOS to determine this)
+		private void UpdateTargetAwareness() {
+			//// PROTOTYPE: Auto acquire target
+			//if (target == null) {
+			//	TryFindPlayer();
+			//}
 
-		//	if (target == null) {
-		//		HasLineOfSight = false;
-		//		HasTarget = false;
-		//		DistanceToTarget = Mathf.Infinity;
-		//		return;
-		//	}
+			if (target == null) {
+				HasLineOfSight = false;
+				HasTarget = false;
+				DistanceToTarget = Mathf.Infinity;
+				return;
+			}
 
-		//	DistanceToTarget = Vector3.Distance(transform.position, target.position);
+			DistanceToTarget = Vector3.Distance(transform.position, target.position);
 
-		//	if (losSensor != null && losSensor.HasLOS()) {
-		//		HasLineOfSight = true;
-		//		HasTarget = true;
-		//		lastSeenTime = Time.time;
-		//	}
-		//	else {
-		//		// fallback if sensor missing
-		//		HasLineOfSight = false;
-		//		HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
-		//	}
-		//}
+			if (losSensor != null && losSensor.HasLOS()) {
+				HasLineOfSight = true;
+				HasTarget = true;
+				lastSeenTime = Time.time;
+			}
+			else {
+				// fallback if sensor missing
+				HasLineOfSight = false;
+				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+			}
+		}
 
 		// Updates the current target position into a time-based history buffer
 		// This allows the minigun to aim at a delayed position instead of the live target
@@ -580,7 +580,6 @@ namespace Game.AI.Shield {
 				navMeshAgent.enabled = false;
 			}
 
-			// TODO: UNCOMMENT THIS OUT AGAIN WHEN YOU WANT TO CHANGE LEVELS WHEN ALL ENEMIES ARE DEAD OR WE COULD REMOVE THIS AND HAVE A DOOR TO TRAVEL TO NEXT LEVEL
 			TrackDeath();
 
 			// Play death animation for shield enemy
@@ -765,9 +764,9 @@ namespace Game.AI.Shield {
 			if (InFireRange == false) {
 				return false;
 			}
-			//if (HasLineOfSight == false) {
-			//	return false;
-			//}
+			if (HasLineOfSight == false) {
+				return false;
+			}
 			//if (HasMuzzleLOS == false) {
 			//	return false;
 			//}
