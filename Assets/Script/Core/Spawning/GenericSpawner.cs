@@ -6,6 +6,9 @@ using UnityEngine.Pool;
 // Generic reusable spawner that works with any prefab using PooledObject
 // Handles spawning, pooling, and lifetime tracking
 public class GenericSpawner : MonoBehaviour {
+	[Header("References")]
+	[SerializeField] private EnemyTracker enemyTracker;
+
 	[Header("Spawnable Prefabs")]
 	[Tooltip("All prefabs this spawner is allowed to spawn when using category-based wave entries")]
 	[SerializeField] private PooledObject[] availablePrefabs;
@@ -95,6 +98,11 @@ public class GenericSpawner : MonoBehaviour {
 	// Starts the wave sequence once
 	public void StartWaveSequence() {
 		if (waveRoutine == null) {
+			// Tell tracker how many enemies will exist
+			if (enemyTracker != null) {
+				enemyTracker.AddEnemies(GetTotalEnemiesInAllWaves());
+			}
+
 			waveRoutine = StartCoroutine(WaveSequenceRoutine());
 		}
 	}
@@ -107,10 +115,40 @@ public class GenericSpawner : MonoBehaviour {
 		}
 	}
 
-	// Helper spawn using the autoSpawnPrefab
-	public PooledObject Spawn() {
-		return Spawn(autoSpawnPrefab);
+	// Stores total enemies for all waves in a scene
+	// Useful for triggering events when all enemies are dead
+	private int GetTotalEnemiesInAllWaves() {
+		int total = 0;
+
+		if (waves == null) {
+			return 0;
+		}
+
+		for (int i = 0; i < waves.Length; i++) {
+			Wave wave = waves[i];
+
+			if (wave == null || wave.entries == null) {
+				continue;
+			}
+
+			for (int j = 0; j < wave.entries.Length; j++) {
+				SpawnEntry entry = wave.entries[j];
+
+				if (entry == null) {
+					continue;
+				}
+
+				total += Mathf.Max(0, entry.count);
+			}
+		}
+
+		return total;
 	}
+
+	//// Helper spawn using the autoSpawnPrefab
+	//public PooledObject Spawn() {
+	//	return Spawn(autoSpawnPrefab);
+	//}
 
 	// Spawns a specific prefab once
 	public PooledObject Spawn(PooledObject prefab) {
@@ -232,11 +270,19 @@ public class GenericSpawner : MonoBehaviour {
 
 					for (int i = 0; i < entry.count; i++) {
 						//PooledObject prefabToSpawn = ResolvePrefabForEntry(entry); // Uses different prefab for every spawn in that entry
-						PooledObject obj = Spawn(prefabToSpawn);
+						//PooledObject obj = Spawn(prefabToSpawn); // DONT NEED
 
-						if (obj != null) {
-							aliveWaveObjects.Add(obj);
+						PooledObject obj = null;
+
+						while (obj == null) {
+							obj = Spawn(prefabToSpawn);
+
+							if (obj == null) {
+								yield return null; // wait until we can spawn
+							}
 						}
+
+						aliveWaveObjects.Add(obj);
 
 						if (i < entry.count - 1 && delay > 0.0f) {
 							yield return wait;
@@ -406,6 +452,12 @@ public class GenericSpawner : MonoBehaviour {
 		}
 
 		aliveObjects.Add(item);
+
+		EnemyCombat enemyCombat = item.GetComponent<EnemyCombat>();
+		if (enemyCombat != null && enemyTracker != null) {
+			enemyCombat.SetEnemyTracker(enemyTracker);
+		}
+
 		item.gameObject.SetActive(true);
 
 		foreach (IPoolSpawnHandler handler in item.GetComponents<IPoolSpawnHandler>()) {

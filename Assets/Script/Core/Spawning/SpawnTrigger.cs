@@ -5,10 +5,6 @@ public class SpawnTrigger : MonoBehaviour {
 	[SerializeField] private string targetTag = "Player";
 	[SerializeField] private bool triggerOnce = true;
 
-	//[Header("Burst Spawn")]
-	//[SerializeField] private int spawnCount = 3;
-	//[SerializeField] private float delayBetweenSpawns = 0.5f;
-
 	private bool hasTriggered;
 
 	private void OnTriggerEnter(Collider other) {
@@ -20,20 +16,11 @@ public class SpawnTrigger : MonoBehaviour {
 			return;
 		}
 
-		// NOTE: Instant spawn
-		//for (int i = 0; i < spawnCount; i++) {
-		//	spawner.Spawn();
-		//}
-
 		if (spawner.IsWaveRunning) {
 			return;
 		}
 			
 		spawner.StartWaveSequence();
-
-		//if (spawner.CanSpawn() == true) {
-		//	spawner.SpawnBurst(this, spawnCount, delayBetweenSpawns);
-		//}
 		
 		hasTriggered = true;
 
@@ -52,7 +39,5 @@ public class SpawnTrigger : MonoBehaviour {
 			Gizmos.matrix = transform.localToWorldMatrix;
 			Gizmos.DrawWireCube(box.center, box.size);
 		}
-
-		//Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider>().size);
 	}
 }

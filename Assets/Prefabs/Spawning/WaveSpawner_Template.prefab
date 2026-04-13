@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availablePrefabs:
+  - {fileID: 9090729134742462375, guid: 0dbd75d28e56fab4eae7b5814231eb16, type: 3}
   - {fileID: 3866372044054942689, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
   - {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
   waves:
@@ -54,18 +55,23 @@ MonoBehaviour:
       category: 1
       count: 3
       delayBetweenSpawns: 1
-    delayAfterWaveCleared: 5
+    - spawnSource: 1
+      prefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      category: 2
+      count: 2
+      delayBetweenSpawns: 0
+    delayAfterWaveCleared: 2
   - entries:
     - spawnSource: 1
       prefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
       category: 1
       count: 2
-      delayBetweenSpawns: 1
+      delayBetweenSpawns: 0.5
     - spawnSource: 1
       prefab: {fileID: 3866372044054942689, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
       category: 3
       count: 1
-      delayBetweenSpawns: 0.5
+      delayBetweenSpawns: 0
     delayAfterWaveCleared: 1.5
   autoSpawn: 0
   autoSpawnPrefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
@@ -93,6 +99,21 @@ MonoBehaviour:
     clearanceRadius: 1
   - point: {fileID: 0}
     allowedCategories: 01000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 02000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 02000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 02000000
     ignoreClearance: 0
     clearanceOffset: {x: 0, y: 1, z: 0}
     clearanceRadius: 1
