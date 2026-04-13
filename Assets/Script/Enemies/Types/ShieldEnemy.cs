@@ -278,7 +278,6 @@ namespace Game.AI.Shield {
 				animator.SetBool(AnimExposed, false);
 				animator.ResetTrigger(AnimHit);
 				animator.ResetTrigger(AnimDie);
-				//animator.Play(0, 0, 0f); // optional - depends on controller setup
 			}
 		}
 
@@ -572,24 +571,77 @@ namespace Game.AI.Shield {
 			IsStunned = false;
 			IsAttacking = false;
 			GrappleWindowOpen = false;
-			ExitExposedState();
-
-			// Disable nav mesh agent upon death
-			if (navMeshAgent != null && navMeshAgent.isOnNavMesh) {
-				navMeshAgent.isStopped = true;
-				navMeshAgent.enabled = false;
-			}
+			//ExitExposedState(); // do i need this here?
 
 			TrackDeath();
 
-			// Play death animation for shield enemy
+			// Stop combat states
+			StopMinigunFiring();
+			SetShieldRaised(false);
+
+			// Clear exposed state visuals without re-opening any recovery state
+			IsExposed = false;
 			if (animator != null) {
 				animator.SetBool(AnimExposed, false);
+				animator.SetBool(AnimFire, false);
+				animator.SetBool(AnimShieldRaised, false);
+			}
+
+			// Stop movement
+			StopMove();
+
+			// Disable navigation
+			if (navMeshAgent != null && navMeshAgent.enabled) {
+				if (navMeshAgent.isOnNavMesh) {
+					navMeshAgent.isStopped = true;
+				}
+				navMeshAgent.enabled = false;
+			}
+
+			// Disable shield blocking collider
+			if (shieldBlockCollider != null) {
+				shieldBlockCollider.enabled = false;
+			}
+
+			// Play death animation
+			if (animator != null) {
+				// animator.SetBool(AnimExposed, false); // do i need this here?
 				animator.SetTrigger(AnimDie);
 			}
 
-			// NOTE: Immediate despawn - no visible death animation
-			// TODO: Use AnimEvent_DeathFinished and remove this
+			// Small heavy knockback
+			ApplyDeathKnockback();
+
+			// Delay despawn so animation can play
+			StartCoroutine(DeathRoutine());
+
+			//// NOTE: Immediate despawn - no visible death animation
+			//// TODO: Use AnimEvent_DeathFinished and remove this
+			//if (pooledObject != null && gameObject.activeInHierarchy) {
+			//	pooledObject.ReturnToPool();
+			//}
+		}
+
+		private void ApplyDeathKnockback() {
+			if (target == null) {
+				return;
+			}
+
+			// Push away from player
+			Vector3 direction = (transform.position - target.position).normalized;
+			direction.y = 0.12f; // very small lift for weight
+
+			// NOTE: Could use RB on Shield Enemy
+			if (TryGetComponent<Rigidbody>(out Rigidbody rb)) {
+				rb.isKinematic = false;
+				rb.linearVelocity = Vector3.zero;
+				rb.AddForce(direction * 2.5f, ForceMode.VelocityChange);
+			}
+		}
+
+		private IEnumerator DeathRoutine() {
+			yield return new WaitForSeconds(1.5f);
+
 			if (pooledObject != null && gameObject.activeInHierarchy) {
 				pooledObject.ReturnToPool();
 			}

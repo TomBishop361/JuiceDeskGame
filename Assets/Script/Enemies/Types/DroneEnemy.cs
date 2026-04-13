@@ -2,6 +2,7 @@ using UnityEngine;
 using Game.AI; // IEnemyAgent namespace
 using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namespace
 using UnityEngine.AI;
+using System.Collections;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
@@ -92,6 +93,11 @@ namespace Game.AI.Drone {
 		[SerializeField] private float maxSeparationForce = 1.15f;
 		[Tooltip("Small variation added to orbit movement so drones don't overlap paths")]
 		[SerializeField] private float orbitJitter = 0.15f; // slight variation so drones don't all choose identical paths
+
+		[Header("Death")]
+		[SerializeField] private float deathFallSpeed = 6.0f;
+		[SerializeField] private float deathDuration = 0.45f;
+		[SerializeField] private ParticleSystem deathFX;
 
 		[Header("Knockdown")]
 		[Tooltip("Duration (in seconds) the drone remains knocked down")]
@@ -390,16 +396,50 @@ namespace Game.AI.Drone {
 			IsDead = true;
 			IsKnockedDown = false;
 			IsAttacking = false;
+			//HasTarget = false;
+			//HasLineOfSight = false;
 
 			TrackDeath();
 
-			// Play death animation for drone enemy
+			// Stop any remaining attack state
 			if (animator != null) {
-				animator.SetTrigger(AnimDie);
+				animator.SetBool(AnimKnocked, false);
+				//animator.SetTrigger(AnimDie);
 			}
 
-			// NOTE: Immediate despawn - no visible death animation
-			// TODO: Use AnimEvent_DeathFinished and remove this
+			// TODO: death FX
+			if (deathFX != null) {
+				Instantiate(deathFX, transform.position, Quaternion.identity);
+			}
+
+			// Delay despawn so the death can actually be seen
+			StartCoroutine(DeathRoutine());
+
+			//// NOTE: Immediate despawn - no visible death animation
+			//// TODO: Use AnimEvent_DeathFinished and remove this
+			//if (pooledObject != null && gameObject.activeInHierarchy) {
+			//	pooledObject.ReturnToPool();
+			//}
+		}
+
+		private IEnumerator DeathRoutine() {
+			float timer = 0.0f;
+
+			Vector3 startPos = transform.position;
+			Vector3 endPos = startPos + Vector3.down * (deathFallSpeed * deathDuration);
+
+			while (timer < deathDuration) {
+				timer += Time.deltaTime;
+
+				float t = timer / deathDuration;
+				transform.position = Vector3.Lerp(startPos, endPos, t);
+
+				// Small spin while falling
+				transform.Rotate(0.0f, 360.0f * Time.deltaTime, 180.0f * Time.deltaTime, Space.Self);
+
+				yield return null;
+			}
+
 			if (pooledObject != null && gameObject.activeInHierarchy) {
 				pooledObject.ReturnToPool();
 			}

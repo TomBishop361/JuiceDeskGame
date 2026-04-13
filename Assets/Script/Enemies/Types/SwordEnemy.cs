@@ -26,6 +26,7 @@ namespace Game.AI.Sword {
 		[SerializeField] private Animator animator;
 		[SerializeField] private LOSSensor losSensor;
 		[SerializeField] private Health healthComponent;
+		//[SerializeField] private ParticleSystem deathFX;
 
 		[Header("Stats")]
 		[SerializeField] private int maxHealth = 3;
@@ -638,19 +639,58 @@ namespace Game.AI.Sword {
 
 			TrackDeath();
 
-			// Disable nav mesh agent upon death
+			// Stop movement
+			StopMove();
+
+			// Disable NavMesh
 			if (navMeshAgent != null) {
-				StopMove();
 				navMeshAgent.enabled = false;
 			}
 
-			// Play death animation for sword enemy
+			// Disable hitboxes
+			meleeHitbox.Disable();
+			swingHitbox.Disable();
+			lungeHitbox.Disable();
+
+			//if (deathFX != null) {
+			//	Instantiate(deathFX, transform.position, Quaternion.identity);
+			//}
+
+			// Play death animation
 			if (animator != null) {
 				animator.SetTrigger(AnimDie);
 			}
 
-			// NOTE: Immediate despawn - no visible death animation
-			// TODO: Use AnimEvent_DeathFinished and remove this
+			// Apply small knockback (away from player)
+			ApplyDeathKnockback();
+
+			// Delay despawn (so animation can play)
+			StartCoroutine(DeathRoutine());
+
+			//// NOTE: Immediate despawn - no visible death animation
+			//// TODO: Use AnimEvent_DeathFinished and remove this
+			//if (pooledObject != null && gameObject.activeInHierarchy) {
+			//	pooledObject.ReturnToPool();
+			//}
+		}
+
+		private void ApplyDeathKnockback() {
+			if (target == null || rb == null) {
+				return;
+			}
+
+			Vector3 dir = (transform.position - target.position).normalized;
+			dir.y = 0.25f; // small lift so it feels less stiff
+
+			rb.isKinematic = false;
+			rb.linearVelocity = Vector3.zero;
+			rb.AddForce(dir * 4f, ForceMode.VelocityChange); // tweak 3–6
+		}
+
+		private IEnumerator DeathRoutine() {
+			// Wait for animation / visual
+			yield return new WaitForSeconds(1.2f);
+
 			if (pooledObject != null && gameObject.activeInHierarchy) {
 				pooledObject.ReturnToPool();
 			}
