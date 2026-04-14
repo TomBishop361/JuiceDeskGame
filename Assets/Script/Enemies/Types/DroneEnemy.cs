@@ -2,10 +2,13 @@ using UnityEngine;
 using Game.AI; // IEnemyAgent namespace
 using Game.Combat.Projectiles; // DroneProjectile & DroneHomingProjectile namespace
 using UnityEngine.AI;
+using System.Collections;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
-	public class DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings {
+	[RequireComponent(typeof(Hurtbox))]
+	[RequireComponent(typeof(PooledObject))]
+	public class DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -21,50 +24,91 @@ namespace Game.AI.Drone {
 		[SerializeField] private Health healthComponent;
 
 		[Header("Stats")]
+		[Tooltip("Maximum health of the drone")]
 		[SerializeField] private int maxHealth = 1;
 
 		[Header("Combat")]
 		//[SerializeField] private float damage = 1.0f; // USED IN DroneProjectile.cs
 		//[SerializeField] private float projectileSpeed = 14.0f; // USED IN DroneProjectile.cs
+		[Tooltip("Attack data used to initialise projectile damage and behaviour")]
 		[SerializeField] private AttackData projectileAttackData = new AttackData();
+		[Tooltip("Projectile prefab the drone will spawn when firing")]
 		[SerializeField] private GameObject projectilePrefab;
+		[Tooltip("Transform representing where projectiles are spawned from")]
 		[SerializeField] private Transform projectileSpawn;
 
 		[Header("Ranges")]
 		// NOTE: Can use distance bands later -> Close, Short, Medium, Long, Extreme (not all of these but just for reference)
+		[Tooltip("Minimum distance before the drone moves away from the target")]
 		[SerializeField] private float minRange = 4.0f;   // too close -> move away
+		[Tooltip("Maximum distance at which the drone is allowed to fire")]
 		[SerializeField] private float fireRange = 10.0f; // in this range -> can fire
+		[Tooltip("Preferred distance the drone tries to maintain from the target")]
 		[SerializeField] private float desiredRange = 7.0f; // aim to remain within this range
+		[Tooltip("Buffer zone around desired range to prevent constant jittering (hysteresis)")]
 		[SerializeField] private float rangeDeadzone = 0.75f; // deadzone where drone orbits instead of constantly re-adjusting (acts as hysterisis -> prevents oscillation around target distance) 
 
 		[Header("Cooldowns")]
+		[Tooltip("Time (in seconds) between consecutive shots")]
 		[SerializeField] private float fireCooldown = 1.5f;
 
 		[Header("Movement")]
+		[Tooltip("Toggle between smooth rotation (Slerp) and snappy rotation (RotateTowards)")]
 		[SerializeField] private bool toggleSmoothRotation = true; // toggle between smooth and responsive rotation
+		[Tooltip("Rotation speed in degrees per second when using responsive rotation")]
 		[SerializeField] private float rotationSpeed = 300.0f; // degrees per second (300 - 360 good range)
+		[Tooltip("Smoothing factor for smooth rotation")]
 		[SerializeField] private float rotationSmoothing = 8.0f; // smoothing multiplier (7 - 9 good range)
 
 		[Header("Flight")]
+		[Tooltip("Base hover height above the ground when not matching player height")]
 		[SerializeField] private float hoverHeight = 3.0f;
+		[Tooltip("Horizontal movement speed of the drone")]
 		[SerializeField] private float flightMoveSpeed = 4.0f;
+		[Tooltip("Speed at which the drone returns to its base height")]
 		[SerializeField] private float heightLerpSpeed = 8.0f;
+		[Tooltip("Speed at which the drone visually follows movement (for smoothing visuals)")]
 		[SerializeField] private float visualFollowSpeed = 4.0f;
 
 		[Header("Dynamic Height")]
+		[Tooltip("If enabled, drone adjusts its height relative to the player")]
 		[SerializeField] private bool matchPlayerHeight = true;
+		[Tooltip("Vertical offset above the player's position")]
 		[SerializeField] private float heightOffsetFromPlayer = 3.0f; // drone floats above player
+		[Tooltip("Minimum world Y position the drone is allowed to reach")]
 		[SerializeField] private float minWorldY = -100.0f;
+		[Tooltip("Maximum world Y position the drone is allowed to reach")]
 		[SerializeField] private float maxWorldY = 100.0f;
+		[Tooltip("Speed at which the drone follows vertical changes")]
 		[SerializeField] private float verticalFollowSpeed = 6.0f; // how quickly it tracks height changes
 
+		[Header("Drone Separation")]
+		[Tooltip("Enable or disable separation behaviour between drones")]
+		[SerializeField] private bool enableDroneSeparation = true;
+		[Tooltip("Radius within which other drones will be considered for avoidance")]
+		[SerializeField] private float separationRadius = 1.75f;
+		[Tooltip("Strength of the push force away from nearby drones")]
+		[SerializeField] private float separationWeight = 1.35f;
+		[Tooltip("Maximum force applied by separation to prevent extreme movement")]
+		[SerializeField] private float maxSeparationForce = 1.15f;
+		[Tooltip("Small variation added to orbit movement so drones don't overlap paths")]
+		[SerializeField] private float orbitJitter = 0.15f; // slight variation so drones don't all choose identical paths
+
+		[Header("Death")]
+		[SerializeField] private float deathFallSpeed = 6.0f;
+		[SerializeField] private float deathDuration = 0.45f;
+		[SerializeField] private ParticleSystem deathFX;
+
 		[Header("Knockdown")]
+		[Tooltip("Duration (in seconds) the drone remains knocked down")]
 		[SerializeField] private float knockdownDuration = 1.2f;
 
 		[Header("Attack Lock Times (prevents spam)")]
+		[Tooltip("Minimum time the drone stays in attack state to prevent animation spam")]
 		[SerializeField] private float fireLockTime = 0.50f; // anim length (approx)
 
 		[Header("LOS Memory")]
+		[Tooltip("Time (in seconds) the drone remembers the target after losing line of sight")]
 		[SerializeField] private float targetMemoryDuration = 1.0f;
 
 		//[Header("Obstacle Avoidance")]
@@ -117,24 +161,83 @@ namespace Game.AI.Drone {
 
 		// Runtime params
 		private float groundY;
-		/*[SerializeField]*/ private float currentHealth;
-		/*[SerializeField]*/ private float previousHealthValue = 0.0f;
-		/*[SerializeField]*/ private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		//private float currentHealth;
+		private float previousHealthValue = 0.0f;
+		private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
+		private static readonly Collider[] separationHits = new Collider[16];
 
-		private void Awake() {
-			// Sync health
-			currentHealth = maxHealth;
+		// Misc
+		private PooledObject pooledObject;
+
+		// Implement IPoolSpawnHandler
+		public void OnSpawned() {
+			ResetRuntimeToBaseValues();
+		}
+
+		public void OnDespawned() {
+			// Cleanup temporary effects, target refs etc.
+			//HasTarget = false;
+			//HasLineOfSight = false;
+		}
+
+		private void ResetRuntimeToBaseValues() {
+			IsDead = false;
+			IsKnockedDown = false;
+			IsAttacking = false;
+			//HasTarget = false;
+			//HasLineOfSight = false;
+			DistanceToTarget = Mathf.Infinity;
+
+			nextFireTime = -Mathf.Infinity;
+			knockdownEndTime = -Mathf.Infinity;
+			attackEndTime = -Mathf.Infinity;
+			lastSeenTime = -Mathf.Infinity;
+			lastDamageTime = -Mathf.Infinity;
 
 			groundY = transform.position.y;
 
+			if (animator != null) {
+				animator.ResetTrigger(AnimFire);
+				animator.ResetTrigger(AnimHit);
+				animator.ResetTrigger(AnimDie);
+				animator.SetBool(AnimKnocked, false);
+				//animator.Play(0, 0, 0f); // optional - depends on controller setup
+			}
+
+			// Restore health
+			if (healthComponent != null) {
+				healthComponent.RestoreFullHealth();
+				previousHealthValue = healthComponent.CurrentHealth;
+			}
+		}
+
+		private void Awake() {
+			CacheComponents();
+			InitialRuntimeSetup();
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [START] -
+
+		private void CacheComponents() {
 			if (animator == null) {
 				animator = GetComponentInChildren<Animator>();
 			}
-
 			if (losSensor == null) {
 				losSensor = GetComponent<LOSSensor>();
 			}
 		}
+
+		private void InitialRuntimeSetup() {
+			// Sync health
+			//currentHealth = maxHealth;
+
+			// Reset ground position
+			groundY = transform.position.y;
+
+			pooledObject = GetComponent<PooledObject>();
+		}
+
+		// - Initialisation Functions (Called inside Awake()) [END] -
 
 		private void Update() {
 			if (IsDead == true) {
@@ -142,12 +245,12 @@ namespace Game.AI.Drone {
 			}
 
 			// LOS checker
-			UpdateTargetAwareness();
+			//UpdateTargetAwareness();
 
-			//// PROTOTYPE: Auto acquire target
-			//if (target == null) {
-			//	TryFindPlayer();
-			//}
+			// PROTOTYPE: Auto acquire target
+			if (target == null) {
+				TryFindPlayer();
+			}
 
 			// Fetch distance to target (if target is valid)
 			if (HasTarget == true) {
@@ -183,39 +286,44 @@ namespace Game.AI.Drone {
 			}
 		}
 
-		// Update drone enemy awareness state (uses LOS to determine this)
-		private void UpdateTargetAwareness() {
-			// PROTOTYPE: Auto acquire target
-			if (target == null) {
-				TryFindPlayer();
-			}
+		//// Update drone enemy awareness state (uses LOS to determine this)
+		//private void UpdateTargetAwareness() {
+		//	// PROTOTYPE: Auto acquire target
+		//	if (target == null) {
+		//		TryFindPlayer();
+		//	}
 
-			if (target == null) {
-				HasLineOfSight = false;
-				HasTarget = false;
-				DistanceToTarget = Mathf.Infinity;
-				return;
-			}
+		//	if (target == null) {
+		//		HasLineOfSight = false;
+		//		HasTarget = false;
+		//		DistanceToTarget = Mathf.Infinity;
+		//		return;
+		//	}
 
-			DistanceToTarget = Vector3.Distance(transform.position, target.position);
+		//	DistanceToTarget = Vector3.Distance(transform.position, target.position);
 
-			if (losSensor != null && losSensor.HasLOS()) {
-				HasLineOfSight = true;
-				HasTarget = true;
-				lastSeenTime = Time.time;
-			}
-			else {
-				// fallback if sensor missing
-				HasLineOfSight = false;
-				HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
-			}
-		}
+		//	if (losSensor != null && losSensor.HasLOS()) {
+		//		HasLineOfSight = true;
+		//		HasTarget = true;
+		//		lastSeenTime = Time.time;
+		//	}
+		//	else {
+		//		// fallback if sensor missing
+		//		HasLineOfSight = false;
+		//		HasTarget = (Time.time - lastSeenTime) <= targetMemoryDuration;
+		//	}
+		//}
 
 		// PROTOTYPE: Find player automatically
 		private void TryFindPlayer() {
 			GameObject player = GameObject.FindGameObjectWithTag("Player");
 			if (player != null) {
 				target = player.transform;
+				HasTarget = true;
+			}
+			else {
+				target = null;
+				HasTarget = false;
 			}
 		}
 
@@ -288,16 +396,53 @@ namespace Game.AI.Drone {
 			IsDead = true;
 			IsKnockedDown = false;
 			IsAttacking = false;
-
-			// Play death animation for drone enemy
-			if (animator != null) {
-				animator.SetTrigger(AnimDie);
-			}
+			//HasTarget = false;
+			//HasLineOfSight = false;
 
 			TrackDeath();
 
-			// NOTE: This is temporary
-			//Destroy(gameObject);
+			// Stop any remaining attack state
+			if (animator != null) {
+				animator.SetBool(AnimKnocked, false);
+				//animator.SetTrigger(AnimDie);
+			}
+
+			// TODO: death FX
+			if (deathFX != null) {
+				Instantiate(deathFX, transform.position, Quaternion.identity);
+			}
+
+			// Delay despawn so the death can actually be seen
+			StartCoroutine(DeathRoutine());
+
+			//// NOTE: Immediate despawn - no visible death animation
+			//// TODO: Use AnimEvent_DeathFinished and remove this
+			//if (pooledObject != null && gameObject.activeInHierarchy) {
+			//	pooledObject.ReturnToPool();
+			//}
+		}
+
+		private IEnumerator DeathRoutine() {
+			float timer = 0.0f;
+
+			Vector3 startPos = transform.position;
+			Vector3 endPos = startPos + Vector3.down * (deathFallSpeed * deathDuration);
+
+			while (timer < deathDuration) {
+				timer += Time.deltaTime;
+
+				float t = timer / deathDuration;
+				transform.position = Vector3.Lerp(startPos, endPos, t);
+
+				// Small spin while falling
+				transform.Rotate(0.0f, 360.0f * Time.deltaTime, 180.0f * Time.deltaTime, Space.Self);
+
+				yield return null;
+			}
+
+			if (pooledObject != null && gameObject.activeInHierarchy) {
+				pooledObject.ReturnToPool();
+			}
 		}
 
 		public void RecoverTick() {
@@ -361,10 +506,15 @@ namespace Game.AI.Drone {
 				awayDirection = transform.forward;
 			}
 
-			awayDirection.Normalize();
+			// Move towards away direction
+			MoveInDirection(awayDirection.normalized);
+
+			FaceTarget(target.position);
+
+			//awayDirection.Normalize();
 
 			// Move towards away direction
-			transform.position += awayDirection * flightMoveSpeed * Time.deltaTime;
+			//transform.position += awayDirection * flightMoveSpeed * Time.deltaTime;
 
 			// Pick a point away from the target instead of moving directly by transform.position
 			//Vector3 desiredPoint = transform.position + awayDirection * 3.0f;
@@ -374,8 +524,71 @@ namespace Game.AI.Drone {
 			// Avoid obstacles movement temp
 			//Vector3 moveDir = GetAvoidedDirection(awayDirection);
 			//transform.position += moveDir * flightMoveSpeed * Time.deltaTime;
+		}
 
-			FaceTarget(target.position);
+		private void MoveInDirection(Vector3 baseDirection) {
+			if (baseDirection.sqrMagnitude < 0.0001f) {
+				return;
+			}
+
+			Vector3 desiredDirection = baseDirection.normalized;
+
+			if (enableDroneSeparation == true) {
+				desiredDirection += CalculateDroneSeparation();
+			}
+
+			desiredDirection.y = 0.0f;
+
+			if (desiredDirection.sqrMagnitude < 0.0001f) {
+				desiredDirection = baseDirection.normalized;
+			}
+
+			transform.position += desiredDirection.normalized * flightMoveSpeed * Time.deltaTime;
+		}
+
+		private Vector3 CalculateDroneSeparation() {
+			if (separationRadius <= 0.0f) {
+				return Vector3.zero;
+			}
+
+			int hitCount = Physics.OverlapSphereNonAlloc(transform.position,separationRadius,separationHits,Physics.AllLayers, QueryTriggerInteraction.Ignore);
+
+			if (hitCount <= 0) {
+				return Vector3.zero;
+			}
+
+			Vector3 separation = Vector3.zero;
+
+			for (int i = 0; i < hitCount; i++) {
+				Collider hit = separationHits[i];
+				if (hit == null) {
+					continue;
+				}
+
+				DroneEnemy otherDrone = hit.GetComponentInParent<DroneEnemy>();
+				if (otherDrone == null || otherDrone == this || otherDrone.IsDead == true) {
+					continue;
+				}
+
+				Vector3 awayFromOther = transform.position - otherDrone.transform.position;
+				awayFromOther.y = 0.0f;
+
+				float sqrDistance = awayFromOther.sqrMagnitude;
+				if (sqrDistance < 0.0001f) {
+					awayFromOther = transform.right;
+					sqrDistance = awayFromOther.sqrMagnitude;
+				}
+
+				float distance = Mathf.Sqrt(sqrDistance);
+				float falloff = 1.0f - Mathf.Clamp01(distance / separationRadius);
+				separation += awayFromOther.normalized * falloff;
+			}
+
+			if (separation.sqrMagnitude < 0.0001f) {
+				return Vector3.zero;
+			}
+
+			return Vector3.ClampMagnitude(separation * separationWeight, maxSeparationForce);
 		}
 
 		public void MaintainRangeTick() {
@@ -407,16 +620,23 @@ namespace Game.AI.Drone {
 				direction = -toTarget.normalized; // move away
 			}
 			else {
+				// Orbit sideways, with a tiny per-drone variation so they don't all collapse into same path
+				Vector3 orbitDir = Vector3.Cross(Vector3.up, toTarget.normalized);
+				float jitter = Mathf.Sin((Time.time * 1.5f) + transform.GetInstanceID()) * orbitJitter;
+				direction = (orbitDir + transform.right * jitter).normalized;
+
 				// Create vector perpendicular to target direction (circles rather than moving directly in/out)
-				direction = Vector3.Cross(Vector3.up, toTarget.normalized); // orbit sideways
+				//direction = Vector3.Cross(Vector3.up, toTarget.normalized); // orbit sideways
 			}
+
+			MoveInDirection(direction);
 
 			// Avoid obstacles movement temp
 			//Vector3 moveDir = GetAvoidedDirection(direction);
 			//transform.position += moveDir * flightMoveSpeed * Time.deltaTime;
 
 			// Move towwards direction
-			transform.position += direction * flightMoveSpeed * Time.deltaTime;
+			//transform.position += direction * flightMoveSpeed * Time.deltaTime;
 
 			// Instead of moving every frame manually, choose a world-space goal for the agent
 			//Vector3 desiredPoint = transform.position + direction * 2.5f;
@@ -431,9 +651,9 @@ namespace Game.AI.Drone {
 			if (HasTarget == false) {
 				return false;
 			}
-			if (HasLineOfSight == false) {
-				return false;
-			}
+			//if (HasLineOfSight == false) {
+			//	return false;
+			//}
 			if (InFireRange == false) {
 				return false;
 			}
@@ -500,13 +720,13 @@ namespace Game.AI.Drone {
 			}
 
 			// Decrement health by 'x' amount
-			currentHealth -= amount;
+			//currentHealth -= amount;
 
-			// Death on 0 health
-			if (currentHealth <= 0) {
-				Die();
-				return;
-			}
+			//// Death on 0 health
+			//if (currentHealth <= 0) {
+			//	Die();
+			//	return;
+			//}
 
 			if (animator != null) {
 				animator.SetTrigger(AnimHit);
@@ -536,6 +756,15 @@ namespace Game.AI.Drone {
 		// Call this at end of attack animation
 		public void AnimEvent_AttackFinished() {
 			IsAttacking = false;
+		}
+
+		// TODO: Call this at the end of death animation
+		public void AnimEvent_DeathFinished() {
+			if (pooledObject == null || gameObject == null) {
+				return;
+			}
+
+			pooledObject.ReturnToPool();
 		}
 
 		// - Movement Helpers -
@@ -568,16 +797,27 @@ namespace Game.AI.Drone {
 		private void OnEnable() {
 			if (healthComponent != null) {
 				previousHealthValue = healthComponent.CurrentHealth;
-				healthComponent.OnHealthChanged += OnHealthChanged;
+				healthComponent.OnHealthChanged += HandleHealthChanged;
 			}
 		}
 		private void OnDisable() {
 			if (healthComponent != null) {
-				healthComponent.OnHealthChanged -= OnHealthChanged;
+				healthComponent.OnHealthChanged -= HandleHealthChanged;
 			}
 		}
 
-		private void OnHealthChanged(float current, float max) {
+		private void HandleHealthChanged(float current, float max) {
+			// Death on 0 health
+			if (current <= 0) {
+				Die();
+				return;
+			}
+
+			// Trigger hit animation
+			if (animator != null) {
+				animator.SetTrigger(AnimHit);
+			}
+
 			// Damage only if health has gone down
 			if (current < previousHealthValue) {
 				// Reset regen delay timer - only regen when out of combat

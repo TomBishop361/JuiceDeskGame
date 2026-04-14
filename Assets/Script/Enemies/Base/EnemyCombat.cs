@@ -1,14 +1,23 @@
 using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour {
-	private EnemyTracker tracker;
+	private EnemyTracker enemyTracker;
+	private bool deathReported = false;
 
-	void Start() {
-		tracker = FindObjectOfType<EnemyTracker>();
+	public void SetEnemyTracker(EnemyTracker tracker) {
+		enemyTracker = tracker;
+		deathReported = false;
 	}
 
 	public void TrackDeath() {
-		tracker.EnemyDied();
-		Destroy(gameObject);
+		if (deathReported == true) {
+			return;
+		}
+
+		deathReported = true;
+
+		if (enemyTracker != null) {
+			enemyTracker.EnemyDied();
+		}
 	}
 }

@@ -588,6 +588,7 @@ GameObject:
   - component: {fileID: 2001483471632426427}
   - component: {fileID: 2985575060621215461}
   - component: {fileID: 2624410534295647474}
+  - component: {fileID: 9090729134742462375}
   - component: {fileID: 4028784406532282084}
   - component: {fileID: 8743485709165554065}
   - component: {fileID: 1072683807792024947}
@@ -713,7 +714,7 @@ MonoBehaviour:
   animator: {fileID: 7135050395248741609}
   losSensor: {fileID: 4028784406532282084}
   healthComponent: {fileID: 1072683807792024947}
-  maxHealth: 15
+  maxHealth: 10
   defaultSpeed: 12
   defaultAcceleration: 60
   damage: 2
@@ -753,7 +754,7 @@ MonoBehaviour:
   lungeDuration: 2
   lungeRecoveryTime: 4
   targetMemoryDuration: 2.5
---- !u!114 &4028784406532282084
+--- !u!114 &9090729134742462375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -761,6 +762,19 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2262400151946653406}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnCategory: 2
+--- !u!114 &4028784406532282084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2262400151946653406}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bc985d2a972abc4ab910068296bdde5, type: 3}
   m_Name: 
@@ -778,7 +792,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2262400151946653406}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d52986baa5dfb0a4d941a02ad9bb96db, type: 3}
   m_Name: 
@@ -798,7 +812,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ed8bcf79dbaa24c909e52aad77b000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 7135050395248741609}
 --- !u!114 &2781016853244417460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1412,7 +1425,7 @@ BoxCollider:
     m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 72
+    m_Bits: 4168
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
@@ -1951,7 +1964,7 @@ BoxCollider:
     m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 72
+    m_Bits: 4168
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0

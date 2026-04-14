@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7464457352908525559
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1602533022682179632}
+  - component: {fileID: 8837923560533012979}
+  m_Layer: 0
+  m_Name: WaveSpawner_Template
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1602533022682179632
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7464457352908525559}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8837923560533012979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7464457352908525559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9688846f8380a74b87100402d524637, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availablePrefabs:
+  - {fileID: 9090729134742462375, guid: 0dbd75d28e56fab4eae7b5814231eb16, type: 3}
+  - {fileID: 3866372044054942689, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
+  - {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
+  waves:
+  - entries:
+    - spawnSource: 1
+      prefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      category: 1
+      count: 3
+      delayBetweenSpawns: 1
+    - spawnSource: 1
+      prefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      category: 2
+      count: 2
+      delayBetweenSpawns: 0
+    delayAfterWaveCleared: 2
+  - entries:
+    - spawnSource: 1
+      prefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
+      category: 1
+      count: 2
+      delayBetweenSpawns: 0.5
+    - spawnSource: 1
+      prefab: {fileID: 3866372044054942689, guid: b0d5abffc33f3854fa4e44b44b3852fc, type: 3}
+      category: 3
+      count: 1
+      delayBetweenSpawns: 0
+    delayAfterWaveCleared: 1.5
+  autoSpawn: 0
+  autoSpawnPrefab: {fileID: 1471610687534739882, guid: 452c61c835732674d9559a5b77167239, type: 3}
+  spawnInterval: 3
+  spawnPoints:
+  - point: {fileID: 0}
+    allowedCategories: 01000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 01000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 01000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 01000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 01000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 02000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 02000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 02000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 03000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 03000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  - point: {fileID: 0}
+    allowedCategories: 03000000
+    ignoreClearance: 0
+    clearanceOffset: {x: 0, y: 1, z: 0}
+    clearanceRadius: 1
+  maxAlive: 10
+  spawnBlockingLayers:
+    serializedVersion: 2
+    m_Bits: 456
+  triggerInteraction: 1
+  defaultCapacityPerPrefab: 10
+  maxPoolSizePerPrefab: 20

@@ -21,7 +21,87 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 373203168293027919
+    - rid: 4349001980571550231
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: 'DRONE: IDLE/PATROL'
+    - rid: 4349001980571550232
+      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: 0
+    - rid: 4349001980571550242
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: Drone Enemy DIED
+    - rid: 4349001980571550243
+      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: 0
+    - rid: 4349001980571550244
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: Drone Enemy IS KNOCKED/STUNNED
+    - rid: 4349001980571550245
+      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: 0
+    - rid: 4349001980571550250
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: Drone Enemy FIRE PROJECTILE
+    - rid: 4349001980571550251
+      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: 0
+    - rid: 4349001980571550252
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: Drone Enemy MOVES AWAY FROM TARGET
+    - rid: 4349001980571550253
+      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: 0
+    - rid: 4349001980571550307
       type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -32,10 +112,10 @@ MonoBehaviour:
         m_Parent:
           rid: -2
         m_Child:
-          rid: 373203168293027920
+          rid: 4349001980571550308
         Repeat: 1
         AllowMultipleRepeatsPerTick: 0
-    - rid: 373203168293027920
+    - rid: 4349001980571550308
       type: {class: SelectorComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -44,20 +124,18 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027919
+          rid: 4349001980571550307
         m_Children:
-        - rid: 373203168293027921
-        - rid: 373203168293027922
-        - rid: 373203168293027923
-        - rid: 373203168293027924
+        - rid: 4349001980571550309
+        - rid: 4349001980571550310
+        - rid: 4349001980571550311
+        - rid: 4349001980571550312
         m_RegisteredObservers:
         - Observer:
-            rid: 373203168293027921
+            rid: 4349001980571550309
         - Observer:
-            rid: 373203168293027922
-        - Observer:
-            rid: 373203168293027923
-    - rid: 373203168293027921
+            rid: 4349001980571550310
+    - rid: 4349001980571550309
       type: {class: ConditionalGuardModifier, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -66,14 +144,14 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027920
+          rid: 4349001980571550308
         m_Child:
-          rid: 373203168293027925
+          rid: 4349001980571550313
         m_Conditions:
-        - rid: 373203168293027926
+        - rid: 4349001980571550314
         m_RequiresAllConditions: 1
         m_ObserverType: 3
-    - rid: 373203168293027922
+    - rid: 4349001980571550310
       type: {class: ConditionalGuardModifier, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -82,82 +160,14 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027920
+          rid: 4349001980571550308
         m_Child:
-          rid: 373203168293027927
+          rid: 4349001980571550315
         m_Conditions:
-        - rid: 373203168293027928
+        - rid: 4349001980571550316
         m_RequiresAllConditions: 1
         m_ObserverType: 3
-    - rid: 373203168293027923
-      type: {class: ConditionalGuardModifier, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 5472119285134543380
-          m_Value1: 17621067173423469868
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 373203168293027920
-        m_Child:
-          rid: 373203168293027929
-        m_Conditions:
-        - rid: 373203168293027930
-        m_RequiresAllConditions: 0
-        m_ObserverType: 2
-    - rid: 373203168293027924
-      type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 8592132145445788432
-          m_Value1: 1645761179662092836
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 373203168293027920
-        Message:
-          rid: 373203168293027931
-        LogLevel:
-          rid: 373203168293027932
-    - rid: 373203168293027925
-      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 2283429554904677411
-          m_Value1: 13277822037749628581
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 373203168293027921
-        m_Children:
-        - rid: 373203168293027933
-        - rid: 373203168293027934
-        m_RegisteredObservers: []
-    - rid: 373203168293027926
-      type: {class: EnemyIsDead, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        Graph:
-          rid: 7112529902252327530
-    - rid: 373203168293027927
-      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 10711928669854247474
-          m_Value1: 17127681492034520210
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 373203168293027922
-        m_Children:
-        - rid: 373203168293027935
-        - rid: 373203168293027936
-        m_RegisteredObservers: []
-    - rid: 373203168293027928
-      type: {class: DroneIsKnockedDown, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
-      data:
-        Graph:
-          rid: 7112529902252327530
-    - rid: 373203168293027929
+    - rid: 4349001980571550311
       type: {class: SelectorComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -166,39 +176,32 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027923
+          rid: 4349001980571550308
         m_Children:
-        - rid: 373203168293027937
-        - rid: 373203168293027938
-        - rid: 373203168293027939
+        - rid: 4349001980571550317
+        - rid: 4349001980571550318
+        - rid: 4349001980571550319
         m_RegisteredObservers:
         - Observer:
-            rid: 373203168293027937
+            rid: 4349001980571550317
         - Observer:
-            rid: 373203168293027938
-    - rid: 373203168293027930
-      type: {class: EnemyHasTarget, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
+            rid: 4349001980571550318
+    - rid: 4349001980571550312
+      type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
+        ID:
+          m_Value0: 8592132145445788432
+          m_Value1: 1645761179662092836
         Graph:
           rid: 7112529902252327530
-    - rid: 373203168293027931
-      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 'DRONE: IDLE/PATROL'
-    - rid: 373203168293027932
-      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
-    - rid: 373203168293027933
-      type: {class: EnemyDie, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
+        m_Parent:
+          rid: 4349001980571550308
+        Message:
+          rid: 4349001980571550231
+        LogLevel:
+          rid: 4349001980571550232
+    - rid: 4349001980571550313
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
           m_Value0: 2283429554904677411
@@ -206,23 +209,18 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027925
-    - rid: 373203168293027934
-      type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
+          rid: 4349001980571550309
+        m_Children:
+        - rid: 4349001980571550320
+        - rid: 4349001980571550321
+        m_RegisteredObservers: []
+    - rid: 4349001980571550314
+      type: {class: EnemyIsDead, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
       data:
-        ID:
-          m_Value0: 12044724442665163698
-          m_Value1: 9888560897926363786
         Graph:
           rid: 7112529902252327530
-        m_Parent:
-          rid: 373203168293027925
-        Message:
-          rid: 373203168293027940
-        LogLevel:
-          rid: 373203168293027941
-    - rid: 373203168293027935
-      type: {class: DroneRecoverFromKnockdown, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
+    - rid: 4349001980571550315
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
           m_Value0: 10711928669854247474
@@ -230,22 +228,17 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027927
-    - rid: 373203168293027936
-      type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
+          rid: 4349001980571550310
+        m_Children:
+        - rid: 4349001980571550322
+        - rid: 4349001980571550323
+        m_RegisteredObservers: []
+    - rid: 4349001980571550316
+      type: {class: DroneIsKnockedDown, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
-        ID:
-          m_Value0: 16315071909636317404
-          m_Value1: 363146576029522158
         Graph:
           rid: 7112529902252327530
-        m_Parent:
-          rid: 373203168293027927
-        Message:
-          rid: 373203168293027942
-        LogLevel:
-          rid: 373203168293027943
-    - rid: 373203168293027937
+    - rid: 4349001980571550317
       type: {class: ConditionalGuardModifier, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -254,15 +247,15 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027929
+          rid: 4349001980571550311
         m_Child:
-          rid: 373203168293027944
+          rid: 4349001980571550324
         m_Conditions:
-        - rid: 373203168293027945
-        - rid: 373203168293027946
+        - rid: 4349001980571550325
+        - rid: 4349001980571550326
         m_RequiresAllConditions: 1
         m_ObserverType: 2
-    - rid: 373203168293027938
+    - rid: 4349001980571550318
       type: {class: ConditionalGuardModifier, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -271,14 +264,14 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027929
+          rid: 4349001980571550311
         m_Child:
-          rid: 373203168293027947
+          rid: 4349001980571550327
         m_Conditions:
-        - rid: 373203168293027948
+        - rid: 4349001980571550328
         m_RequiresAllConditions: 1
         m_ObserverType: 2
-    - rid: 373203168293027939
+    - rid: 4349001980571550319
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -287,44 +280,60 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027929
+          rid: 4349001980571550311
         m_Children:
-        - rid: 373203168293027949
-        - rid: 373203168293027950
+        - rid: 4349001980571550329
+        - rid: 4349001980571550330
         m_RegisteredObservers: []
-    - rid: 373203168293027940
-      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+    - rid: 4349001980571550320
+      type: {class: EnemyDie, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
       data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: Drone Enemy DIED
-    - rid: 373203168293027941
-      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+        ID:
+          m_Value0: 2283429554904677411
+          m_Value1: 13277822037749628581
+        Graph:
+          rid: 7112529902252327530
+        m_Parent:
+          rid: 4349001980571550313
+    - rid: 4349001980571550321
+      type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
-    - rid: 373203168293027942
-      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+        ID:
+          m_Value0: 12044724442665163698
+          m_Value1: 9888560897926363786
+        Graph:
+          rid: 7112529902252327530
+        m_Parent:
+          rid: 4349001980571550313
+        Message:
+          rid: 4349001980571550242
+        LogLevel:
+          rid: 4349001980571550243
+    - rid: 4349001980571550322
+      type: {class: DroneRecoverFromKnockdown, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: Drone Enemy IS KNOCKED/STUNNED
-    - rid: 373203168293027943
-      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
+        ID:
+          m_Value0: 10711928669854247474
+          m_Value1: 17127681492034520210
+        Graph:
+          rid: 7112529902252327530
+        m_Parent:
+          rid: 4349001980571550315
+    - rid: 4349001980571550323
+      type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
-    - rid: 373203168293027944
+        ID:
+          m_Value0: 16315071909636317404
+          m_Value1: 363146576029522158
+        Graph:
+          rid: 7112529902252327530
+        m_Parent:
+          rid: 4349001980571550315
+        Message:
+          rid: 4349001980571550244
+        LogLevel:
+          rid: 4349001980571550245
+    - rid: 4349001980571550324
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -333,22 +342,22 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027937
+          rid: 4349001980571550317
         m_Children:
-        - rid: 373203168293027951
-        - rid: 373203168293027952
+        - rid: 4349001980571550331
+        - rid: 4349001980571550332
         m_RegisteredObservers: []
-    - rid: 373203168293027945
+    - rid: 4349001980571550325
       type: {class: DroneInFireRange, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
         Graph:
           rid: 7112529902252327530
-    - rid: 373203168293027946
+    - rid: 4349001980571550326
       type: {class: DroneCanFire, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
         Graph:
           rid: 7112529902252327530
-    - rid: 373203168293027947
+    - rid: 4349001980571550327
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -357,17 +366,17 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027938
+          rid: 4349001980571550318
         m_Children:
-        - rid: 373203168293027953
-        - rid: 373203168293027954
+        - rid: 4349001980571550333
+        - rid: 4349001980571550334
         m_RegisteredObservers: []
-    - rid: 373203168293027948
+    - rid: 4349001980571550328
       type: {class: DroneTargetTooClose, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
         Graph:
           rid: 7112529902252327530
-    - rid: 373203168293027949
+    - rid: 4349001980571550329
       type: {class: DroneMaintainRangeTick, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
         ID:
@@ -376,8 +385,8 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027939
-    - rid: 373203168293027950
+          rid: 4349001980571550319
+    - rid: 4349001980571550330
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -386,12 +395,12 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027939
+          rid: 4349001980571550319
         Message:
-          rid: 373203168293027955
+          rid: 4349001980571550335
         LogLevel:
-          rid: 373203168293027956
-    - rid: 373203168293027951
+          rid: 4349001980571550336
+    - rid: 4349001980571550331
       type: {class: DroneFireProjectile, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
         ID:
@@ -400,8 +409,8 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027944
-    - rid: 373203168293027952
+          rid: 4349001980571550324
+    - rid: 4349001980571550332
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -410,12 +419,12 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027944
+          rid: 4349001980571550324
         Message:
-          rid: 373203168293027957
+          rid: 4349001980571550250
         LogLevel:
-          rid: 373203168293027958
-    - rid: 373203168293027953
+          rid: 4349001980571550251
+    - rid: 4349001980571550333
       type: {class: DroneMoveAwayTick, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
       data:
         ID:
@@ -424,8 +433,8 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027947
-    - rid: 373203168293027954
+          rid: 4349001980571550327
+    - rid: 4349001980571550334
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -434,12 +443,12 @@ MonoBehaviour:
         Graph:
           rid: 7112529902252327530
         m_Parent:
-          rid: 373203168293027947
+          rid: 4349001980571550327
         Message:
-          rid: 373203168293027959
+          rid: 4349001980571550252
         LogLevel:
-          rid: 373203168293027960
-    - rid: 373203168293027955
+          rid: 4349001980571550253
+    - rid: 4349001980571550335
       type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -447,39 +456,7 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: Drone Enemy MAINTAINS RANGE
-    - rid: 373203168293027956
-      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
-    - rid: 373203168293027957
-      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: Drone Enemy FIRE PROJECTILE
-    - rid: 373203168293027958
-      type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 0
-    - rid: 373203168293027959
-      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: Drone Enemy MOVES AWAY FROM TARGET
-    - rid: 373203168293027960
+    - rid: 4349001980571550336
       type: {class: 'BlackboardVariable`1[[Unity.Behavior.LogMessageToConsoleAction/LogType, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -498,8 +475,8 @@ MonoBehaviour:
           rid: 7112529902252327531
         BlackboardGroupReferences: []
         Root:
-          rid: 373203168293027919
-        m_VersionTimestamp: 639091111796277230
+          rid: 4349001980571550307
+        m_VersionTimestamp: 639116048466817246
     - rid: 7112529902252327531
       type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -620,7 +597,8 @@ MonoBehaviour:
   - rid: 7112529948010348647
   - rid: 7112529948010348721
   - rid: 7112529948010348778
-  m_VersionTimestamp: 639091111796277230
+  - rid: 4349001980571549905
+  m_VersionTimestamp: 639116048466817246
   m_SerializedVersion: 2
   m_DebugInfo: {fileID: 8522848657885155476}
   m_RuntimeGraph: {fileID: -2347024426253386433}
@@ -680,6 +658,16 @@ MonoBehaviour:
         m_SerializableType: Unity.Behavior.LogMessageToConsoleAction+LogType, Unity.Behavior,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       Tooltip: 
+    NamedChildren: []
+    IsPlaceholder: 0
+  - Name: Conditional Guard (Action)
+    Story: 
+    RuntimeTypeString: Unity.Behavior.ConditionalGuardAction, Unity.Behavior, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    RuntimeTypeID:
+      m_Value0: 10845871997924083670
+      m_Value1: 4041440894818793834
+    Variables: []
     NamedChildren: []
     IsPlaceholder: 0
   - Name: 'Drone: Recover From Knockdown'
@@ -745,6 +733,16 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 4349001980571549905
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: 566.34625, y: 330.86282}
+        ID:
+          m_Value0: 12263552006195705659
+          m_Value1: 10142742253180733803
+        Parents: []
+        PortModels: []
+        Text: Pass If & Abort Lower Priority
     - rid: 7112529902252327535
       type: {class: StartNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
@@ -833,7 +831,7 @@ MonoBehaviour:
         m_Connections:
         - rid: 7112529902252327732
         - rid: 7112529902252327781
-        - rid: 7112529904951362313
+        - rid: 7112529902252327860
         - rid: 7112529932407013645
     - rid: 7112529902252327728
       type: {class: ConditionalGuardNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
@@ -1124,7 +1122,7 @@ MonoBehaviour:
         m_NodeModel:
           rid: 7112529902252327859
         m_Connections:
-        - rid: 7112529904951362314
+        - rid: 7112529902252327722
     - rid: 7112529902252327861
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -1510,7 +1508,7 @@ MonoBehaviour:
     - rid: 7112529904951362312
       type: {class: ConditionalGuardNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: 361.911, y: 235.47397}
+        Position: {x: 530.4631, y: 281.676}
         ID:
           m_Value0: 5472119285134543380
           m_Value1: 17621067173423469868
@@ -1519,18 +1517,18 @@ MonoBehaviour:
         - rid: 7112529904951362313
         - rid: 7112529904951362314
         NodeType:
-          m_SerializableType: Unity.Behavior.ConditionalGuardModifier, Unity.Behavior,
+          m_SerializableType: Unity.Behavior.ConditionalGuardAction, Unity.Behavior,
             Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         NodeTypeID:
-          m_Value0: 3048858705937822632
-          m_Value1: 3282115049331433116
+          m_Value0: 10845871997924083670
+          m_Value1: 4041440894818793834
         m_FieldValues: []
-        m_Mode: 1
+        m_Mode: 0
         <ConditionModels>k__BackingField:
         - rid: 7112529948010348580
         <RequiresAllConditionsTrue>k__BackingField: 0
         <ShouldTruncateNodeUI>k__BackingField: 0
-        <ObserverType>k__BackingField: 2
+        <ObserverType>k__BackingField: 0
     - rid: 7112529904951362313
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -1539,8 +1537,7 @@ MonoBehaviour:
         m_IsFloating: 0
         m_NodeModel:
           rid: 7112529904951362312
-        m_Connections:
-        - rid: 7112529902252327722
+        m_Connections: []
     - rid: 7112529904951362314
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -1549,8 +1546,7 @@ MonoBehaviour:
         m_IsFloating: 0
         m_NodeModel:
           rid: 7112529904951362312
-        m_Connections:
-        - rid: 7112529902252327860
+        m_Connections: []
     - rid: 7112529932407013452
       type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
