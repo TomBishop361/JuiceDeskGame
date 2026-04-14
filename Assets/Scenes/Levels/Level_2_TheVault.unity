@@ -208466,6 +208466,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: SceneEvents
       objectReference: {fileID: 0}
+    - target: {fileID: 5269836830272674917, guid: 6c223a17e8a9dc142aa3717282ef9c7b, type: 3}
+      propertyPath: onLevelRestartCmd.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 794987097}
+    - target: {fileID: 5269836830272674917, guid: 6c223a17e8a9dc142aa3717282ef9c7b, type: 3}
+      propertyPath: onLevelRestartCmd.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 5269836830272674917, guid: 6c223a17e8a9dc142aa3717282ef9c7b, type: 3}
+      propertyPath: onLevelRestartCmd.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Level_2_TheVault
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -244584,7 +244596,7 @@ PrefabInstance:
       objectReference: {fileID: 794987097}
     - target: {fileID: 7137270874155908623, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
       propertyPath: sceneToLoad
-      value: Level1-AI_JoshFix
+      value: Level_1
       objectReference: {fileID: 0}
     - target: {fileID: 7137270874155908623, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
       propertyPath: startsLocked
@@ -308909,65 +308921,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!1 &1750882383
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1750882385}
-  - component: {fileID: 1750882384}
-  m_Layer: 0
-  m_Name: Dev
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1750882384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750882383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d15d81e2ce0c2946ae6380130f6fc55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onLevelRestartCmd:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 794987097}
-        m_TargetAssemblyTypeName: SceneTransition, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Level_2_TheVault_JoshFix
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!4 &1750882385
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750882383}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 64.26553, y: 21.145617, z: -32.705658}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1751024231
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -394171,4 +394124,3 @@ SceneRoots:
   - {fileID: 58903118}
   - {fileID: 1282353668}
   - {fileID: 1897328367}
-  - {fileID: 1750882385}
