@@ -202,7 +202,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_Name
-      value: WaveSpawnTrigger_ShieldOnly
+      value: WaveTrigger_ShieldOnly
       objectReference: {fileID: 0}
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_IsActive
@@ -2168,7 +2168,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_Name
-      value: WaveSpawnTrigger_DroneOnly
+      value: WaveTrigger_DroneOnly
       objectReference: {fileID: 0}
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_IsActive
@@ -3038,72 +3038,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dbd75d28e56fab4eae7b5814231eb16, type: 3}
---- !u!1001 &934932713
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1163682013}
-    m_Modifications:
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4987792396620979073, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: m_Name
-      value: EnemyTracker
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988622397455261270, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-      propertyPath: onAllEnemiesDead.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
---- !u!4 &934932714 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1086746930237776241, guid: 822c01b995495b04ea43a534c5bfb65c, type: 3}
-  m_PrefabInstance: {fileID: 934932713}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &949004522
 GameObject:
   m_ObjectHideFlags: 0
@@ -3136,7 +3070,6 @@ Transform:
   - {fileID: 1658450590}
   - {fileID: 1946538320}
   - {fileID: 1336536294}
-  - {fileID: 1163682013}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &952995508
@@ -3748,38 +3681,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5755296534510582935, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
   m_PrefabInstance: {fileID: 1307197916}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1163682012
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1163682013}
-  m_Layer: 0
-  m_Name: DEPRECATED_TrackingSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1163682013
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1163682012}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 934932714}
-  m_Father: {fileID: 949004523}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1189377937
 GameObject:
   m_ObjectHideFlags: 0
@@ -4485,7 +4386,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_Name
-      value: WaveSpawnTrigger_SwordOnly
+      value: WaveTrigger_SwordOnly
       objectReference: {fileID: 0}
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_IsActive
@@ -5729,7 +5630,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_Name
-      value: WaveSpawnTrigger_Template
+      value: WaveTrigger_Template
       objectReference: {fileID: 0}
     - target: {fileID: 5841369381750647544, guid: 22a66b4ec92b83d4da13735b51208621, type: 3}
       propertyPath: m_IsActive
