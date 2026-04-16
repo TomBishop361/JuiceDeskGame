@@ -352,6 +352,11 @@ MonoBehaviour:
   airControlDuringGrapple: 0.5
   grapplePullForce: 20
   AnchorLaunchAmount: 0
+  onRail: 0
+  railGrindTime: 1
+  grindSpeed: 0
+  heightOffset: 0
+  currentRailScript: {fileID: 0}
   acceleration: 50
   airAcceleration: 50
   groundFriction: 9
@@ -372,6 +377,7 @@ MonoBehaviour:
   IsJumpReady: 0
   isOnCoolDown: 0
   freeze: 0
+  isRailGrinding: 0
   activeGrapple: 0
   rb: {fileID: 13888070988371887}
   state: 0
@@ -516,6 +522,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gunInputManager: {fileID: 8400700820253014844}
   gunData: {fileID: 11400000, guid: 1b2903353fdc954469b45a0cdeba68cd, type: 2}
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 3417
   isDrawn: 0
   AimOrigin: {fileID: 0}
   BulletOrigin: {fileID: 1852571263087215205}

@@ -29,6 +29,8 @@ public class GunBase : MonoBehaviour
     public float reloadSpeed { get; private set; }
     public float fireRate { get; private set; } //RoundsPerMin to RoundsPerSec
 
+    public LayerMask hitMask;
+
     //logic
     public bool isDrawn;
 
@@ -68,6 +70,9 @@ public class GunBase : MonoBehaviour
     Vector3 ShootDir;
 
     #endregion
+
+
+    
 
     public delegate void OnShoot();
     public event OnShoot onShot;
@@ -157,10 +162,14 @@ public class GunBase : MonoBehaviour
         {
             RaycastHit hit;
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red,2);
-            if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit)) 
-                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;
+            if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit, 30f, hitMask))
+            {
+                Debug.DrawLine(AimOrigin.transform.position, hit.point, Color.blue, 5f);
+                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;                
+                Debug.Log("Hit Object Name " + hit.transform.name);
+            }
             else
-                ShootDir = AimOrigin.transform.forward ;
+                ShootDir = AimOrigin.transform.forward;
                  
             ShootBullet();
         }
