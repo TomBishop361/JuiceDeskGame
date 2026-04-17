@@ -62,6 +62,7 @@ public class InputController : MonoBehaviour
     [SerializeField] RailScript currentRailScript;
 
     [Header("Misc")]
+    [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
     [SerializeField] float airAcceleration = 25;
@@ -111,9 +112,12 @@ public class InputController : MonoBehaviour
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
 
-    public event Action JumpEvent = delegate { };
+    public event Action JumpEvent = delegate { };   
 
     public MovementState state;
+
+    
+
     public enum MovementState
     {
         freeze,
@@ -123,6 +127,7 @@ public class InputController : MonoBehaviour
         wallRunning,
         crouching,
         sliding,
+        idle,
         air
     }
   
@@ -218,9 +223,14 @@ public class InputController : MonoBehaviour
             state = MovementState.sprinting;
             desiredMoveSpeed = sprintSpeed;
         }
-        else if (_isGrounded)
+        else if (_isGrounded && MoveDirection != Vector2.zero)
         {
             state = MovementState.walking;
+            desiredMoveSpeed = walkSpeed;
+        }
+        else if (_isGrounded && MoveDirection == Vector2.zero)
+        {
+            state = MovementState.idle;
             desiredMoveSpeed = walkSpeed;
         }
         else
@@ -511,6 +521,7 @@ public class InputController : MonoBehaviour
     private void LateUpdate()
     {
         HandleLook(LookDirection);
+        UpdateAnimator();
     }
     private void Update()
     {
@@ -654,6 +665,24 @@ private void OnCollisionEnter(Collision collision)
         
     }
 
+    private void UpdateAnimator()
+    {
+        if (!animator) return;   
+
+      
+
+        //animator.SetBool("Grounded", isGrounded);
+        animator.SetBool("Walking", state == MovementState.walking);
+        animator.SetBool("Idle", state == MovementState.idle);
+        animator.SetBool("Sprinting", state == MovementState.sprinting);
+        //animator.SetBool("Crouching", state == MovementState.crouching);
+        animator.SetBool("Sliding", state == MovementState.sliding);
+        //animator.SetBool("WallRunning", state == MovementState.wallRunning);
+        //animator.SetBool("RailGrinding", isRailGrinding);
+        //animator.SetBool("Grappling", activeGrapple);
+
+        //animator.SetInteger("State", (int)state);
+    }
 
 
 #if UNITY_EDITOR

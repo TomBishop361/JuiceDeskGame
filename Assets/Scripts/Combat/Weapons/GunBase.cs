@@ -69,6 +69,9 @@ public class GunBase : MonoBehaviour
     //TPPGunShoot
     Vector3 ShootDir;
 
+    //ForPlayerIK
+    [SerializeField] GameObject IKTarget;
+
     #endregion
 
 
@@ -165,11 +168,19 @@ public class GunBase : MonoBehaviour
             if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit, 30f, hitMask))
             {
                 Debug.DrawLine(AimOrigin.transform.position, hit.point, Color.blue, 5f);
-                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;                
+                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;
                 Debug.Log("Hit Object Name " + hit.transform.name);
+                if (IKTarget != null)
+                {
+                    IKTarget.transform.position = hit.point;
+                }
             }
             else
+            {
                 ShootDir = AimOrigin.transform.forward;
+                IKTarget.transform.position = AimOrigin.transform.position + AimOrigin.transform.forward * 10;
+            }
+
                  
             ShootBullet();
         }
