@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5565896424687819428}
   - component: {fileID: 9175466855674170723}
   - component: {fileID: 7436090233546715121}
-  m_Layer: 2
+  m_Layer: 15
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 5996962199118647859}
   - component: {fileID: 6303715535058746769}
   - component: {fileID: 7494796260684051012}
-  m_Layer: 2
+  m_Layer: 15
   m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,10 +129,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 840
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 2213
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
@@ -152,6 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02323bb9eb30b0744aa5183f4bb246db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  validHitLayers:
+    serializedVersion: 2
+    m_Bits: 28489
 --- !u!1 &7362145670262986248
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +166,7 @@ GameObject:
   - component: {fileID: 2380422073610278484}
   - component: {fileID: 1613184670381674500}
   - component: {fileID: 6589406144891701966}
-  m_Layer: 2
+  m_Layer: 15
   m_Name: Player_Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,7 +209,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 12416
+    m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0

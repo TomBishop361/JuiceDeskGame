@@ -362,7 +362,7 @@ namespace Game.AI.Shield {
 			}
 
 			// Dynamically update shield blocking state
-			//UpdateShieldBlockState();
+			UpdateShieldBlockState();
 
 			// Handle Attack lock timer (prevents immediate re-trigger spam even if anim event misfires)
 			// NOTE: THIS ANIM EVENT IS A SAFETY NET IN CASE ANIM DOES NOT FIRE OR ISN'T WIRED CORRECTLY

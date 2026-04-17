@@ -8,6 +8,8 @@ using UnityEngine.ProBuilder;
 
 // NOTE: Should be applied to each Projectile GameObject
 public class ProjectileHitbox : MonoBehaviour {
+	[SerializeField] private LayerMask validHitLayers;
+
 	//private ProjectileBase parentProjectile;
 	private MonoBehaviour parentProjectile;
 	private AttackData attackData;
@@ -44,13 +46,29 @@ public class ProjectileHitbox : MonoBehaviour {
 			return;
 		}
 
+		// Ignore layers this projectile should not hit
+		if ((validHitLayers.value & (1 << other.gameObject.layer)) == 0) {
+			return;
+		}
+
+		// Ignore non-damageable utility triggers
+		IDamageable target = other.GetComponentInParent<IDamageable>();
+		if (other.isTrigger && target == null) {
+			return;
+		}
+
 		hasHit = true;
 
+		// Notify executors that projectile hit something
+		// They handle damage dealing due to projectiles dealing either direct or in-direct splash damage (For drone homing projectiles only at the moment)
 		Vector3 hitPoint = other.ClosestPoint(parentProjectile.transform.position);
+		OnProjectileHitImpact?.Invoke(attackData, target, hitPoint);
+
+		Debug.Log("parent = " + parentProjectile.gameObject.name);
 
 		// IDamageable is implemented inside Hurtbox.cs (which is on root parent gameobject)
 		// Hurtbox exists on enemies, but environment usually won't have one
-		IDamageable target = other.GetComponentInParent<IDamageable>();
+		// IDamageable target = other.GetComponentInParent<IDamageable>();
 
 		////IDamageable is implemented inside Hurtbox.cs(which is on root parent gameobject)
 		//IDamageable target = other.GetComponentInParent<IDamageable>();
@@ -60,7 +78,6 @@ public class ProjectileHitbox : MonoBehaviour {
 		//	return;
 		//}
 
-		Debug.Log("parent = " + parentProjectile.gameObject.name);
 		// Dictates if a direct or in-direct hit was made based on whether IDamageable exists on the collided object
 		//IDamageable target = other.TryGetComponent(out IDamageable damageable) ? damageable : null;
 		//Debug.Log("TARGET =  " + other.name);
@@ -68,12 +85,6 @@ public class ProjectileHitbox : MonoBehaviour {
 		//if (isDrone == false) {
 		//	target.TakeDamage(attackData);
 		//}
-		
-
-
-		// Notify executors that projectile hit something
-		// They handle damage dealing due to projectiles dealing either direct or in-direct splash damage (For drone homing projectiles only at the moment)
-		OnProjectileHitImpact?.Invoke(attackData, target, hitPoint);
 
 		//// Inform Projectile.cs script that a collision has occured
 		//// It will deal with damage handling because there is falloff based on AOE impact

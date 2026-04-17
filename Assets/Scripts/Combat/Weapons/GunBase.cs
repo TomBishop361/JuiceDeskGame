@@ -29,7 +29,7 @@ public class GunBase : MonoBehaviour
     public float reloadSpeed { get; private set; }
     public float fireRate { get; private set; } //RoundsPerMin to RoundsPerSec
 
-    public LayerMask hitMask;
+    public LayerMask aimMask;
 
     //logic
     public bool isDrawn;
@@ -162,7 +162,7 @@ public class GunBase : MonoBehaviour
         {
             RaycastHit hit;
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red,2);
-            if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit, 30f, hitMask))
+            if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit, 30f, aimMask, QueryTriggerInteraction.Ignore))
             {
                 Debug.DrawLine(AimOrigin.transform.position, hit.point, Color.blue, 5f);
                 ShootDir = (hit.point - BulletOrigin.transform.position).normalized;                
