@@ -36,7 +36,8 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Success;
 			}
 
-			shieldEnemy.AdvanceRaisedTick();
+			shieldEnemy.ChaseTargetTick(); // AdvanceRaisedTick();
+
 
 			return Status.Running;
 		}
@@ -53,7 +54,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Success;
 			}
 
-			shieldEnemy.AdvanceRaisedTick();
+			shieldEnemy.ChaseTargetTick(); // AdvanceRaisedTick();
 
 			return Status.Running;
 		}
@@ -123,7 +124,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			bool hasStartedSlamShockwave = shieldEnemy.TryStartSlamShockwave();
+			bool hasStartedSlamShockwave = shieldEnemy.TryStartSlam(); // TryStartSlamShockwave();
 
 			return hasStartedSlamShockwave ? Status.Running : Status.Failure;
 		}
@@ -153,7 +154,7 @@ namespace Game.AI.Behavior.Shield {
 			}
 
 			// Start firing immediately (PROTOTYPE: no spin-up)
-			bool canFireMinigun = shieldEnemy.FireMinigunTick();
+			bool canFireMinigun = shieldEnemy.TryStartMinigun(); // FireMinigunTick();
 
 			return canFireMinigun ? Status.Running : Status.Failure;
 		}
@@ -166,7 +167,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			bool canFireMinigun = shieldEnemy.FireMinigunTick();
+			bool canFireMinigun = shieldEnemy.TryStartMinigun(); // FireMinigunTick();
 
 			return canFireMinigun ? Status.Running : Status.Success; //RETRUN SUCCESS?
 		}

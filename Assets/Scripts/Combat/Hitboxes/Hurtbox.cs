@@ -10,8 +10,13 @@ using UnityEngine;
 // NOTE: PLACE HURTBOX COLLIDER ON CHILD OF ROOT PARENT GAMEOBJECT
 [RequireComponent(typeof(Health))]
 public class Hurtbox : MonoBehaviour, IDamageable {
+	[Header("Damage Reaction")]
 	[SerializeField] private Animator animator;
+	[SerializeField] private bool playTakeDamageAnimation = false;
+	[SerializeField] private string takeDamageTriggerName = "TakeDamage";
+
 	private IFactionOwner factionOwner;
+	private int takeDamageTriggerHash;
 
 	public static event Action<Hurtbox, AttackData> OnAnyDamaged;
 
@@ -20,6 +25,8 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		if (factionOwner == null) {
 			Debug.LogError("Hurtbox: IFactionOwner not found on parent");
 		}
+
+		takeDamageTriggerHash = Animator.StringToHash(takeDamageTriggerName);
 	}
 
 	public void TakeDamage(AttackData attackData) {
@@ -42,11 +49,11 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		// Notify executors that damage has been received
 		OnAnyDamaged?.Invoke(this, attackData);
 
-		// Trigger damage reaction animation
-		if (animator != null) {
-			animator.SetTrigger("TakeDamage");
+		// Trigger damage reaction animation (Optional - set inside each entities inspector)
+		if (playTakeDamageAnimation == true && animator != null) {
+			animator.SetTrigger(takeDamageTriggerHash);
 			StartCoroutine(ResetTakeDamageTriggerOnNextFrame());
-		}	
+		}
 	}
 
 	private bool CanBeDamaged(Faction attackerFaction) {
@@ -84,7 +91,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		}
 
 		// Compute the direction of knockback
-		Vector3 knockbackDirection = transform.position - attackData.Attacker.transform.position/*.normalized*/;
+		Vector3 knockbackDirection = transform.position - attackData.Attacker.transform.position;
 		knockbackDirection.y = 0.0f;
 
 		if (knockbackDirection.sqrMagnitude < 0.0001f) {
@@ -101,7 +108,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		rigidbody.AddForce(forceToApply, ForceMode.VelocityChange);
 		//rigidbody.AddForce(knockbackDirection * attackData.Knockback.Force + Vector3.up * attackData.Knockback.UpwardModifier, ForceMode.Impulse);
 
-		// Clamp upward velocity (in the case of the plater already rising, they won't be sent too high)
+		// Clamp upward velocity (in the case of the player already rising, they won't be sent too high)
 		float maxUpVelocity = 8.0f; // TODO: MAKE THIS A VARIABLE [STORE INSIDE AttackData]
 
 		Vector3 velocity = rigidbody.linearVelocity;
@@ -133,7 +140,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		// Wait one frame
 		yield return null;
 		// Reset after one frame to prevent multiple triggers from firing
-		animator.ResetTrigger("TakeDamage");
+		animator.ResetTrigger(takeDamageTriggerHash);
 	}
 
 	// TODO: REMOVE LATER -> REPLACED WITH TakeDamage()

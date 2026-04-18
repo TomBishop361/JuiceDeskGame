@@ -32,7 +32,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Success;
 			}
 
-			droneEnemy.RecoverFromKnockdownTick();
+			droneEnemy.RecoverTick();
 
 			return Status.Running;
 		}
@@ -46,7 +46,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Success;
 			}
 
-			droneEnemy.RecoverFromKnockdownTick();
+			droneEnemy.RecoverTick();
 
 			return Status.Running;
 		}
@@ -66,8 +66,8 @@ namespace Game.AI.Behavior.Drone {
 			if (droneEnemy.HasTarget == false) {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
-
-			droneEnemy.MoveAwayTick();
+			
+			droneEnemy.ChaseTargetTick(); // droneEnemy.MoveAwayTick(); New method will make this happen if it should
 
 			return Status.Success; 
 		}
@@ -80,7 +80,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
-			droneEnemy.MoveAwayTick();
+			droneEnemy.ChaseTargetTick(); // droneEnemy.MoveAwayTick(); New method will make this happen if it should
 
 			return Status.Success; 
 		}
@@ -98,10 +98,11 @@ namespace Game.AI.Behavior.Drone {
 			}
 
 			if (droneEnemy.HasTarget == false) {
-				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
+				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE 
 			}
 
-			droneEnemy.MaintainRangeTick();
+			droneEnemy.ChaseTargetTick(); // droneEnemy.MaintainRangeTick(); New method will make this happen if it should
+
 
 			return Status.Success; 
 		}
@@ -114,7 +115,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
-			droneEnemy.MaintainRangeTick();
+			droneEnemy.ChaseTargetTick(); // droneEnemy.MaintainRangeTick(); New method will make this happen if it should
 
 			return Status.Success; 
 		}
