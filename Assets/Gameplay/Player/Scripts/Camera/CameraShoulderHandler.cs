@@ -55,16 +55,18 @@ public class CameraShoulderHandler : MonoBehaviour
         {
             targetOffset = -XShoulderOffset;
             targetDutch = DutchTilt;
-            gunObj.transform.localPosition = LeftSideGunPlacement;
+            //TEMORARY STOPPED
+            //gunObj.transform.localPosition = LeftSideGunPlacement;
         }
         else
         {            
             targetDutch = -DutchTilt;
-            gunObj.transform.localPosition = RightSideGunPlacement;
+            //TEMORARY STOPPED
+            // gunObj.transform.localPosition = RightSideGunPlacement;
         }
 
         //Begin Lerp
-        if(cameraLerp != null) StopCoroutine(cameraLerp);
+        if (cameraLerp != null) StopCoroutine(cameraLerp);
         cameraLerp = StartCoroutine("MoveCameraOffset");
     }
 

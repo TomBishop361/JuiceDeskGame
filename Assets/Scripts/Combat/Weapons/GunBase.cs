@@ -69,6 +69,7 @@ public class GunBase : MonoBehaviour
     //TPPGunShoot
     Vector3 ShootDir;
 
+    
     #endregion
 
 
@@ -165,11 +166,16 @@ public class GunBase : MonoBehaviour
             if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit, 30f, aimMask, QueryTriggerInteraction.Ignore))
             {
                 Debug.DrawLine(AimOrigin.transform.position, hit.point, Color.blue, 5f);
-                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;                
+                ShootDir = (hit.point - BulletOrigin.transform.position).normalized;
                 Debug.Log("Hit Object Name " + hit.transform.name);
+               
             }
             else
+            {
                 ShootDir = AimOrigin.transform.forward;
+               
+            }
+
                  
             ShootBullet();
         }

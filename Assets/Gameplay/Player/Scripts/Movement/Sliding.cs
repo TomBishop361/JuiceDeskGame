@@ -29,7 +29,7 @@ public class Sliding : MonoBehaviour
         controller.InputManager.OnSlideReceived += SlideInput;
         controller.InputManager.OnMoveReceived += MoveInput;
         controller.JumpEvent += jumpListener;
-        startYScale = transform.localScale.y;   
+        //startYScale = transform.localScale.y;   
     }
 
     private void OnDisable()
@@ -40,8 +40,7 @@ public class Sliding : MonoBehaviour
     }
 
     void SlideInput(float val)
-    {
-        
+    {        
         slideInput = val;
         Debug.Log(slideInput + "Slide INPUT ");
     }
@@ -79,7 +78,10 @@ public class Sliding : MonoBehaviour
     {
         
         controller.sliding = true;
-        transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
+        //Animator Call
+
+        //transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
+
         rb.AddForce(Vector3.down, ForceMode.Impulse);
 
 
@@ -91,7 +93,9 @@ public class Sliding : MonoBehaviour
         if (!controller.sliding) return;
 
         controller.sliding = false;
-        transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        //Animator Call
+        //transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

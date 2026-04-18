@@ -62,6 +62,7 @@ public class InputController : MonoBehaviour
     [SerializeField] RailScript currentRailScript;
 
     [Header("Misc")]
+    [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
     [SerializeField] float airAcceleration = 25;
@@ -92,8 +93,9 @@ public class InputController : MonoBehaviour
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
-   
 
+    [SerializeField] GameObject IKGunTarget;
+    [SerializeField] GameObject PlayerRoot;
 
 
     private Vector2 lastInputEvent;
@@ -111,9 +113,12 @@ public class InputController : MonoBehaviour
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
 
-    public event Action JumpEvent = delegate { };
+    public event Action JumpEvent = delegate { };   
 
     public MovementState state;
+
+    
+
     public enum MovementState
     {
         freeze,
@@ -123,6 +128,7 @@ public class InputController : MonoBehaviour
         wallRunning,
         crouching,
         sliding,
+        idle,
         air
     }
   
@@ -218,9 +224,14 @@ public class InputController : MonoBehaviour
             state = MovementState.sprinting;
             desiredMoveSpeed = sprintSpeed;
         }
-        else if (_isGrounded)
+        else if (_isGrounded && MoveDirection != Vector2.zero)
         {
             state = MovementState.walking;
+            desiredMoveSpeed = walkSpeed;
+        }
+        else if (_isGrounded && MoveDirection == Vector2.zero)
+        {
+            state = MovementState.idle;
             desiredMoveSpeed = walkSpeed;
         }
         else
@@ -511,6 +522,8 @@ public class InputController : MonoBehaviour
     private void LateUpdate()
     {
         HandleLook(LookDirection);
+        UpdateAnimator();
+        UpdateIK();
     }
     private void Update()
     {
@@ -654,6 +667,58 @@ private void OnCollisionEnter(Collision collision)
         
     }
 
+    void UpdateIK()
+    {
+        Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 5;
+        Vector3 localTarget = PlayerRoot.transform.InverseTransformPoint(desiredIKPosition);
+
+        // Clamp horizontal angle
+        float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
+        angle = Mathf.Clamp(angle, -70f, 160f);
+
+        // Clamp vertical
+        localTarget.y = Mathf.Clamp(localTarget.y, -0.2f, 0.8f);
+
+        // Rebuild position
+        float dist = localTarget.magnitude;
+
+        float yOffset = 0;
+        if (state == MovementState.sliding) {
+            yOffset = -5;
+        }
+        else if(state == MovementState.walking || state == MovementState.sprinting){
+            yOffset = 2.5f;
+
+        }
+
+            Vector3 clamped = new Vector3(
+                Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
+                desiredIKPosition.y + yOffset,
+                Mathf.Cos(angle * Mathf.Deg2Rad) * dist
+            );
+
+        IKGunTarget.transform.position = PlayerRoot.transform.TransformPoint(clamped);
+
+    }
+
+    private void UpdateAnimator()
+    {
+        if (!animator) return;   
+
+      
+
+        //animator.SetBool("Grounded", isGrounded);
+        animator.SetBool("Walking", state == MovementState.walking);
+        animator.SetBool("Idle", state == MovementState.idle);
+        animator.SetBool("Sprinting", state == MovementState.sprinting);
+        //animator.SetBool("Crouching", state == MovementState.crouching);
+        animator.SetBool("Sliding", state == MovementState.sliding);
+        //animator.SetBool("WallRunning", state == MovementState.wallRunning);
+        //animator.SetBool("RailGrinding", isRailGrinding);
+        //animator.SetBool("Grappling", activeGrapple);
+
+        //animator.SetInteger("State", (int)state);
+    }
 
 
 #if UNITY_EDITOR

@@ -1,4 +1,6 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Sniper : MonoBehaviour
 {
@@ -8,34 +10,76 @@ public class Sniper : MonoBehaviour
     // Post process effect (Enemy Highlight red?)
 
     [Header("References")]
-    [SerializeField] InputController playerController;
-    [SerializeField]
-    GunInputManagerBase _gunInputManager;
+    [SerializeField] CinemachineCamera _camera;    
+    [SerializeField] GunInputManagerBase _gunInputManager;
+    [SerializeField] WeaponManager _weaponManager;
+
+    
+    float aimTimer;
+    
+
     IGunInputManager gunInputManager => _gunInputManager.InputManager;
 
     private void OnEnable()
     {
-        gunInputManager.onSecondFire += Aim;
+        gunInputManager.onSecondFire += AimInput;
     }
     private void OnDisable()
     {
+        gunInputManager.onSecondFire -= AimInput;
+    }
+
+    bool aim = false;
+    bool isAimmed;
+
+    bool _aim { get { return aim; }
+        set { 
+            aim = value; 
+            aimTimer = 0;
+            
+        } 
+    }
+
+    void AimInput(bool aim)
+    {
+        _aim = aim;
+    }
+
+    private void FixedUpdate()
+    {
+        if (_aim)
+            AimIn();
+        else
+            AimOut();
+
+        AimTimer();
         
     }
 
-    void Aim(bool aim)
+    void AimTimer()
     {
-
+        if (aimTimer < 1)
+            aimTimer += Time.deltaTime;
+        else
+            isAimmed = true;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void AimIn()
     {
+        float t = aimTimer;
+        _weaponManager.CanPrimaryFire = false;
+        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, 50, t);  
         
     }
 
-    // Update is called once per frame
-    void Update()
+    void AimOut()
     {
-        
+        Debug.Log("AimOut");
+        float t = aimTimer;
+        _weaponManager.CanPrimaryFire = true;
+        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, 90, t);
+
+
     }
+   
 }
