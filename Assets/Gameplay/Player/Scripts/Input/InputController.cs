@@ -674,7 +674,7 @@ private void OnCollisionEnter(Collision collision)
 
         // Clamp horizontal angle
         float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
-        angle = Mathf.Clamp(angle, -90f, 90f);
+        angle = Mathf.Clamp(angle, -90f, 150f);
 
         // Clamp vertical
         localTarget.y = Mathf.Clamp(localTarget.y, -0.2f, 0.8f);
