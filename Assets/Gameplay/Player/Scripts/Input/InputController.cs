@@ -93,8 +93,9 @@ public class InputController : MonoBehaviour
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
-   
 
+    [SerializeField] GameObject IKGunTarget;
+    [SerializeField] GameObject PlayerRoot;
 
 
     private Vector2 lastInputEvent;
@@ -522,6 +523,7 @@ public class InputController : MonoBehaviour
     {
         HandleLook(LookDirection);
         UpdateAnimator();
+        UpdateIK();
     }
     private void Update()
     {
@@ -663,6 +665,29 @@ private void OnCollisionEnter(Collision collision)
         canRailGrind= false;
         railGrindTimer = railGrindTime;
         
+    }
+
+    void UpdateIK()
+    {
+        Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 10;
+        Vector3 localTarget = PlayerRoot.transform.InverseTransformPoint(desiredIKPosition);
+
+        // Clamp horizontal angle
+        float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
+        angle = Mathf.Clamp(angle, -90f, 90f);
+
+        // Clamp vertical
+        localTarget.y = Mathf.Clamp(localTarget.y, -0.2f, 0.8f);
+
+        // Rebuild position
+        float dist = localTarget.magnitude;
+        Vector3 clamped = new Vector3(
+            Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
+            localTarget.y,
+            Mathf.Cos(angle * Mathf.Deg2Rad) * dist
+        );
+
+        IKGunTarget.transform.position = PlayerRoot.transform.TransformPoint(clamped);
     }
 
     private void UpdateAnimator()
