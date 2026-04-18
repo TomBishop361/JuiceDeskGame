@@ -669,25 +669,36 @@ private void OnCollisionEnter(Collision collision)
 
     void UpdateIK()
     {
-        Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 10;
+        Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 5;
         Vector3 localTarget = PlayerRoot.transform.InverseTransformPoint(desiredIKPosition);
 
         // Clamp horizontal angle
         float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
-        angle = Mathf.Clamp(angle, -90f, 160f);
+        angle = Mathf.Clamp(angle, -70f, 160f);
 
         // Clamp vertical
         localTarget.y = Mathf.Clamp(localTarget.y, -0.2f, 0.8f);
 
         // Rebuild position
         float dist = localTarget.magnitude;
-        Vector3 clamped = new Vector3(
-            Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
-            localTarget.y,
-            Mathf.Cos(angle * Mathf.Deg2Rad) * dist
-        );
+
+        float yOffset = 0;
+        if (state == MovementState.sliding) {
+            yOffset = -5;
+        }
+        else if(state == MovementState.walking || state == MovementState.sprinting){
+            yOffset = 2.5f;
+
+        }
+
+            Vector3 clamped = new Vector3(
+                Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
+                desiredIKPosition.y + yOffset,
+                Mathf.Cos(angle * Mathf.Deg2Rad) * dist
+            );
 
         IKGunTarget.transform.position = PlayerRoot.transform.TransformPoint(clamped);
+
     }
 
     private void UpdateAnimator()
