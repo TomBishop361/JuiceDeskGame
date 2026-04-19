@@ -693,12 +693,12 @@ private void OnCollisionEnter(Collision collision)
         float yOffset = 0;
         if (state == MovementState.sliding)
         {
-            yOffset = -5;
+            yOffset = Mathf.Lerp(-5, 1.5f, t);
         }
         else if (state == MovementState.walking || state == MovementState.sprinting)
         {
+            //offset based on aim dir (offset is -2.f when looking behind)
             yOffset = Mathf.Lerp(3.5f,-2.5f ,t);
-
         }
         else if (wallRunning)
         {
