@@ -68,8 +68,9 @@ public class WallRunning : MonoBehaviour
     void CheckForWall()
     {
         wallRight = Physics.Raycast(transform.position, orientation.right, out rightWallCheck, wallCheckDist, wallLayer);
+        controller.WallRunRight = wallRight;
         wallLeft = Physics.Raycast(transform.position, -orientation.right, out leftWallCheck, wallCheckDist, wallLayer);
-        
+        controller.WallRunLeft = wallLeft;
     }
 
     private bool AboveGround()

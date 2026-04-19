@@ -14,6 +14,7 @@ using UnityEngine.Windows;
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
 {
+    public bool debugIK;
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
@@ -89,6 +90,8 @@ public class InputController : MonoBehaviour
     public bool IsJumpReady;
     public bool isOnCoolDown;
     public bool freeze;
+    public bool WallRunRight;
+    public bool WallRunLeft;
     public bool isRailGrinding;
     public bool activeGrapple;
     bool exitingSlope;
@@ -669,6 +672,10 @@ private void OnCollisionEnter(Collision collision)
 
     void UpdateIK()
     {
+        float minIKDistance = 0.6f;
+        float maxIKDistance = 1.5f;
+
+        if (debugIK) return;
         Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 5;
         Vector3 localTarget = PlayerRoot.transform.InverseTransformPoint(desiredIKPosition);
 
@@ -676,28 +683,49 @@ private void OnCollisionEnter(Collision collision)
         float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
         angle = Mathf.Clamp(angle, -70f, 160f);
 
+        //Set Max Distance based on what end of the clamp
+        float t = Mathf.InverseLerp(-70f, 160f, angle);
+        
+
         // Clamp vertical
         localTarget.y = Mathf.Clamp(localTarget.y, -0.2f, 0.8f);
 
-        // Rebuild position
-        float dist = localTarget.magnitude;
-
         float yOffset = 0;
-        if (state == MovementState.sliding) {
+        if (state == MovementState.sliding)
+        {
             yOffset = -5;
         }
-        else if(state == MovementState.walking || state == MovementState.sprinting){
-            yOffset = 2.5f;
+        else if (state == MovementState.walking || state == MovementState.sprinting)
+        {
+            yOffset = Mathf.Lerp(3.5f,-2.5f ,t);
 
         }
+        else if (wallRunning)
+        {
+            yOffset = -5;
+        }
 
-            Vector3 clamped = new Vector3(
-                Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
-                desiredIKPosition.y + yOffset,
-                Mathf.Cos(angle * Mathf.Deg2Rad) * dist
-            );
 
-        IKGunTarget.transform.position = PlayerRoot.transform.TransformPoint(clamped);
+        // Rebuild position
+        float dist = localTarget.magnitude;  
+
+        Vector3 clamped = new Vector3(
+            Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
+            desiredIKPosition.y + yOffset,
+            Mathf.Cos(angle * Mathf.Deg2Rad) * dist
+        );
+        Vector3 clampedWorldSpace = PlayerRoot.transform.TransformPoint(clamped);
+
+        t = Mathf.Pow(t, 0.75f);   // slower near 0, faster near 1
+        float dynamicMaxDistance = Mathf.Lerp(minIKDistance, maxIKDistance, t);
+        //Clamp max distance from player
+        Vector3 dirToIk = clampedWorldSpace - PlayerRoot.transform.position;
+        if (dirToIk.magnitude > maxIKDistance)
+            dirToIk = dirToIk.normalized * dynamicMaxDistance;
+
+        Vector3 newIKPosition = PlayerRoot.transform.position + dirToIk;
+
+        IKGunTarget.transform.position = newIKPosition;
 
     }
 
@@ -713,7 +741,9 @@ private void OnCollisionEnter(Collision collision)
         animator.SetBool("Sprinting", state == MovementState.sprinting);
         //animator.SetBool("Crouching", state == MovementState.crouching);
         animator.SetBool("Sliding", state == MovementState.sliding);
-        //animator.SetBool("WallRunning", state == MovementState.wallRunning);
+        animator.SetBool("WallRunRight", state == MovementState.wallRunning && WallRunRight);
+        animator.SetBool("WallRunLeft", state == MovementState.wallRunning && WallRunLeft);
+        animator.SetBool("Air", state == MovementState.air);
         //animator.SetBool("RailGrinding", isRailGrinding);
         //animator.SetBool("Grappling", activeGrapple);
 
