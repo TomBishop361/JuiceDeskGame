@@ -246,7 +246,7 @@ GameObject:
   m_Component:
   - component: {fileID: 229915720976692371}
   m_Layer: 7
-  m_Name: Root
+  m_Name: IKRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,6 +267,95 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4419632975823580738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2570911848564802828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2729673135064780049}
+  m_Layer: 0
+  m_Name: GrappleAim_target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2729673135064780049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2570911848564802828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.0007339417, y: -0.031828176, z: -0.99896383, w: -0.03252254}
+  m_LocalPosition: {x: 8.51261, y: 1.2022586, z: -1.3080758}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8557501718202339521}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2841249590520897274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8557501718202339521}
+  - component: {fileID: 9119851207589750209}
+  m_Layer: 0
+  m_Name: GrappleAim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8557501718202339521
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2841249590520897274}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2729673135064780049}
+  - {fileID: 9092676891957373348}
+  m_Father: {fileID: 8435256864712912593}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9119851207589750209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2841249590520897274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeda7bfbf984f2a4da5ab4b8967b115d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Weight: 0
+  m_Data:
+    m_Root: {fileID: 970424411237274295}
+    m_Mid: {fileID: 8787960311877646618}
+    m_Tip: {fileID: 5086902374377884125}
+    m_Target: {fileID: 2729673135064780049}
+    m_Hint: {fileID: 9092676891957373348}
+    m_TargetPositionWeight: 1
+    m_TargetRotationWeight: 1
+    m_HintWeight: 1
+    m_MaintainTargetPositionOffset: 0
+    m_MaintainTargetRotationOffset: 0
 --- !u!1 &3483415358483928322
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,6 +445,7 @@ Transform:
   - {fileID: 7107664999446701439}
   - {fileID: 3812942448371548770}
   - {fileID: 2857218717582729890}
+  - {fileID: 8557501718202339521}
   m_Father: {fileID: 1227006110956650397}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6495418860031008263
@@ -381,6 +471,22 @@ MonoBehaviour:
       rotation: {x: 0, y: 0, z: 0}
     m_Visible: 1
   - m_Transform: {fileID: 6853463832896775}
+    m_Style:
+      shape: {fileID: 4300000, guid: e050c2b16fe384bd994474655a4b4968, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 2729673135064780049}
+    m_Style:
+      shape: {fileID: 4300000, guid: 687b70eb9c49243639f9379f6965034f, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 9092676891957373348}
     m_Style:
       shape: {fileID: 4300000, guid: e050c2b16fe384bd994474655a4b4968, type: 2}
       color: {r: 1, g: 0, b: 0, a: 0.5}
@@ -531,6 +637,37 @@ MonoBehaviour:
       x: 0
       y: 1
       z: 0
+--- !u!1 &5665673182596307776
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9092676891957373348}
+  m_Layer: 0
+  m_Name: GrappleAim_hint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9092676891957373348
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5665673182596307776}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.000000029802322, w: 1}
+  m_LocalPosition: {x: 8.022856, y: 1.608146, z: -0.82541895}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8557501718202339521}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5907270329318784892
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,6 +952,7 @@ GameObject:
   - component: {fileID: 2117846202450981472}
   - component: {fileID: 1565311720385674736}
   - component: {fileID: 6755807588143192543}
+  - component: {fileID: 5475490808948988050}
   - component: {fileID: 8905889218891336177}
   m_Layer: 7
   m_Name: Player_Root_Model
@@ -920,7 +1058,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7beb60b306e2314ca4c7c3a2a416399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugIK: 0
+  _rig: {fileID: 0}
   _inputManager: {fileID: 621564341637026740}
   _camera: {fileID: 280475935180124010}
   walkSpeed: 8
@@ -937,7 +1075,7 @@ MonoBehaviour:
   grappleSpeedBoost: 1.5
   airControlDuringGrapple: 0.5
   grapplePullForce: 20
-  AnchorLaunchAmount: 0
+  AnchorLaunchAmount: 5
   onRail: 0
   railGrindTime: 1
   grindSpeed: 12
@@ -1255,6 +1393,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanPrimaryFire: 1
+--- !u!114 &5475490808948988050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9203921099087918707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77eae2dcf33dbb444bef738bff144106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerIKRoot: {fileID: 2391648621561952788}
+  _camera: {fileID: 280475935180124010}
+  _controller: {fileID: 5820352042844993939}
+  _grapple: {fileID: 0}
+  debugIK: 0
+  IKGunTarget: {fileID: 1012007540998253961}
+  minIKDistance: 0.6
+  maxIKDistance: 1.6
+  IKGrappleTarget: {fileID: 0}
+  GrappleIKConstraint: {fileID: 0}
 --- !u!114 &8905889218891336177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1268,7 +1428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 239481573621303028}
-  controller: {fileID: 5820352042844993939}
+  _controller: {fileID: 0}
 --- !u!1001 &7655380087178217704
 PrefabInstance:
   m_ObjectHideFlags: 0

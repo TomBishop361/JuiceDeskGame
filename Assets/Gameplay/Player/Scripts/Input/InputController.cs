@@ -16,15 +16,13 @@ using UnityEngine.Windows;
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
 {
-    [Header("Debug")]
-    public bool debugIK;
+    [Header("Debug")]    
     public Rig _rig;
 
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
-    [SerializeField] GameObject _camera;
-    [SerializeField] CinemachineThirdPersonFollow _cameraFollow;
+    [SerializeField] GameObject _camera;   
 
     [Header("Movement Values")]
     private float moveSpeed = 7;
@@ -194,7 +192,7 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
-        //Freeze for grapple;
+        
         if (isRailGrinding) {
             state = MovementState.railGrinding;
             desiredMoveSpeed = 0;
@@ -346,12 +344,13 @@ public class InputController : MonoBehaviour
     public void AnchorLaunch()
     {
         Debug.Log("LAUNCH");
+        isGrounded = true;
         Vector3 launchDir = _camera.transform.forward;
         launchDir.y = 0f;
         rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
+        desiredMoveSpeed = sprintSpeed;
 
-        //Weird fix look into later
-        isGrounded = true;
+
     }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
@@ -379,7 +378,7 @@ public class InputController : MonoBehaviour
         enableMoveOnNextTouch = true;
 
         // Boost max speed so the lerp doesn't immediately throttle us
-        moveSpeed = sprintSpeed * grappleSpeedBoost;
+        moveSpeed = sprintSpeed * grappleSpeedBoost;        
     }
 
     public Vector3 GetSlopeMoveDirection( Vector3 Direction)
@@ -404,9 +403,6 @@ public class InputController : MonoBehaviour
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirToTarget), 15 * Time.deltaTime);
             }
-
-
-
             return;
         }
 
@@ -538,8 +534,8 @@ public class InputController : MonoBehaviour
     private void LateUpdate()
     {
         HandleLook(LookDirection);
-        UpdateAnimator();
-        UpdateIK();
+        
+
     }
     private void Update()
     {
@@ -551,7 +547,8 @@ public class InputController : MonoBehaviour
     {
         GroundCheck();
         Jump();
-        HandleMove(MoveDirection);        
+        HandleMove(MoveDirection);
+        
         StateHandler();
         HandleCrouch();
         movePlayerAlongRail();
@@ -577,8 +574,10 @@ public class InputController : MonoBehaviour
 
     public void ResetRestrictions()
     {
-        activeGrapple = false;
         rb.linearDamping = 0.75f;
+        activeGrapple = false;
+             
+        
     }
 
 private void OnCollisionEnter(Collision collision)
@@ -683,81 +682,9 @@ private void OnCollisionEnter(Collision collision)
         
     }
 
-    void UpdateIK()
-    {
-        float minIKDistance = 0.6f;
-        float maxIKDistance = 1.5f;
+  
 
-        if (debugIK) return;
-        Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 5;
-        Vector3 localTarget = PlayerRoot.transform.InverseTransformPoint(desiredIKPosition);
-
-        // Clamp horizontal angle
-        float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
-        angle = Mathf.Clamp(angle, -70f, 160f);
-
-        //Set Max Distance based on what end of the clamp
-        float t = Mathf.InverseLerp(-70f, 160f, angle);
-        
-
-        // Clamp vertical
-        localTarget.y = Mathf.Clamp(localTarget.y, -0.2f, 0.8f);
-
-        float yOffset = 0;
-        if (state == MovementState.sliding)
-        {
-            yOffset = Mathf.Lerp(-5, 1.5f, t);
-        }
-        else if (state == MovementState.walking || state == MovementState.sprinting)
-        {
-            //offset based on aim dir (offset is -2.f when looking behind)
-            yOffset = Mathf.Lerp(3.5f,-2.5f ,t);
-        }
-       
-
-        // Rebuild position
-        float dist = localTarget.magnitude;  
-
-        Vector3 clamped = new Vector3(
-            Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
-            desiredIKPosition.y + yOffset,
-            Mathf.Cos(angle * Mathf.Deg2Rad) * dist
-        );
-        Vector3 clampedWorldSpace = PlayerRoot.transform.TransformPoint(clamped);
-
-        t = Mathf.Pow(t, 0.75f);   // slower near 0, faster near 1
-        float dynamicMaxDistance = Mathf.Lerp(minIKDistance, maxIKDistance, t);
-        //Clamp max distance from player
-        Vector3 dirToIk = clampedWorldSpace - PlayerRoot.transform.position;
-        if (dirToIk.magnitude > maxIKDistance)
-            dirToIk = dirToIk.normalized * dynamicMaxDistance;
-
-        Vector3 newIKPosition = PlayerRoot.transform.position + dirToIk;
-
-        IKGunTarget.transform.position = newIKPosition;
-
-    }
-
-    private void UpdateAnimator()
-    {
-        if (!animator) return;   
-
-      
-
-        //animator.SetBool("Grounded", isGrounded);
-        animator.SetBool("Walking", state == MovementState.walking);
-        animator.SetBool("Idle", state == MovementState.idle);
-        animator.SetBool("Sprinting", state == MovementState.sprinting);
-        //animator.SetBool("Crouching", state == MovementState.crouching);
-        animator.SetBool("Sliding", state == MovementState.sliding);
-        animator.SetBool("WallRunRight", state == MovementState.wallRunning && WallRunRight);
-        animator.SetBool("WallRunLeft", state == MovementState.wallRunning && WallRunLeft);
-        animator.SetBool("Air", state == MovementState.air);
-        //animator.SetBool("RailGrinding", isRailGrinding);
-        //animator.SetBool("Grappling", activeGrapple);
-
-        //animator.SetInteger("State", (int)state);
-    }
+  
 
 
 #if UNITY_EDITOR
