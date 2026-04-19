@@ -19,7 +19,8 @@ public class IKManager : MonoBehaviour
 
     [Header("Grapple IK")]
     [SerializeField] GameObject IKGrappleTarget;
-    [SerializeField] TwoBoneIKConstraint GrappleIKConstraint;
+    [Tooltip("Graple Rig")]
+    [SerializeField] Rig _rig;
 
     private void OnEnable()
     {
@@ -35,12 +36,12 @@ public class IKManager : MonoBehaviour
     void StartGrappleIK(Vector3 position)
     {
         IKGrappleTarget.transform.position = position;
-        GrappleIKConstraint.weight = 1f;
+       _rig.weight = 1f;
     }
 
     void EndGrappleIK()
     {
-        GrappleIKConstraint.weight = 0f;
+       _rig.weight = 0f;
     }
 
     private void LateUpdate()
@@ -92,7 +93,7 @@ public class IKManager : MonoBehaviour
 
         Vector3 clamped = new Vector3(
             Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
-            localTarget.y + yOffset,
+            localTarget.y ,
             Mathf.Cos(angle * Mathf.Deg2Rad) * dist
         );
         Vector3 clampedWorldSpace = PlayerIKRoot.transform.TransformPoint(clamped);

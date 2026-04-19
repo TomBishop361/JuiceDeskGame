@@ -121,7 +121,7 @@ public class Grapple : MonoBehaviour
             grappleDelayTimer = grappleDelayTime;
             grappleHit = true;
             lineRenderer.enabled = true;
-           // OnGrapple?.Invoke(grapplePoint);
+            OnGrapple?.Invoke(grapplePoint);
         }
         
         //lineRenderer.SetPosition(1, grapplePoint);
@@ -157,8 +157,8 @@ public class Grapple : MonoBehaviour
         lineRenderer.enabled = false;
         CancelInvoke(nameof(StopGrapple));
         controller.ResetRestrictions();
-        controller.AnchorLaunch();        
-        
+        controller.AnchorLaunch();
+        OnGrappleEnd?.Invoke();
     }
 
 }
