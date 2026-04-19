@@ -140,9 +140,7 @@ public class WallRunning : MonoBehaviour
         LastWall = wall;
         sameWallTimer = SameWallTime;
         controller.wallRunning = true;
-        OnWallRunStart?.Invoke(wallRight);
-            
-        
+        OnWallRunStart?.Invoke(wallRight);        
     }
 
     void StopWallRun()

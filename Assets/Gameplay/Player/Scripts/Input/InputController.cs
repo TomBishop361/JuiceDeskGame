@@ -15,9 +15,7 @@ using UnityEngine.Windows;
 
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
-{
-    [Header("Debug")]    
-    public Rig _rig;
+{   
 
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
@@ -208,8 +206,7 @@ public class InputController : MonoBehaviour
         {
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
-            //Debug
-            _rig.weight = 0;
+            
         }
         else if (sliding)
         {
@@ -246,8 +243,7 @@ public class InputController : MonoBehaviour
         else
         {
             state = MovementState.air;
-            //Debug 
-            _rig.weight = 1;
+            
         }
 
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
@@ -389,6 +385,7 @@ public class InputController : MonoBehaviour
     void HandleMove(Vector2 Direction)
     {
         if (isRailGrinding) return;
+        if (wallRunning) return;
         // 1. Calculate desired velocity based on camera
         Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
         Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
@@ -408,23 +405,16 @@ public class InputController : MonoBehaviour
 
         Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
-        
         //3. Slop Logic
         if (OnSlope() && !exitingSlope && !sliding)
         {
-            
-
             // Project the desired velocity onto the slope and scale it by movement speed
             Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
-
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
-            rb.linearVelocity = new Vector3(slopeVel.x , rb.linearVelocity.y, slopeVel.z);
-
+            rb.linearVelocity = new Vector3(slopeVel.x, rb.linearVelocity.y, slopeVel.z);
             // Apply an extra force to keep the player grounded          
             rb.AddForce(-slopeHit.normal * Slopeforce, ForceMode.Force);
-
-           
-        }
+        }        
 
         // 4. Ground vs Air Movement Logic
         if (isGrounded)
@@ -434,34 +424,34 @@ public class InputController : MonoBehaviour
                 // Apply friction/deceleration when on ground with no input
                 Vector3 horizontal = Vector3.Lerp(new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z), Vector3.zero, groundFriction * Time.deltaTime);
                 rb.linearVelocity = new Vector3(horizontal.x, rb.linearVelocity.y, horizontal.z);
-               // velocity = Vector3.zero; 
+                // velocity = Vector3.zero; 
             }
             else
-            {                
-                moveDir =  Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
+            {
+                moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
                 rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
             }
         }
-      else // AIR LOGIC
-{
-    if (Direction != Vector2.zero)
-    {
-        // Use the desiredvelocity (which is based on input) 
-        // instead of just lerping from current velocity
-        Vector3 currentHorizontalVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        else // AIR LOGIC
+        {
+            if (Direction != Vector2.zero)
+            {
+                // Use the desiredvelocity (which is based on input) 
+                // instead of just lerping from current velocity
+                Vector3 currentHorizontalVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 
-        // Ensure airAcceleration is high enough to overcome gravity's feel
-        moveDir = Vector3.MoveTowards(currentHorizontalVel, desiredvelocity, airAcceleration * Time.deltaTime);
-        rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
-    }
-}
+                // Ensure airAcceleration is high enough to overcome gravity's feel
+                moveDir = Vector3.MoveTowards(currentHorizontalVel, desiredvelocity, airAcceleration * Time.deltaTime);
+                rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
+            }
+        }
 
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        
+
         Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
-        
+
         rb.useGravity = !OnSlope();
     }
 
@@ -534,9 +524,8 @@ public class InputController : MonoBehaviour
     private void LateUpdate()
     {
         HandleLook(LookDirection);
-        
-
     }
+
     private void Update()
     {
         if(VelocityUI == null) return;

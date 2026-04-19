@@ -51,6 +51,13 @@ public class IKManager : MonoBehaviour
 
     void UpdateGunIK()
     {
+        float minClamp = -70;
+        float MaxClamp = 160;
+        bool WallRight = _controller.WallRunRight;
+        if (WallRight) { 
+        minClamp = -160;
+        MaxClamp = 70;
+        }
         
         if (debugIK) return;
         //Vector3 desiredIKPosition = _camera.transform.position + _camera.transform.forward * 5;
@@ -67,33 +74,30 @@ public class IKManager : MonoBehaviour
 
         // Clamp horizontal angle
         float angle = Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg;
-        angle = Mathf.Clamp(angle, -70f, 160f);
+        angle = Mathf.Clamp(angle, minClamp, MaxClamp);
 
         //Set Max Distance based on what end of the clamp
-        float t = Mathf.InverseLerp(-70f, 160f, angle);
+        float t = 0;
 
-
-        // Clamp vertical
-        localTarget.y = Mathf.Clamp(localTarget.y, -89f, 89f);
-
-        float yOffset = 0;
-        if (_controller.state == MovementState.sliding)
+        if (WallRight)
         {
-            yOffset = Mathf.Lerp(-5, 1.5f, t);
+            t = Mathf.InverseLerp(MaxClamp, minClamp, angle); 
         }
-        else if (_controller.state == MovementState.walking || _controller.state == MovementState.sprinting)
+        else
         {
-            //offset based on aim dir (offset is -2.f when looking behind)
-            yOffset = Mathf.Lerp(3.5f, -2.5f, t);
+            t = Mathf.InverseLerp(minClamp, MaxClamp, angle);
         }
 
+
+            // Clamp vertical
+            localTarget.y = Mathf.Clamp(localTarget.y, -89f, 89f);
 
         // Rebuild position
         float dist = localTarget.magnitude;
 
         Vector3 clamped = new Vector3(
             Mathf.Sin(angle * Mathf.Deg2Rad) * dist,
-            localTarget.y ,
+            localTarget.y,
             Mathf.Cos(angle * Mathf.Deg2Rad) * dist
         );
         Vector3 clampedWorldSpace = PlayerIKRoot.transform.TransformPoint(clamped);
@@ -101,6 +105,7 @@ public class IKManager : MonoBehaviour
         t = Mathf.Pow(t, 0.75f);   // slower near 0, faster near 1
         float dynamicMaxDistance = Mathf.Lerp(minIKDistance, maxIKDistance, t);
         //Clamp max distance from player
+
         Vector3 dirToIk = clampedWorldSpace - PlayerIKRoot.transform.position;
         if (dirToIk.magnitude > dynamicMaxDistance)
             dirToIk = dirToIk.normalized * dynamicMaxDistance;
