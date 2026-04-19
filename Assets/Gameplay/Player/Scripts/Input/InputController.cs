@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.Cinemachine;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Splines;
 using UnityEngine.Windows;
 
@@ -14,11 +16,15 @@ using UnityEngine.Windows;
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
 {
+    [Header("Debug")]
     public bool debugIK;
+    public Rig _rig;
+
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
     [SerializeField] GameObject _camera;
+    [SerializeField] CinemachineThirdPersonFollow _cameraFollow;
 
     [Header("Movement Values")]
     private float moveSpeed = 7;
@@ -204,6 +210,8 @@ public class InputController : MonoBehaviour
         {
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
+            //Debug
+            _rig.weight = 0;
         }
         else if (sliding)
         {
@@ -240,6 +248,8 @@ public class InputController : MonoBehaviour
         else
         {
             state = MovementState.air;
+            //Debug 
+            _rig.weight = 1;
         }
 
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
@@ -251,8 +261,11 @@ public class InputController : MonoBehaviour
         else
         {
             moveSpeed = desiredMoveSpeed;
-        }
+            
+        }        
         lastDesiredMoveSpeed = desiredMoveSpeed;
+
+        
     }
 
     private IEnumerator SmoothLerpSpeed()
@@ -700,11 +713,7 @@ private void OnCollisionEnter(Collision collision)
             //offset based on aim dir (offset is -2.f when looking behind)
             yOffset = Mathf.Lerp(3.5f,-2.5f ,t);
         }
-        else if (wallRunning)
-        {
-            yOffset = -5;
-        }
-
+       
 
         // Rebuild position
         float dist = localTarget.magnitude;  
