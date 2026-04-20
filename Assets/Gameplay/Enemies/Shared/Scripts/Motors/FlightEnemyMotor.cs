@@ -8,8 +8,12 @@ namespace Game.AI {
 		[Header("Flight")]
 		[Tooltip("Default hover height used when not matching the target's vertical position.")]
 		[SerializeField] private float hoverHeight = 3.0f;
-		[Tooltip("Horizontal movement speed used for flight steering")]
-		[SerializeField] private float moveSpeed = 4.0f;
+		[Tooltip("Top movement speed used for flight steering")]
+		[SerializeField] private float maxMoveSpeed = 4.0f;
+		[Tooltip("How quickly the drone ramps up to full speed while moving.")]
+		[SerializeField] private float acceleration = 10.0f;
+		[Tooltip("How quickly the drone slows down again when stopping or changing pace.")]
+		[SerializeField] private float braking = 14.0f;
 		[Tooltip("How quickly the enemy steers toward its desired flight direction")]
 		[SerializeField] private float steeringLerpSpeed = 10.0f;
 		[Tooltip("If true, the flyer tries to stay around the player's height instead of staying at a fixed hover level.")]
@@ -162,12 +166,30 @@ namespace Game.AI {
 		// Useful for animation blending
 		public float LastMoveSpeed { get; private set; }
 
+		// Runtime speed that is eased with acceleration / braking instead of snapping instantly
+		private float currentMoveSpeed;
+		// Tracks whether a movement command was issued this frame
+		private bool receivedMovementCommandThisFrame;
+
 		private void Awake() {
 			SeedRuntime();
 		}
 
+		private void LateUpdate() {
+			// If the AI did not request movement this frame decrease speed back to zero (idle)
+			// This is so animations and visual polish brake cleanly instead of snapping
+			if (receivedMovementCommandThisFrame == false) {
+				currentMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, 0.0f, braking * Time.deltaTime);
+				LastMoveSpeed = currentMoveSpeed;
+			}
+
+			receivedMovementCommandThisFrame = false;
+		}
+
 		public void ResetRuntime() {
 			LastMoveSpeed = 0.0f;
+			currentMoveSpeed = 0.0f;
+			receivedMovementCommandThisFrame = false;
 			SeedRuntime();
 		}
 
@@ -302,6 +324,8 @@ namespace Game.AI {
 
 		// Anchors flyer to a specific Y position to avoid clipping roofs
 		public void HoldPosition(Vector3 facePoint, float anchorY) {
+			receivedMovementCommandThisFrame = true;
+
 			Vector3 pos = transform.position;
 
 			pos.y = GetDesiredY(anchorY);
@@ -309,7 +333,8 @@ namespace Game.AI {
 			pos.y = Mathf.Clamp(pos.y, minWorldY, maxWorldY);
 
 			transform.position = pos;
-			LastMoveSpeed = 0.0f;
+			currentMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, 0.0f, braking * Time.deltaTime);
+			LastMoveSpeed = currentMoveSpeed;
 
 			FaceTarget(facePoint);
 		}
@@ -340,10 +365,13 @@ namespace Game.AI {
 		// Moves toward a chosen point using local steering
 		// This blends intent with obstacle avoidance and drone separation
 		private void MoveTowardsPoint(Vector3 desiredPoint, Vector3 facePoint) {
+			receivedMovementCommandThisFrame = true;
+
 			Vector3 toPoint = desiredPoint - transform.position;
 
 			if (toPoint.sqrMagnitude < 0.01f) {
-				LastMoveSpeed = 0.0f;
+				currentMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, 0.0f, braking * Time.deltaTime);
+				LastMoveSpeed = currentMoveSpeed;
 				FaceTarget(facePoint);
 				return;
 			}
@@ -365,7 +393,9 @@ namespace Game.AI {
 			// Smooth direction changes so movement stays predictable
 			currentMoveDirection = Vector3.Slerp(currentMoveDirection, finalDir.normalized, Time.deltaTime * steeringLerpSpeed).normalized;
 
-			transform.position += currentMoveDirection * (moveSpeed * Time.deltaTime);
+			float speedChange = currentMoveSpeed < maxMoveSpeed ? acceleration : braking;
+			currentMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, maxMoveSpeed, speedChange * Time.deltaTime);
+			transform.position += currentMoveDirection * (currentMoveSpeed * Time.deltaTime);
 
 			// Clamp Y (local and world space) in case the drone ever gets pushed too high or too low
 			Vector3 clampedPosition = transform.position;
@@ -373,7 +403,7 @@ namespace Game.AI {
 			clampedPosition.y = Mathf.Clamp(clampedPosition.y, minWorldY, maxWorldY);
 			transform.position = clampedPosition;
 
-			LastMoveSpeed = moveSpeed;
+			LastMoveSpeed = currentMoveSpeed;
 			FaceTarget(facePoint);
 		}
 
@@ -707,8 +737,8 @@ namespace Game.AI {
 		//		desiredDirection = baseDirection.normalized;
 		//	}
 
-		//	transform.position += desiredDirection.normalized * (moveSpeed * Time.deltaTime);
-		//	LastMoveSpeed = moveSpeed;
+		//	transform.position += desiredDirection.normalized * (maxMoveSpeed * Time.deltaTime);
+		//	LastMoveSpeed = maxMoveSpeed;
 		//}
 
 		//// Adjusts the enemy's vertical position toward either a fixed hover height or a target-relative height

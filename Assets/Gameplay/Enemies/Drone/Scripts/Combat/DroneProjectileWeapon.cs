@@ -36,11 +36,14 @@ namespace Game.AI.Drone {
 		private float nextFireTime = -Mathf.Infinity;
 		private int fireTriggerHash;
 
+		private DroneVisualMotion droneVisualMotion;
+
 		public float FireRange => fireRange;
 		public DroneHomingProjectileStats HomingProjectileStats => homingProjectileStats;
 
 		private void Awake() {
 			fireTriggerHash = Animator.StringToHash(fireTriggerName);
+			droneVisualMotion = GetComponent<DroneVisualMotion>();
 		}
 
 		// Resets weapon runtime state when the owner respawns or is reused from a pool
@@ -121,6 +124,9 @@ namespace Game.AI.Drone {
 
 			// Spawn projectile
 			GameObject projectileObject = Instantiate(projectilePrefab, projectileSpawn.position, rotation);
+
+			// Kick the drone slightly backwards to visualise them shooting
+			droneVisualMotion?.PlayShotRecoil();
 
 			// Supply projectile hitbox with attack data
 			ProjectileHitbox projectileHitbox = projectileObject.GetComponentInChildren<ProjectileHitbox>();

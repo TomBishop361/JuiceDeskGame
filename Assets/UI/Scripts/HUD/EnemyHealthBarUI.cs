@@ -11,6 +11,8 @@ public class EnemyHealthBarUI : MonoBehaviour {
 
 	[Header("World Space")]
 	[SerializeField] private bool followTarget = true;
+	[Tooltip("Optional follow point. Use a child anchor under the drone visual root so the bar follows bobbing/recoil too.")]
+	[SerializeField] private Transform worldAnchor;
 	[SerializeField] private Vector3 uiOffset = new Vector3(0, 2.0f, 0);
 
 	private Camera mainCamera;
@@ -39,11 +41,31 @@ public class EnemyHealthBarUI : MonoBehaviour {
 		health.OnHealthChanged += UpdateHealthBar;
 		health.OnDeath += ResetHealthBar; 
 	}
-	private void Start() {
-		ResetRuntimeToBaseValues();
+
+	private void OnEnable() {
+		// Pooling fix:
+		// Start() only runs once but OnEnable runs every time the enemy is reused
+		//ResetRuntimeToBaseValues();
+		SnapToTarget();
 	}
 
+	private void Start() {
+		ResetRuntimeToBaseValues();
+		SnapToTarget();
+	}
+
+	//private void ResetRuntimeToBaseValues() {
+	//	float maxHealth = health.MaxHealth;
+	//	float currentHealth = health.CurrentHealth;
+	//	BuildSegments((int)maxHealth);
+	//	UpdateHealthBar(currentHealth, maxHealth);
+	//}
+
 	private void ResetRuntimeToBaseValues() {
+		if (health == null) {
+			return;
+		}
+
 		float maxHealth = health.MaxHealth;
 		float currentHealth = health.CurrentHealth;
 		BuildSegments((int)maxHealth);
@@ -55,13 +77,32 @@ public class EnemyHealthBarUI : MonoBehaviour {
 			return;
 		}
 
-		transform.position = health.transform.position + uiOffset;
-		transform.forward = mainCamera.transform.forward;
+		SnapToTarget();
+
+		//transform.position = health.transform.position + uiOffset;
+		//transform.forward = mainCamera.transform.forward;
 
 		// TODO: ADD BACK LATER WHEN PLAYER DOES NOT USE THIS SCRIPT FOR THEIR HP BAR
 		//if (gameObject.tag != "Player") {
 		//	transform.forward = mainCamera.transform.forward;
 		//}
+	}
+
+	private void SnapToTarget() {
+		Transform target = worldAnchor != null ? worldAnchor : (health != null ? health.transform : null);
+		if (target == null) {
+			return;
+		}
+
+		if (mainCamera == null) {
+			mainCamera = Camera.main;
+			if (mainCamera == null) {
+				return;
+			}
+		}
+
+		transform.position = target.position + uiOffset;
+		transform.forward = mainCamera.transform.forward;
 	}
 
 	private void UpdateHealthBar(float currentHealth, float maxHealth) {
@@ -107,5 +148,12 @@ public class EnemyHealthBarUI : MonoBehaviour {
 
 	private void ResetHealthBar() {
 		ResetRuntimeToBaseValues();
+	}
+
+	private void OnDestroy() {
+		if (health != null) {
+			health.OnHealthChanged -= UpdateHealthBar;
+			health.OnDeath -= ResetHealthBar;
+		}
 	}
 }
