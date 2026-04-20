@@ -57,6 +57,7 @@ public class InputController : MonoBehaviour
     bool canRailGrind = true;
     public float railGrindTime = 1;
     float railGrindTimer;
+    public float railBoost;
 
     [SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2
@@ -338,15 +339,13 @@ public class InputController : MonoBehaviour
     }
 
     public void AnchorLaunch()
-    {
-        Debug.Log("LAUNCH");
+    {        
         isGrounded = true;
         Vector3 launchDir = _camera.transform.forward;
         launchDir.y = 0f;
         rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
+        //UnFreeze player
         desiredMoveSpeed = sprintSpeed;
-
-
     }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
@@ -663,12 +662,12 @@ private void OnCollisionEnter(Collision collision)
         isRailGrinding = false;
         onRail = false;
         rb.useGravity = true;
-        isGrounded = true;
+        //isGrounded = true;
         currentRailScript = null;
-        transform.position += transform.forward * 1;
+        rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
         canRailGrind= false;
         railGrindTimer = railGrindTime;
-        
+        desiredMoveSpeed = sprintSpeed;
     }
 
   
