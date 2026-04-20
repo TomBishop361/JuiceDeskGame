@@ -2627,6 +2627,7 @@ MonoBehaviour:
   fillImage: {fileID: 0}
   hpText: {fileID: 0}
   followTarget: 1
+  worldAnchor: {fileID: 0}
   uiOffset: {x: 0, y: 1.5, z: 0}
   fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
@@ -2832,7 +2833,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7beb60b306e2314ca4c7c3a2a416399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rig: {fileID: 511637373691699786}
   _inputManager: {fileID: 3360952311824732236}
   _camera: {fileID: 1312244048495141995}
   walkSpeed: 8
@@ -2852,6 +2852,7 @@ MonoBehaviour:
   AnchorLaunchAmount: 0
   onRail: 0
   railGrindTime: 1
+  railBoost: 0
   grindSpeed: 12
   heightOffset: 1
   currentRailScript: {fileID: 0}
@@ -3055,7 +3056,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: {fileID: 6915328010031275841}
   rb: {fileID: 8303638504209387791}
-  playerModel: {fileID: 0}
+  playerModel: {fileID: 7957883448529750283}
   enableRegen: 1
   regenDelay: 3
   regenPerSecond: 0.5
