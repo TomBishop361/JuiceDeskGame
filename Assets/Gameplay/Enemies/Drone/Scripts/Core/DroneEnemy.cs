@@ -28,7 +28,7 @@ namespace Game.AI.Drone {
 		// Drone Enemy Specific Properties 
 
 		public bool InFireRange => HasTarget && projectileWeapon != null && projectileWeapon.InFireRange(DistanceToTarget);
-		public bool TargetTooClose => droneFlightMotor != null && droneFlightMotor.TargetTooClose(DistanceToTarget);
+		public bool TargetTooClose => droneFlightMotor != null && droneFlightMotor.TargetTooClose(Target);
 		public bool CanFire => projectileWeapon != null && projectileWeapon.CanFire(this);
 		public bool IsKnockedDown => knockdownState != null && knockdownState.IsKnockedDown;
 
@@ -105,7 +105,16 @@ namespace Game.AI.Drone {
 				return;
 			}
 
-			droneFlightMotor?.TickMovement(Target, DistanceToTarget);
+			droneFlightMotor?.TickMovement(Target);
+
+			//if (HasLineOfSight == true && Target != null) {
+			//	droneFlightMotor?.TickMovement(Target);
+			//	return;
+			//}
+
+			//if (HasLastSeenPosition == true) {
+			//	droneFlightMotor?.TickInvestigateMovement(LastSeenPosition);
+			//}
 		}
 
 		public override void StopMove() {

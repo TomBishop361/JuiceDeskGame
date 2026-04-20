@@ -22,7 +22,7 @@ namespace Game.AI.Drone {
 		[Tooltip("Attack data used for timeout explosion splash.")]
 		[SerializeField] private AttackData timeoutAttackData;
 		[Tooltip("Layers this projectile can damage / affect.")]
-		[SerializeField] private LayerMask hitLayers = ~0;
+		[SerializeField] private LayerMask damageLayers = ~0;
 
 		public float Speed => speed;
 		public float TurnRate => turnRate;
@@ -31,6 +31,6 @@ namespace Game.AI.Drone {
 		public float HitRadius => hitRadius;
 		public bool ExplodeOnTimeout => explodeOnTimeout;
 		public AttackData TimeoutAttackData => timeoutAttackData;
-		public LayerMask HitLayers => hitLayers;
+		public LayerMask DamageLayers => damageLayers;
 	}
 }

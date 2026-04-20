@@ -36,6 +36,8 @@ namespace Game.AI {
 		public Transform Target => blackboard != null ? blackboard.Target : null;
 		public bool HasLineOfSight => blackboard != null && blackboard.HasLineOfSight;
 		public float DistanceToTarget => blackboard != null ? blackboard.DistanceToTarget : Mathf.Infinity;
+		//public Vector3 LastSeenPosition => blackboard != null ? blackboard.LastSeenPosition : transform.position;
+		//public bool HasLastSeenPosition => blackboard != null && blackboard.HasLastSeenPosition;
 		public bool IsAttacking { get; protected set; }
 
 		// Derived enemies define what "attack range" and "attack ready" mean

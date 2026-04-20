@@ -17,6 +17,8 @@ namespace Game.AI.Drone {
 		[Header("Range")]
 		[Tooltip("Maximum distance at which the drone is allowed to fire.")]
 		[SerializeField] private float fireRange = 10.0f;
+		//[Tooltip("If true, the drone must currently have LOS before it is allowed to fire.")]
+		//[SerializeField] private bool requireLineOfSightToFire = true;
 
 		[Header("Timing")]
 		[Tooltip("Time (in seconds) between consecutive shots.")]
@@ -59,6 +61,7 @@ namespace Game.AI.Drone {
 				&& owner.IsAttacking == false
 				&& owner.IsKnockedDown == false
 				&& Time.time >= nextFireTime;
+				//&& (requireLineOfSightToFire == false || owner.HasLineOfSight);
 		}
 
 		// Attempts to start the fire attack by setting cooldowns + attack lock timing + the fire animation trigger
@@ -66,6 +69,10 @@ namespace Game.AI.Drone {
 			if (owner == null || owner.HasTarget == false) {
 				return false;
 			}
+
+			//if (requireLineOfSightToFire&& owner.HasLineOfSight == false) {
+			//	return false;
+			//}
 
 			if (CanFire(owner) == false || InFireRange(owner.DistanceToTarget) == false) {
 				return false;
@@ -111,6 +118,7 @@ namespace Game.AI.Drone {
 			}
 
 			Quaternion rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+
 			// Spawn projectile
 			GameObject projectileObject = Instantiate(projectilePrefab, projectileSpawn.position, rotation);
 
