@@ -1,5 +1,6 @@
 using UnityEngine;
 using Game.AI.Drone;
+using System.Collections.Generic;
 
 // DroneHomingProjectile:
 // Uses a Rigidbody and steers toward the target with a configurable turn rate
@@ -25,7 +26,7 @@ namespace Game.Combat.Projectiles {
 
 		private AttackData activeAttackData;
 		private AttackData timeoutAttackData;
-		private LayerMask hitLayers;
+		private LayerMask damageLayers;
 		private float speed;
 		private float turnRate;
 		private float hitRadius;
@@ -61,7 +62,7 @@ namespace Game.Combat.Projectiles {
 				rb.interpolation = RigidbodyInterpolation.Interpolate;
 			}
 
-			if (homingActiveMaterial != null) {
+			if (homingActiveMaterial != null && cachedRenderer != null) {
 				cachedRenderer.material = homingActiveMaterial;
 			}
 		}
@@ -80,7 +81,7 @@ namespace Game.Combat.Projectiles {
 			hitRadius = stats != null ? Mathf.Max(0.01f, stats.HitRadius) : 0.75f;
 			explodeOnTimeout = stats == null || stats.ExplodeOnTimeout;
 			timeoutAttackData = stats != null ? stats.TimeoutAttackData : projectileAttackData;
-			hitLayers = stats != null ? stats.HitLayers : ~0;
+			damageLayers = stats != null ? stats.DamageLayers : ~0;
 
 			float lifetime = stats != null ? stats.Lifetime : 3.0f;
 			float homingDuration = stats != null ? stats.HomingDuration : 2.0f;
@@ -223,7 +224,9 @@ namespace Game.Combat.Projectiles {
 
 		// Deals splash damage to any in-direct hits that contain a HurtBox
 		private void DealSplashDamage(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
-			Collider[] overlaps = Physics.OverlapSphere(hitPoint, hitRadius, hitLayers, QueryTriggerInteraction.Ignore);
+			Collider[] overlaps = Physics.OverlapSphere(hitPoint, hitRadius, damageLayers, QueryTriggerInteraction.Ignore);
+
+			HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
 
 			foreach (Collider hit in overlaps) {
 				if (hit == null) {
@@ -241,8 +244,13 @@ namespace Game.Combat.Projectiles {
 					continue;
 				}
 
-				// Prevent any double damage on direct hits
+				// Prevent any double damage on the direct hit target
 				if (directReceiver != null && damageable == directReceiver) {
+					continue;
+				}
+
+				// Prevent multiple colliders on the same target from taking damage more than once
+				if (damagedTargets.Add(damageable) == false) {
 					continue;
 				}
 
