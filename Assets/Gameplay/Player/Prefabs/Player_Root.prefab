@@ -114,7 +114,7 @@ Transform:
   m_GameObject: {fileID: 1852571263087215205}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.5}
+  m_LocalPosition: {x: -0, y: 0, z: 0.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -335,6 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7beb60b306e2314ca4c7c3a2a416399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rig: {fileID: 0}
   _inputManager: {fileID: 3422815711289434995}
   _camera: {fileID: 5635177817222094823}
   walkSpeed: 8
@@ -352,6 +353,12 @@ MonoBehaviour:
   airControlDuringGrapple: 0.5
   grapplePullForce: 20
   AnchorLaunchAmount: 0
+  onRail: 0
+  railGrindTime: 1
+  grindSpeed: 12
+  heightOffset: 1
+  currentRailScript: {fileID: 0}
+  animator: {fileID: 0}
   acceleration: 50
   airAcceleration: 50
   groundFriction: 9
@@ -372,7 +379,12 @@ MonoBehaviour:
   IsJumpReady: 0
   isOnCoolDown: 0
   freeze: 0
+  WallRunRight: 0
+  WallRunLeft: 0
+  isRailGrinding: 0
   activeGrapple: 0
+  IKGunTarget: {fileID: 0}
+  PlayerRoot: {fileID: 0}
   rb: {fileID: 13888070988371887}
   state: 0
 --- !u!114 &1623776242580891429
@@ -467,7 +479,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   lineRenderer: {fileID: 2785746629931228013}
-  overshootYAxis: 30
+  overshootYAxis: 0
   grappleDelayTime: 0.1
   AnimCurve:
     serializedVersion: 2
@@ -516,6 +528,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gunInputManager: {fileID: 8400700820253014844}
   gunData: {fileID: 11400000, guid: 1b2903353fdc954469b45a0cdeba68cd, type: 2}
+  aimMask:
+    serializedVersion: 2
+    m_Bits: 28489
   isDrawn: 0
   AimOrigin: {fileID: 0}
   BulletOrigin: {fileID: 1852571263087215205}
@@ -590,6 +605,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  playTakeDamageAnimation: 1
+  takeDamageTriggerName: TakeDamage
 --- !u!114 &6559390991075414141
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ public class Sliding : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] Transform orientation;
-    [SerializeField] Transform playerObj;
+    [SerializeField] CapsuleCollider _capsuleCollider;
     [SerializeField] Rigidbody rb;
     [SerializeField]private InputController controller;
 
@@ -29,7 +29,7 @@ public class Sliding : MonoBehaviour
         controller.InputManager.OnSlideReceived += SlideInput;
         controller.InputManager.OnMoveReceived += MoveInput;
         controller.JumpEvent += jumpListener;
-        startYScale = transform.localScale.y;   
+        startYScale = _capsuleCollider.height;   
     }
 
     private void OnDisable()
@@ -40,8 +40,7 @@ public class Sliding : MonoBehaviour
     }
 
     void SlideInput(float val)
-    {
-        
+    {        
         slideInput = val;
         Debug.Log(slideInput + "Slide INPUT ");
     }
@@ -79,7 +78,11 @@ public class Sliding : MonoBehaviour
     {
         
         controller.sliding = true;
-        transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
+        //Animator Call
+
+        _capsuleCollider.height = slideYScale;
+        _capsuleCollider.center = Vector3.up * -0.35f;
+
         rb.AddForce(Vector3.down, ForceMode.Impulse);
 
 
@@ -91,7 +94,11 @@ public class Sliding : MonoBehaviour
         if (!controller.sliding) return;
 
         controller.sliding = false;
-        transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        //Animator Call
+        _capsuleCollider.center = Vector3.up * 0.15f;
+        
+        _capsuleCollider.height = startYScale;
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

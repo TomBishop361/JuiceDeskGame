@@ -5,6 +5,11 @@ using UnityEngine;
 
 // NOTE: Apply to the object root - Entity shooting hitscan - cast ray - supplies HitScanHitbox with the hit and attackdata - HitScanHitbox deals with whether the hit should be notified to handle damage being applied or not 
 public class HitScanHitbox : MonoBehaviour {
+	private AttackData attackData;
+
+	public void Initialise(AttackData attackData) {
+		this.attackData = attackData;
+	}
 
 	// Called by HitScan.cs when raycast detects a valid hit
 	public void ApplyHitScanHit(RaycastHit hit, AttackData attackData) {

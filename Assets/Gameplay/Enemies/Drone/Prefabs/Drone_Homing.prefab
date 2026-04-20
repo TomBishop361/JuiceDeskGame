@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2975428769303140544}
   - component: {fileID: 1025106597326282760}
   - component: {fileID: 8827402555016144863}
+  - component: {fileID: 412335192420947666}
   m_Layer: 9
   m_Name: Drone_Homing
   m_TagString: Untagged
@@ -54,7 +55,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
@@ -92,11 +93,24 @@ MonoBehaviour:
     AttackerFaction: 1
   hitLayers:
     serializedVersion: 2
-    m_Bits: 205
+    m_Bits: 24777
   homingActiveMaterial: {fileID: 2100000, guid: efe26027cacc84b409062a6cff9b90c4, type: 2}
   homingExpiredMaterial: {fileID: 2100000, guid: 6af20d21fdb3e9846be9fcc5368045e6, type: 2}
   rb: {fileID: 1025106597326282760}
   useTrigger: 1
+--- !u!114 &412335192420947666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527449327847401711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825e928f690f9fb408899a3624bb306e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectile: {fileID: 8827402555016144863}
 --- !u!1 &5383064483998320398
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,7 +243,7 @@ SphereCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
@@ -249,3 +263,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02323bb9eb30b0744aa5183f4bb246db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  validHitLayers:
+    serializedVersion: 2
+    m_Bits: 57545

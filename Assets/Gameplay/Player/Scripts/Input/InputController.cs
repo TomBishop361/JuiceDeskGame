@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.Cinemachine;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Splines;
 using UnityEngine.Windows;
 
@@ -13,11 +15,12 @@ using UnityEngine.Windows;
 
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
-{
+{   
+
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
-    [SerializeField] GameObject _camera;
+    [SerializeField] GameObject _camera;   
 
     [Header("Movement Values")]
     private float moveSpeed = 7;
@@ -54,6 +57,7 @@ public class InputController : MonoBehaviour
     bool canRailGrind = true;
     public float railGrindTime = 1;
     float railGrindTimer;
+    public float railBoost;
 
     [SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2
@@ -62,6 +66,7 @@ public class InputController : MonoBehaviour
     [SerializeField] RailScript currentRailScript;
 
     [Header("Misc")]
+    [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
     [SerializeField] float airAcceleration = 25;
@@ -88,12 +93,15 @@ public class InputController : MonoBehaviour
     public bool IsJumpReady;
     public bool isOnCoolDown;
     public bool freeze;
+    public bool WallRunRight;
+    public bool WallRunLeft;
     public bool isRailGrinding;
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
-   
 
+    [SerializeField] GameObject IKGunTarget;
+    [SerializeField] GameObject PlayerRoot;
 
 
     private Vector2 lastInputEvent;
@@ -111,9 +119,12 @@ public class InputController : MonoBehaviour
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
 
-    public event Action JumpEvent = delegate { };
+    public event Action JumpEvent = delegate { };   
 
     public MovementState state;
+
+    
+
     public enum MovementState
     {
         freeze,
@@ -123,6 +134,7 @@ public class InputController : MonoBehaviour
         wallRunning,
         crouching,
         sliding,
+        idle,
         air
     }
   
@@ -179,7 +191,7 @@ public class InputController : MonoBehaviour
     //Movement fsm
     private void StateHandler()
     {
-        //Freeze for grapple;
+        
         if (isRailGrinding) {
             state = MovementState.railGrinding;
             desiredMoveSpeed = 0;
@@ -195,6 +207,7 @@ public class InputController : MonoBehaviour
         {
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
+            
         }
         else if (sliding)
         {
@@ -218,14 +231,20 @@ public class InputController : MonoBehaviour
             state = MovementState.sprinting;
             desiredMoveSpeed = sprintSpeed;
         }
-        else if (_isGrounded)
+        else if (_isGrounded && MoveDirection != Vector2.zero)
         {
             state = MovementState.walking;
+            desiredMoveSpeed = walkSpeed;
+        }
+        else if (_isGrounded && MoveDirection == Vector2.zero)
+        {
+            state = MovementState.idle;
             desiredMoveSpeed = walkSpeed;
         }
         else
         {
             state = MovementState.air;
+            
         }
 
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
@@ -237,8 +256,11 @@ public class InputController : MonoBehaviour
         else
         {
             moveSpeed = desiredMoveSpeed;
-        }
+            
+        }        
         lastDesiredMoveSpeed = desiredMoveSpeed;
+
+        
     }
 
     private IEnumerator SmoothLerpSpeed()
@@ -317,14 +339,13 @@ public class InputController : MonoBehaviour
     }
 
     public void AnchorLaunch()
-    {
-        Debug.Log("LAUNCH");
+    {        
+        isGrounded = true;
         Vector3 launchDir = _camera.transform.forward;
         launchDir.y = 0f;
         rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
-
-        //Weird fix look into later
-        isGrounded = true;
+        //UnFreeze player
+        desiredMoveSpeed = sprintSpeed;
     }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
@@ -352,7 +373,7 @@ public class InputController : MonoBehaviour
         enableMoveOnNextTouch = true;
 
         // Boost max speed so the lerp doesn't immediately throttle us
-        moveSpeed = sprintSpeed * grappleSpeedBoost;
+        moveSpeed = sprintSpeed * grappleSpeedBoost;        
     }
 
     public Vector3 GetSlopeMoveDirection( Vector3 Direction)
@@ -363,6 +384,7 @@ public class InputController : MonoBehaviour
     void HandleMove(Vector2 Direction)
     {
         if (isRailGrinding) return;
+        if (wallRunning) return;
         // 1. Calculate desired velocity based on camera
         Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
         Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
@@ -377,31 +399,21 @@ public class InputController : MonoBehaviour
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirToTarget), 15 * Time.deltaTime);
             }
-
-
-
             return;
         }
 
         Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
-        
         //3. Slop Logic
         if (OnSlope() && !exitingSlope && !sliding)
         {
-            
-
             // Project the desired velocity onto the slope and scale it by movement speed
             Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
-
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
-            rb.linearVelocity = new Vector3(slopeVel.x , rb.linearVelocity.y, slopeVel.z);
-
+            rb.linearVelocity = new Vector3(slopeVel.x, rb.linearVelocity.y, slopeVel.z);
             // Apply an extra force to keep the player grounded          
             rb.AddForce(-slopeHit.normal * Slopeforce, ForceMode.Force);
-
-           
-        }
+        }        
 
         // 4. Ground vs Air Movement Logic
         if (isGrounded)
@@ -411,34 +423,34 @@ public class InputController : MonoBehaviour
                 // Apply friction/deceleration when on ground with no input
                 Vector3 horizontal = Vector3.Lerp(new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z), Vector3.zero, groundFriction * Time.deltaTime);
                 rb.linearVelocity = new Vector3(horizontal.x, rb.linearVelocity.y, horizontal.z);
-               // velocity = Vector3.zero; 
+                // velocity = Vector3.zero; 
             }
             else
-            {                
-                moveDir =  Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
+            {
+                moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
                 rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
             }
         }
-      else // AIR LOGIC
-{
-    if (Direction != Vector2.zero)
-    {
-        // Use the desiredvelocity (which is based on input) 
-        // instead of just lerping from current velocity
-        Vector3 currentHorizontalVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        else // AIR LOGIC
+        {
+            if (Direction != Vector2.zero)
+            {
+                // Use the desiredvelocity (which is based on input) 
+                // instead of just lerping from current velocity
+                Vector3 currentHorizontalVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 
-        // Ensure airAcceleration is high enough to overcome gravity's feel
-        moveDir = Vector3.MoveTowards(currentHorizontalVel, desiredvelocity, airAcceleration * Time.deltaTime);
-        rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
-    }
-}
+                // Ensure airAcceleration is high enough to overcome gravity's feel
+                moveDir = Vector3.MoveTowards(currentHorizontalVel, desiredvelocity, airAcceleration * Time.deltaTime);
+                rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
+            }
+        }
 
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        
+
         Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
-        
+
         rb.useGravity = !OnSlope();
     }
 
@@ -512,6 +524,7 @@ public class InputController : MonoBehaviour
     {
         HandleLook(LookDirection);
     }
+
     private void Update()
     {
         if(VelocityUI == null) return;
@@ -522,7 +535,8 @@ public class InputController : MonoBehaviour
     {
         GroundCheck();
         Jump();
-        HandleMove(MoveDirection);        
+        HandleMove(MoveDirection);
+        
         StateHandler();
         HandleCrouch();
         movePlayerAlongRail();
@@ -548,8 +562,10 @@ public class InputController : MonoBehaviour
 
     public void ResetRestrictions()
     {
-        activeGrapple = false;
         rb.linearDamping = 0.75f;
+        activeGrapple = false;
+             
+        
     }
 
 private void OnCollisionEnter(Collision collision)
@@ -646,14 +662,17 @@ private void OnCollisionEnter(Collision collision)
         isRailGrinding = false;
         onRail = false;
         rb.useGravity = true;
-        isGrounded = true;
+        //isGrounded = true;
         currentRailScript = null;
-        transform.position += transform.forward * 1;
+        rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
         canRailGrind= false;
         railGrindTimer = railGrindTime;
-        
+        desiredMoveSpeed = sprintSpeed;
     }
 
+  
+
+  
 
 
 #if UNITY_EDITOR

@@ -1,5 +1,7 @@
-using Unity.VisualScripting;
+
 using UnityEngine;
+using System;
+
 
 public class Grapple : MonoBehaviour
 {
@@ -31,9 +33,10 @@ public class Grapple : MonoBehaviour
     float grapplingCoolDownTimer;
 
     bool grappleHit;
-
-    
     public GameObject GrappleAnchor;
+
+    public event Action<Vector3> OnGrapple;
+    public event Action OnGrappleEnd;
 
     private void OnEnable()
     {
@@ -114,10 +117,11 @@ public class Grapple : MonoBehaviour
              grappling = true;
 
             controller.freeze = true;
-            grapplePoint = GrappleAnchor.transform.position - (Vector3.down* -2) ;
+            grapplePoint = GrappleAnchor.transform.position - (Vector3.down* -2.5f) ;
             grappleDelayTimer = grappleDelayTime;
             grappleHit = true;
             lineRenderer.enabled = true;
+            OnGrapple?.Invoke(grapplePoint);
         }
         
         //lineRenderer.SetPosition(1, grapplePoint);
@@ -150,14 +154,11 @@ public class Grapple : MonoBehaviour
         controller.freeze = false;
         grappling = false;
 
-
-
-
         lineRenderer.enabled = false;
-            CancelInvoke(nameof(StopGrapple));
-
-    controller.ResetRestrictions();
-       controller.AnchorLaunch();
+        CancelInvoke(nameof(StopGrapple));
+        controller.ResetRestrictions();
+        controller.AnchorLaunch();
+        OnGrappleEnd?.Invoke();
     }
 
 }
