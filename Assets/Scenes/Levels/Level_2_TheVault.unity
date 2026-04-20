@@ -221399,6 +221399,10 @@ PrefabInstance:
       propertyPath: healthSlider
       value: 
       objectReference: {fileID: 2129626067}
+    - target: {fileID: 1299384109808734316, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      propertyPath: segmentsContainer
+      value: 
+      objectReference: {fileID: 1394469565}
     - target: {fileID: 2481668657288226550, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
       propertyPath: Camera
       value: 
@@ -221460,6 +221464,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+--- !u!4 &1243363842 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 952415781016506688, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+  m_PrefabInstance: {fileID: 1243363841}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1245356099
 Mesh:
   m_ObjectHideFlags: 0
@@ -241013,7 +241022,7 @@ PrefabInstance:
     - target: {fileID: 1730014864899252984, guid: 26fafa8138a103b48905844a1455d7aa, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1243363842}
     - target: {fileID: 2321720035309346247, guid: 26fafa8138a103b48905844a1455d7aa, type: 3}
       propertyPath: m_Name
       value: CheckpointManager
@@ -249177,6 +249186,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!224 &1394469565 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6129239453115416564, guid: 6d235cd6a12245d4da4e9fccc3f0d693, type: 3}
+  m_PrefabInstance: {fileID: 1333406163}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1394817934
 Mesh:
   m_ObjectHideFlags: 0
