@@ -253,7 +253,7 @@ namespace Game.AI.Drone {
 			}
 
 			// Fetch distance to target (if target is valid)
-			if (HasTarget == true) {
+			if (HasTarget) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
 			}
 				
@@ -533,7 +533,7 @@ namespace Game.AI.Drone {
 
 			Vector3 desiredDirection = baseDirection.normalized;
 
-			if (enableDroneSeparation == true) {
+			if (enableDroneSeparation) {
 				desiredDirection += CalculateDroneSeparation();
 			}
 

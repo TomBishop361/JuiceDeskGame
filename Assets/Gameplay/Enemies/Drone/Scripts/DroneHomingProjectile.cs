@@ -128,7 +128,7 @@ namespace Game.Combat.Projectiles {
 		}
 
 		private void FixedUpdate() {
-			if (configured == false || hasHit == true) {
+			if (configured == false || hasHit) {
 				return;
 			}
 
@@ -204,7 +204,7 @@ namespace Game.Combat.Projectiles {
 		// Event Handler for projectile impact -> invoked from inside ProjectileHitbox when a projectile hits a trigger
 		// Deals damage based on direct or in-direct hit and plays effects
 		public void HandleProjectileHitImpact(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
-			if (hasHit == true) {
+			if (hasHit) {
 				return;
 			}
 
@@ -290,7 +290,7 @@ namespace Game.Combat.Projectiles {
 		// Explodes if no collision was made and lifetime timer expired - allows it to still deal damage to player
 		private void ExplodeOnTimeout() {
 			// Prevents double explosion damage in the case of a collision
-			if (hasHit == true) {
+			if (hasHit) {
 				return;        
 			}
 			hasHit = true;
@@ -348,7 +348,7 @@ namespace Game.Combat.Projectiles {
 		//		Destroy(gameObject);
 		//		return;
 		//	}
-		//	if (hasHit == true || rb == null) {
+		//	if (hasHit || rb == null) {
 		//		return;
 		//	}
 		//	if (target == null) {
@@ -398,7 +398,7 @@ namespace Game.Combat.Projectiles {
 		//}
 
 		//private void OnCollisionEnter(Collision collision) {
-		//	if (useTrigger == true) {
+		//	if (useTrigger) {
 		//		return;
 		//	}
 
@@ -406,7 +406,7 @@ namespace Game.Combat.Projectiles {
 		//}
 
 		//private void HandleHit(GameObject other) {
-		//	if (hasHit == true) {
+		//	if (hasHit) {
 		//		return;
 		//	}
 		//	if (LayerAllowed(other) == false) {

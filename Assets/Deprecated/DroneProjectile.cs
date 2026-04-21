@@ -102,7 +102,7 @@ namespace Game.Combat.Projectiles {
 
 		// Use Trigger physics
 		private void OnTriggerEnter(Collider other) {
-			if (useTrigger == true) {
+			if (useTrigger) {
 				return;
 			}
 			HandleHit(other.gameObject, other.ClosestPoint(transform.position));
@@ -117,7 +117,7 @@ namespace Game.Combat.Projectiles {
 		}
 
 		private void HandleHit(GameObject other, Vector3 hitPoint) {
-			if (hasHit == true) {
+			if (hasHit) {
 				return;
 			}
 			if (LayerAllowed(other) == false) {
