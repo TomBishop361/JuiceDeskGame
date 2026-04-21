@@ -1669,7 +1669,6 @@ GameObject:
   - component: {fileID: 3566807572259405374}
   - component: {fileID: 3479799254228814965}
   - component: {fileID: -3342709311437937126}
-  - component: {fileID: 3346107593328204525}
   m_Layer: 8
   m_Name: SwordEnemy_Root
   m_TagString: Untagged
@@ -2093,67 +2092,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 2
---- !u!114 &3346107593328204525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7782458668010283615}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f21d5a60faf245448e7b00a677110ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  navMeshAgent: {fileID: 4006545848731893060}
-  meleeHitbox: {fileID: 3075746310608412844}
-  swingHitbox: {fileID: 7167992650389847832}
-  lungeHitbox: {fileID: 8099849276622680662}
-  rb: {fileID: 3916483571648877885}
-  animator: {fileID: 3479799254228814965}
-  losSensor: {fileID: 1847690398170347147}
-  healthComponent: {fileID: 9119978264467695902}
-  maxHealth: 10
-  defaultSpeed: 12
-  defaultAcceleration: 60
-  damage: 2
-  swingAttackData:
-    Damage: 3
-    Knockback:
-      Force: 20
-      UpwardModifier: 2.5
-      TorqueStrength: 0
-    Attacker: {fileID: 7782458668010283615}
-    Type: 0
-    AttackerFaction: 1
-  lungeAttackData:
-    Damage: 2
-    Knockback:
-      Force: 30
-      UpwardModifier: 3.5
-      TorqueStrength: 0
-    Attacker: {fileID: 7782458668010283615}
-    Type: 0
-    AttackerFaction: 1
-  swingRange: 2
-  lungeMinRange: 7
-  lungeMaxRange: 10
-  swingCooldown: 1
-  lungeCooldown: 2
-  toggleSmoothRotation: 0
-  rotationSpeed: 720
-  rotationSmoothing: 20
-  hitStunDuration: 0.6
-  swingLockTime: 0.55
-  lungeLockTime: 0.75
-  lungeForce: 15
-  lungeWindupTime: 2
-  lungeLeadTime: 0.2
-  lungeMaxLaunchAngle: 45
-  lungeDuration: 2
-  lungeRecoveryTime: 4
-  targetMemoryDuration: 2.5
 --- !u!1 &8174157530090233896
 GameObject:
   m_ObjectHideFlags: 0

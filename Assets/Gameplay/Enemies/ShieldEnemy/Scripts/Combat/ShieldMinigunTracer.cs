@@ -1,51 +1,69 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent]
+	[RequireComponent(typeof(PooledObject))]
 	[RequireComponent(typeof(LineRenderer))]
-	public sealed class ShieldMinigunTracer : MonoBehaviour {
-		private IObjectPool<ShieldMinigunTracer> ownerPool;
-		private LineRenderer cachedLineRenderer;
-		private float despawnTime = -Mathf.Infinity;
-		private bool isActive;
+	public sealed class ShieldMinigunTracer : MonoBehaviour, IPoolLifecycleHandler {
+		[SerializeField] private LineRenderer lineRenderer;
+		[SerializeField] private float defaultWidth = 0.025f;
+
+		private PooledObject pooledObject;
+		private Coroutine lifetimeRoutine;
+
+		//private IObjectPool<ShieldMinigunTracer> ownerPool;
+		//private LineRenderer cachedLineRenderer;
+		//private float despawnTime = -Mathf.Infinity;
+		//private bool isActive;
 
 		private void Awake() {
-			cachedLineRenderer = GetComponent<LineRenderer>();
-			enabled = false;
-		}
-
-		public void SetPool(IObjectPool<ShieldMinigunTracer> pool) {
-			ownerPool = pool;
-		}
-
-		public void Play(Vector3 start, Vector3 end, float width, float lifetime) {
-			if (cachedLineRenderer == null) {
-				cachedLineRenderer = GetComponent<LineRenderer>();
+			if (lineRenderer == null) {
+				lineRenderer = GetComponent<LineRenderer>();
 			}
 
-			cachedLineRenderer.positionCount = 2;
-			cachedLineRenderer.startWidth = width;
-			cachedLineRenderer.endWidth = width;
-			cachedLineRenderer.SetPosition(0, start);
-			cachedLineRenderer.SetPosition(1, end);
-
-			despawnTime = Time.time + Mathf.Max(0.01f, lifetime);
-			isActive = true;
-			enabled = true;
+			pooledObject = GetComponent<PooledObject>();
 		}
 
-		public void OnReturnedToPool() {
-			isActive = false;
-			despawnTime = -Mathf.Infinity;
 
-			if (cachedLineRenderer == null) {
-				cachedLineRenderer = GetComponent<LineRenderer>();
+		public void Play(Vector3 start, Vector3 end, float lifetime) {
+			if (lineRenderer == null) {
+				return;
 			}
 
-			cachedLineRenderer.positionCount = 0;
-			enabled = false;
+			lineRenderer.positionCount = 2;
+			lineRenderer.startWidth = defaultWidth;
+			lineRenderer.endWidth = defaultWidth;
+			lineRenderer.SetPosition(0, start);
+			lineRenderer.SetPosition(1, end);
+
+			if (lifetimeRoutine != null) {
+				StopCoroutine(lifetimeRoutine);
+			}
+
+			lifetimeRoutine = StartCoroutine(ReturnAfterLifetime(lifetime));
 		}
 
+		private IEnumerator ReturnAfterLifetime(float lifetime) {
+			yield return new WaitForSeconds(Mathf.Max(0.0f, lifetime));
+
+			if (pooledObject != null) {
+				pooledObject.ReturnToPool();
+			}
+
+			lifetimeRoutine = null;
+		}
+
+		public void OnSpawned() {
+			// Nothing required here, but kept since it needs implementing by IPoolLifecycleHandler
+		}
+
+		public void OnDespawned() {
+			if (lifetimeRoutine != null) {
+				StopCoroutine(lifetimeRoutine);
+				lifetimeRoutine = null;
+			}
+		}
 	}
 }

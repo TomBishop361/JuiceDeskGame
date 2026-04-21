@@ -487,7 +487,7 @@ public class GenericSpawner : MonoBehaviour {
 
 		item.gameObject.SetActive(true);
 
-		foreach (IPoolSpawnHandler handler in item.GetComponents<IPoolSpawnHandler>()) {
+		foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
 			handler.OnSpawned();
 		}
 	}
@@ -505,7 +505,7 @@ public class GenericSpawner : MonoBehaviour {
 		}
 
 		// Notify components before disabling
-		foreach (IPoolSpawnHandler handler in item.GetComponents<IPoolSpawnHandler>()) {
+		foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
 			handler.OnDespawned();
 		}
 

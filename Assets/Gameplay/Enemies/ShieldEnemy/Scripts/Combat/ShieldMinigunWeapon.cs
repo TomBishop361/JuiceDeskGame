@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent]
@@ -11,8 +12,8 @@ namespace Game.AI.Shield {
 		[SerializeField] private Transform minigunBarrel;
 		[Tooltip("Transform used as the origin point for minigun hitscan shots.")]
 		[SerializeField] private Transform minigunMuzzle;
-		[Tooltip("Optional line renderer prefab used as a short-lived bullet tracer.")]
-		[SerializeField] private LineRenderer minigunBulletTracer;
+		[Tooltip("Optional pooled tracer prefab used as a short-lived bullet tracer.")]
+		[SerializeField] private ShieldMinigunTracer minigunBulletTracerPrefab;
 		[Tooltip("Renderer used for minigun heat / emission feedback.")]
 		[SerializeField] private Renderer minigunRenderer;
 
@@ -62,6 +63,12 @@ namespace Game.AI.Shield {
 		[Tooltip("Material property used for the emission color.")]
 		[SerializeField] private string emissionColorProperty = "_EmissionColor";
 
+		[Header("Pooling")]
+		[Tooltip("Initial number of pooled tracers created")]
+		[SerializeField] private int tracerDefaultCapacity = 16;
+		[Tooltip("Maximum number of pooled tracers allowed before extra released ones are destroyed")]
+		[SerializeField] private int tracerMaxPoolSize = 64;
+
 		[Header("Animation")]
 		[Tooltip("Animator bool name used while continuously firing.")]
 		[SerializeField] private string fireBoolName = "IsFiring";
@@ -89,6 +96,9 @@ namespace Game.AI.Shield {
 		private bool hasLastMinigunAimPoint;
 		private Material minigunMaterial;
 
+		private IObjectPool<PooledObject> tracerPool;
+
+
 		// Shield Enemy Minigun Specific Properties 
 
 		// True while the weapon is actively firing
@@ -110,6 +120,51 @@ namespace Game.AI.Shield {
 
 			if (minigunRenderer != null) {
 				minigunMaterial = minigunRenderer.material;
+			}
+
+			if (minigunBulletTracerPrefab != null) {
+				tracerPool = new ObjectPool<PooledObject>(
+					CreateTracer,
+					OnTakeTracerFromPool,
+					OnReturnTracerToPool,
+					OnDestroyTracerFromPool,
+					true,
+					tracerDefaultCapacity,
+					tracerMaxPoolSize
+				);
+			}
+		}
+
+		private PooledObject CreateTracer() {
+			PooledObject tracerPrefabPooledObject = minigunBulletTracerPrefab.GetComponent<PooledObject>();
+
+			PooledObject pooledTracer = Instantiate(tracerPrefabPooledObject);
+			pooledTracer.SetPool(tracerPool);
+			pooledTracer.SourcePrefab = tracerPrefabPooledObject;
+			pooledTracer.gameObject.SetActive(false);
+
+			return pooledTracer;
+		}
+
+		private void OnTakeTracerFromPool(PooledObject item) {
+			item.gameObject.SetActive(true);
+
+			foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
+				handler.OnSpawned();
+			}
+		}
+
+		private void OnReturnTracerToPool(PooledObject item) {
+			foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
+				handler.OnDespawned();
+			}
+
+			item.gameObject.SetActive(false);
+		}
+
+		private void OnDestroyTracerFromPool(PooledObject item) {
+			if (item != null && item.gameObject != null) {
+				Destroy(item.gameObject);
 			}
 		}
 
@@ -363,7 +418,7 @@ namespace Game.AI.Shield {
 
 				hitScanHitbox.Initialise(shotAttackData);
 				// Notify HitScanHitbox of a successful hit
-				hitScanHitbox.ApplyHitScanHit(hit, minigunAttackData);
+				hitScanHitbox.ApplyHitScanHit(hit, shotAttackData);
 			}
 			else {
 				hitScanHitbox.Initialise(minigunAttackData);
@@ -392,17 +447,21 @@ namespace Game.AI.Shield {
 		}
 
 		// Visual tracer for minigun bullets
-		// TODO: Pool tracers instead of instantiating and destroying
 		private void SpawnHitScanTracer(Vector3 start, Vector3 end) {
-			LineRenderer minigunTracer = Instantiate(minigunBulletTracer);
+			if (tracerPool == null) {
+				return;
+			}
 
-			minigunTracer.positionCount = 2;
-			minigunTracer.startWidth = 0.025f;
-			minigunTracer.endWidth = 0.025f;
-			minigunTracer.SetPosition(0, start);
-			minigunTracer.SetPosition(1, end);
+			PooledObject pooledTracer = tracerPool.Get();
+			ShieldMinigunTracer tracer = pooledTracer.GetComponent<ShieldMinigunTracer>();
 
-			Destroy(minigunTracer.gameObject, minigunBulletLifetime);
+			if (tracer == null) {
+				pooledTracer.ReturnToPool();
+				return;
+			}
+
+			pooledTracer.transform.SetPositionAndRotation(start, Quaternion.identity);
+			tracer.Play(start, end, minigunBulletLifetime);
 		}
 
 		private float GetHeatPercent() {
