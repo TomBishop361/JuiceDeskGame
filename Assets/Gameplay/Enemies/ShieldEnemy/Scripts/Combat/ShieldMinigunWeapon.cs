@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: REVISIT THIS TO GET THE CORRECT LOGIC TRANSFERRED ACROSS FROM OLD SHIELDENEMY BUT TO USE THE NEW MODULE SYSTEM
-
 namespace Game.AI.Shield {
 	[DisallowMultipleComponent]
 	public sealed class ShieldMinigunWeapon : MonoBehaviour {

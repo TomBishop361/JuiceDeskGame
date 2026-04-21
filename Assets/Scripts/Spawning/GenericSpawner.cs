@@ -341,7 +341,7 @@ public class GenericSpawner : MonoBehaviour {
 				continue;
 			}
 
-			if (category == SpawnCategory.Any || prefab.SpawnCategory == category) {
+			if (category == SpawnCategory.Any || GetSpawnCategory(prefab) == category) {
 				matches.Add(prefab);
 			}
 		}
@@ -351,6 +351,19 @@ public class GenericSpawner : MonoBehaviour {
 		}
 			
 		return matches[Random.Range(0, matches.Count)];
+	}
+
+	private SpawnCategory GetSpawnCategory(PooledObject pooledObject) {
+		if (pooledObject == null) {
+			return SpawnCategory.Any;
+		}
+
+		SpawnCategoryTag categoryTag = pooledObject.GetComponent<SpawnCategoryTag>();
+		if (categoryTag == null) {
+			return SpawnCategory.Any;
+		}
+
+		return categoryTag.Category;
 	}
 
 	//// Spawns gradually based on delayBetweenSpawns
@@ -447,7 +460,7 @@ public class GenericSpawner : MonoBehaviour {
 			return true;
 		}
 
-		SpawnCategory category = prefab.SpawnCategory;
+		SpawnCategory category = GetSpawnCategory(prefab);
 
 		for (int i = 0; i < spawnPoint.allowedCategories.Length; i++) {
 			if (spawnPoint.allowedCategories[i] == category || spawnPoint.allowedCategories[i] == SpawnCategory.Any) {
