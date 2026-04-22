@@ -53,6 +53,9 @@ public class InputController : MonoBehaviour
     [SerializeField] float AnchorLaunchAmount;
 
     [Header("Grinding")]
+    // Debug
+    public bool toggleKnockOffRail = true;
+    //
     public bool onRail;
     bool canRailGrind = true;
     public float railGrindTime = 1;
@@ -142,7 +145,8 @@ public class InputController : MonoBehaviour
 
     private void OnEnable()
     {
-        _health.OnDamageDealt += throwOffRail;
+        if(toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
+
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
