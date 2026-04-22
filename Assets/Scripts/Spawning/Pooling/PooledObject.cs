@@ -17,7 +17,6 @@ public class PooledObject : MonoBehaviour {
 	}
 
 	// Returns this object back to the pool
-	// NOTE: Call this instead of Destroy()
 	public void ReturnToPool() {
 		if (pool == null || this == null || gameObject == null) {
 			return;

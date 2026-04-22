@@ -65,9 +65,11 @@ namespace Game.AI.Shield {
 
 		[Header("Pooling")]
 		[Tooltip("Initial number of pooled tracers created")]
-		[SerializeField] private int tracerDefaultCapacity = 16;
+		[SerializeField] private int defaultTracerPoolCapacity = 16;
 		[Tooltip("Maximum number of pooled tracers allowed before extra released ones are destroyed")]
-		[SerializeField] private int tracerMaxPoolSize = 64;
+		[SerializeField] private int maxTracerPoolSize = 64;
+		[Tooltip("Populate the tracer pool during Awake so the first shot doesn't cause any lag.")]
+		[SerializeField] private bool populateTracerPoolAtStartup = true;
 
 		[Header("Animation")]
 		[Tooltip("Animator bool name used while continuously firing.")]
@@ -122,50 +124,7 @@ namespace Game.AI.Shield {
 				minigunMaterial = minigunRenderer.material;
 			}
 
-			if (minigunBulletTracerPrefab != null) {
-				tracerPool = new ObjectPool<PooledObject>(
-					CreateTracer,
-					OnTakeTracerFromPool,
-					OnReturnTracerToPool,
-					OnDestroyTracerFromPool,
-					true,
-					tracerDefaultCapacity,
-					tracerMaxPoolSize
-				);
-			}
-		}
-
-		private PooledObject CreateTracer() {
-			PooledObject tracerPrefabPooledObject = minigunBulletTracerPrefab.GetComponent<PooledObject>();
-
-			PooledObject pooledTracer = Instantiate(tracerPrefabPooledObject);
-			pooledTracer.SetPool(tracerPool);
-			pooledTracer.SourcePrefab = tracerPrefabPooledObject;
-			pooledTracer.gameObject.SetActive(false);
-
-			return pooledTracer;
-		}
-
-		private void OnTakeTracerFromPool(PooledObject item) {
-			item.gameObject.SetActive(true);
-
-			foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
-				handler.OnSpawned();
-			}
-		}
-
-		private void OnReturnTracerToPool(PooledObject item) {
-			foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
-				handler.OnDespawned();
-			}
-
-			item.gameObject.SetActive(false);
-		}
-
-		private void OnDestroyTracerFromPool(PooledObject item) {
-			if (item != null && item.gameObject != null) {
-				Destroy(item.gameObject);
-			}
+			SetupTracerPool();
 		}
 
 		// Resets weapon runtime state when the owner respawns or is reused from a pool
@@ -457,6 +416,7 @@ namespace Game.AI.Shield {
 
 			if (tracer == null) {
 				pooledTracer.ReturnToPool();
+				Debug.LogWarning($"{name}: Pooled tracer is missing ShieldMinigunTracer.", this);
 				return;
 			}
 
@@ -488,6 +448,91 @@ namespace Game.AI.Shield {
 			}
 
 			return Time.time - minigunFireStartTime >= minigunOverheatDuration;
+		}
+
+		private void SetupTracerPool() {
+			if (tracerPool != null || minigunBulletTracerPrefab == null) {
+				return;
+			}
+
+			tracerPool = new ObjectPool<PooledObject>(
+				CreateTracer,
+				OnTakeTracerFromPool,
+				OnReturnTracerToPool,
+				OnDestroyTracerFromPool,
+				true,
+				Mathf.Max(1, defaultTracerPoolCapacity),
+				Mathf.Max(1, maxTracerPoolSize)
+			);
+
+			if (populateTracerPoolAtStartup) {
+				PopulateTracerPool();
+			}
+
+		}
+
+		private PooledObject CreateTracer() {
+			PooledObject tracerPrefabPooledObject = minigunBulletTracerPrefab.GetComponent<PooledObject>();
+
+			PooledObject pooledTracer = Instantiate(tracerPrefabPooledObject);
+			pooledTracer.SetPool(tracerPool);
+			pooledTracer.SourcePrefab = tracerPrefabPooledObject;
+			pooledTracer.gameObject.SetActive(false);
+
+			return pooledTracer;
+		}
+
+		private void PopulateTracerPool() {
+			int count = Mathf.Min(Mathf.Max(1, defaultTracerPoolCapacity), Mathf.Max(1, maxTracerPoolSize));
+
+			PooledObject[] borrowedTracers = new PooledObject[count];
+			for (int i = 0; i < count; i++) {
+				borrowedTracers[i] = tracerPool.Get();
+			}
+
+			for (int i = 0; i < borrowedTracers.Length; i++) {
+				tracerPool.Release(borrowedTracers[i]);
+			}
+		}
+
+		private void OnTakeTracerFromPool(PooledObject item) {
+			if (item == null) {
+				return;
+			}
+
+			item.transform.SetParent(null, true);
+			item.gameObject.SetActive(true);
+
+			ShieldMinigunTracer tracer = item.GetComponent<ShieldMinigunTracer>();
+			tracer?.OnSpawned();
+
+			//foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
+			//	handler.OnSpawned();
+			//}
+		}
+
+		private void OnReturnTracerToPool(PooledObject item) {
+			if (item == null) {
+				return;
+			}
+
+			ShieldMinigunTracer tracer = item.GetComponent<ShieldMinigunTracer>();
+			tracer?.OnDespawned();
+
+			//foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
+			//	handler.OnDespawned();
+			//}
+
+			item.transform.SetParent(transform, false);
+			item.transform.localPosition = Vector3.zero;
+			item.transform.localRotation = Quaternion.identity;
+			item.gameObject.SetActive(false);
+		}
+
+		private void OnDestroyTracerFromPool(PooledObject item) {
+			if (item != null && item.gameObject != null) {
+				Destroy(item.gameObject);
+			}
 		}
 
 		// - DEPRECATED - 

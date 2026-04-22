@@ -1789,8 +1789,9 @@ MonoBehaviour:
   baseEmissionColor: {r: 0, g: 0, b: 0, a: 1}
   maxEmissionColor: {r: 1.5, g: 0.4, b: 0.1, a: 1}
   emissionColorProperty: _EmissionColor
-  tracerDefaultCapacity: 16
-  tracerMaxPoolSize: 64
+  defaultTracerPoolCapacity: 6
+  maxTracerPoolSize: 64
+  populateTracerPoolAtStartup: 1
   fireBoolName: IsFiring
 --- !u!114 &4254916816721932567
 MonoBehaviour:

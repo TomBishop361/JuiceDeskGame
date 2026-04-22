@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.AI.Drone {
 	[Serializable]
-	public class DroneHomingProjectileStats : MonoBehaviour {
+	public class DroneHomingProjectileStats {
 		[Header("Motion")]
 		[Tooltip("Units (per second) travelled by the homing projectile.")]
 		[SerializeField] private float speed = 24.0f;

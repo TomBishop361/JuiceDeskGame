@@ -64,6 +64,10 @@ namespace Game.AI.Shield {
 				StopCoroutine(lifetimeRoutine);
 				lifetimeRoutine = null;
 			}
+
+			if (lineRenderer != null) {
+				lineRenderer.positionCount = 0;
+			}
 		}
 	}
 }

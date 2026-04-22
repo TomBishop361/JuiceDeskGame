@@ -8,7 +8,8 @@ using System.Collections.Generic;
 // Has lifetime + hit handling
 namespace Game.Combat.Projectiles {
 	[DisallowMultipleComponent]
-	public sealed class DroneHomingProjectile : MonoBehaviour {
+	[RequireComponent(typeof(PooledObject))]
+	public sealed class DroneHomingProjectile : MonoBehaviour, IPoolLifecycleHandler {
 		[Header("Visuals")]
 		[SerializeField] private Material homingActiveMaterial;
 		[SerializeField] private Material homingExpiredMaterial;
@@ -17,12 +18,12 @@ namespace Game.Combat.Projectiles {
 
 		[Header("Physics")]
 		[SerializeField] private Rigidbody rb;
-		[SerializeField] private bool useTrigger = true;
 
 		// Runtime params
 		private Transform target;
 		private ProjectileHitbox projectileHitbox;
 		private MeshRenderer cachedRenderer;
+		private PooledObject pooledObject;
 
 		private AttackData activeAttackData;
 		private AttackData timeoutAttackData;
@@ -49,6 +50,7 @@ namespace Game.Combat.Projectiles {
 
 			cachedRenderer = GetComponentInChildren<MeshRenderer>();
 			projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
+			pooledObject = GetComponent<PooledObject>();
 
 			if (projectileHitbox != null) {
 				// Subscribe to event handler from the hit box event
@@ -62,10 +64,9 @@ namespace Game.Combat.Projectiles {
 				rb.interpolation = RigidbodyInterpolation.Interpolate;
 			}
 
-			if (homingActiveMaterial != null && cachedRenderer != null) {
-				cachedRenderer.material = homingActiveMaterial;
-			}
+			ResetRuntimeState();
 		}
+
 		private void OnDestroy() {
 			if (projectileHitbox != null) {
 				projectileHitbox.OnProjectileHitImpact -= HandleProjectileHitImpact;
@@ -93,8 +94,12 @@ namespace Game.Combat.Projectiles {
 			hasExpired = false;
 			configured = true;
 
+			// Supply projectile hitbox with attack data
 			if (projectileHitbox != null) {
 				projectileHitbox.Initialise(activeAttackData);
+			}
+			else {
+				Debug.LogWarning($"{name}: ProjectileHitbox cannot be found on projectile");
 			}
 
 			if (homingActiveMaterial != null && cachedRenderer != null) {
@@ -117,14 +122,6 @@ namespace Game.Combat.Projectiles {
 			transform.rotation = Quaternion.LookRotation(velocityDirection, Vector3.up); // Vector3.up is a change
 
 			ApplyVelocity(velocityDirection * speed);
-
-			//if (rb != null) {
-			//	rb.linearVelocity = initialDirection * homingProjectileSpeed;
-			//}
-			//else {
-			//	// Fallback: If there is no rigidbody
-			//	transform.position += initialDirection * homingProjectileSpeed * Time.deltaTime;
-			//}
 		}
 
 		private void FixedUpdate() {
@@ -138,7 +135,7 @@ namespace Game.Combat.Projectiles {
 					ExplodeOnTimeout();
 				}
 				else {
-					Destroy(gameObject);
+					ReturnToPool();
 				}
 				return;
 			}
@@ -272,19 +269,18 @@ namespace Game.Combat.Projectiles {
 		// Calculate damage falloff based on distance of explosion to the hit target
 		private float CalculateDamageFalloff(AttackData attackData, float distance) {
 			float t = Mathf.Clamp01(distance / hitRadius);
-
 			return Mathf.Lerp(attackData.Damage, 0.0f, t);
 		}
 
-		// TODO: Play Camera shake + SFX + VFX + Destroy projectile regardless of hit
+		// TODO: Play Camera shake + SFX + VFX + Despawn projectile regardless of hit
 		private void Explode(/*Vector3 explosionPoint*/) {
 			// Play projectile explosion Camera shake + SFX + VFX at explosion point
 			//CameraShakeManager.Instance.TriggerCameraShakeAtPosition(CameraShakeType.BossProjectileHit, explosionPoint);
 			//SFXController.Instance.PlayProjectileExplosion(explosionPoint);
 			//VFXController.Instance.SpawnProjectileExplosion(explosionPointl);
 
-			// Destroy once explosion effects have been started 
-			Destroy(gameObject);
+			// Return to pool once explosion effects have been started
+			ReturnToPool();
 		}
 
 		// Explodes if no collision was made and lifetime timer expired - allows it to still deal damage to player
@@ -297,7 +293,6 @@ namespace Game.Combat.Projectiles {
 
 			// Timeout explosion has no directReceiver since no collision was made so it’s just splash damage
 			DealSplashDamage(timeoutAttackData, null, transform.position);
-
 			Explode(/*transform.position*/);
 		}
 
@@ -308,6 +303,46 @@ namespace Game.Combat.Projectiles {
 			else {
 				transform.position += velocity * Time.fixedDeltaTime;
 			}
+		}
+
+		public void ReturnToPool() {
+			if (pooledObject != null) {
+				pooledObject.ReturnToPool();
+			}
+		}
+
+		private void ResetRuntimeState() {
+			target = null;
+			configured = false;
+			hasHit = false;
+			hasExpired = false;
+			velocityDirection = Vector3.zero;
+			deathTime = 0.0f;
+			homingEndTime = 0.0f;
+			speed = 0.0f;
+			turnRate = 0.0f;
+			hitRadius = 0.75f;
+			explodeOnTimeout = true;
+			activeAttackData = default;
+			timeoutAttackData = default;
+			damageLayers = ~0;
+
+			if (rb != null) {
+				rb.linearVelocity = Vector3.zero;
+				rb.angularVelocity = Vector3.zero;
+			}
+
+			if (homingActiveMaterial != null && cachedRenderer != null) {
+				cachedRenderer.material = homingActiveMaterial;
+			}
+		}
+
+		public void OnSpawned() {
+			ResetRuntimeState();
+		}
+
+		public void OnDespawned() {
+			ResetRuntimeState();
 		}
 
 		// Shows explosion hit radius as a gizmo (scene view only)

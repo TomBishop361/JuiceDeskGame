@@ -1047,7 +1047,6 @@ GameObject:
   - component: {fileID: 9217402146755338662}
   - component: {fileID: 6815171748467265589}
   - component: {fileID: 7438655828395453440}
-  - component: {fileID: 5779678482841020805}
   - component: {fileID: 8051029756593719978}
   - component: {fileID: 962284047258909528}
   - component: {fileID: 2716789458970548036}
@@ -1253,44 +1252,35 @@ MonoBehaviour:
     Attacker: {fileID: 6426209685012709754}
     Type: 1
     AttackerFaction: 1
-  projectilePrefab: {fileID: 527449327847401711, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
+  projectilePrefab: {fileID: 8827402555016144863, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
   projectileSpawn: {fileID: 41086772765354385}
-  homingProjectileStats: {fileID: 5779678482841020805}
+  homingProjectileStats:
+    speed: 6
+    turnRate: 105
+    lifetime: 8
+    homingDuration: 5
+    hitRadius: 3
+    explodeOnTimeout: 1
+    timeoutAttackData:
+      Damage: 1
+      Knockback:
+        Force: 5
+        UpwardModifier: 1
+        TorqueStrength: 0
+      Attacker: {fileID: 6426209685012709754}
+      Type: 1
+      AttackerFaction: 1
+    damageLayers:
+      serializedVersion: 2
+      m_Bits: 128
   fireRange: 10
   fireCooldown: 3
   fireLockTime: 0.35
+  defaultProjectilePoolCapacity: 4
+  maxProjectilePoolSize: 12
+  populateProjectilePoolAtStartup: 1
   fireOnAnimationEvent: 0
   fireTriggerName: Fire
---- !u!114 &5779678482841020805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6426209685012709754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51402d4ab63b06e43ba4b3474c53fb7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 6
-  turnRate: 105
-  lifetime: 8
-  homingDuration: 5
-  hitRadius: 3
-  explodeOnTimeout: 1
-  timeoutAttackData:
-    Damage: 3
-    Knockback:
-      Force: 5
-      UpwardModifier: 1
-      TorqueStrength: 0
-    Attacker: {fileID: 6426209685012709754}
-    Type: 1
-    AttackerFaction: 1
-  damageLayers:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!114 &8051029756593719978
 MonoBehaviour:
   m_ObjectHideFlags: 0
