@@ -82,6 +82,7 @@ public class InputController : MonoBehaviour
     [SerializeField] bool isGrounded;
     [SerializeField] float inputLagPeriod = 0.0001f;
     [SerializeField] TextMeshProUGUI VelocityUI;
+    [SerializeField] Health _health;
 
     public const float gravity = -9.81f;
     public bool jump;
@@ -140,8 +141,8 @@ public class InputController : MonoBehaviour
   
 
     private void OnEnable()
-    {       
-
+    {
+        _health.OnDamageDealt += throwOffRail;
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
@@ -566,6 +567,7 @@ public class InputController : MonoBehaviour
 
     private void OnDisable()
     {
+        _health.OnDamageDealt -= throwOffRail;
         InputManager.OnMoveReceived -= MovePressed;
         InputManager.OnLookReceived -= LookMoved;
         InputManager.OnJumpReceived -= JumpPressed;
@@ -672,15 +674,18 @@ private void OnCollisionEnter(Collision collision)
     //MoveToInputController?
     void throwOffRail()
     {
-        isRailGrinding = false;
-        onRail = false;
-        rb.useGravity = true;
-        //isGrounded = true;
-        currentRailScript = null;
-        rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
-        canRailGrind= false;
-        railGrindTimer = railGrindTime;
-        desiredMoveSpeed = sprintSpeed;
+        if (isRailGrinding)
+        {
+            isRailGrinding = false;
+            onRail = false;
+            rb.useGravity = true;
+            currentRailScript = null;
+            rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
+            canRailGrind = false;
+            railGrindTimer = railGrindTime;
+
+            desiredMoveSpeed = walkSpeed;
+        }
     }
 
   
