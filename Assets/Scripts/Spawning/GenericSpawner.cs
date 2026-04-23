@@ -69,9 +69,18 @@ public class GenericSpawner : MonoBehaviour {
 	}
 
 	private void Start() {
-		if (autoSpawn == true) {
+		if (autoSpawn) {
 			StartSpawning();
 		}
+	}
+
+	
+	public void SetEnemyTracker(EnemyTracker tracker) {
+		enemyTracker = tracker;
+	}
+
+	public int GetPlannedEnemyCount() {
+		return GetTotalEnemiesInAllWaves();
 	}
 
 	// Starts the simple continuous auto-spawn loop using autoSpawnPrefab
@@ -97,14 +106,18 @@ public class GenericSpawner : MonoBehaviour {
 
 	// Starts the wave sequence once
 	public void StartWaveSequence() {
-		if (waveRoutine == null) {
-			// Tell tracker how many enemies will exist
-			if (enemyTracker != null) {
-				enemyTracker.AddEnemies(GetTotalEnemiesInAllWaves());
-			}
-
-			waveRoutine = StartCoroutine(WaveSequenceRoutine());
+		if (waveRoutine != null) {
+			return;
 		}
+
+		// Tell tracker how many enemies will exist
+		//if (enemyTracker != null) {
+		//	enemyTracker.AddEnemies(GetTotalEnemiesInAllWaves());
+		//}
+
+		// Tell tracker how many enemies will exist
+		// Precomputed at scene start
+		waveRoutine = StartCoroutine(WaveSequenceRoutine());
 	}
 
 	// Stops the wave sequence if it is running
@@ -328,7 +341,7 @@ public class GenericSpawner : MonoBehaviour {
 				continue;
 			}
 
-			if (category == SpawnCategory.Any || prefab.SpawnCategory == category) {
+			if (category == SpawnCategory.Any || GetSpawnCategory(prefab) == category) {
 				matches.Add(prefab);
 			}
 		}
@@ -338,6 +351,19 @@ public class GenericSpawner : MonoBehaviour {
 		}
 			
 		return matches[Random.Range(0, matches.Count)];
+	}
+
+	private SpawnCategory GetSpawnCategory(PooledObject pooledObject) {
+		if (pooledObject == null) {
+			return SpawnCategory.Any;
+		}
+
+		SpawnCategoryTag categoryTag = pooledObject.GetComponent<SpawnCategoryTag>();
+		if (categoryTag == null) {
+			return SpawnCategory.Any;
+		}
+
+		return categoryTag.Category;
 	}
 
 	//// Spawns gradually based on delayBetweenSpawns
@@ -434,7 +460,7 @@ public class GenericSpawner : MonoBehaviour {
 			return true;
 		}
 
-		SpawnCategory category = prefab.SpawnCategory;
+		SpawnCategory category = GetSpawnCategory(prefab);
 
 		for (int i = 0; i < spawnPoint.allowedCategories.Length; i++) {
 			if (spawnPoint.allowedCategories[i] == category || spawnPoint.allowedCategories[i] == SpawnCategory.Any) {
@@ -447,7 +473,7 @@ public class GenericSpawner : MonoBehaviour {
 
 	// Called when an object is taken from its pool (spawned in)
 	private void OnTakeFromPool(PooledObject item) {
-		if (hasPendingSpawnPose == true) {
+		if (hasPendingSpawnPose) {
 			item.transform.SetPositionAndRotation(pendingSpawnPosition, pendingSpawnRotation);
 		}
 
@@ -456,11 +482,12 @@ public class GenericSpawner : MonoBehaviour {
 		EnemyCombat enemyCombat = item.GetComponent<EnemyCombat>();
 		if (enemyCombat != null && enemyTracker != null) {
 			enemyCombat.SetEnemyTracker(enemyTracker);
+			enemyTracker.EnemySpawned();
 		}
 
 		item.gameObject.SetActive(true);
 
-		foreach (IPoolSpawnHandler handler in item.GetComponents<IPoolSpawnHandler>()) {
+		foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
 			handler.OnSpawned();
 		}
 	}
@@ -471,8 +498,14 @@ public class GenericSpawner : MonoBehaviour {
 		aliveObjects.Remove(item);
 		aliveWaveObjects.Remove(item);
 
+		// Tracks enemies that have despawned but not died (i.e. despawn on player death)
+		EnemyCombat enemyCombat = item.GetComponent<EnemyCombat>();
+		if (enemyCombat != null && enemyTracker != null && enemyCombat.HasReportedDeath == false) {
+			enemyTracker.EnemyDespawnedAlive();
+		}
+
 		// Notify components before disabling
-		foreach (IPoolSpawnHandler handler in item.GetComponents<IPoolSpawnHandler>()) {
+		foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
 			handler.OnDespawned();
 		}
 

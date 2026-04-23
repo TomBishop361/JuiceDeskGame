@@ -50,7 +50,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		OnAnyDamaged?.Invoke(this, attackData);
 
 		// Trigger damage reaction animation (Optional - set inside each entities inspector)
-		if (playTakeDamageAnimation == true && animator != null) {
+		if (playTakeDamageAnimation && animator != null) {
 			animator.SetTrigger(takeDamageTriggerHash);
 			StartCoroutine(ResetTakeDamageTriggerOnNextFrame());
 		}
@@ -126,11 +126,11 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		}
 
 		//// Apply knockback via Rigidbody
-		//if (gameObject.TryGetComponent(out Rigidbody rigidbody) == true) {
+		//if (gameObject.TryGetComponent(out Rigidbody rigidbody)) {
 		//	CombatHelper.ApplyRigidbodyKnockback(transform, attackData.Attacker.transform, attackData.Knockback);
 		//}
 		//// Apply knockback via CharacterController
-		//else if (gameObject.TryGetComponent(out ThirdPersonController thirdPersonController) == true) {
+		//else if (gameObject.TryGetComponent(out ThirdPersonController thirdPersonController)) {
 		//	CombatHelper.ApplyCharacterControllerKnockback(transform, attackData.Attacker.transform, attackData.Knockback);
 		//}
 	}

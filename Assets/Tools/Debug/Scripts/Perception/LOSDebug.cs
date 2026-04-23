@@ -41,7 +41,7 @@ namespace Game.AI {
 			Gizmos.DrawLine(origin, origin + right * losSensor.DetectionRange);
 
 			// Optional LOS line to target
-			if (showSightLine == true && debugTarget != null) {
+			if (showSightLine && debugTarget != null) {
 				bool hasLOS = losSensor.HasLOS(debugTarget);
 
 				Gizmos.color = hasLOS ? Color.green : Color.red;

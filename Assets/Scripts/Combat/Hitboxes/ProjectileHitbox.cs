@@ -71,7 +71,7 @@ public class ProjectileHitbox : MonoBehaviour {
 	// Impact validation
 	// Prevents duplicate hits + invalid layers +utility triggers with no damageable target
 	private void HandleImpact(Collider other, Vector3 hitPoint) {
-		if (hasHit == true || other == null) {
+		if (hasHit || other == null) {
 			return;
 		}
 
@@ -105,7 +105,7 @@ public class ProjectileHitbox : MonoBehaviour {
 	// - DEPRECATED-
 
 	//private void OnTriggerEnter(Collider other) {
-	//	if (hasHit == true) {
+	//	if (hasHit) {
 	//		return;
 	//	}
 
@@ -151,7 +151,7 @@ public class ProjectileHitbox : MonoBehaviour {
 
 	//	//// Inform Projectile.cs script that a collision has occured
 	//	//// It will deal with damage handling because there is falloff based on AOE impact
-	//	//if (other.TryGetComponent(out IDamageable damageableInterface) == true) {
+	//	//if (other.TryGetComponent(out IDamageable damageableInterface)) {
 	//	//	// Direct hit
 	//	//	Vector3 hitPoint = other.ClosestPoint(parentProjectile.transform.position);
 

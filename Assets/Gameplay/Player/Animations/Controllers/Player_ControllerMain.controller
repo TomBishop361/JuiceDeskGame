@@ -89,6 +89,7 @@ AnimatorState:
   - {fileID: 2164823571123632105}
   - {fileID: -5421099905242653902}
   - {fileID: -7693500020915146847}
+  - {fileID: 247154566574349882}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -681,6 +682,56 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1101 &247154566574349882
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: Sliding
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 3789406875873962473}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.75
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
+--- !u!1101 &1180594341258699254
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -7656544727472521578}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.9632353
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1101 &2164823571123632105
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -874,6 +925,7 @@ AnimatorState:
   m_Transitions:
   - {fileID: 8363967176739591141}
   - {fileID: -2665131097017529031}
+  - {fileID: 1180594341258699254}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -978,7 +1030,7 @@ AnimatorStateMachine:
     m_Position: {x: -210, y: 390, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3789406875873962473}
-    m_Position: {x: 270, y: 400, z: 0}
+    m_Position: {x: 310, y: 400, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7656544727472521578}
     m_Position: {x: 30, y: 270, z: 0}
