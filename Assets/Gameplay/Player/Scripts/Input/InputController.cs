@@ -124,10 +124,9 @@ public class InputController : MonoBehaviour
     [SerializeField] Rigidbody rb;
 
     public event Action JumpEvent = delegate { };   
+    
 
     public MovementState state;
-
-    
 
     public enum MovementState
     {
@@ -691,11 +690,6 @@ private void OnCollisionEnter(Collision collision)
             desiredMoveSpeed = walkSpeed;
         }
     }
-
-  
-
-  
-
 
 #if UNITY_EDITOR
 

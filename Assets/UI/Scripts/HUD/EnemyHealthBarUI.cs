@@ -5,7 +5,7 @@ using static UnityEngine.Rendering.DebugUI;
 public class EnemyHealthBarUI : MonoBehaviour {
 	[Header("References")]
 	[SerializeField] private Health health;
-	[SerializeField] private Slider healthSlider;
+	[SerializeField] private Image healthSlider;
 	[SerializeField] private Image fillImage; // image inside slider to fill
 	[SerializeField] private TMPro.TextMeshProUGUI hpText;
 
@@ -34,9 +34,9 @@ public class EnemyHealthBarUI : MonoBehaviour {
 		mainCamera = Camera.main;
 
 		// Initialise slider values
-		healthSlider.minValue = 0.0f;
-		healthSlider.maxValue = 1.0f;
-		healthSlider.interactable = false;
+		//healthSlider.minValue = 0.0f;
+		//healthSlider.maxValue = 1.0f;
+		//healthSlider.interactable = false;
 
 		health.OnHealthChanged += UpdateHealthBar;
 		health.OnDeath += ResetHealthBar; 
@@ -108,7 +108,7 @@ public class EnemyHealthBarUI : MonoBehaviour {
 	private void UpdateHealthBar(float currentHealth, float maxHealth) {
 		float healthPercent = currentHealth / maxHealth;
 
-		healthSlider.value = healthPercent;
+		fillImage.fillAmount = healthPercent;
 
 		if (fillImage != null) {
 			fillImage.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercent);
