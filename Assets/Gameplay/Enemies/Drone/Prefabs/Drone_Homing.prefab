@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1025106597326282760}
   - component: {fileID: 8827402555016144863}
   - component: {fileID: 412335192420947666}
+  - component: {fileID: 758937524414565748}
   m_Layer: 9
   m_Name: Drone_Homing
   m_TagString: Untagged
@@ -75,30 +76,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18c6a9c0e2b41b94ba10ea365ccc339e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  homingProjectileSpeed: 8
-  homingProjectileTurnRate: 20
-  homingProjectileLifetime: 8
-  homingDuration: 5
-  homingProjectileDamage: 3
-  hitRadius: 3
-  explodeOnTimeout: 1
-  timeoutAttackData:
-    Damage: 3
-    Knockback:
-      Force: 15
-      UpwardModifier: 6
-      TorqueStrength: 0
-    Attacker: {fileID: 527449327847401711}
-    Type: 1
-    AttackerFaction: 1
-  hitLayers:
-    serializedVersion: 2
-    m_Bits: 24777
-  homingActiveMaterial: {fileID: 2100000, guid: efe26027cacc84b409062a6cff9b90c4, type: 2}
-  homingExpiredMaterial: {fileID: 2100000, guid: 6af20d21fdb3e9846be9fcc5368045e6, type: 2}
+  armingMaterial: {fileID: 2100000, guid: f5c03b7d48332454cbf96bd82bc98f12, type: 2}
+  homingActiveMaterial: {fileID: 2100000, guid: 0c32055e4135a484b913cc24d7fd1be5, type: 2}
+  homingExpiredMaterial: {fileID: 2100000, guid: a5fef8e8f920d422692b573b553f9c2b, type: 2}
   rb: {fileID: 1025106597326282760}
-  useTrigger: 1
 --- !u!114 &412335192420947666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527449327847401711}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825e928f690f9fb408899a3624bb306e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectile: {fileID: 8827402555016144863}
+--- !u!114 &758937524414565748
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,10 +102,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 527449327847401711}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 825e928f690f9fb408899a3624bb306e, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectile: {fileID: 8827402555016144863}
 --- !u!1 &5383064483998320398
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +133,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2975428769303140544}

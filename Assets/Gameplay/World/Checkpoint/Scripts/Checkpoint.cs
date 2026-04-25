@@ -14,11 +14,11 @@ public class Checkpoint : MonoBehaviour {
 	}
 
 	private void OnTriggerEnter(Collider other) {
-		if (activated == true) {
+		if (activated) {
 			return;
 		}
 
-		if (other.CompareTag("Player") == true) {
+		if (other.CompareTag("Player")) {
 			CheckpointManager.Instance.SetCheckpoint(transform.position + Vector3.up * 1.5f);
 			activated = true;
 

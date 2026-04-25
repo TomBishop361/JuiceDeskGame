@@ -260,7 +260,7 @@ namespace Game.AI.Sword {
 			// Aim at players chest (0.8 - 1.2 for the multiplier depending on player height)
 			Vector3 baseAim = target.position + target.forward /*Vector3.up * 1.0f*/;
 
-			if (target.TryGetComponent(out Rigidbody rb) == true) {
+			if (target.TryGetComponent(out Rigidbody rb)) {
 				return baseAim + rb.linearVelocity * lungeLeadTime;
 			}
 

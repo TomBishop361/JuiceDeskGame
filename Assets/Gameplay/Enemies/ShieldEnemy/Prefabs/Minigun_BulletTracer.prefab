@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 6301013040785597570}
   - component: {fileID: 8346758640552866426}
   - component: {fileID: 7942066574889770760}
+  - component: {fileID: 7337224773031513817}
+  - component: {fileID: 2794973165367800489}
   m_Layer: 9
-  m_Name: Minigun_Tracer
+  m_Name: Minigun_BulletTracer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,5 +152,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65d317793a58b5549be4c3d4a0f7c3b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7337224773031513817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4005437882009194891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70a453ca7cebab64590bd5b357dff54c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineRenderer: {fileID: 8346758640552866426}
+  defaultWidth: 0.05
+--- !u!114 &2794973165367800489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4005437882009194891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

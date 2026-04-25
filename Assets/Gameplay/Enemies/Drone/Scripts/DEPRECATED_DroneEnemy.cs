@@ -8,7 +8,7 @@ namespace Game.AI.Drone {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
 	[RequireComponent(typeof(Hurtbox))]
 	[RequireComponent(typeof(PooledObject))]
-	public class DEPRECATED_DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
+	public class DEPRECATED_DroneEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolLifecycleHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -169,7 +169,7 @@ namespace Game.AI.Drone {
 		// Misc
 		private PooledObject pooledObject;
 
-		// Implement IPoolSpawnHandler
+		// Implement IPoolLifecycleHandler
 		public void OnSpawned() {
 			ResetRuntimeToBaseValues();
 		}
@@ -253,7 +253,7 @@ namespace Game.AI.Drone {
 			}
 
 			// Fetch distance to target (if target is valid)
-			if (HasTarget == true) {
+			if (HasTarget) {
 				DistanceToTarget = Vector3.Distance(transform.position, target.position);
 			}
 				
@@ -533,7 +533,7 @@ namespace Game.AI.Drone {
 
 			Vector3 desiredDirection = baseDirection.normalized;
 
-			if (enableDroneSeparation == true) {
+			if (enableDroneSeparation) {
 				desiredDirection += CalculateDroneSeparation();
 			}
 

@@ -24,7 +24,7 @@ public class Health : MonoBehaviour {
 			return;
 		}
 		// Get Animator for AI (to trigger death animation)
-		if (TryGetComponent(out Animator anim) == true) {
+		if (TryGetComponent(out Animator anim)) {
 			animator = anim;
 		}
 
@@ -52,7 +52,7 @@ public class Health : MonoBehaviour {
 			return;
 		}
 
-		if (isInvulnerable == true) {
+		if (isInvulnerable) {
 			return;
 		}
 

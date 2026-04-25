@@ -7,7 +7,7 @@ public class RestartLevel_DevCmd : MonoBehaviour {
 	private bool triggered = false;
 
 	public void RestartLevelCmd() {
-		if (triggered == true) {
+		if (triggered) {
 			return;
 		}
 		triggered = true;

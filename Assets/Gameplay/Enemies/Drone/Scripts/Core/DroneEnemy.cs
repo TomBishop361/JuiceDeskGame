@@ -113,12 +113,12 @@ namespace Game.AI.Drone {
 
 			droneFlightMotor?.TickMovement(Target);
 
-			//if (HasLineOfSight == true && Target != null) {
+			//if (HasLineOfSight && Target != null) {
 			//	droneFlightMotor?.TickMovement(Target);
 			//	return;
 			//}
 
-			//if (HasLastSeenPosition == true) {
+			//if (HasLastSeenPosition) {
 			//	droneFlightMotor?.TickInvestigateMovement(LastSeenPosition);
 			//}
 		}

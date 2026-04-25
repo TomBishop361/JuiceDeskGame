@@ -10,14 +10,21 @@ public class DestroyableEnemyProjectile : MonoBehaviour, IDamageable {
 		}
 	}
 
-	// TODO: When pooled replace SetActive(false) with the despawn method that the projectile uses in the pooling system
+	// When the projectile is shot, prefer returning it through the same pool path the projectile already uses
 	public void TakeDamage(AttackData attackData) {
 		if (projectile != null) {
-			projectile.gameObject.SetActive(false);
+			projectile.ReturnToPool();
+			return;
 		}
-		else {
-			gameObject.SetActive(false);
+
+		PooledObject pooledObject = GetComponent<PooledObject>();
+		if (pooledObject != null) {
+			pooledObject.ReturnToPool();
+			return;
 		}
+
+		// Fallback for non-pooled test objects.
+		gameObject.SetActive(false);
 	}
 
 	public void adjustHealth(int damage) {
