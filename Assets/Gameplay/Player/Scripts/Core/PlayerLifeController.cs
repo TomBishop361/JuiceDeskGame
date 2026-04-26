@@ -40,7 +40,7 @@ public class PlayerLifeController : MonoBehaviour {
 	}
 
 	private void Update() {
-		if (health == null || isDead == true) {
+		if (health == null || isDead) {
 			return;
 		}
 		if (enableRegen == false) {
@@ -50,7 +50,7 @@ public class PlayerLifeController : MonoBehaviour {
 		bool atFullHealth = health.CurrentHealth >= health.MaxHealth;
 		bool regenDelayFinished = Time.time >= lastDamageTime + regenDelay;
 
-		if (atFullHealth == false && regenDelayFinished == true) {
+		if (atFullHealth == false && regenDelayFinished) {
 			health.RegenerateHealth(regenPerSecond * Time.deltaTime);
 		}
 	}
@@ -115,7 +115,7 @@ public class PlayerLifeController : MonoBehaviour {
 	}
 
 	private void HandleDeath() {
-		if (isDead == true) {
+		if (isDead) {
 			return;
 		}
 		isDead = true;

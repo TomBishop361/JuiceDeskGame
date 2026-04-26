@@ -1047,7 +1047,6 @@ GameObject:
   - component: {fileID: 9217402146755338662}
   - component: {fileID: 6815171748467265589}
   - component: {fileID: 7438655828395453440}
-  - component: {fileID: 5779678482841020805}
   - component: {fileID: 8051029756593719978}
   - component: {fileID: 962284047258909528}
   - component: {fileID: 2716789458970548036}
@@ -1062,7 +1061,7 @@ GameObject:
   - component: {fileID: 4590514767511177929}
   - component: {fileID: 6835325938086037590}
   - component: {fileID: 4867790311118515996}
-  - component: {fileID: 3027478897397345026}
+  - component: {fileID: 6549758123022710367}
   m_Layer: 8
   m_Name: DroneEnemy_Root
   m_TagString: Untagged
@@ -1253,44 +1252,35 @@ MonoBehaviour:
     Attacker: {fileID: 6426209685012709754}
     Type: 1
     AttackerFaction: 1
-  projectilePrefab: {fileID: 527449327847401711, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
+  projectilePrefab: {fileID: 8827402555016144863, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
   projectileSpawn: {fileID: 41086772765354385}
-  homingProjectileStats: {fileID: 5779678482841020805}
+  homingProjectileStats:
+    speed: 6
+    turnRate: 105
+    lifetime: 8
+    homingDuration: 5
+    hitRadius: 3
+    explodeOnTimeout: 1
+    timeoutAttackData:
+      Damage: 1
+      Knockback:
+        Force: 5
+        UpwardModifier: 1
+        TorqueStrength: 0
+      Attacker: {fileID: 6426209685012709754}
+      Type: 1
+      AttackerFaction: 1
+    damageLayers:
+      serializedVersion: 2
+      m_Bits: 128
   fireRange: 10
   fireCooldown: 3
   fireLockTime: 0.35
+  defaultProjectilePoolCapacity: 4
+  maxProjectilePoolSize: 12
+  populateProjectilePoolAtStartup: 1
   fireOnAnimationEvent: 0
   fireTriggerName: Fire
---- !u!114 &5779678482841020805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6426209685012709754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51402d4ab63b06e43ba4b3474c53fb7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 6
-  turnRate: 105
-  lifetime: 8
-  homingDuration: 5
-  hitRadius: 3
-  explodeOnTimeout: 1
-  timeoutAttackData:
-    Damage: 3
-    Knockback:
-      Force: 5
-      UpwardModifier: 1
-      TorqueStrength: 0
-    Attacker: {fileID: 6426209685012709754}
-    Type: 1
-    AttackerFaction: 1
-  damageLayers:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!114 &8051029756593719978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1465,7 +1455,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnCategory: 1
 --- !u!114 &4590514767511177929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1536,62 +1525,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &3027478897397345026
+--- !u!114 &6549758123022710367
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6426209685012709754}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f35ecf2e19cffa498633569aa3cee71, type: 3}
+  m_Script: {fileID: 11500000, guid: 119db1831f48a204a9afedb4f1f29018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  animator: {fileID: 4867790311118515996}
-  losSensor: {fileID: 6013245490068612030}
-  healthComponent: {fileID: 8058414518214028440}
-  maxHealth: 1
-  projectileAttackData:
-    Damage: 1
-    Knockback:
-      Force: 0
-      UpwardModifier: 0
-      TorqueStrength: 0
-    Attacker: {fileID: 6426209685012709754}
-    Type: 1
-    AttackerFaction: 1
-  projectilePrefab: {fileID: 527449327847401711, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
-  projectileSpawn: {fileID: 9220908418508404628}
-  minRange: 4
-  fireRange: 10
-  desiredRange: 7
-  rangeDeadzone: 0.75
-  fireCooldown: 2.5
-  toggleSmoothRotation: 1
-  rotationSpeed: 300
-  rotationSmoothing: 8
-  hoverHeight: 3
-  flightMoveSpeed: 5
-  heightLerpSpeed: 8
-  visualFollowSpeed: 4
-  matchPlayerHeight: 1
-  heightOffsetFromPlayer: 3
-  minWorldY: -100
-  maxWorldY: 100
-  verticalFollowSpeed: 6
-  enableDroneSeparation: 1
-  separationRadius: 4.5
-  separationWeight: 1.35
-  maxSeparationForce: 1.15
-  orbitJitter: 0.15
-  deathFallSpeed: 6
-  deathDuration: 0.45
-  deathFX: {fileID: 0}
-  knockdownDuration: 1.2
-  fireLockTime: 0.2
-  targetMemoryDuration: 3
+  category: 1
 --- !u!1 &8591190532727063243
 GameObject:
   m_ObjectHideFlags: 0

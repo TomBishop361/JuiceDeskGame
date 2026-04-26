@@ -25,7 +25,7 @@ public class SpawnTrigger : MonoBehaviour {
 		hasTriggered = true;
 
 		// If TRUE disable trigger collider
-		if (triggerOnce == true) {
+		if (triggerOnce) {
 			GetComponent<Collider>().enabled = false;
 		}
 	}

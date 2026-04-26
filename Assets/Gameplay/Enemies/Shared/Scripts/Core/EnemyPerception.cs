@@ -81,7 +81,7 @@ namespace Game.AI {
 
 			//blackboard.SetLineOfSight(hasLOS);
 
-			//if (hasLOS == true) {
+			//if (hasLOS) {
 			//	blackboard.SetLastSeenPosition(explicitTarget.position);
 			//}
 
@@ -122,7 +122,7 @@ namespace Game.AI {
 			bool keepTarget = hasLOS || (Time.time - blackboard.LastSeenTime) <= targetMemoryDuration;
 			blackboard.SetHasTarget(keepTarget);
 
-			//if (hasLOS == true) {
+			//if (hasLOS) {
 			//	blackboard.SetLastSeenPosition(explicitTarget.position);
 			//}
 

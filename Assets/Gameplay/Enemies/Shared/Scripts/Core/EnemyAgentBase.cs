@@ -7,7 +7,7 @@ namespace Game.AI {
 	[RequireComponent(typeof(EnemyPerception))]
 	[RequireComponent(typeof(EnemyHealthDriver))]
 	[RequireComponent(typeof(EnemyDeathHandler))]
-	public abstract class EnemyAgentBase : EnemyCombat, IEnemyAgent, IEnemyCore, IEnemyTargeting, IEnemyMotor, IPrimaryAttack, IFactionOwner, IPoolSpawnHandler {
+	public abstract class EnemyAgentBase : EnemyCombat, IEnemyAgent, IEnemyCore, IEnemyTargeting, IEnemyMotor, IPrimaryAttack, IFactionOwner, IPoolLifecycleHandler {
 		[Header("Shared References")]
 		[SerializeField] protected Animator animator;
 		[SerializeField] protected Health healthComponent;

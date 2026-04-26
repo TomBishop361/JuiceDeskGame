@@ -4,9 +4,6 @@ using UnityEngine.Pool;
 // Base component required for any object that will be pooled
 // Handles returning itself back to its assigned pool
 public class PooledObject : MonoBehaviour {
-	[SerializeField] private SpawnCategory spawnCategory = SpawnCategory.Any;
-	public SpawnCategory SpawnCategory => spawnCategory;
-
 	// Reference to the pool that owns this object
 	private IObjectPool<PooledObject> pool;
 
@@ -20,7 +17,6 @@ public class PooledObject : MonoBehaviour {
 	}
 
 	// Returns this object back to the pool
-	// NOTE: Call this instead of Destroy()
 	public void ReturnToPool() {
 		if (pool == null || this == null || gameObject == null) {
 			return;

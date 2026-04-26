@@ -46,7 +46,7 @@ namespace Game.AI.Shield {
 		public bool IsExposed => defenseState != null && defenseState.IsExposed;
 		public bool IsFiringMinigun => minigunWeapon != null && minigunWeapon.IsFiring;
 
-		// Implement IEnemyAgent Properties 
+		// Implement Shared Enemy Properties 
 
 		// True when slam range condition is valid
 		public override bool InAttackRange => InSlamRange;
