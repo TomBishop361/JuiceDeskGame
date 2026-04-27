@@ -8,7 +8,7 @@ namespace Game.AI.Sword {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
 	[RequireComponent(typeof(Hurtbox))]
 	[RequireComponent(typeof(PooledObject))]
-	public class DEPRECATED_SwordEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
+	public class DEPRECATED_SwordEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolLifecycleHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 
@@ -140,7 +140,7 @@ namespace Game.AI.Sword {
 		private int normalLayer;
 		private int lungeLayer;
 
-		// Implement IPoolSpawnHandler
+		// Implement IPoolLifecycleHandler
 		public void OnSpawned() {
 			ResetRuntimeToBaseValues();
 		}

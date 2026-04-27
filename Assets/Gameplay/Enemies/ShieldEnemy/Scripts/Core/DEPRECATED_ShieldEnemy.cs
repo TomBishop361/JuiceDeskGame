@@ -10,7 +10,7 @@ namespace Game.AI.Shield {
 	[DisallowMultipleComponent] // can only add this component once to a gameobject
 	[RequireComponent(typeof(Hurtbox))]
 	[RequireComponent(typeof(PooledObject))]
-	public class DEPRECATED_ShieldEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolSpawnHandler {
+	public class DEPRECATED_ShieldEnemy : EnemyCombat, IEnemyAgent, IFactionOwner, IHealthSettings, IPoolLifecycleHandler {
 		// Implement IFactionOwner
 		public Faction OwnerFaction => Faction.Enemy;
 		// Implement IHealthSettings
@@ -213,7 +213,7 @@ namespace Game.AI.Shield {
 		// Misc
 		private PooledObject pooledObject;
 
-		// Implement IPoolSpawnHandler
+		// Implement IPoolLifecycleHandler
 		public void OnSpawned() {
 			ResetRuntimeToBaseValues();
 			

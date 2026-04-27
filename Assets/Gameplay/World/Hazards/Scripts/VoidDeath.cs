@@ -8,7 +8,7 @@ public class VoidDeath : MonoBehaviour {
 	private bool triggered = false;
 
 	public void PlayerFellInVoid() {
-		if (triggered == true) {
+		if (triggered) {
 			return;
 		}
 		triggered = true;
@@ -16,7 +16,7 @@ public class VoidDeath : MonoBehaviour {
 	}
 
 	private void OnTriggerEnter(Collider other) {
-		if (other.gameObject.CompareTag("Player") == true) {
+		if (other.gameObject.CompareTag("Player")) {
 			PlayerFellInVoid();
 		}
 	}

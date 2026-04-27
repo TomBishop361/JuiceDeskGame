@@ -912,9 +912,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.9
-  m_Height: 2.2
+  m_Height: 3.8221054
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -0.3426919, z: 0}
 --- !u!1 &4127634598116825111
 GameObject:
   m_ObjectHideFlags: 0
@@ -1586,7 +1586,7 @@ GameObject:
   - component: {fileID: 6674946175275264170}
   - component: {fileID: 7088472956447957708}
   - component: {fileID: 8342141347256848035}
-  - component: {fileID: 9149343434590310761}
+  - component: {fileID: 3884055606165247876}
   m_Layer: 8
   m_Name: ShieldEnemy_Root
   m_TagString: Untagged
@@ -1705,7 +1705,7 @@ MonoBehaviour:
   deathHandler: {fileID: 850036826570138842}
   defaultStunDuration: 0.4
   defaultDeathDespawnDelay: 1.2
-  maxHealth: 25
+  maxHealth: 75
   lowHealthThreshold: 5
   groundMotor: {fileID: 4488825989965254406}
   advanceMotor: {fileID: 5090258675412554558}
@@ -1760,10 +1760,10 @@ MonoBehaviour:
   hitScanHitbox: {fileID: 3712372061465919918}
   minigunBarrel: {fileID: 7846264198886879228}
   minigunMuzzle: {fileID: 2048145152801793667}
-  minigunBulletTracer: {fileID: 8346758640552866426, guid: 10d60da6f83739c41be049e395b04306, type: 3}
+  minigunBulletTracerPrefab: {fileID: 7337224773031513817, guid: 10d60da6f83739c41be049e395b04306, type: 3}
   minigunRenderer: {fileID: 8807493490366487733}
   minigunAttackData:
-    Damage: 0.2
+    Damage: 0.5
     Knockback:
       Force: 1
       UpwardModifier: 0
@@ -1778,17 +1778,20 @@ MonoBehaviour:
   minigunFullDamageRange: 20
   minigunMediumDamageRange: 35
   minigunMaxRange: 45
-  minigunFireRate: 5
+  minigunFireRate: 7
   minigunBulletLifetime: 0.06
-  minigunAimDelay: 0.12
+  minigunAimDelay: 0.8
   minigunAimOffsetRadius: 0.5
   minigunInaccuracyDegrees: 2
   minigunMaxAimSnapPerShot: 1.5
-  minigunExposeDuration: 2
-  minigunOverheatDuration: 6
+  minigunExposeDuration: 8
+  minigunOverheatDuration: 2
   baseEmissionColor: {r: 0, g: 0, b: 0, a: 1}
   maxEmissionColor: {r: 1.5, g: 0.4, b: 0.1, a: 1}
   emissionColorProperty: _EmissionColor
+  defaultTracerPoolCapacity: 6
+  maxTracerPoolSize: 64
+  populateTracerPoolAtStartup: 1
   fireBoolName: IsFiring
 --- !u!114 &4254916816721932567
 MonoBehaviour:
@@ -1876,7 +1879,7 @@ MonoBehaviour:
   explicitTarget: {fileID: 0}
   autoAcquirePlayerByTag: 1
   playerTag: Player
-  targetMemoryDuration: 2.5
+  targetMemoryDuration: 15
   losSensor: {fileID: 336471975230357279}
   allowTargetWithoutSensor: 1
 --- !u!114 &336471975230357279
@@ -1996,7 +1999,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnCategory: 3
 --- !u!114 &6674946175275264170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2067,91 +2069,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &9149343434590310761
+--- !u!114 &3884055606165247876
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8618922778442928813}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4ecc5342d164ed4daca66d4417b26ea, type: 3}
+  m_Script: {fileID: 11500000, guid: 119db1831f48a204a9afedb4f1f29018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  navMeshAgent: {fileID: 3964159061307939131}
-  hitScanHitbox: {fileID: 3712372061465919918}
-  animator: {fileID: 8342141347256848035}
-  losSensor: {fileID: 336471975230357279}
-  healthComponent: {fileID: 7989100796515525723}
-  maxHealth: 25
-  damage: 1
-  minigunAttackData:
-    Damage: 0.2
-    Knockback:
-      Force: 1
-      UpwardModifier: 0
-      TorqueStrength: 0
-    Attacker: {fileID: 8618922778442928813}
-    Type: 1
-    AttackerFaction: 1
-  shockwaveAttackData:
-    Damage: 2.5
-    Knockback:
-      Force: 15
-      UpwardModifier: 3.5
-      TorqueStrength: 0
-    Attacker: {fileID: 8618922778442928813}
-    Type: 0
-    AttackerFaction: 1
-  fireMinRange: 3
-  slamRange: 7
-  slamCooldown: 3
-  toggleSmoothRotation: 1
-  rotationSpeed: 180
-  rotationSmoothing: 6
-  hitStunDuration: 0.4
-  minigunBarrel: {fileID: 7846264198886879228}
-  minigunMuzzle: {fileID: 2048145152801793667}
-  minigunBulletTracer: {fileID: 8346758640552866426, guid: 10d60da6f83739c41be049e395b04306, type: 3}
-  minigunBulletLifetime: 0.05
-  minigunFireRate: 5
-  minigunFullDamageRange: 20
-  minigunMediumDamageRange: 35
-  minigunMaxRange: 45
-  minigunHitMask:
-    serializedVersion: 2
-    m_Bits: 128
-  minigunAimDelay: 0.12
-  minigunAimOffsetRadius: 0.5
-  minigunInaccuracyDegrees: 2
-  minigunMaxAimSnapPerShot: 1.5
-  minigunRenderer: {fileID: 3449389475543042956}
-  baseEmissionColor: {r: 0, g: 0, b: 0, a: 1}
-  maxEmissionColor: {r: 1, g: 0.21348314, b: 0, a: 1}
-  shockwaveRadius: 6.5
-  shockwaveHitMask:
-    serializedVersion: 2
-    m_Bits: 8
-  shockwaveDamageMask:
-    serializedVersion: 2
-    m_Bits: 128
-  spawnShockwaveDebugRing: 1
-  shockwaveRingPrefab: {fileID: 7798735277863091619, guid: 290d4698bde3e9b4da736ae27f7327e7, type: 3}
-  shockwaveRingExpandDuration: 0.6
-  shockwaveRingHoldDuration: 0.5
-  shockwaveRingYThickness: 0.05
-  minigunExposeDuration: 2
-  slamExposeDuration: 2.5
-  minigunOverheatDuration: 3
-  shieldBlockCollider: {fileID: 5736204186998066460}
-  blockArcDegrees: 120
-  slamLockTime: 1
-  grappleWindowDuration: 1
-  targetMemoryDuration: 2.5
-  postExposeRecoveryTime: 0.4
-  emissionColorProperty: _EmissionColor
+  category: 3
 --- !u!1 &8722368276012395742
 GameObject:
   m_ObjectHideFlags: 0
@@ -2214,7 +2144,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 3726441836492853422, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124400566104502144, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124400566104502144, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 70ce311f2175bac419e89b2390c7c4b4, type: 3}
+    - target: {fileID: 4124400566104502144, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_FillAmount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5409389377900455977, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_Layer
@@ -2284,15 +2238,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2333,6 +2287,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
       propertyPath: m_Name

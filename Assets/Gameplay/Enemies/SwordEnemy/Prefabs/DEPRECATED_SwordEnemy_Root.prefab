@@ -406,6 +406,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fac403b9ff744ca19c88fbbc3392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  validTargetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1753510983908594229
 GameObject:
   m_ObjectHideFlags: 0
@@ -779,12 +782,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bc985d2a972abc4ab910068296bdde5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   visionLayerMask:
     serializedVersion: 2
     m_Bits: 1480
   detectionRange: 14
   visionAngle: 240
+  eyeHeight: 0.5
 --- !u!114 &8743485709165554065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -797,9 +800,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d52986baa5dfb0a4d941a02ad9bb96db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showVisionGizmo: 1
-  eyes: {fileID: 3782710018509885800}
+  eyes: {fileID: 8801569425762147905}
   losSensor: {fileID: 4028784406532282084}
+  debugTarget: {fileID: 0}
+  showVisionGizmo: 1
+  showSightLine: 1
 --- !u!114 &1072683807792024947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -825,6 +830,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 7135050395248741609}
+  playTakeDamageAnimation: 0
+  takeDamageTriggerName: TakeDamage
 --- !u!114 &7888177967883063960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1445,6 +1452,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fac403b9ff744ca19c88fbbc3392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  validTargetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &6235626129301541335
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,6 +1994,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3fac403b9ff744ca19c88fbbc3392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  validTargetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &7339247027277484995
 GameObject:
   m_ObjectHideFlags: 0

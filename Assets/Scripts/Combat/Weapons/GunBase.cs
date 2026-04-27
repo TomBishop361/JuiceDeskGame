@@ -11,7 +11,7 @@ public class GunBase : MonoBehaviour
     [SerializeField]
     GunInputManagerBase _gunInputManager;
     IGunInputManager gunInputManager => _gunInputManager.InputManager;
-
+    [SerializeField] WeaponManager weaponManager;
     [SerializeField]
     GunSO gunData;
     public string gunName { get; private set; }
@@ -159,7 +159,7 @@ public class GunBase : MonoBehaviour
 
     private void handleShoot(bool isShooting)
     {
-        if (isShooting && canShoot && currentAmmo > 0 && !isReloading)
+        if (isShooting && canShoot && currentAmmo > 0 && !isReloading && weaponManager.CanPrimaryFire)
         {
             RaycastHit hit;
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red,2);
@@ -167,8 +167,7 @@ public class GunBase : MonoBehaviour
             {
                 Debug.DrawLine(AimOrigin.transform.position, hit.point, Color.blue, 5f);
                 ShootDir = (hit.point - BulletOrigin.transform.position).normalized;
-                Debug.Log("Hit Object Name " + hit.transform.name);
-               
+                Debug.Log("Hit Object Name " + hit.transform.name);               
             }
             else
             {

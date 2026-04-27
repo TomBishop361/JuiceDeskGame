@@ -44,7 +44,7 @@ namespace Game.AI.Sword {
 		// True when the lunge module says a lunge can begin right now
 		public bool CanLunge => lungeAttack != null && lungeAttack.CanLunge(this);
 
-		// Implement IEnemyAgent Properties 
+		// Implement Shared Enemy Properties 
 
 		// True when either the swing or lunge range condition is valid
 		public override bool InAttackRange => InSwingRange || InLungeRange;
@@ -90,7 +90,7 @@ namespace Game.AI.Sword {
 
 		// Interrupts lunge behaviour and applies hit stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
-			if (lungeAttack != null && lungeAttack.IsLunging == true) {
+			if (lungeAttack != null && lungeAttack.IsLunging) {
 				// TODO: Play hit VFX SFX only (but do not cancel dash)
 				return;
 			}

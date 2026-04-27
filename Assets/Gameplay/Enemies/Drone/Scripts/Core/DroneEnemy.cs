@@ -20,7 +20,8 @@ namespace Game.AI.Drone {
 		[SerializeField] private DroneProjectileWeapon projectileWeapon;
 		[SerializeField] private DroneKnockdownState knockdownState;
 		[SerializeField] private DroneDeathFall deathFall;
-		
+		[SerializeField] private DroneVisualMotion visualMotion;
+
 		// Implement IHealthSettings
 		public float MaxHealth => maxHealth;
 		public float LowHealthThreshold => lowHealthThreshold;
@@ -28,7 +29,7 @@ namespace Game.AI.Drone {
 		// Drone Enemy Specific Properties 
 
 		public bool InFireRange => HasTarget && projectileWeapon != null && projectileWeapon.InFireRange(DistanceToTarget);
-		public bool TargetTooClose => droneFlightMotor != null && droneFlightMotor.TargetTooClose(DistanceToTarget);
+		public bool TargetTooClose => droneFlightMotor != null && droneFlightMotor.TargetTooClose(Target);
 		public bool CanFire => projectileWeapon != null && projectileWeapon.CanFire(this);
 		public bool IsKnockedDown => knockdownState != null && knockdownState.IsKnockedDown;
 
@@ -52,6 +53,10 @@ namespace Game.AI.Drone {
 			if (deathFall == null) {
 				deathFall = GetComponent<DroneDeathFall>();
 			}
+
+			if (visualMotion == null) {
+				visualMotion = GetComponent<DroneVisualMotion>();
+			}
 		}
 
 		// Resets all drone-specific runtime modules when the enemy is spawned or reused from a pool
@@ -60,6 +65,7 @@ namespace Game.AI.Drone {
 			projectileWeapon?.ResetRuntime();
 			knockdownState?.ResetRuntime(animator);
 			deathFall?.ResetRuntime();
+			visualMotion?.ResetRuntime();
 		}
 
 		// Updates active knockdown behaviour and pushes movement speed into the animator for locomotion blending
@@ -105,7 +111,16 @@ namespace Game.AI.Drone {
 				return;
 			}
 
-			droneFlightMotor?.TickMovement(Target, DistanceToTarget);
+			droneFlightMotor?.TickMovement(Target);
+
+			//if (HasLineOfSight && Target != null) {
+			//	droneFlightMotor?.TickMovement(Target);
+			//	return;
+			//}
+
+			//if (HasLastSeenPosition) {
+			//	droneFlightMotor?.TickInvestigateMovement(LastSeenPosition);
+			//}
 		}
 
 		public override void StopMove() {
