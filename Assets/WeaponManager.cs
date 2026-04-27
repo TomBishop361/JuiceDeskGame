@@ -37,8 +37,7 @@ public class WeaponManager : MonoBehaviour
     private void FixedUpdate()
     {
         if((_controller.wallRunning || _controller.sliding || _controller.isRailGrinding) && SniperOnCoolDown)
-        {
-            Debug.Log("Sniper CoolDown = " + sniperCDTimer);
+        {            
             sniperCDTimer -= Time.deltaTime;
             Fillimage.fillAmount = Mathf.InverseLerp(sniperCDTime,0 , sniperCDTimer);
             if (sniperCDTimer <= 0) {

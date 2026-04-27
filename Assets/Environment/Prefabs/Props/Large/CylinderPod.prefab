@@ -215,10 +215,10 @@ PrefabInstance:
       addedObject: {fileID: 7548281466236321052}
     - targetCorrespondingSourceObject: {fileID: -6258994370953168824, guid: 89080c4f5ad57ef47b86d64c670fc1f0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1091095794315085781}
+      addedObject: {fileID: 4746342584002875349}
     - targetCorrespondingSourceObject: {fileID: -6258994370953168824, guid: 89080c4f5ad57ef47b86d64c670fc1f0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4746342584002875349}
+      addedObject: {fileID: 3212394727170814476}
   m_SourcePrefab: {fileID: 100100000, guid: 89080c4f5ad57ef47b86d64c670fc1f0, type: 3}
 --- !u!1 &4399513190545367594 stripped
 GameObject:
@@ -252,8 +252,21 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -6258994370953168824, guid: 89080c4f5ad57ef47b86d64c670fc1f0, type: 3}
   m_PrefabInstance: {fileID: 8049009364050917469}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1091095794315085781
-MeshCollider:
+--- !u!114 &4746342584002875349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5084641602214199317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b8e1f5b129bf048ba8a03052bfa5c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleEffect: {fileID: 0}
+--- !u!65 &3212394727170814476
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -270,23 +283,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 5427924810392867043, guid: 89080c4f5ad57ef47b86d64c670fc1f0, type: 3}
---- !u!114 &4746342584002875349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5084641602214199317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94b8e1f5b129bf048ba8a03052bfa5c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  particleEffect: {fileID: 0}
+  serializedVersion: 3
+  m_Size: {x: 2.2192123, y: 3.5099764, z: 4.57904}
+  m_Center: {x: 0.0000076293945, y: 3.0785913, z: 0}
 --- !u!4 &7510150549970444214 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 89080c4f5ad57ef47b86d64c670fc1f0, type: 3}

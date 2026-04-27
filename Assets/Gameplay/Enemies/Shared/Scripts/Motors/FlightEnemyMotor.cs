@@ -438,11 +438,11 @@ namespace Game.AI {
 			bool leftBlocked = Probe(origin, (desiredDirection - right * sideProbeSpread).normalized, sideProbeDistance, sideProbeWeight, ref avoidance);
 			bool rightBlocked = Probe(origin, (desiredDirection + right * sideProbeSpread).normalized, sideProbeDistance, sideProbeWeight, ref avoidance);
 
-			if (forwardBlocked == true) {
+			if (forwardBlocked) {
 				// If directly blocked try going up and over first
 				bool upClear = !IsBlocked(origin, (desiredDirection + Vector3.up * upwardProbeBias).normalized, verticalProbeDistance);
 
-				if (upClear == true) {
+				if (upClear) {
 					avoidance += Vector3.up * upwardEscapeBias;
 				}
 				else {
@@ -456,7 +456,7 @@ namespace Game.AI {
 					}
 					// Worst case:
 					// blocked in on both sides then still bias slightly upward
-					if (leftBlocked == true && rightBlocked == true) {
+					if (leftBlocked && rightBlocked) {
 						avoidance += Vector3.up * (upwardEscapeBias * boxedInUpwardFactor);
 					}
 				}
@@ -594,7 +594,7 @@ namespace Game.AI {
 		// - DEBUG GIZMOS - 
 
 		private void OnDrawGizmos() {
-			if (drawGizmosOnlyWhenSelected == true || showDebugGizmos == false) {
+			if (drawGizmosOnlyWhenSelected || showDebugGizmos == false) {
 				return;
 			}
 
