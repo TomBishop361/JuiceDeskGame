@@ -7,7 +7,7 @@ namespace Game.AI {
 	[RequireComponent(typeof(EnemyPerception))]
 	[RequireComponent(typeof(EnemyHealthDriver))]
 	[RequireComponent(typeof(EnemyDeathHandler))]
-	public abstract class EnemyAgentBase : EnemyCombat, IEnemyAgent, IEnemyCore, IEnemyTargeting, IEnemyMotor, IPrimaryAttack, IFactionOwner, IPoolSpawnHandler {
+	public abstract class EnemyAgentBase : EnemyCombat, IEnemyAgent, IEnemyCore, IEnemyTargeting, IEnemyMotor, IPrimaryAttack, IFactionOwner, IPoolLifecycleHandler {
 		[Header("Shared References")]
 		[SerializeField] protected Animator animator;
 		[SerializeField] protected Health healthComponent;
@@ -36,6 +36,8 @@ namespace Game.AI {
 		public Transform Target => blackboard != null ? blackboard.Target : null;
 		public bool HasLineOfSight => blackboard != null && blackboard.HasLineOfSight;
 		public float DistanceToTarget => blackboard != null ? blackboard.DistanceToTarget : Mathf.Infinity;
+		//public Vector3 LastSeenPosition => blackboard != null ? blackboard.LastSeenPosition : transform.position;
+		//public bool HasLastSeenPosition => blackboard != null && blackboard.HasLastSeenPosition;
 		public bool IsAttacking { get; protected set; }
 
 		// Derived enemies define what "attack range" and "attack ready" mean

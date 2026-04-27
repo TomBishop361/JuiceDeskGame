@@ -7,7 +7,7 @@ public class GrappleAnchorSelector : MonoBehaviour
     [SerializeField] float viewThreshold = 0.92f; // 1.0 is center, 0.9 is roughly the inner screen area
     [SerializeField] AnchorPoint[] anchorPoints;
     [SerializeField] Camera _camera;
-    LayerMask _layerMask;
+    [SerializeField] LayerMask _layerMask;
     [SerializeField] float grappleMaxDist;
 
     public AnchorPoint bestAnchor;
@@ -52,7 +52,7 @@ public class GrappleAnchorSelector : MonoBehaviour
             // 3. Check if it's within our "FOV" threshold and better than the last one found
             if (dot > viewThreshold && dot > closestToCenter)
             {
-                // ensure the anchor isn't behind a wall
+                // check if anchor isn't behind a wall
                  if (Physics.Linecast(_camera.transform.position, anchor.transform.position, _layerMask)) continue;
 
                 closestToCenter = dot;

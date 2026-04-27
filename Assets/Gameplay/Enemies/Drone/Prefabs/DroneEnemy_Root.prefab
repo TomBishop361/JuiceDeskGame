@@ -32,6 +32,68 @@ Transform:
   - {fileID: 6110277621092865753}
   m_Father: {fileID: 3821767889359053709}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &258310340729370794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7720529200055701874}
+  m_Layer: 8
+  m_Name: HealthBarAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7720529200055701874
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258310340729370794}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.394, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5894685192833931399}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &830616467326767720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 41086772765354385}
+  m_Layer: 8
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &41086772765354385
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830616467326767720}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.021, z: 0.979}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5894685192833931399}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1158341012389992146
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,7 +859,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.4
+  m_Radius: 1.45
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5670564577669244552
 GameObject:
@@ -980,12 +1042,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3821767889359053709}
-  - component: {fileID: 4171583882084181863}
+  - component: {fileID: 1769668467455147081}
   - component: {fileID: 3455065785669354331}
   - component: {fileID: 9217402146755338662}
   - component: {fileID: 6815171748467265589}
   - component: {fileID: 7438655828395453440}
-  - component: {fileID: 5779678482841020805}
+  - component: {fileID: 8051029756593719978}
   - component: {fileID: 962284047258909528}
   - component: {fileID: 2716789458970548036}
   - component: {fileID: 4572627965412102517}
@@ -999,7 +1061,7 @@ GameObject:
   - component: {fileID: 4590514767511177929}
   - component: {fileID: 6835325938086037590}
   - component: {fileID: 4867790311118515996}
-  - component: {fileID: 3027478897397345026}
+  - component: {fileID: 6549758123022710367}
   m_Layer: 8
   m_Name: DroneEnemy_Root
   m_TagString: Untagged
@@ -1028,8 +1090,8 @@ Transform:
   - {fileID: 5894685192833931399}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &4171583882084181863
-CapsuleCollider:
+--- !u!135 &1769668467455147081
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1046,10 +1108,8 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 2.1084461
-  m_Height: 4.2168922
-  m_Direction: 1
+  serializedVersion: 3
+  m_Radius: 1.35
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3455065785669354331
 MonoBehaviour:
@@ -1071,12 +1131,13 @@ MonoBehaviour:
   deathHandler: {fileID: 7559605602555233583}
   defaultStunDuration: 0.4
   defaultDeathDespawnDelay: 1.2
-  maxHealth: 1
+  maxHealth: 5
   lowHealthThreshold: 0.1
   droneFlightMotor: {fileID: 6815171748467265589}
   projectileWeapon: {fileID: 7438655828395453440}
   knockdownState: {fileID: 962284047258909528}
   deathFall: {fileID: 2716789458970548036}
+  visualMotion: {fileID: 8051029756593719978}
 --- !u!114 &9217402146755338662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1090,19 +1151,69 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverHeight: 3
-  moveSpeed: 5
-  heightLerpSpeed: 8
+  maxMoveSpeed: 4
+  acceleration: 10
+  braking: 14
+  steeringLerpSpeed: 10
   matchPlayerHeight: 1
   heightOffsetFromPlayer: 3
+  heightBobAmplitude: 0.65
+  heightBobFrequency: 1.15
+  randomHeightOffsetRange: {x: -0.75, y: 1.25}
+  randomHeightRetargetInterval: {x: 1, y: 2.25}
   minWorldY: -100
   maxWorldY: 100
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 24649
+  bodyRadius: 1.2
+  probeOriginLift: 0.1
+  forwardProbeDistance: 1.2
+  sideProbeDistance: 1
+  verticalProbeDistance: 1.2
+  sideProbeSpread: 0.6
+  upwardProbeBias: 0.65
+  avoidanceWeight: 2.25
+  forwardProbeWeight: 1.35
+  sideProbeWeight: 1
+  upwardEscapeBias: 1.35
+  sidewaysEscapeBias: 1.1
+  boxedInUpwardFactor: 0.5
+  maxAvoidanceForce: 2.5
+  enableCeilingClamp: 1
+  ceilingProbeDistance: 1.75
+  ceilingClearance: 0.3
   toggleSmoothRotation: 1
   rotationSpeed: 300
   rotationSmoothing: 8
   enableSeparation: 1
-  separationRadius: 4.5
-  separationWeight: 1.35
-  maxSeparationForce: 1.15
+  separationMask:
+    serializedVersion: 2
+    m_Bits: 256
+  separationRadius: 2.85
+  separationWeight: 1.1
+  maxSeparationForce: 1.5
+  separationVerticalInfluence: 0.35
+  closeRepelMultiplier: 2.5
+  closeRepelDistanceMultiplier: 3
+  orbitStepDistance: 2.25
+  approachSideBias: 0.75
+  orbitWobbleFrequency: 1.5
+  orbitRangeOffsetRange: 0.6
+  orbitStepOffsetRange: 0.4
+  retreatDistance: 2.5
+  retreatHeightBonus: 0.4
+  showDebugGizmos: 0
+  drawGizmosOnlyWhenSelected: 1
+  debugDrawBodyRadius: 1
+  debugDrawProbeOrigin: 1
+  debugDrawForwardProbe: 1
+  debugDrawSideProbes: 1
+  debugDrawVerticalProbe: 1
+  debugDrawCeilingClamp: 1
+  debugDrawSeparationRadius: 1
+  debugDrawMoveDirection: 1
+  debugDrawDesiredHeight: 1
 --- !u!114 &6815171748467265589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1141,15 +1252,36 @@ MonoBehaviour:
     Attacker: {fileID: 6426209685012709754}
     Type: 1
     AttackerFaction: 1
-  projectilePrefab: {fileID: 527449327847401711, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
-  projectileSpawn: {fileID: 9220908418508404628}
-  homingProjectileStats: {fileID: 5779678482841020805}
+  projectilePrefab: {fileID: 8827402555016144863, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
+  projectileSpawn: {fileID: 41086772765354385}
+  homingProjectileStats:
+    speed: 6
+    turnRate: 105
+    lifetime: 8
+    homingDuration: 5
+    hitRadius: 3
+    explodeOnTimeout: 1
+    timeoutAttackData:
+      Damage: 1
+      Knockback:
+        Force: 5
+        UpwardModifier: 1
+        TorqueStrength: 0
+      Attacker: {fileID: 6426209685012709754}
+      Type: 1
+      AttackerFaction: 1
+    damageLayers:
+      serializedVersion: 2
+      m_Bits: 128
   fireRange: 10
-  fireCooldown: 2.5
+  fireCooldown: 3
   fireLockTime: 0.35
+  defaultProjectilePoolCapacity: 4
+  maxProjectilePoolSize: 12
+  populateProjectilePoolAtStartup: 1
   fireOnAnimationEvent: 0
   fireTriggerName: Fire
---- !u!114 &5779678482841020805
+--- !u!114 &8051029756593719978
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1158,27 +1290,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 6426209685012709754}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51402d4ab63b06e43ba4b3474c53fb7a, type: 3}
+  m_Script: {fileID: 11500000, guid: e9f3dca415b27f74dbcc75a1a3720691, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  turnRate: 105
-  lifetime: 8
-  homingDuration: 5
-  hitRadius: 3
-  explodeOnTimeout: 1
-  timeoutAttackData:
-    Damage: 3
-    Knockback:
-      Force: 5
-      UpwardModifier: 1
-      TorqueStrength: 0
-    Attacker: {fileID: 6426209685012709754}
-    Type: 1
-    AttackerFaction: 1
-  hitLayers:
-    serializedVersion: 2
-    m_Bits: 24777
+  visualRoot: {fileID: 5894685192833931399}
+  flightMotor: {fileID: 9217402146755338662}
+  bobAmplitude: 0.15
+  bobFrequency: 2
+  maxPitch: 10
+  maxBank: 14
+  tiltSmoothing: 8
+  recoilDistance: 0.18
+  recoilReturnSpeed: 10
 --- !u!114 &962284047258909528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1224,7 +1347,7 @@ MonoBehaviour:
   explicitTarget: {fileID: 0}
   autoAcquirePlayerByTag: 1
   playerTag: Player
-  targetMemoryDuration: 1.5
+  targetMemoryDuration: 15
   losSensor: {fileID: 6013245490068612030}
   allowTargetWithoutSensor: 1
 --- !u!114 &6013245490068612030
@@ -1241,7 +1364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visionLayerMask:
     serializedVersion: 2
-    m_Bits: 129
+    m_Bits: 24777
   detectionRange: 150
   visionAngle: 360
   eyeHeight: 0.5
@@ -1332,7 +1455,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnCategory: 1
 --- !u!114 &4590514767511177929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1403,62 +1525,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &3027478897397345026
+--- !u!114 &6549758123022710367
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6426209685012709754}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f35ecf2e19cffa498633569aa3cee71, type: 3}
+  m_Script: {fileID: 11500000, guid: 119db1831f48a204a9afedb4f1f29018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  animator: {fileID: 4867790311118515996}
-  losSensor: {fileID: 6013245490068612030}
-  healthComponent: {fileID: 8058414518214028440}
-  maxHealth: 1
-  projectileAttackData:
-    Damage: 1
-    Knockback:
-      Force: 0
-      UpwardModifier: 0
-      TorqueStrength: 0
-    Attacker: {fileID: 6426209685012709754}
-    Type: 1
-    AttackerFaction: 1
-  projectilePrefab: {fileID: 527449327847401711, guid: c778463e55aadf64d98a6de6381331c7, type: 3}
-  projectileSpawn: {fileID: 9220908418508404628}
-  minRange: 4
-  fireRange: 10
-  desiredRange: 7
-  rangeDeadzone: 0.75
-  fireCooldown: 2.5
-  toggleSmoothRotation: 1
-  rotationSpeed: 300
-  rotationSmoothing: 8
-  hoverHeight: 3
-  flightMoveSpeed: 5
-  heightLerpSpeed: 8
-  visualFollowSpeed: 4
-  matchPlayerHeight: 1
-  heightOffsetFromPlayer: 3
-  minWorldY: -100
-  maxWorldY: 100
-  verticalFollowSpeed: 6
-  enableDroneSeparation: 1
-  separationRadius: 4.5
-  separationWeight: 1.35
-  maxSeparationForce: 1.15
-  orbitJitter: 0.15
-  deathFallSpeed: 6
-  deathDuration: 0.45
-  deathFX: {fileID: 0}
-  knockdownDuration: 1.2
-  fireLockTime: 0.2
-  targetMemoryDuration: 3
+  category: 1
 --- !u!1 &8591190532727063243
 GameObject:
   m_ObjectHideFlags: 0
@@ -1706,7 +1785,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 41086772765354385}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7720529200055701874}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68040530ca8824347bd2f585025d2198, type: 3}
 --- !u!4 &5894685192833931399 stripped
@@ -1734,13 +1819,45 @@ PrefabInstance:
       propertyPath: health
       value: 
       objectReference: {fileID: 8058414518214028440}
+    - target: {fileID: 2045554695440734199, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: uiOffset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2045554695440734199, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: worldAnchor
+      value: 
+      objectReference: {fileID: 7720529200055701874}
     - target: {fileID: 2119413501553610204, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 157.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3210927333390160078, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 82.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3726441836492853422, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124400566104502144, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124400566104502144, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 70ce311f2175bac419e89b2390c7c4b4, type: 3}
+    - target: {fileID: 4124400566104502144, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
+      propertyPath: m_FillAmount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5409389377900455977, guid: e45a0004cfa25a64f91c2fcdfeb65560, type: 3}
       propertyPath: m_Layer

@@ -1,5 +1,6 @@
 using Game.Combat.Projectiles;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent]
@@ -8,7 +9,7 @@ namespace Game.AI.Drone {
 		[Tooltip("Attack data used to initialise projectile damage and behaviour.")]
 		[SerializeField] private AttackData projectileAttackData = new AttackData();
 		[Tooltip("Projectile prefab the drone will spawn when firing.")]
-		[SerializeField] private GameObject projectilePrefab;
+		[SerializeField] private DroneHomingProjectile projectilePrefab;
 		[Tooltip("Transform representing where projectiles are spawned from.")]
 		[SerializeField] private Transform projectileSpawn;
 		[Tooltip("Gameplay tuning pushed into each homing projectile when this drone fires.")]
@@ -17,12 +18,22 @@ namespace Game.AI.Drone {
 		[Header("Range")]
 		[Tooltip("Maximum distance at which the drone is allowed to fire.")]
 		[SerializeField] private float fireRange = 10.0f;
+		//[Tooltip("If true, the drone must currently have LOS before it is allowed to fire.")]
+		//[SerializeField] private bool requireLineOfSightToFire = true;
 
 		[Header("Timing")]
 		[Tooltip("Time (in seconds) between consecutive shots.")]
 		[SerializeField] private float fireCooldown = 1.5f;
 		[Tooltip("Minimum time the drone stays in attack state to prevent animation spam.")]
 		[SerializeField] private float fireLockTime = 0.45f;
+
+		[Header("Pooling")]
+		[Tooltip("Initial number of pooled projectiles created for this drone weapon.")]
+		[SerializeField] private int defaultProjectilePoolCapacity = 4;
+		[Tooltip("Maximum number of pooled projectiles allowed before extra released ones are destroyed.")]
+		[SerializeField] private int maxProjectilePoolSize = 12;
+		[Tooltip("Populate the projectile pool during Awake so the first shot doesn't cause any lag.")]
+		[SerializeField] private bool populateProjectilePoolAtStartup = true;
 
 		[Header("Animation")]
 		[Tooltip("Whether the drone will fire a projectile based on the animation event or not.")]
@@ -34,11 +45,16 @@ namespace Game.AI.Drone {
 		private float nextFireTime = -Mathf.Infinity;
 		private int fireTriggerHash;
 
+		private DroneVisualMotion droneVisualMotion;
+		private IObjectPool<PooledObject> projectilePool;
+
 		public float FireRange => fireRange;
 		public DroneHomingProjectileStats HomingProjectileStats => homingProjectileStats;
 
 		private void Awake() {
 			fireTriggerHash = Animator.StringToHash(fireTriggerName);
+			droneVisualMotion = GetComponent<DroneVisualMotion>();
+			SetupProjectilePool();
 		}
 
 		// Resets weapon runtime state when the owner respawns or is reused from a pool
@@ -59,6 +75,7 @@ namespace Game.AI.Drone {
 				&& owner.IsAttacking == false
 				&& owner.IsKnockedDown == false
 				&& Time.time >= nextFireTime;
+				//&& (requireLineOfSightToFire == false || owner.HasLineOfSight);
 		}
 
 		// Attempts to start the fire attack by setting cooldowns + attack lock timing + the fire animation trigger
@@ -67,11 +84,22 @@ namespace Game.AI.Drone {
 				return false;
 			}
 
+			//if (requireLineOfSightToFire&& owner.HasLineOfSight == false) {
+			//	return false;
+			//}
+
 			if (CanFire(owner) == false || InFireRange(owner.DistanceToTarget) == false) {
 				return false;
 			}
 
 			if (projectilePrefab == null || projectileSpawn == null || owner.Target == null) {
+				return false;
+			}
+
+			SetupProjectilePool();
+			if (projectilePool == null) {
+				Debug.LogWarning($"{name}: Projectile pool could not be created because no projectile prefab is assigned.", this);
+
 				return false;
 			}
 
@@ -95,6 +123,11 @@ namespace Game.AI.Drone {
 				return;
 			}
 
+			SetupProjectilePool();
+			if (projectilePool == null) {
+				return;
+			}
+
 			Vector3 aimPosition;
 			if (target != null) {
 				// Get aim direction towards target (aim at chest height -> + Vector3.up * 1.0f)
@@ -111,25 +144,26 @@ namespace Game.AI.Drone {
 			}
 
 			Quaternion rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+
 			// Spawn projectile
-			GameObject projectileObject = Instantiate(projectilePrefab, projectileSpawn.position, rotation);
+			PooledObject pooledProjectile = projectilePool.Get();
+			DroneHomingProjectile homingProjectile = pooledProjectile.GetComponent<DroneHomingProjectile>();
 
-			// Supply projectile hitbox with attack data
-			ProjectileHitbox projectileHitbox = projectileObject.GetComponentInChildren<ProjectileHitbox>();
-			if (projectileHitbox != null) {
-				projectileHitbox.Initialise(projectileAttackData);
-			}
-			else {
-				Debug.LogWarning("DroneProjectileWeapon: ProjectileHitbox cannot be found on instantiated projectile object " + projectileObject.name);
-			}
-
-			// Launch homing projectile
-			if (projectileObject.TryGetComponent(out DroneHomingProjectile homingProjectile)) {
-				homingProjectile.Configure(projectileAttackData, homingProjectileStats);
-				homingProjectile.Init(target);
-				homingProjectile.Launch(direction);
+			if (homingProjectile == null) {
+				pooledProjectile.ReturnToPool();
+				Debug.LogWarning($"{name}: Pooled projectile is missing DroneHomingProjectile.", this);
 				return;
 			}
+
+			homingProjectile.transform.SetPositionAndRotation(projectileSpawn.position, rotation);
+
+			// Kick the drone slightly backwards to visualise them shooting
+			droneVisualMotion?.PlayShotRecoil();
+
+			// Launch homing projectile
+			homingProjectile.Configure(projectileAttackData, homingProjectileStats);
+			homingProjectile.Init(target);
+			homingProjectile.Launch(direction);
 
 			//if (projectileObject.TryGetComponent(out Rigidbody rigidbody)) {
 			//	rigidbody.linearVelocity = direction.normalized * 14.0f;
@@ -137,6 +171,90 @@ namespace Game.AI.Drone {
 		}
 
 		public void Cancel() {
+		}
+
+		private void SetupProjectilePool() {
+			if (projectilePool != null || projectilePrefab == null) {
+				return;
+			}
+
+			projectilePool = new ObjectPool<PooledObject>(
+				CreateProjectile,
+				OnTakeProjectileFromPool,
+				OnReturnProjectileToPool,
+				OnDestroyProjectileFromPool,
+				true,
+				Mathf.Max(1, defaultProjectilePoolCapacity),
+				Mathf.Max(1, maxProjectilePoolSize)
+			);
+
+			if (populateProjectilePoolAtStartup) {
+				PopulateProjectilePool();
+			}
+		}
+
+		private PooledObject CreateProjectile() {
+			PooledObject projectilePrefabPooledObject = projectilePrefab.GetComponent<PooledObject>();
+
+			PooledObject pooledProjectile = Instantiate(projectilePrefabPooledObject);
+			pooledProjectile.SetPool(projectilePool);
+			pooledProjectile.SourcePrefab = projectilePrefabPooledObject;
+			pooledProjectile.gameObject.SetActive(false);
+
+			return pooledProjectile;
+		}
+
+		private void PopulateProjectilePool() {
+			int count = Mathf.Min(Mathf.Max(1, defaultProjectilePoolCapacity), Mathf.Max(1, maxProjectilePoolSize));
+
+			PooledObject[] borrowedProjectiles = new PooledObject[count];
+			for (int i = 0; i < count; i++) {
+				borrowedProjectiles[i] = projectilePool.Get();
+			}
+
+			for (int i = 0; i < borrowedProjectiles.Length; i++) {
+				projectilePool.Release(borrowedProjectiles[i]);
+			}
+		}
+
+		private void OnTakeProjectileFromPool(PooledObject item) {
+			if (item == null) {
+				return;
+			}
+
+			item.transform.SetParent(null, true);
+			item.gameObject.SetActive(true);
+
+			DroneHomingProjectile projectile = item.GetComponent<DroneHomingProjectile>();
+			projectile?.OnSpawned();
+
+			//foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
+			//	handler.OnSpawned();
+			//}
+		}
+
+		private void OnReturnProjectileToPool(PooledObject item) {
+			if (item == null) {
+				return;
+			}
+
+			DroneHomingProjectile projectile = item.GetComponent<DroneHomingProjectile>();
+			projectile?.OnDespawned();
+
+			//foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
+			//	handler.OnDespawned();
+			//}
+
+			item.transform.SetParent(transform, false);
+			item.transform.localPosition = Vector3.zero;
+			item.transform.localRotation = Quaternion.identity;
+			item.gameObject.SetActive(false);
+		}
+
+		private void OnDestroyProjectileFromPool(PooledObject item) {
+			if (item != null && item.gameObject != null) {
+				Destroy(item.gameObject);
+			}
 		}
 
 		// - DEPRECATED - apply Hurtbox logic and extra null checks now with debug messages

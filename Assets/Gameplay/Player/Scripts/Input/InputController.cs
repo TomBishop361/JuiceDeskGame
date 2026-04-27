@@ -53,10 +53,14 @@ public class InputController : MonoBehaviour
     [SerializeField] float AnchorLaunchAmount;
 
     [Header("Grinding")]
+    // Debug
+    public bool toggleKnockOffRail = true;
+    //
     public bool onRail;
     bool canRailGrind = true;
     public float railGrindTime = 1;
     float railGrindTimer;
+    public float railBoost;
 
     [SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2
@@ -81,6 +85,7 @@ public class InputController : MonoBehaviour
     [SerializeField] bool isGrounded;
     [SerializeField] float inputLagPeriod = 0.0001f;
     [SerializeField] TextMeshProUGUI VelocityUI;
+    [SerializeField] Health _health;
 
     public const float gravity = -9.81f;
     public bool jump;
@@ -119,10 +124,9 @@ public class InputController : MonoBehaviour
     [SerializeField] Rigidbody rb;
 
     public event Action JumpEvent = delegate { };   
+    
 
     public MovementState state;
-
-    
 
     public enum MovementState
     {
@@ -139,7 +143,8 @@ public class InputController : MonoBehaviour
   
 
     private void OnEnable()
-    {       
+    {
+        if(toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
 
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
@@ -338,15 +343,13 @@ public class InputController : MonoBehaviour
     }
 
     public void AnchorLaunch()
-    {
-        Debug.Log("LAUNCH");
+    {        
         isGrounded = true;
         Vector3 launchDir = _camera.transform.forward;
         launchDir.y = 0f;
         rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
+        //UnFreeze player
         desiredMoveSpeed = sprintSpeed;
-
-
     }
 
     public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
@@ -406,12 +409,12 @@ public class InputController : MonoBehaviour
         Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
         //3. Slop Logic
-        if (OnSlope() && !exitingSlope && !sliding)
+        if (OnSlope() && !exitingSlope )
         {
             // Project the desired velocity onto the slope and scale it by movement speed
             Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
-            rb.linearVelocity = new Vector3(slopeVel.x, rb.linearVelocity.y, slopeVel.z);
+            rb.linearVelocity = slopeVel;
             // Apply an extra force to keep the player grounded          
             rb.AddForce(-slopeHit.normal * Slopeforce, ForceMode.Force);
         }        
@@ -453,6 +456,21 @@ public class InputController : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
 
         rb.useGravity = !OnSlope();
+        ClampSpeed();
+    }
+
+    void ClampSpeed()
+    {
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        float maxSpeed = 20;
+
+        if (rb.linearVelocity.magnitude > maxSpeed)
+        {
+            Vector3 limited = rb.linearVelocity.normalized * maxSpeed;
+            rb.linearVelocity = limited;
+            moveSpeed = maxSpeed;
+        }
     }
 
     void HandleLook(Vector2 Direction)
@@ -472,17 +490,15 @@ public class InputController : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -89, 89);
 
         _camera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0); 
-        //transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        
     }
 
     private void Jump()
     {
         
         if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
-        {
-            Debug.Log("");
-            if (isRailGrinding) throwOffRail();
-           
+        {            
+            if (isRailGrinding) throwOffRail();          
 
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
@@ -554,6 +570,7 @@ public class InputController : MonoBehaviour
 
     private void OnDisable()
     {
+        _health.OnDamageDealt -= throwOffRail;
         InputManager.OnMoveReceived -= MovePressed;
         InputManager.OnLookReceived -= LookMoved;
         InputManager.OnJumpReceived -= JumpPressed;
@@ -660,21 +677,19 @@ private void OnCollisionEnter(Collision collision)
     //MoveToInputController?
     void throwOffRail()
     {
-        isRailGrinding = false;
-        onRail = false;
-        rb.useGravity = true;
-        isGrounded = true;
-        currentRailScript = null;
-        transform.position += transform.forward * 1;
-        canRailGrind= false;
-        railGrindTimer = railGrindTime;
-        
+        if (isRailGrinding)
+        {
+            isRailGrinding = false;
+            onRail = false;
+            rb.useGravity = true;
+            currentRailScript = null;
+            rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
+            canRailGrind = false;
+            railGrindTimer = railGrindTime;
+
+            desiredMoveSpeed = walkSpeed;
+        }
     }
-
-  
-
-  
-
 
 #if UNITY_EDITOR
 

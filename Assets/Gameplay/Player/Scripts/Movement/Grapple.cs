@@ -33,7 +33,8 @@ public class Grapple : MonoBehaviour
     float grapplingCoolDownTimer;
 
     bool grappleHit;
-    public GameObject GrappleAnchor;
+    public GameObject BestGrappleAnchor;
+    public GameObject CurrentGrappleAnchor;
 
     public event Action<Vector3> OnGrapple;
     public event Action OnGrappleEnd;
@@ -77,13 +78,13 @@ public class Grapple : MonoBehaviour
         Vector3 position = Vector3.Lerp(lineRenderer.GetPosition(1), grapplePoint,t );
         float yDisplace = AnimCurve.Evaluate(t);
         position = new Vector3(position.x ,position.y+yDisplace,position.z);        
-        lineRenderer.SetPosition(1, GrappleAnchor.transform.position);
+        lineRenderer.SetPosition(1, CurrentGrappleAnchor.transform.position);
     }
 
     void setAnchorPoint(AnchorPoint anchor)
     {
-        if(anchor != null) GrappleAnchor = anchor.gameObject;
-        else GrappleAnchor = null;  
+        if(anchor != null) BestGrappleAnchor = anchor.gameObject;
+        else BestGrappleAnchor = null;  
     }
 
     private void FixedUpdate()
@@ -105,19 +106,20 @@ public class Grapple : MonoBehaviour
     void StartGrapple(bool value)
     {
         if (grapplingCoolDownTimer > 0 || grappling) return;
+        CurrentGrappleAnchor = BestGrappleAnchor;
+        if (CurrentGrappleAnchor == null) return;
 
-        if (GrappleAnchor == null) return;
-        if (Vector3.Distance(GrappleAnchor.transform.position, transform.position) < 30)
+        if (Vector3.Distance(CurrentGrappleAnchor.transform.position, transform.position) < 30)
         {
            
-            if (Physics.Raycast(transform.position, (GrappleAnchor.transform.position - transform.position).normalized, 30,Grappleable))
+            if (Physics.Raycast(transform.position, (CurrentGrappleAnchor.transform.position - transform.position).normalized, 30,Grappleable))
             {
                 return;
             }
              grappling = true;
 
             controller.freeze = true;
-            grapplePoint = GrappleAnchor.transform.position - (Vector3.down* -2.5f) ;
+            grapplePoint = CurrentGrappleAnchor.transform.position - (Vector3.down* -2.5f) ;
             grappleDelayTimer = grappleDelayTime;
             grappleHit = true;
             lineRenderer.enabled = true;

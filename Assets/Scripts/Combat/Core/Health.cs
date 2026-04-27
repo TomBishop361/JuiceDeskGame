@@ -11,6 +11,7 @@ public class Health : MonoBehaviour {
 
 	// Non-AI gameplay events
 	public event Action<float, float> OnHealthChanged;
+	public event Action OnDamageDealt;
 	public event Action OnDeath;
 
 	private Animator animator;
@@ -23,7 +24,7 @@ public class Health : MonoBehaviour {
 			return;
 		}
 		// Get Animator for AI (to trigger death animation)
-		if (TryGetComponent(out Animator anim) == true) {
+		if (TryGetComponent(out Animator anim)) {
 			animator = anim;
 		}
 
@@ -51,13 +52,14 @@ public class Health : MonoBehaviour {
 			return;
 		}
 
-		if (isInvulnerable == true) {
+		if (isInvulnerable) {
 			return;
 		}
 
 		CurrentHealth = Mathf.Clamp(CurrentHealth - damageAmount, 0.0f, MaxHealth);
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+		OnDamageDealt?.Invoke();
 
 		if (CurrentHealth <= 0.0f) {
 			// Player only
