@@ -39,7 +39,7 @@ public class Sniper : MonoBehaviour
     }
 
     bool SniperShot;
-    byte aim = 0; // The most minor storage optimisation known to man (also prevents repeated Aimout calls on update)
+    byte aim = 0; 
     bool aiming;
     bool isAimed;
     public bool isOnCoolDown;
@@ -52,7 +52,7 @@ public class Sniper : MonoBehaviour
     byte _aim { get { return aim; }
         set { 
             aim = value;
-            aiming = true;
+            aiming = true;            
             aimTimer = 0;  
         } 
     }
@@ -60,10 +60,12 @@ public class Sniper : MonoBehaviour
     void AimInput(bool aim)
     {
         _aim = (byte)(aim ? 1 : 0);
+        
     }
 
     private void Update()
     {
+        
         if (_aim == 1)
         {
             AimIn();
@@ -90,7 +92,7 @@ public class Sniper : MonoBehaviour
 
     void HandleShoot()
     {        
-        if (isAimed && !isOnCoolDown)
+        if (_aim !=0 && isAimed && !isOnCoolDown)
         {            
             ShotLineEffect.SetPosition(0, shotOrigin.position);            
             if (Physics.Raycast(_cameraTarget.transform.position, _cameraTarget.transform.forward.normalized, out RaycastHit hit, 100,hitMask))
@@ -114,17 +116,25 @@ public class Sniper : MonoBehaviour
     void AimTimer()
     {
         if (aimTimer < 1)
-            aimTimer += Time.fixedDeltaTime;
+            aimTimer += Time.unscaledDeltaTime;
         else
         {
-            isAimed = true;
-            aiming = false;
-            _aim = 2;
+           if(_aim == 1)
+            {
+                isAimed = true;
+            }
+            else
+            {
+                isAimed= false;
+            }
+
+                aiming = false;
         }        
     }
 
     void AimIn()
     {
+        
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = false;
         _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, 50, t);
@@ -132,8 +142,9 @@ public class Sniper : MonoBehaviour
     }
 
     void AimOut()
-    {            
-        Debug.Log("AimOutCalled");
+    {           
+        
+        
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = true;
         _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, 90, t);
