@@ -5,6 +5,9 @@
     "m_Properties": [
         {
             "m_Id": "1e5894138e274366b3f40e7d17248f7b"
+        },
+        {
+            "m_Id": "1f8bde7282174a678414f11488f85ad2"
         }
     ],
     "m_Keywords": [],
@@ -56,6 +59,9 @@
         },
         {
             "m_Id": "f981b5d9ecfd4fe8af9e3f963602110c"
+        },
+        {
+            "m_Id": "b36c1284dd1a4ff7af87891de253f336"
         }
     ],
     "m_GroupDatas": [],
@@ -87,6 +93,20 @@
                     "m_Id": "00351ffc2fb0428b85788aedd87457eb"
                 },
                 "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "b36c1284dd1a4ff7af87891de253f336"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "afca9cb33658400296fbf028cefbe8da"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -446,6 +466,36 @@
 }
 
 {
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "1f8bde7282174a678414f11488f85ad2",
+    "m_Guid": {
+        "m_GuidSerialized": "930e4f50-0b94-43ba-9001-68b960902bf0"
+    },
+    "m_Name": "HDR",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "HDR",
+    "m_DefaultReferenceName": "_HDR",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+    },
+    "isMainColor": false,
+    "m_ColorMode": 1
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.NormalMaterialSlot",
     "m_ObjectId": "20e16d9b9f424e49acc587dde9e8325b",
@@ -702,6 +752,9 @@
     "m_ChildObjectList": [
         {
             "m_Id": "1e5894138e274366b3f40e7d17248f7b"
+        },
+        {
+            "m_Id": "1f8bde7282174a678414f11488f85ad2"
         }
     ]
 }
@@ -865,6 +918,31 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
+    "m_ObjectId": "a9062560bc8446d0bd0ba1892582c934",
+    "m_Id": 0,
+    "m_DisplayName": "HDR",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "aedf978be75144b287b879d0a34abb4e",
     "m_Id": 2,
@@ -910,6 +988,42 @@
         "m_SerializableColors": []
     },
     "m_SerializedDescriptor": "SurfaceDescription.Emission"
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "b36c1284dd1a4ff7af87891de253f336",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -162.00003051757813,
+            "y": 352.9999694824219,
+            "width": 101.00004577636719,
+            "height": 34.00006103515625
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "a9062560bc8446d0bd0ba1892582c934"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "1f8bde7282174a678414f11488f85ad2"
+    }
 }
 
 {
