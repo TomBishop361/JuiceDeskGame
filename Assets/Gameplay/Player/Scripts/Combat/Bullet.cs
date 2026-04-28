@@ -67,7 +67,14 @@ public class Bullet : ProjectileBase {
 		{
 			hit.TakeDamage(bulletAttackData);
 		}
-		OnBulletHit(this);
+		else
+		{
+			if(collision.transform.root.TryGetComponent<IDamageable>(out hit))
+			{
+                hit.TakeDamage(bulletAttackData);
+            }
+		}
+			OnBulletHit(this);
 		Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
 	}
 

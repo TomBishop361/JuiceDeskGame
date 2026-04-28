@@ -90,7 +90,7 @@ public class Sniper : MonoBehaviour
 
     void HandleShoot()
     {        
-        if (isAimed && !isOnCoolDown)
+        if (_aim ==1 && isAimed && !isOnCoolDown)
         {            
             ShotLineEffect.SetPosition(0, shotOrigin.position);            
             if (Physics.Raycast(_cameraTarget.transform.position, _cameraTarget.transform.forward.normalized, out RaycastHit hit, 100,hitMask))
@@ -114,7 +114,7 @@ public class Sniper : MonoBehaviour
     void AimTimer()
     {
         if (aimTimer < 1)
-            aimTimer += Time.fixedDeltaTime;
+            aimTimer += Time.unscaledDeltaTime;
         else
         {
             isAimed = true;

@@ -17,12 +17,14 @@ public class ZeroGravTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Physics.gravity = Vector3.up * NewGrav;
+        if (other.CompareTag("Player")) 
+            Physics.gravity = Vector3.up * NewGrav;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Physics.gravity = Vector3.up*startGravityY;
+        if (other.CompareTag("Player"))
+            Physics.gravity = Vector3.up*startGravityY;
     }
 
 
