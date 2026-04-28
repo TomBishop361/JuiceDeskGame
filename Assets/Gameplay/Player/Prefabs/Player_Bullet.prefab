@@ -166,6 +166,7 @@ GameObject:
   - component: {fileID: 2380422073610278484}
   - component: {fileID: 1613184670381674500}
   - component: {fileID: 6589406144891701966}
+  - component: {fileID: -8043575640873745552}
   m_Layer: 15
   m_Name: Player_Bullet
   m_TagString: Untagged
@@ -206,7 +207,7 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -239,4 +240,26 @@ MonoBehaviour:
     Type: 1
     AttackerFaction: 0
   testHitParticle: {fileID: 5678810261352315327, guid: efff56178007d994db299da800c117d9, type: 3}
-  lifeTime: 2
+  lifeTime: 0.25
+  lifeTimer: 0
+--- !u!65 &-8043575640873745552
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7362145670262986248}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 32768
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
