@@ -90,7 +90,7 @@ namespace Game.AI.Sword {
 
 		// Interrupts lunge behaviour and applies hit stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
-			if (lungeAttack != null && lungeAttack.IsLunging) {
+			if (lungeAttack != null && lungeAttack.IsDashPhase) {
 				// TODO: Play hit VFX SFX only (but do not cancel dash)
 				return;
 			}
@@ -181,7 +181,12 @@ namespace Game.AI.Sword {
 		// Animation Events
 
 		// Called by animation at the end of an attack to release the shared attack lock
+		// Lunge recovery is controlled by SwordLungeAttack, so lunge animations should not clear the lock early
 		public void AnimEvent_AttackFinished() {
+			if (lungeAttack != null && lungeAttack.IsLunging) {
+				return;
+			}
+
 			EndAttackLock();
 		}
 
