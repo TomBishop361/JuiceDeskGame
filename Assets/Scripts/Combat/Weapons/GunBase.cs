@@ -1,8 +1,7 @@
-using NUnit.Framework;
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class GunBase : MonoBehaviour
@@ -10,6 +9,9 @@ public class GunBase : MonoBehaviour
     #region Vars
     [SerializeField]
     GunInputManagerBase _gunInputManager;
+
+    [SerializeField] Image fillImage;
+
     IGunInputManager gunInputManager => _gunInputManager.InputManager;
     [SerializeField] WeaponManager weaponManager;
     [SerializeField]
@@ -41,20 +43,36 @@ public class GunBase : MonoBehaviour
 
     bool isShooting;
     bool canShoot = true;
-    public int currentAmmo;
-    bool _isReloading = false;
+    
+    float _overHeat;
+    [Range(0f,5f)]
+    public float HeatBuildRate = 2f;
+    public int CoolDownRate = 10;
+    bool _OverHeated = false;
+    
+    public float StartNaturalCoolDownTime = 1;
+    float StartNaturalCoolDownTimer;
 
-    bool isReloading
+
+    float overHeatLvl
     {
-        get => _isReloading;
-        set { 
-            if (value == true) reloadTimer = reloadSpeed;
-            _isReloading = value;
+        get => _overHeat;
+        set
+        {
+            _overHeat = value;
+            fillImage.fillAmount = (overHeatLvl * 0.01f);
+            fillImage.color = UIColour(fillImage.fillAmount);
         }
     }
-    
-       
-    
+
+    bool OverHeated
+    {
+        get => _OverHeated;
+        set { 
+            if (value == true) reloadTimer = reloadSpeed;
+            _OverHeated = value;
+        }
+    }
 
     //BulletPool
     [SerializeField]
@@ -71,8 +89,6 @@ public class GunBase : MonoBehaviour
 
     
     #endregion
-
-
     
 
     public delegate void OnShoot();
@@ -84,13 +100,13 @@ public class GunBase : MonoBehaviour
     private void OnEnable()
     {
         gunInputManager.onShootReceived += Shoot;
-        gunInputManager.onReload += reload;
+       // gunInputManager.onReload += reload;
     }
 
     private void OnDisable()
     {
         gunInputManager.onShootReceived -= Shoot;
-        gunInputManager.onReload -= reload;
+       // gunInputManager.onReload -= reload;
     }
 
     private void Awake()
@@ -100,14 +116,9 @@ public class GunBase : MonoBehaviour
         muzzleVilocity = gunData.muzzleVilocity;
         damage = gunData.damage;
         effectiveRange = gunData.effectiveRange;
-        meleeDamage = gunData.meleeDamage;
-        reloadSpeed = gunData.reloadSpeed;
-        fireRate = 1 / (gunData.fireRate / 60);  //RoundsPerMin to RoundsPerSec
-        magSize = gunData.magSize;
-        maxAmmoReserve = gunData.maxAmmoReserve;
-        currentAmmo = magSize;
+        meleeDamage = gunData.meleeDamage;        
+        fireRate = 1 / (gunData.fireRate / 60);  //RoundsPerMin to RoundsPerSec        
         reloadTimer = fireRate;
-
         if(isDrawn) Instantiate(gunObject, transform.position, transform.rotation, transform.parent);
        // gunAnimationHandler = gunObject.GetComponent<GunAnimationHandler>();
     }
@@ -120,7 +131,20 @@ public class GunBase : MonoBehaviour
     private void Update()
     {
         RofTimer();
-        ReloadTimer();
+        OverHeatedTimer();
+        coolDown();
+    }
+
+    private void coolDown()
+    {
+        if (!isShooting)
+        {
+            StartNaturalCoolDownTimer -= Time.deltaTime;
+        }
+        if(StartNaturalCoolDownTimer <=0)
+        {
+            overHeatLvl -= (Time.deltaTime * CoolDownRate);
+        }
     }
 
     void RofTimer()
@@ -132,25 +156,43 @@ public class GunBase : MonoBehaviour
         if (shootTimer <= 0 ) canShoot = true;
     }
 
-    void ReloadTimer()
+    Color UIColour(float t)
     {
-        if (isReloading)
+        Color white = Color.white;
+        Color orange = new Color(1.0f, 0.5f, 0.0f); // RGB for Orange
+        Color red = Color.red;
+
+        if (t < 0.5f)
         {
-            Debug.Log("Reloading");
-            reloadTimer -= Time.deltaTime;
+            // Remap t from [0, 0.5] to [0, 1]
+            return Color.Lerp(white, orange, t * 2.0f);
         }
-        if (reloadTimer <= 0 && isReloading) reloadGun();
+        else
+        {
+            // Remap t from [0.5, 1] to [0, 1]
+            return Color.Lerp(orange, red, (t - 0.5f) * 2.0f);
+        }
+    }
+
+    void OverHeatedTimer()
+    {
+        if (OverHeated)
+        {
+            
+            overHeatLvl -= (Time.deltaTime* CoolDownRate) ;
+        }
+        if (overHeatLvl <= 0 && OverHeated) reloadGun();
         
     }
 
-    void reload(bool reload)
-    {
-        Debug.Log("reload");
-        if (!isReloading)
-        {            
-            isReloading = true;          
-        }
-    }
+    //void reload(bool reload)
+    //{
+    //    Debug.Log("reload");
+    //    if (!OverHeated)
+    //    {            
+    //        OverHeated = true;          
+    //    }
+    //}
 
     void Shoot(bool shoot)
     {        
@@ -159,8 +201,9 @@ public class GunBase : MonoBehaviour
 
     private void handleShoot(bool isShooting)
     {
-        if (isShooting && canShoot && currentAmmo > 0 && !isReloading && weaponManager.CanPrimaryFire)
+        if (isShooting && canShoot && !OverHeated && weaponManager.CanPrimaryFire)
         {
+            StartNaturalCoolDownTimer = StartNaturalCoolDownTime;
             RaycastHit hit;
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red,2);
             if (Physics.Raycast(AimOrigin.transform.position, AimOrigin.transform.forward, out hit, 30f, aimMask, QueryTriggerInteraction.Ignore))
@@ -171,16 +214,13 @@ public class GunBase : MonoBehaviour
             }
             else
             {
-                ShootDir = AimOrigin.transform.forward;
-               
-            }
-
-                 
+                ShootDir = AimOrigin.transform.forward;               
+            }                 
             ShootBullet();
         }
-        else if (currentAmmo <= 0 && !isReloading)
+        else if (overHeatLvl >= 100 && !OverHeated)
         {
-            isReloading = true;            
+            OverHeated = true;            
         }
     }
 
@@ -190,7 +230,7 @@ public class GunBase : MonoBehaviour
         shootTimer = fireRate;
 
         onShot?.Invoke(); //For animation Script or audio or anything else to subscribe to        
-        currentAmmo--;
+        overHeatLvl += HeatBuildRate;
         Vector3 offset = Vector3.zero; //new Vector3(UnityEngine.Random.Range(-0.05f,0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f));
         bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage);       
     }
@@ -198,9 +238,8 @@ public class GunBase : MonoBehaviour
     void reloadGun()
     {
         onReload?.Invoke();    
-        Debug.Log("Reload Complete");
-        currentAmmo = magSize;
-        isReloading = false;        
+        Debug.Log("Reload Complete");        
+        OverHeated = false;        
     }
     
 }
