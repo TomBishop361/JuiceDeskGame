@@ -58,7 +58,7 @@ public class ProjectileHitbox : MonoBehaviour {
 	// Used when the projectile collider is not configured as a trigger
 	private void OnCollisionEnter(Collision collision) {
 		Vector3 hitPoint;
-		if (collision.contactCount  > 0) {
+		if (collision.contactCount > 0) {
 			hitPoint = collision.contacts[0].point;
 		}
 		else {
