@@ -1,5 +1,6 @@
 
 using System;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,8 +44,9 @@ public class GunBase : MonoBehaviour
 
     bool isShooting;
     bool canShoot = true;
+
     
-    float _overHeat;
+    public float _overHeat;
     [Range(0f,5f)]
     public float HeatBuildRate = 2f;
     public int CoolDownRate = 10;
@@ -59,7 +61,7 @@ public class GunBase : MonoBehaviour
         get => _overHeat;
         set
         {
-            _overHeat = value;
+            _overHeat = Mathf.Clamp(value,0,100);
             fillImage.fillAmount = (overHeatLvl * 0.01f);
             fillImage.color = UIColour(fillImage.fillAmount);
         }
@@ -141,9 +143,10 @@ public class GunBase : MonoBehaviour
         {
             StartNaturalCoolDownTimer -= Time.deltaTime;
         }
-        if(StartNaturalCoolDownTimer <=0)
+        if(StartNaturalCoolDownTimer <=0 && overHeatLvl > 0)
         {
             overHeatLvl -= (Time.deltaTime * CoolDownRate);
+            overHeatLvl = Mathf.Clamp(overHeatLvl, 0, 100);
         }
     }
 
@@ -159,7 +162,7 @@ public class GunBase : MonoBehaviour
     Color UIColour(float t)
     {
         Color white = Color.white;
-        Color orange = new Color(1.0f, 0.5f, 0.0f); // RGB for Orange
+        Color orange = new Color(1.0f, 0.5f, 0.0f); 
         Color red = Color.red;
 
         if (t < 0.5f)
@@ -180,6 +183,7 @@ public class GunBase : MonoBehaviour
         {
             
             overHeatLvl -= (Time.deltaTime* CoolDownRate) ;
+
         }
         if (overHeatLvl <= 0 && OverHeated) reloadGun();
         

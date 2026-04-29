@@ -5,7 +5,7 @@ public class LineRendererHandler : MonoBehaviour
 {
     [SerializeField]LineRenderer lr;
     bool isTiming;
-    public float LifeTime;
+    public float LifeTime = 3;
     float timer;
 
     public void DrawLine(Vector3 Origin, Vector3 Target )
@@ -13,8 +13,9 @@ public class LineRendererHandler : MonoBehaviour
         lr.enabled = true;
         lr.SetPosition(0, Origin);
         lr.SetPosition(1, Target);
-        isTiming = true;
         timer = LifeTime;
+        isTiming = true;
+        
     }
 
     private void Update()
@@ -22,12 +23,13 @@ public class LineRendererHandler : MonoBehaviour
         if (isTiming)
         {
             timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                lr.enabled = false;
+                isTiming = false;
+            }
         }
-        if (timer <= 0)
-        {
-            lr.enabled = false;
-            isTiming = false;
-        }
+        
     }
 
 

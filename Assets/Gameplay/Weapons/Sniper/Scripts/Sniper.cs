@@ -95,8 +95,8 @@ public class Sniper : MonoBehaviour
         if (_aim !=0 && isAimed && !isOnCoolDown)
         {            
             //ShotLineEffect.SetPosition(0, shotOrigin.position);            
-            if (Physics.Raycast(_cameraTarget.transform.position, _cameraTarget.transform.forward.normalized, out RaycastHit hit, 100,hitMask))
-            {
+            if (Physics.SphereCast(_cameraTarget.transform.position, 0.5f, _camera.transform.forward.normalized, out RaycastHit hit, 100, hitMask))
+            {                
                 ShotLineEffect.DrawLine(shotOrigin.position, hit.point);
                 if (hit.transform.TryGetComponent<IDamageable>(out IDamageable damageable) || hit.transform.root.TryGetComponent<IDamageable>(out damageable))
                 {

@@ -296,6 +296,7 @@ public class InputController : MonoBehaviour
         moveSpeed = desiredMoveSpeed;
     }
 
+    #region Inputs
     private void LookMoved(Vector2 vector)
     {
         LookDirection = vector;
@@ -321,6 +322,8 @@ public class InputController : MonoBehaviour
     {
         crouch = value;
     }
+
+    #endregion
 
     void GroundCheck()
     {
