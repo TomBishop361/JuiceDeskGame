@@ -53,6 +53,9 @@ public class InputController : MonoBehaviour
     [SerializeField] float AnchorLaunchAmount;
 
     [Header("Grinding")]
+    // Debug
+    public bool toggleKnockOffRail = true;
+    //
     public bool onRail;
     bool canRailGrind = true;
     public float railGrindTime = 1;
@@ -82,6 +85,7 @@ public class InputController : MonoBehaviour
     [SerializeField] bool isGrounded;
     [SerializeField] float inputLagPeriod = 0.0001f;
     [SerializeField] TextMeshProUGUI VelocityUI;
+    [SerializeField] Health _health;
 
     public const float gravity = -9.81f;
     public bool jump;
@@ -120,10 +124,9 @@ public class InputController : MonoBehaviour
     [SerializeField] Rigidbody rb;
 
     public event Action JumpEvent = delegate { };   
+    
 
     public MovementState state;
-
-    
 
     public enum MovementState
     {
@@ -140,7 +143,8 @@ public class InputController : MonoBehaviour
   
 
     private void OnEnable()
-    {       
+    {
+        if(toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
 
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
@@ -566,6 +570,7 @@ public class InputController : MonoBehaviour
 
     private void OnDisable()
     {
+        _health.OnDamageDealt -= throwOffRail;
         InputManager.OnMoveReceived -= MovePressed;
         InputManager.OnLookReceived -= LookMoved;
         InputManager.OnJumpReceived -= JumpPressed;
@@ -672,21 +677,19 @@ private void OnCollisionEnter(Collision collision)
     //MoveToInputController?
     void throwOffRail()
     {
-        isRailGrinding = false;
-        onRail = false;
-        rb.useGravity = true;
-        //isGrounded = true;
-        currentRailScript = null;
-        rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
-        canRailGrind= false;
-        railGrindTimer = railGrindTime;
-        desiredMoveSpeed = sprintSpeed;
+        if (isRailGrinding)
+        {
+            isRailGrinding = false;
+            onRail = false;
+            rb.useGravity = true;
+            currentRailScript = null;
+            rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
+            canRailGrind = false;
+            railGrindTimer = railGrindTime;
+
+            desiredMoveSpeed = walkSpeed;
+        }
     }
-
-  
-
-  
-
 
 #if UNITY_EDITOR
 
