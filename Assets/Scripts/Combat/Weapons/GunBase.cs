@@ -60,7 +60,8 @@ public class GunBase : MonoBehaviour
         set
         {
             _overHeat = value;
-            fillImage.fillAmount = (overHeatLvl * 0.01f)*HeatBuildRate;
+            fillImage.fillAmount = (overHeatLvl * 0.01f);
+            fillImage.color = UIColour(fillImage.fillAmount);
         }
     }
 
@@ -155,6 +156,24 @@ public class GunBase : MonoBehaviour
         if (shootTimer <= 0 ) canShoot = true;
     }
 
+    Color UIColour(float t)
+    {
+        Color white = Color.white;
+        Color orange = new Color(1.0f, 0.5f, 0.0f); // RGB for Orange
+        Color red = Color.red;
+
+        if (t < 0.5f)
+        {
+            // Remap t from [0, 0.5] to [0, 1]
+            return Color.Lerp(white, orange, t * 2.0f);
+        }
+        else
+        {
+            // Remap t from [0.5, 1] to [0, 1]
+            return Color.Lerp(orange, red, (t - 0.5f) * 2.0f);
+        }
+    }
+
     void OverHeatedTimer()
     {
         if (OverHeated)
@@ -211,7 +230,7 @@ public class GunBase : MonoBehaviour
         shootTimer = fireRate;
 
         onShot?.Invoke(); //For animation Script or audio or anything else to subscribe to        
-        overHeatLvl++;
+        overHeatLvl += HeatBuildRate;
         Vector3 offset = Vector3.zero; //new Vector3(UnityEngine.Random.Range(-0.05f,0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f));
         bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage);       
     }
