@@ -19,7 +19,7 @@ public class Sniper : MonoBehaviour
     [SerializeField] WeaponManager _weaponManager;    
     float aimTimer;
     [SerializeField] LayerMask hitMask;
-    [SerializeField] LineRenderer ShotLineEffect;
+    [SerializeField] LineRendererHandler ShotLineEffect;
     [SerializeField] AttackData _attackData;
     [SerializeField] Transform shotOrigin;
     IGunInputManager gunInputManager => _gunInputManager.InputManager;    
@@ -94,10 +94,10 @@ public class Sniper : MonoBehaviour
     {        
         if (_aim !=0 && isAimed && !isOnCoolDown)
         {            
-            ShotLineEffect.SetPosition(0, shotOrigin.position);            
+            //ShotLineEffect.SetPosition(0, shotOrigin.position);            
             if (Physics.Raycast(_cameraTarget.transform.position, _cameraTarget.transform.forward.normalized, out RaycastHit hit, 100,hitMask))
-            {                
-                ShotLineEffect.SetPosition(1, hit.point);
+            {
+                ShotLineEffect.DrawLine(shotOrigin.position, hit.point);
                 if (hit.transform.TryGetComponent<IDamageable>(out IDamageable damageable) || hit.transform.root.TryGetComponent<IDamageable>(out damageable))
                 {
                     damageable.TakeDamage(_attackData);
@@ -105,7 +105,8 @@ public class Sniper : MonoBehaviour
             }
             else
             {
-                ShotLineEffect.SetPosition(1, _cameraTarget.transform.forward * 10);
+                ShotLineEffect.DrawLine(shotOrigin.position, _cameraTarget.transform.forward * 10);
+                
             }
             isOnCoolDown = true;
             OnShotTaken?.Invoke();

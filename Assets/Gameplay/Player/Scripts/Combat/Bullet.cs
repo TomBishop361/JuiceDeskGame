@@ -35,6 +35,7 @@ public class Bullet : ProjectileBase {
 
 	private void Awake() {
 		rb = GetComponent<Rigidbody>();
+		
 
 		projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
 	}
@@ -46,7 +47,8 @@ public class Bullet : ProjectileBase {
 
 		lifeTimer = lifeTime;
 		isActive = true;
-	}
+		transform.rotation = Quaternion.LookRotation(direction);
+    }
 
 
 	private void Update() {
