@@ -10,7 +10,7 @@ public class DestroyableEnemyProjectile : MonoBehaviour, IDamageable {
 		}
 	}
 
-	// TODO: When pooled replace SetActive(false) with the despawn method that the projectile uses in the pooling system
+	// When the projectile is shot, prefer returning it through the same pool path the projectile already uses
 	public void TakeDamage(AttackData attackData) {
 		if (projectile != null) {
 			projectile.ReturnToPool();
@@ -23,7 +23,7 @@ public class DestroyableEnemyProjectile : MonoBehaviour, IDamageable {
 			return;
 		}
 
-		// Fallback
+		// Fallback for non-pooled test objects.
 		gameObject.SetActive(false);
 	}
 

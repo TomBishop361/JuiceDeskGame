@@ -23,7 +23,7 @@ public class InputController : MonoBehaviour
     [SerializeField] GameObject _camera;   
 
     [Header("Movement Values")]
-    private float moveSpeed = 7;
+    float moveSpeed = 7;
     [SerializeField] float walkSpeed = 7;
     [SerializeField] float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
@@ -154,6 +154,7 @@ public class InputController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         startScaleYscale = transform.localScale.y;
+        
     }
 
     public bool _isGrounded
@@ -296,6 +297,7 @@ public class InputController : MonoBehaviour
         moveSpeed = desiredMoveSpeed;
     }
 
+    #region Inputs
     private void LookMoved(Vector2 vector)
     {
         LookDirection = vector;
@@ -321,6 +323,8 @@ public class InputController : MonoBehaviour
     {
         crouch = value;
     }
+
+    #endregion
 
     void GroundCheck()
     {
