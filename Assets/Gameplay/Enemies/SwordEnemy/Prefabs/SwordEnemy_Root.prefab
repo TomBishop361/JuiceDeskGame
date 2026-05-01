@@ -1787,7 +1787,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6264253651246739149}
   m_Layer: 8
-  m_Name: Model
+  m_Name: Visual_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1858,19 +1858,24 @@ GameObject:
   - component: {fileID: 8971865296739883366}
   - component: {fileID: 3916483571648877885}
   - component: {fileID: 4006545848731893060}
+  - component: {fileID: 4260311001460574981}
   - component: {fileID: 596960630571841368}
   - component: {fileID: 7971377067462787380}
+  - component: {fileID: 7310344175641646870}
+  - component: {fileID: 9078762917954121944}
   - component: {fileID: 2492967299845892110}
   - component: {fileID: 5171767187067607998}
   - component: {fileID: 6102671430866734951}
   - component: {fileID: 8380730772912573954}
   - component: {fileID: 1847690398170347147}
   - component: {fileID: 1996718449401447096}
+  - component: {fileID: 7113598184507878919}
   - component: {fileID: 5383888986075633314}
   - component: {fileID: 1964208316698497613}
   - component: {fileID: 9119978264467695902}
   - component: {fileID: 6469415742068227541}
   - component: {fileID: 6308464576384138355}
+  - component: {fileID: 4793005457090686131}
   - component: {fileID: 5180549574186250285}
   - component: {fileID: 3566807572259405374}
   - component: {fileID: 3479799254228814965}
@@ -1897,8 +1902,8 @@ Transform:
   m_Children:
   - {fileID: 6264253651246739149}
   - {fileID: 3942669526376498505}
-  - {fileID: 7228835705038387992}
   - {fileID: 2418639928641559441}
+  - {fileID: 7228835705038387992}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &8971865296739883366
@@ -1973,6 +1978,20 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &4260311001460574981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c50d660590609944a97c5c28b6651142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  squadId: Default
+  director: {fileID: 0}
 --- !u!114 &596960630571841368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2018,6 +2037,51 @@ MonoBehaviour:
   toggleSmoothRotation: 0
   rotationSpeed: 720
   rotationSmoothing: 20
+--- !u!114 &7310344175641646870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bef76ed69fd45dc4da283c2e23beefc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundMotor: {fileID: 7971377067462787380}
+  flightMotor: {fileID: 0}
+  arrivalDistance: 1.25
+  faceFocusWhileMoving: 1
+--- !u!114 &9078762917954121944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8772478debc46a4d904a0812ea622b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSightingAge: 3
+  reactionDelay: 0.45
+  minimumVelocityForIntercept: 2
+  interceptCooldown: 4
+  predictionTime: 1.15
+  uncertaintyGrowthPerSecond: 1.25
+  maxUncertaintyRadius: 4
+  maxAnchorDistanceFromPrediction: 9
+  minAnchorDistanceFromEnemy: 2.5
+  interceptorTraversalAnchorBias: 3
+  flankerSideLaneBias: 2.5
+  suppressorCoverBias: 2
+  enemyDistanceScoreWeight: 0.15
+  validateGroundNavMesh: 1
+  navMeshSampleRadius: 2
+  fallbackFlankDistance: 6
+  fallbackAnchorBackoff: 3.5
 --- !u!114 &2492967299845892110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2127,6 +2191,8 @@ MonoBehaviour:
   targetMemoryDuration: 15
   losSensor: {fileID: 1847690398170347147}
   allowTargetWithoutSensor: 1
+  shareSightingsWithSquad: 1
+  sightingShareInterval: 0.25
 --- !u!114 &1847690398170347147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2141,10 +2207,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visionLayerMask:
     serializedVersion: 2
-    m_Bits: 129
-  detectionRange: 140
-  visionAngle: 360
-  eyeHeight: 0.5
+    m_Bits: 24777
+  detectionRange: 32
+  visionAngle: 135
+  eyes: {fileID: 7419415779911540261}
 --- !u!114 &1996718449401447096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2162,6 +2228,22 @@ MonoBehaviour:
   debugTarget: {fileID: 0}
   showVisionGizmo: 1
   showSightLine: 1
+--- !u!114 &7113598184507878919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2060e9ed128a4cd44807b991eb6a42b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hearingRadiusMultiplier: 1.25
+  minimumLoudness: 0.05
+  suspicionMemoryDuration: 5
+  drawDebug: 0
 --- !u!114 &5383888986075633314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2232,6 +2314,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7efb7cb8585d34a827962291e546c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4793005457090686131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfb2cf668c6a5d74abafe26874da7d8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CurrentState>k__BackingField: 0
 --- !u!114 &5180549574186250285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2249,6 +2344,24 @@ MonoBehaviour:
   <HasLineOfSight>k__BackingField: 0
   <DistanceToTarget>k__BackingField: Infinity
   <LastSeenTime>k__BackingField: -Infinity
+  <LastSeenPosition>k__BackingField: {x: 0, y: 0, z: 0}
+  <HasLastSeenPosition>k__BackingField: 0
+  <ObservedTargetVelocity>k__BackingField: {x: 0, y: 0, z: 0}
+  <LastObservedTargetPosition>k__BackingField: {x: 0, y: 0, z: 0}
+  <HasObservedTargetPosition>k__BackingField: 0
+  <LastObservedTargetTime>k__BackingField: -Infinity
+  <LastSharedAwarenessTime>k__BackingField: -Infinity
+  <SuspiciousNoisePosition>k__BackingField: {x: 0, y: 0, z: 0}
+  <HasSuspiciousNoise>k__BackingField: 0
+  <LastHeardNoiseTime>k__BackingField: -Infinity
+  <LastHeardNoiseRadius>k__BackingField: 0
+  <LastHeardNoiseKind>k__BackingField: 0
+  <LastNoiseWasShared>k__BackingField: 0
+  <TacticalRole>k__BackingField: 0
+  <RoleAssignedTime>k__BackingField: -Infinity
+  <TacticalDestination>k__BackingField: {x: 0, y: 0, z: 0}
+  <HasTacticalDestination>k__BackingField: 0
+  <LastInterceptTime>k__BackingField: -Infinity
   <IsDead>k__BackingField: 0
   <IsDisabled>k__BackingField: 0
 --- !u!114 &3566807572259405374

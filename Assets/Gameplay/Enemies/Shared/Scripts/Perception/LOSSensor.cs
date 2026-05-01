@@ -11,7 +11,9 @@ namespace Game.AI {
 		[Tooltip("Field-of-view angle (in degrees) used for target detection.")]
 		[SerializeField] private float visionAngle = 120.0f;
 		[Tooltip("Vertical offset applied to the ray origin when checking LOS.")]
-		[SerializeField] private float eyeHeight = 0.5f;
+		[SerializeField] private Transform eyes;
+		//[Tooltip("Vertical offset applied to the ray origin when checking LOS.")]
+		//[SerializeField] private float eyeHeight = 0.5f;
 
 		public float DetectionRange => detectionRange;
 		public float VisionAngle => visionAngle;
@@ -22,7 +24,7 @@ namespace Game.AI {
 				return false;
 			}
 
-			Vector3 origin = transform.position + Vector3.up * eyeHeight;
+			Vector3 origin = transform.position + Vector3.up * eyes.transform.position.y;
 
 			// Calculate distance to target
 			Vector3 toTarget = target.position - origin;

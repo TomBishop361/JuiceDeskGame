@@ -165,7 +165,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			shieldEnemy.SetShieldRaised(Raised);
+			shieldEnemy.SetShieldRaised(Raised.Value);
 
 			return Status.Success;
 		}
@@ -184,7 +184,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			shieldEnemy.EnterExposedState(Duration);
+			shieldEnemy.EnterExposedState(Duration.Value);
 			return Status.Success;
 		}
 	}
