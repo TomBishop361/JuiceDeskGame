@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using UnityEngine;
+using Game.AI;
 
 public class WallRunning : MonoBehaviour
 {
@@ -26,8 +27,9 @@ public class WallRunning : MonoBehaviour
     public Transform LastWall;
     private bool wallLeft;
     private bool wallRight;
+	[SerializeField] private float wallRunNoiseInterval = 0.4f;
 
-    [Header("Wall Jumping")]
+	[Header("Wall Jumping")]
     public float wallJumpUpForce;
     public float wallJumpSideForce;
     public float exitWallTime;
@@ -39,7 +41,15 @@ public class WallRunning : MonoBehaviour
     public event Action OnWallRunEnd;
     
     public ForceMode forceMode;
-    private void OnEnable()
+
+	private PlayerNoiseEmitter noiseEmitter;
+	private float nextWallRunNoiseTime;
+
+	private void Awake() {
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+	}
+
+	private void OnEnable()
     {
        controller.InputManager.OnMoveReceived += MoveInput;
         controller.InputManager.OnJumpReceived += JumpInput;
@@ -140,8 +150,11 @@ public class WallRunning : MonoBehaviour
         LastWall = wall;
         sameWallTimer = SameWallTime;
         controller.wallRunning = true;
-        OnWallRunStart?.Invoke(wallRight);        
-    }
+        OnWallRunStart?.Invoke(wallRight);
+
+		noiseEmitter?.EmitWallRunNoise();
+		nextWallRunNoiseTime = Time.time + wallRunNoiseInterval;
+	}
 
     void StopWallRun()
     {
@@ -175,7 +188,13 @@ public class WallRunning : MonoBehaviour
         {
             rb.AddForce(-wallNoral * 200, ForceMode.Force);
         }
-    }
+
+        // Pulsing noise on sustained wall runs
+		if (controller.wallRunning && Time.time >= nextWallRunNoiseTime) {
+			noiseEmitter?.EmitWallRunNoise(0.6f);
+			nextWallRunNoiseTime = Time.time + wallRunNoiseInterval;
+		}
+	}
 
     private void FixedUpdate()
     {

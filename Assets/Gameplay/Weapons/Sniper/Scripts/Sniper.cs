@@ -4,6 +4,7 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Game.AI;
 
 public class Sniper : MonoBehaviour
 {
@@ -26,8 +27,7 @@ public class Sniper : MonoBehaviour
 
     public event Action OnShotTaken = delegate { };
 
-
-    private void OnEnable()
+	private void OnEnable()
     {
         gunInputManager.onSecondFire += AimInput;
          gunInputManager.onShootReceived += ShootInput;

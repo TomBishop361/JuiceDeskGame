@@ -1,3 +1,4 @@
+using Game.AI;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,18 +22,30 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] float sniperCDTime = 15;
     float sniperCDTimer;
 
+	private PlayerNoiseEmitter noiseEmitter;
 
-    private void OnEnable()
+	private void Awake() {
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+	}
+
+	private void OnEnable()
     {
         _Sniper.OnShotTaken += SniperStartCooldown;
     }
 
-    void SniperStartCooldown()
+	private void OnDisable() {
+		_Sniper.OnShotTaken -= SniperStartCooldown;
+	}
+
+	void SniperStartCooldown()
     {
         SniperOnCoolDown = true;
         sniperCDTimer = sniperCDTime;
         Fillimage.fillAmount = 0;
-    }
+
+        // Emit Sniper shot noise
+		noiseEmitter?.EmitWeaponNoise(1.5f);
+	}
 
     private void FixedUpdate()
     {

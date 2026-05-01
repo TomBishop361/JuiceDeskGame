@@ -8,8 +8,8 @@ public class RailScript : MonoBehaviour
     public SplineContainer railSpline;
     public float totalSplineLength;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+	// Start is called once before the first execution of Update after the MonoBehaviour is created
+	void Start()
     {
         railSpline = GetComponent<SplineContainer>();
         totalSplineLength = railSpline.CalculateLength();

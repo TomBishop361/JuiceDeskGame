@@ -1,3 +1,4 @@
+using Game.AI;
 using Game.AI.Sword;
 using System;
 using System.Collections;
@@ -10,6 +11,7 @@ using UnityEngine;
 public class Bullet : ProjectileBase {
 	[Header("Bullet Stats")]
 	[SerializeField] private AttackData bulletAttackData = new AttackData();
+	[SerializeField] private float weaponNoiseInterval = 0.15f;
 
 	Rigidbody rb;
 
@@ -26,18 +28,15 @@ public class Bullet : ProjectileBase {
 	private Transform player; 
 	private PlayerSettings playerSettings; // TODO: Remove later as this script can be used by anyone not just the player
 	private ProjectileHitbox projectileHitbox;
-	//private AttackData attackData;
-
-	//public AttackData attackData => projectileAttackData;
-
-	// Runtime params
-	//PlayerSettings playerSettings;
+	private PlayerNoiseEmitter noiseEmitter;
+	private float nextWeaponNoiseTime;
 
 	private void Awake() {
 		rb = GetComponent<Rigidbody>();
 		
 
 		projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
 	}
 
 	public override void Fire(Vector3 direction, Vector3 origin, float speed, float damage) {
@@ -48,7 +47,13 @@ public class Bullet : ProjectileBase {
 		lifeTimer = lifeTime;
 		isActive = true;
 		transform.rotation = Quaternion.LookRotation(direction);
-    }
+
+		// Pulse SMG Fire noise
+		if (Time.time >= nextWeaponNoiseTime) {
+			noiseEmitter?.EmitWeaponNoise();
+			nextWeaponNoiseTime = Time.time + weaponNoiseInterval;
+		}
+	}
 
 
 	private void Update() {

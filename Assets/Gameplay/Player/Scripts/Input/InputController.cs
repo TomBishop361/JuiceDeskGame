@@ -1,3 +1,4 @@
+using Game.AI;
 using System;
 using System.Collections;
 using TMPro;
@@ -61,8 +62,9 @@ public class InputController : MonoBehaviour
     public float railGrindTime = 1;
     float railGrindTimer;
     public float railBoost;
+	[SerializeField] private float railGrindNoiseInterval = 0.3f;
 
-    [SerializeField] float grindSpeed;
+	[SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2
     float timeForFullSpline;
     float elapsdTime;    
@@ -103,8 +105,12 @@ public class InputController : MonoBehaviour
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
+	private PlayerNoiseEmitter noiseEmitter;
+	private float nextRailGrindNoiseTime;
+	private bool wasGrounded;
+	private float previousYVelocity;
 
-    [SerializeField] GameObject IKGunTarget;
+	[SerializeField] GameObject IKGunTarget;
     [SerializeField] GameObject PlayerRoot;
 
 
@@ -140,9 +146,14 @@ public class InputController : MonoBehaviour
         idle,
         air
     }
-  
 
-    private void OnEnable()
+	private void Awake() {
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+		wasGrounded = _isGrounded;
+		previousYVelocity = rb != null ? rb.linearVelocity.y : 0.0f;
+	}
+
+	private void OnEnable()
     {
         if(toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
 
@@ -412,7 +423,7 @@ public class InputController : MonoBehaviour
 
         Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
-        //3. Slop Logic
+        //3. Slope Logic
         if (OnSlope() && !exitingSlope )
         {
             // Project the desired velocity onto the slope and scale it by movement speed
@@ -548,10 +559,20 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        if(VelocityUI == null) return;
-       VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-        
-    }
+		bool groundedNow = _isGrounded;
+
+		if (!wasGrounded && groundedNow && previousYVelocity < -6f) {
+			noiseEmitter?.EmitLandingNoise();
+		}
+
+		wasGrounded = groundedNow;
+		previousYVelocity = rb.linearVelocity.y;
+
+		if (VelocityUI != null) {
+			VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
+		}
+	}
+
     private void FixedUpdate()
     {
         GroundCheck();
@@ -610,7 +631,9 @@ private void OnCollisionEnter(Collision collision)
             currentRailScript = collision.gameObject.GetComponent<RailScript>();
             CalculateAndSetRailPosition();
 
-        }
+			noiseEmitter?.EmitRailGrindNoise();
+			nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
+		}
     }
 
 
@@ -664,7 +687,13 @@ private void OnCollisionEnter(Collision collision)
             elapsdTime += Time.fixedDeltaTime;
         else
             elapsdTime -= Time.fixedDeltaTime;
-    }
+
+        // Pulse noise for continued rail grinding
+		if (isRailGrinding && Time.time >= nextRailGrindNoiseTime) {
+			noiseEmitter?.EmitRailGrindNoise(0.7f);
+			nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
+		}
+	}
 
     private void CalculateAndSetRailPosition()
     {

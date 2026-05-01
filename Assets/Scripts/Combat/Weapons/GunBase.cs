@@ -3,7 +3,7 @@ using System;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Game.AI;
 
 public class GunBase : MonoBehaviour
 {
@@ -89,17 +89,21 @@ public class GunBase : MonoBehaviour
     //TPPGunShoot
     Vector3 ShootDir;
 
-    
-    #endregion
-    
 
-    public delegate void OnShoot();
+	#endregion
+
+	[SerializeField] private float weaponNoiseInterval = 0.15f;
+
+	private PlayerNoiseEmitter noiseEmitter;
+	private float nextWeaponNoiseTime;
+
+	public delegate void OnShoot();
     public event OnShoot onShot;
 
     public delegate void OnReload();
     public event OnReload onReload;
 
-    private void OnEnable()
+	private void OnEnable()
     {
         gunInputManager.onShootReceived += Shoot;
        // gunInputManager.onReload += reload;
@@ -122,8 +126,9 @@ public class GunBase : MonoBehaviour
         fireRate = 1 / (gunData.fireRate / 60);  //RoundsPerMin to RoundsPerSec        
         reloadTimer = fireRate;
         if(isDrawn) Instantiate(gunObject, transform.position, transform.rotation, transform.parent);
-       // gunAnimationHandler = gunObject.GetComponent<GunAnimationHandler>();
-    }
+		// gunAnimationHandler = gunObject.GetComponent<GunAnimationHandler>();
+		noiseEmitter = GetComponentInParent<PlayerNoiseEmitter>();
+	}
 
     private void FixedUpdate()
     {
@@ -200,8 +205,8 @@ public class GunBase : MonoBehaviour
 
     void Shoot(bool shoot)
     {        
-        isShooting = shoot;        
-    }   
+        isShooting = shoot;
+	}   
 
     private void handleShoot(bool isShooting)
     {
@@ -236,8 +241,9 @@ public class GunBase : MonoBehaviour
         onShot?.Invoke(); //For animation Script or audio or anything else to subscribe to        
         overHeatLvl += HeatBuildRate;
         Vector3 offset = Vector3.zero; //new Vector3(UnityEngine.Random.Range(-0.05f,0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f));
-        bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage);       
-    }
+        bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage);
+        EmitPrimaryFireNoise();
+	}
 
     void reloadGun()
     {
@@ -245,5 +251,14 @@ public class GunBase : MonoBehaviour
         Debug.Log("Reload Complete");        
         OverHeated = false;        
     }
-    
+
+	private void EmitPrimaryFireNoise() {
+		if (Time.time < nextWeaponNoiseTime) {
+			return;
+		}
+			
+		noiseEmitter?.EmitWeaponNoise();
+		nextWeaponNoiseTime = Time.time + weaponNoiseInterval;
+	}
+
 }

@@ -1,7 +1,7 @@
 
 using UnityEngine;
 using System;
-
+using Game.AI;
 
 public class Grapple : MonoBehaviour
 {
@@ -39,7 +39,13 @@ public class Grapple : MonoBehaviour
     public event Action<Vector3> OnGrapple;
     public event Action OnGrappleEnd;
 
-    private void OnEnable()
+	private PlayerNoiseEmitter noiseEmitter;
+
+	private void Awake() {
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+	}
+
+	private void OnEnable()
     {
         inputManager.OnGrappleReceived += StartGrapple;
         selector.OnAnchorFound += setAnchorPoint;
@@ -48,7 +54,8 @@ public class Grapple : MonoBehaviour
     private void OnDisable()
     {
         inputManager.OnGrappleReceived -= StartGrapple;
-    }
+		selector.OnAnchorFound -= setAnchorPoint;
+	}
 
     private void Update()
     {
@@ -124,7 +131,8 @@ public class Grapple : MonoBehaviour
             grappleHit = true;
             lineRenderer.enabled = true;
             OnGrapple?.Invoke(grapplePoint);
-        }
+			noiseEmitter?.EmitGrappleNoise();
+		}
         
         //lineRenderer.SetPosition(1, grapplePoint);
     }
