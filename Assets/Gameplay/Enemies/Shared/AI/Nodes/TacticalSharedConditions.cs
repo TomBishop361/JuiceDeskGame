@@ -14,7 +14,7 @@ namespace Game.AI.Behavior.Shared {
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
 
-	[Condition(name: "Enemy: Has Line Of Sight", description: "True if this enemy currently has confirmed LOS to the target.", story: "Enemy has line of sight", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.has_los")]
+	[Condition(name: "Enemy: Has Line Of Sight", description: "True if this enemy currently has confirmed LOS to the target.", story: "Enemy has line of sight", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.line_of_sight")]
 	public sealed class EnemyHasLineOfSight : Condition {
 		public override bool IsTrue() {
 			EnemyBlackboard blackboard = GameObject.GetComponent<EnemyBlackboard>();
@@ -22,7 +22,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-	[Condition(name: "Enemy: Has Last Seen Position", description: "True if this enemy has a remembered or shared target position.", story: "Enemy has last seen position", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.has_last_seen")]
+	[Condition(name: "Enemy: Has Last Seen Position", description: "True if this enemy has a remembered or shared target position.", story: "Enemy has last seen position", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.last_seen")]
 	public sealed class EnemyHasLastSeenPosition : Condition {
 		public override bool IsTrue() {
 			EnemyBlackboard blackboard = GameObject.GetComponent<EnemyBlackboard>();
@@ -30,7 +30,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-	[Condition(name: "Enemy: Has Fresh Last Seen Position", description: "True if last seen memory is younger than Max Age.", story: "Enemy has fresh last seen position within [MaxAge] seconds", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.has_fresh_last_seen")]
+	[Condition(name: "Enemy: Has Fresh Last Seen Position", description: "True if last seen memory is younger than Max Age.", story: "Enemy has fresh last seen position within [MaxAge] seconds", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.fresh_last_seen")]
 	public sealed class EnemyHasFreshLastSeenPosition : Condition {
 		[SerializeReference] public BlackboardVariable<float> MaxAge;
 
@@ -41,7 +41,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-	[Condition(name: "Enemy: Has Suspicious Noise", description: "True if this enemy has heard or received a suspicious noise.", story: "Enemy has suspicious noise", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.has_suspicious_noise")]
+	[Condition(name: "Enemy: Has Suspicious Noise", description: "True if this enemy has heard or received a suspicious noise.", story: "Enemy has suspicious noise", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.suspicious_noise")]
 	public sealed class EnemyHasSuspiciousNoise : Condition {
 		public override bool IsTrue() {
 			EnemyBlackboard blackboard = GameObject.GetComponent<EnemyBlackboard>();
@@ -49,7 +49,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-	[Condition(name: "Enemy: Has Fresh Suspicious Noise", description: "True if suspicious noise memory is younger than Max Age.", story: "Enemy heard suspicious noise within [MaxAge] seconds", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.has_fresh_noise")]
+	[Condition(name: "Enemy: Has Fresh Suspicious Noise", description: "True if suspicious noise memory is younger than Max Age.", story: "Enemy heard suspicious noise within [MaxAge] seconds", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.fresh_noise")]
 	public sealed class EnemyHasFreshSuspiciousNoise : Condition {
 		[SerializeReference] public BlackboardVariable<float> MaxAge;
 
