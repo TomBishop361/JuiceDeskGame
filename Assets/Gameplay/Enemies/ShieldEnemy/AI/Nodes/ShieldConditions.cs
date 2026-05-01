@@ -8,22 +8,12 @@ namespace Game.AI.Behavior.Shield {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+	//<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
-
-	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
-	[Condition(name: "Shield: In Punch Range", description: "True if target is within punch range.", story: "Target is in punch range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_punch_range")]
-	public sealed class ShieldInPunchRange : Condition {
-		public override bool IsTrue() {
-			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
-
-			return shieldEnemy != null /*&& shieldEnemy.InPunchRange*/;
-		}
-	}
 
 	[Condition(name: "Shield: In Slam Range", description: "True if target is within slam range.", story: "Target is in slam range", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.in_slam_range")]
 	public sealed class ShieldInSlamRange : Condition {
@@ -43,16 +33,6 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
-	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
-	[Condition(name: "Shield: Can Punch", description: "True if punch cooldown is ready and enemy can punch now.", story: "Shield enemy can punch", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.can_punch")]
-	public sealed class ShieldCanPunch : Condition {
-		public override bool IsTrue() {
-			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
-
-			return shieldEnemy != null /*&& shieldEnemy.CanPunch*/;
-		}
-	}
-
 	[Condition(name: "Shield: Can Slam", description: "True if slam cooldown is ready and enemy can slam now.", story: "Shield enemy can slam", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.can_slam")]
 	public sealed class ShieldCanSlam : Condition {
 		public override bool IsTrue() {
@@ -68,16 +48,6 @@ namespace Game.AI.Behavior.Shield {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
 			return shieldEnemy != null && shieldEnemy.CanFireMinigun;
-		}
-	}
-
-	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
-	[Condition(name: "Shield: Has Muzzle LOS", description: "True if shield enemy muzzle has a line of sight .", story: "Shield has muzzle LOS", category: "Enemy/Shield/Conditions/Combat", id: "shield.condition.combat.has_muzzle_los")]
-	public sealed class ShieldHasMuzzleLOS : Condition {
-		public override bool IsTrue() {
-			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
-
-			return shieldEnemy != null /*&& shieldEnemy.HasMuzzleLOS*/;
 		}
 	}
 

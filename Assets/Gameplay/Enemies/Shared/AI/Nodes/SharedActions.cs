@@ -10,14 +10,12 @@ namespace Game.AI.Behavior.Shared {
 	// INFO: 'IEnemyAgent' is an interface implemented by all enemy types
 
 	// - ID INFORMATION -
-	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+	//<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
-
-	// - Shared Core (Actions) - 
 
 	[NodeDescription(name: "Enemy: Acquire Target", description: "Assigns a target.", story: "Enemy acquires a target", category: "Enemy/Shared/Actions/Core", id: "enemy.action.core.acquire_target")]
 	public sealed class EnemyAcquireTarget : Action {

@@ -40,6 +40,7 @@ namespace Game.AI {
 			// If a focus transform exists, face it while moving
 			// Otherwise, face the destination itself
 			Vector3 focusPoint = focus != null ? focus.position : destination;
+
 			return TickMoveTo(destination, focusPoint);
 		}
 

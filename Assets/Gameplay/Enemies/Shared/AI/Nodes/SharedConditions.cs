@@ -8,14 +8,12 @@ namespace Game.AI.Behavior.Shared {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+	//<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
 	//domain = core / combat / move / defense / flight / grapple / utility
 	//name = the specific node name
-
-	// - Shared Core (Conditions) - 
 
 	[Condition(name: "Enemy: Is Dead", description: "True if the enemy is dead.", story: "Enemy is dead", category: "Enemy/Shared/Conditions/Core", id: "enemy.condition.core.is_dead")]
 	public sealed class EnemyIsDead : Condition {
