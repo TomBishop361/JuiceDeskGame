@@ -271,15 +271,20 @@ public class GenericSpawner : MonoBehaviour {
 				for (int entryIndex = 0; entryIndex < wave.entries.Length; entryIndex++) {
 					SpawnEntry entry = wave.entries[entryIndex];
 
-					if (entry == null || entry.prefab == null || entry.count <= 0) {
+					if (entry == null || entry.count <= 0) {
 						continue;
 					}
-						
-					float delay = Mathf.Max(0.0f, entry.delayBetweenSpawns);
-					WaitForSeconds wait = new WaitForSeconds(delay);
 
 					// Uses same prefab for every spawn in that entry
 					PooledObject prefabToSpawn = ResolvePrefabForEntry(entry);
+
+					if (prefabToSpawn == null) {
+						Debug.LogWarning($"{name}: Could not resolve prefab for spawn entry. Source: {entry.spawnSource}, Category: {entry.category}", this);
+						continue;
+					}
+
+					float delay = Mathf.Max(0.0f, entry.delayBetweenSpawns);
+					WaitForSeconds wait = new WaitForSeconds(delay);
 
 					for (int i = 0; i < entry.count; i++) {
 						//PooledObject prefabToSpawn = ResolvePrefabForEntry(entry); // Uses different prefab for every spawn in that entry
