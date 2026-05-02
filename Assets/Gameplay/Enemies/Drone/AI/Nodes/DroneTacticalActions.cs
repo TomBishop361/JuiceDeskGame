@@ -57,6 +57,8 @@ namespace Game.AI.Behavior.Drone {
 		private FlightEnemyMotor flightMotor;
 		private EnemyBlackboard blackboard;
 
+		private float holdAnchorY;
+
 		protected override Status OnStart() {
 			droneEnemy = GameObject.GetComponent<DroneEnemy>();
 			flightMotor = GameObject.GetComponent<FlightEnemyMotor>();
@@ -66,6 +68,8 @@ namespace Game.AI.Behavior.Drone {
 				LogFailure("FlightEnemyMotor or EnemyBlackboard missing.", isError: true);
 				return Status.Failure;
 			}
+
+			holdAnchorY = GameObject.transform.position.y;
 
 			return Status.Running;
 		}
@@ -79,7 +83,8 @@ namespace Game.AI.Behavior.Drone {
 				blackboard.HasLastSeenPosition ? blackboard.LastSeenPosition :
 				GameObject.transform.position + GameObject.transform.forward;
 
-			flightMotor.HoldPosition(focus, GameObject.transform.position.y);
+			//flightMotor.HoldPosition(focus, GameObject.transform.position.y);
+			flightMotor.HoldPosition(focus, holdAnchorY);
 			return droneEnemy != null && (droneEnemy.IsDead || droneEnemy.IsKnockedDown) ? Status.Failure : Status.Running;
 		}
 	}

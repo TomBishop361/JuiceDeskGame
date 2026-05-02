@@ -724,59 +724,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 84691616}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &85339508
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 85339509}
-  - component: {fileID: 85339510}
-  m_Layer: 0
-  m_Name: SquadDirector_Arena01
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &85339509
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 85339508}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 299780718}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &85339510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 85339508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d569482071df8be469827dad7c653b4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  squadId: Default
-  assignRoles: 1
-  reassignmentInterval: 2
-  roleChangeCooldown: 3
-  maxInterceptors: 0
-  maxSuppressors: 2
-  maxAnchors: 1
-  sightingShareRange: 35
-  noiseShareRange: 28
 --- !u!1 &88517111
 GameObject:
   m_ObjectHideFlags: 0
@@ -2538,6 +2485,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 299780718}
+  - component: {fileID: 299780719}
   m_Layer: 0
   m_Name: SquadDirectors
   m_TagString: Untagged
@@ -2557,10 +2505,30 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 85339509}
+  m_Children: []
   m_Father: {fileID: 160734865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &299780719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299780717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d569482071df8be469827dad7c653b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  squadId: Default
+  assignRoles: 1
+  reassignmentInterval: 2
+  roleChangeCooldown: 3
+  maxInterceptors: 2
+  maxSuppressors: 4
+  maxAnchors: 1
+  sightingShareRange: 45
+  noiseShareRange: 30
 --- !u!1 &313526402
 GameObject:
   m_ObjectHideFlags: 0
@@ -7834,7 +7802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6426209685012709754, guid: 73770458930eb6b4aa6881b3bc019c94, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14522,10 +14490,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SwordEnemy_Root
       objectReference: {fileID: 0}
-    - target: {fileID: 7782458668010283615, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15122,10 +15086,6 @@ PrefabInstance:
     - target: {fileID: 8618922778442928813, guid: 13f90ac2d7c865442b7fad31cbf1b8af, type: 3}
       propertyPath: m_Name
       value: ShieldEnemy_Root
-      objectReference: {fileID: 0}
-    - target: {fileID: 8618922778442928813, guid: 13f90ac2d7c865442b7fad31cbf1b8af, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16118,42 +16078,42 @@ MonoBehaviour:
     clearanceRadius: 0
   - point: {fileID: 536440898}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 2123659597}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 1691270843}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 2053749777}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 107850354}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 874160854}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 1232204368}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   - point: {fileID: 979943796}
     allowedCategories: 01000000
-    ignoreClearance: 1
+    ignoreClearance: 0
     clearanceOffset: {x: 0, y: 0, z: 0}
     clearanceRadius: 0
   maxAlive: 12
@@ -18042,7 +18002,7 @@ Transform:
   m_GameObject: {fileID: 2123659596}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.9238796, z: -0, w: -0.38268325}
-  m_LocalPosition: {x: 19.159199, y: 8.826799, z: 24.9672}
+  m_LocalPosition: {x: 17.5937, y: 11.9031, z: 24.9672}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
