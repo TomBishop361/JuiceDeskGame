@@ -89,6 +89,19 @@ namespace Game.AI {
 			claimedUntil = Time.time + claimDuration;
 		}
 
+		// Choose a point inside the anchor radius that is biased towards the predicted player path
+		public Vector3 GetBiasedPoint(Vector3 predictedPosition) {
+			Vector3 toPrediction = predictedPosition - transform.position;
+			toPrediction.y = 0.0f;
+
+			if (toPrediction.sqrMagnitude < 0.01f) {
+				return transform.position;
+			}
+
+			Vector3 biasedPoint = transform.position + toPrediction.normalized * Mathf.Min(occupiedRadius * 0.75f, toPrediction.magnitude);
+			return biasedPoint;
+		}
+
 		private void OnDrawGizmos() {
 			if (drawGizmos == false) {
 				return;

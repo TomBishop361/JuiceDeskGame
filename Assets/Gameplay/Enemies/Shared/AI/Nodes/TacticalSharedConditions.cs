@@ -49,7 +49,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 	}
 
-	[Condition(name: "Enemy: Has Fresh Suspicious Noise", description: "True if suspicious noise memory is younger than Max Age.", story: "Enemy heard suspicious noise within [MaxAge] seconds", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.fresh_noise")]
+	[Condition(name: "Enemy: Has Fresh Suspicious Noise", description: "True if suspicious noise memory is younger than Max Age.", story: "Enemy heard suspicious noise within [MaxAge] seconds", category: "Enemy/Shared/Conditions/Perception", id: "enemy.condition.perception.noise_fresh")]
 	public sealed class EnemyHasFreshSuspiciousNoise : Condition {
 		[SerializeReference] public BlackboardVariable<float> MaxAge;
 

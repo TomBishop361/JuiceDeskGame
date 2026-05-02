@@ -172,7 +172,10 @@ namespace Game.AI {
 					continue;
 				}
 
-				Vector3 candidate = anchor.Position;
+				//Vector3 candidate = anchor.Position; // OLD: Go to anchor centre
+
+				// Go to a point within the anchor radius, biased toward the predicted player path
+				Vector3 candidate = anchor.GetBiasedPoint(predictedPosition);
 
 				// Ground enemies should only use anchors they can actually path to
 				if (validateGroundNavMesh && GetComponent<GroundEnemyMotor>() != null) {
