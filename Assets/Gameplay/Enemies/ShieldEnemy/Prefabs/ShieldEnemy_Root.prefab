@@ -1567,6 +1567,8 @@ GameObject:
   - component: {fileID: 7803343986905604957}
   - component: {fileID: 5554221476752247085}
   - component: {fileID: 3964159061307939131}
+  - component: {fileID: 6459022839229409296}
+  - component: {fileID: 3622940390707777444}
   - component: {fileID: 919526336564966754}
   - component: {fileID: 4488825989965254406}
   - component: {fileID: 5090258675412554558}
@@ -1589,6 +1591,7 @@ GameObject:
   - component: {fileID: 7088472956447957708}
   - component: {fileID: 8342141347256848035}
   - component: {fileID: 3884055606165247876}
+  - component: {fileID: 5518201892295104703}
   m_Layer: 8
   m_Name: ShieldEnemy_Root
   m_TagString: Untagged
@@ -1687,6 +1690,42 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &6459022839229409296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8618922778442928813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c21fd45f9968a499b561cab7803895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyKind: 2
+  currentJob: 0
+  slotIndex: 0
+  slotCount: 1
+--- !u!114 &3622940390707777444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8618922778442928813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cea01928cdfcd11419a68f56d68d1b7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destinationRefreshInterval: 0.18
+  navMeshSampleRadius: 2
+  reachedKnownPositionDistance: 1.75
+  minigunTokenRefreshTime: 0.35
+  slamTokenTime: 1.25
+  autoAcquireTarget: 1
+  driveAttacks: 1
+  driveMovement: 1
 --- !u!114 &919526336564966754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1936,6 +1975,7 @@ MonoBehaviour:
   hearingRadiusMultiplier: 1
   minimumLoudness: 0.05
   suspicionMemoryDuration: 5.5
+  reportNoiseToAwarenessHub: 1
   drawDebug: 0
 --- !u!114 &4225066917269476315
 MonoBehaviour:
@@ -2133,6 +2173,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 3
+--- !u!114 &5518201892295104703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8618922778442928813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightReportInterval: 0.15
+  reportSightOnlyWhenVisible: 1
 --- !u!1 &8722368276012395742
 GameObject:
   m_ObjectHideFlags: 0

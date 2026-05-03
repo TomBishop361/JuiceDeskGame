@@ -132,6 +132,8 @@ namespace Game.AI.Sword {
 		private float currentDashSpeed;
 		private float hitSlowEndTime = -Mathf.Infinity;
 		private bool hasAppliedHitReaction;
+		private bool hasExternalPressureAimPoint;
+		private Vector3 externalPressureAimPoint;
 
 		// Runtime owner reference used by hit callbacks and animation-event failsafes
 		private SwordEnemy activeOwner;
@@ -236,6 +238,23 @@ namespace Game.AI.Sword {
 				&& lungeChance > 0.0f;
 		}
 
+		public bool TryStartLungeAt(SwordEnemy owner, Animator animator, Vector3 predictedAimPoint) {
+			// Cache the pressure aim before starting the existing lunge pipeline
+			// TryStartLunge() will call LockLungeAimPoint(), where this point is consumed
+			hasExternalPressureAimPoint = true;
+			externalPressureAimPoint = predictedAimPoint;
+
+			bool started = TryStartLunge(owner, animator);
+
+			// If the original lunge rejected the start because of cooldown/state/range/etc,
+			// clear the pending external aim so it cannot leak into a later normal lunge
+			if (started == false) {
+				hasExternalPressureAimPoint = false;
+			}
+
+			return started;
+		}
+
 		// Attempts to start the lunge attack by locking the aim point + deriving attack lock time + triggering the animation
 		public bool TryStartLunge(SwordEnemy owner, Animator animator) {
 			if (owner == null || owner.HasTarget == false) {
@@ -275,6 +294,7 @@ namespace Game.AI.Sword {
 
 			return true;
 		}
+
 
 		// Records target history every frame and handles phase-specific facing
 		// The enemy stops tracking the player during Dash
@@ -396,7 +416,17 @@ namespace Game.AI.Sword {
 				return;
 			}
 
-			Vector3 aimPoint = usePreviousTargetPosition ? GetHistoricalAimPoint(owner.Target) : BuildAimPoint(owner.Target.position);
+			Vector3 aimPoint;
+			if (hasExternalPressureAimPoint) {
+				// Use the pressure prediction once, then clear it
+				// BuildAimPoint() should still apply the existing height/grounding logic
+				aimPoint = BuildAimPoint(externalPressureAimPoint);
+				hasExternalPressureAimPoint = false;
+			}
+			else {
+				// Fall back to the original lunge aim behaviour for non-pressure lunges
+				aimPoint = usePreviousTargetPosition ? GetHistoricalAimPoint(owner.Target) : BuildAimPoint(owner.Target.position);
+			}
 
 			// Undershoot the locked target point so the sword enemy threatens the player without landing perfectly on them
 			Vector3 flatToAim = aimPoint - transform.position;

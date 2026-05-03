@@ -1,8 +1,9 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.AI {
 	// Enemy-side hearing sensor
-	// Listens for AI noise events + stores suspicious sounds + shares them with the squad
+	// Listens for AI noise events + stores suspicious sounds and reports it to EnemyAwarenessHub
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(EnemyBlackboard))]
 	public sealed class EnemyHearingSensor : MonoBehaviour {
@@ -14,16 +15,21 @@ namespace Game.AI {
 		[Tooltip("How long this enemy keeps a noise as suspicious memory.")]
 		[SerializeField] private float suspicionMemoryDuration = 4.0f;
 
+		[Header("Awareness")]
+		[Tooltip("If true, heard player noise is reported to the enemy awareness hub for spawned enemies and LOS-loss movement.")]
+		[SerializeField] private bool reportNoiseToAwarenessHub = true;
+
 		[Header("Debug")]
+		[Tooltip("If true, draws hearing debug gizmos for this sensor.")]
 		[SerializeField] private bool drawDebug = false;
 
 		private EnemyBlackboard blackboard;
-		private EnemySquadMember squadMember;
+		private EnemyAwarenessReporter awarenessReporter;
 
 		private void Awake() {
 			// Cache nearby AI components once instead of searching every noise event
 			blackboard = GetComponent<EnemyBlackboard>();
-			squadMember = GetComponent<EnemySquadMember>();
+			awarenessReporter = GetComponent<EnemyAwarenessReporter>();
 		}
 
 		private void OnEnable() {
@@ -75,8 +81,11 @@ namespace Game.AI {
 			// Store the sound as a suspicious point for the BT to investigate
 			blackboard.SetSuspiciousNoise(aINoiseEvent.Position, effectiveRadius, aINoiseEvent.Kind, aINoiseEvent.Time, false);
 
-			// Share the heard noise with squadmates so they can react too
-			squadMember?.ReportHeardNoise(aINoiseEvent.Position, effectiveRadius, aINoiseEvent.Kind, aINoiseEvent.Time);
+			// Share the heard noise with the enemy awareness hub so others can react too
+			if (reportNoiseToAwarenessHub) {
+				float importance = Mathf.Clamp01(aINoiseEvent.Loudness);
+				awarenessReporter?.ReportNoiseHeard(aINoiseEvent.Position, importance);
+			}
 
 			// Optional debug line from this enemy to the noise source
 			if (drawDebug) {

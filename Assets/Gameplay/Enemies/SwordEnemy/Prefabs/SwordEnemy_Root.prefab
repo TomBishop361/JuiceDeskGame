@@ -1858,6 +1858,8 @@ GameObject:
   - component: {fileID: 8971865296739883366}
   - component: {fileID: 3916483571648877885}
   - component: {fileID: 4006545848731893060}
+  - component: {fileID: 7378980808233261917}
+  - component: {fileID: 5572920745596892322}
   - component: {fileID: 596960630571841368}
   - component: {fileID: 7971377067462787380}
   - component: {fileID: 2492967299845892110}
@@ -1877,6 +1879,7 @@ GameObject:
   - component: {fileID: 3566807572259405374}
   - component: {fileID: 3479799254228814965}
   - component: {fileID: -3342709311437937126}
+  - component: {fileID: 5939474946296732986}
   m_Layer: 8
   m_Name: SwordEnemy_Root
   m_TagString: Untagged
@@ -1975,6 +1978,50 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &7378980808233261917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c21fd45f9968a499b561cab7803895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyKind: 1
+  currentJob: 0
+  slotIndex: 0
+  slotCount: 1
+--- !u!114 &5572920745596892322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d14d8a32c54cb341905ef9499b79166, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destinationRefreshInterval: 0.12
+  sidePressureDistance: 3.25
+  cutOffExtraDistance: 1.5
+  navMeshSampleRadius: 2
+  localSpacingRadius: 1.6
+  localSpacingPush: 1
+  reachedKnownPositionDistance: 1.35
+  attackCheckInterval: 0.1
+  minVisibleTimeBeforeLunge: 0.25
+  startLungeFacingAngle: 48
+  lungePredictionRadius: 0.65
+  swordSwingTokenTime: 0.7
+  swordLungeTokenTime: 1.2
+  autoAcquireTarget: 1
+  driveAttacks: 1
+  driveMovement: 1
 --- !u!114 &596960630571841368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2181,6 +2228,7 @@ MonoBehaviour:
   hearingRadiusMultiplier: 1.25
   minimumLoudness: 0.05
   suspicionMemoryDuration: 5
+  reportNoiseToAwarenessHub: 1
   drawDebug: 0
 --- !u!114 &5383888986075633314
 MonoBehaviour:
@@ -2366,6 +2414,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 2
+--- !u!114 &5939474946296732986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightReportInterval: 0.15
+  reportSightOnlyWhenVisible: 1
 --- !u!1 &8174157530090233896
 GameObject:
   m_ObjectHideFlags: 0

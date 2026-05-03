@@ -178,6 +178,12 @@ namespace Game.AI.Sword {
 			return lungeAttack != null && lungeAttack.TryStartLunge(this, animator);
 		}
 
+		// Attempts to start a pressure lunge attack through the lunge module
+		// SwordPressureController computes predictedAimPoint using the player predictor + a small fairness/random offset
+		public bool TryStartPressureLunge(Vector3 predictedAimPoint) {
+			return lungeAttack != null && lungeAttack.TryStartLungeAt(this, animator, predictedAimPoint);
+		}
+
 		// Animation Events
 
 		// Called by animation at the end of an attack to release the shared attack lock

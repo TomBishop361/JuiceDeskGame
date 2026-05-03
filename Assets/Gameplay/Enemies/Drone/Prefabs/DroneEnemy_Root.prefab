@@ -532,6 +532,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3821767889359053709}
   - component: {fileID: 1769668467455147081}
+  - component: {fileID: 5876445949225704103}
+  - component: {fileID: 5154634994536064024}
   - component: {fileID: 3455065785669354331}
   - component: {fileID: 9217402146755338662}
   - component: {fileID: 6815171748467265589}
@@ -553,6 +555,7 @@ GameObject:
   - component: {fileID: 6835325938086037590}
   - component: {fileID: 4867790311118515996}
   - component: {fileID: 6549758123022710367}
+  - component: {fileID: 6482183119070689281}
   m_Layer: 8
   m_Name: DroneEnemy_Root
   m_TagString: Untagged
@@ -600,6 +603,45 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.35
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5876445949225704103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426209685012709754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c21fd45f9968a499b561cab7803895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyKind: 3
+  currentJob: 0
+  slotIndex: 0
+  slotCount: 1
+--- !u!114 &5154634994536064024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426209685012709754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b35f27ec245733745bbce2ee57f6cf19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orbitRadius: 7
+  backlineExtraDistance: 3
+  slotAngleOffsetDegrees: 25
+  slotRepositionJitter: 0.65
+  fireCheckInterval: 0.15
+  fireFacingAngle: 55
+  droneFireTokenTime: 0.75
+  requireLineOfSightToFire: 1
+  autoAcquireTarget: 1
+  driveAttacks: 1
+  driveMovement: 1
 --- !u!114 &3455065785669354331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,6 +941,7 @@ MonoBehaviour:
   hearingRadiusMultiplier: 1.35
   minimumLoudness: 0.05
   suspicionMemoryDuration: 4.5
+  reportNoiseToAwarenessHub: 1
   drawDebug: 0
 --- !u!114 &8722354882602728551
 MonoBehaviour:
@@ -1084,6 +1127,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 1
+--- !u!114 &6482183119070689281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426209685012709754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightReportInterval: 0.15
+  reportSightOnlyWhenVisible: 1
 --- !u!1 &8798408253545502729
 GameObject:
   m_ObjectHideFlags: 0

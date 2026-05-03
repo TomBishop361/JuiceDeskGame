@@ -2712,6 +2712,7 @@ GameObject:
   - component: {fileID: 8303638504209387791}
   - component: {fileID: 3088120483906418636}
   - component: {fileID: 7128203245387133486}
+  - component: {fileID: 1311496588835139791}
   - component: {fileID: 5054759390921801900}
   - component: {fileID: 5447062614033670975}
   - component: {fileID: 8330575932952866227}
@@ -2855,6 +2856,7 @@ MonoBehaviour:
   onRail: 0
   railGrindTime: 1
   railBoost: 0
+  railGrindNoiseInterval: 0.3
   grindSpeed: 12
   heightOffset: 1
   currentRailScript: {fileID: 0}
@@ -2888,7 +2890,7 @@ MonoBehaviour:
   PlayerRoot: {fileID: 2597609611847294696}
   rb: {fileID: 8303638504209387791}
   state: 0
---- !u!114 &5054759390921801900
+--- !u!114 &1311496588835139791
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2896,6 +2898,26 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7743499516999693894}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084fdd4367e17a7429a6f8cc94434ee3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shortLeadTime: 0.25
+  mediumLeadTime: 0.65
+  longLeadTime: 1.1
+  velocitySmoothing: 14
+  maxPredictionSpeed: 24
+  verticalPredictionScale: 0.35
+  useTransformForwardWhenSlow: 1
+  slowSpeedThreshold: 0.75
+--- !u!114 &5054759390921801900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a483c1acd21fe941bb7eb65fec84437, type: 3}
   m_Name: 
@@ -2953,6 +2975,7 @@ MonoBehaviour:
   maxSlideTime: 0.75
   SlideDownforce: 2
   slideForce: 35
+  slideNoiseInterval: 0.35
   slideYScale: 0.5
 --- !u!114 &1127249066402206109
 MonoBehaviour:
@@ -2981,6 +3004,7 @@ MonoBehaviour:
   wallRunTime: 4
   SameWallTime: 5
   LastWall: {fileID: 0}
+  wallRunNoiseInterval: 0.4
   wallJumpUpForce: 40
   wallJumpSideForce: 20
   exitWallTime: 0.5
@@ -3068,6 +3092,7 @@ MonoBehaviour:
   CoolDownRate: 10
   StartNaturalCoolDownTime: 1
   bulletPoolManager: {fileID: 0}
+  weaponNoiseInterval: 0.15
 --- !u!114 &2912212841907514719
 MonoBehaviour:
   m_ObjectHideFlags: 0
