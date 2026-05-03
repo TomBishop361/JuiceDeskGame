@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+// DEPRECATED
+
+
 namespace Game.AI {
 	// Fair route prediction helper
 	// Uses only observed/shared player memory + reaction delay + cooldowns +designer-placed TacticalAnchor points placed in the scene

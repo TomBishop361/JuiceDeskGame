@@ -1,5 +1,9 @@
 using UnityEngine;
 
+// DEPRECATED
+
+
+
 // TODO: TRANSFER MOST OF THIS INTO A BASE PROJECTILE CLASS - which can be inherited from to create specifc projectile functionality for different enemy types / player etc
 
 namespace Game.Combat.Projectiles {

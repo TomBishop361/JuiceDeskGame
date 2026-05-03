@@ -1,5 +1,9 @@
 using UnityEngine;
 
+
+// DEPRECATED
+
+
 namespace Game.AI {
 	// Connects one enemy to a squad director
 	// This lets the enemy share awareness and receive a tactical role

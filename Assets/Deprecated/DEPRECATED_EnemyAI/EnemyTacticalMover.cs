@@ -1,5 +1,8 @@
 using UnityEngine;
 
+// DEPRECATED
+
+
 namespace Game.AI {
     // Shared movement adapter used by tactical BT nodes
     // Ground enemies use GroundEnemyMotor/NavMesh

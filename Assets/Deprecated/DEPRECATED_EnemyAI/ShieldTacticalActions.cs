@@ -2,6 +2,10 @@ using Game.AI.Shield;
 using Unity.Behavior;
 using UnityEngine;
 
+
+// DEPRECATED
+
+
 namespace Game.AI.Behavior.Shield {
 	// NOTE: IDs must be globally unique and should NEVER change once used in graphs.
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.

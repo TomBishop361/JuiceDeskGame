@@ -1,6 +1,10 @@
 using Unity.Behavior;
 using UnityEngine;
 
+
+// DEPRECATED
+
+
 // TacticalSharedConditions.cs
 namespace Game.AI.Behavior.Shared {
 	// NOTE: IDs must be globally unique and should NEVER change once used in graphs.

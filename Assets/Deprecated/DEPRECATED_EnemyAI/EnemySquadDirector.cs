@@ -4,6 +4,10 @@ using Game.AI.Sword;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// DEPRECATED
+
+
 namespace Game.AI {
 	// Scene-level coordinator for one enemy squad
 	// It does not move or attack directly but instead assigns tactical roles +

@@ -1858,11 +1858,8 @@ GameObject:
   - component: {fileID: 8971865296739883366}
   - component: {fileID: 3916483571648877885}
   - component: {fileID: 4006545848731893060}
-  - component: {fileID: 4260311001460574981}
   - component: {fileID: 596960630571841368}
   - component: {fileID: 7971377067462787380}
-  - component: {fileID: 7310344175641646870}
-  - component: {fileID: 9078762917954121944}
   - component: {fileID: 2492967299845892110}
   - component: {fileID: 5171767187067607998}
   - component: {fileID: 6102671430866734951}
@@ -1978,20 +1975,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &4260311001460574981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7782458668010283615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c50d660590609944a97c5c28b6651142, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  squadId: Default
-  director: {fileID: 0}
 --- !u!114 &596960630571841368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2037,51 +2020,6 @@ MonoBehaviour:
   toggleSmoothRotation: 0
   rotationSpeed: 720
   rotationSmoothing: 20
---- !u!114 &7310344175641646870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7782458668010283615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bef76ed69fd45dc4da283c2e23beefc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  groundMotor: {fileID: 7971377067462787380}
-  flightMotor: {fileID: 0}
-  arrivalDistance: 1.25
-  faceFocusWhileMoving: 1
---- !u!114 &9078762917954121944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7782458668010283615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8772478debc46a4d904a0812ea622b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSightingAge: 3
-  reactionDelay: 0.35
-  minimumVelocityForIntercept: 2
-  interceptCooldown: 4
-  predictionTime: 1.15
-  uncertaintyGrowthPerSecond: 1.25
-  maxUncertaintyRadius: 4
-  maxAnchorDistanceFromPrediction: 9
-  minAnchorDistanceFromEnemy: 2.5
-  interceptorTraversalAnchorBias: 3
-  flankerSideLaneBias: 2.5
-  suppressorCoverBias: 2
-  enemyDistanceScoreWeight: 0.15
-  validateGroundNavMesh: 1
-  navMeshSampleRadius: 2
-  fallbackFlankDistance: 3.5
-  fallbackAnchorBackoff: 3.5
 --- !u!114 &2492967299845892110
 MonoBehaviour:
   m_ObjectHideFlags: 0

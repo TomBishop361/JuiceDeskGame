@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// DEPRECATED
+
+
 namespace Game.AI {
 	// Place these around the level at tactical points like doors, ramps, grapple landing zones, wallrun exits,
 	// rail exits, chokepoints and arena side lanes
