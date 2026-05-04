@@ -1,9 +1,13 @@
 using Game.AI.Shield;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace Game.AI {
-	// Code-driven movement/attack pressure for the shield enemy (replaced BT movement/attack actions and conditions)
+	// Code-driven movement/attack pressure for the shield enemy
+	// This pressure controller replaces BT movement/attack actions and conditions for shield enemies
+	// Movement can use live player prediction while LOS exists, then falls back to remembered
+	// awareness positions so the shield enemy can continue pathing around corners
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(ShieldEnemy))]
 	[RequireComponent(typeof(GroundEnemyMotor))]
@@ -35,10 +39,17 @@ namespace Game.AI {
 		private ShieldEnemy shield;
 		private GroundEnemyMotor groundMotor;
 		private EnemyPressureAgent pressureAgent;
+
+		// Cached active pressure director
+		// This can change at runtime, so Update() refreshes it from the singleton
 		private CombatPressureDirector director;
+
+		// Destination refresh state
 		private float nextDestinationRefreshTime = -Mathf.Infinity;
 		private Vector3 currentDestination;
 		private bool hasDestination;
+
+		// Temporary fallback destination used when this enemy spawns after the player was already spotted
 		private bool hasSpawnAwarenessDestination;
 		private Vector3 spawnAwarenessDestination;
 
@@ -48,7 +59,8 @@ namespace Game.AI {
 			pressureAgent = GetComponent<EnemyPressureAgent>();
 		}
 
-		// On spawn/enable, inherit recent player awareness so newly spawned enemies do not stand idle
+		// Newly spawned/enabled enemies inherit recent player awareness so they can immediately
+		// path toward the known fight location instead of waiting idle for direct line of sight
 		private void OnEnable() {
 			EnemyAwarenessHub hub = EnemyAwarenessHub.Active;
 			if (hub != null && hub.TryGetKnownPositionForSpawn(out Vector3 position)) {
@@ -58,6 +70,7 @@ namespace Game.AI {
 		}
 
 		private void Update() {
+			// The active pressure director may be created/destroyed with encounter state, so refresh it
 			director = CombatPressureDirector.Active;
 
 			if (shield == null || groundMotor == null || pressureAgent == null) {
@@ -77,6 +90,7 @@ namespace Game.AI {
 			bool hasTarget = shield.HasTarget && shield.Target != null;
 			bool hasAwareness = EnemyAwarenessHub.Active != null && EnemyAwarenessHub.Active.HasKnownPosition;
 
+			// With no target and no known player position, there is nothing meaningful to chase or suppress
 			if (hasTarget == false && hasAwareness == false && hasSpawnAwarenessDestination == false) {
 				shield.StopMinigunFiring();
 				groundMotor.Stop();
@@ -99,30 +113,37 @@ namespace Game.AI {
 				return;
 			}
 
+			// Do not fire minigun on top of other attack/exposure states
 			if (shield.IsAttacking || shield.IsExposed) {
 				shield.StopMinigunFiring();
 				return;
 			}
 
+			// Prefer a slam when the player is close enough and the slam cooldown is ready
+			// Tokens prevent too many shield enemies from using high-impact attacks at once
 			if (shield.InSlamRange && shield.CanSlam) {
 				if (pressureAgent.TryRequestAttackToken(PressureAttackTokenType.ShieldSlam, slamTokenTime)) {
 					if (shield.TryStartSlam()) {
 						return;
 					}
-
+					// Return the token if the slam did not actually begin
 					pressureAgent.ReleaseAttackToken(PressureAttackTokenType.ShieldSlam);
 				}
 			}
 
+			// If the shield cannot slam, maintain ranged suppression while the minigun is valid
+			// The minigun token is refreshed repeatedly so ownership remains while firing
 			if (shield.InFireRange && shield.CanFireMinigun) {
 				if (pressureAgent.TryRequestAttackToken(PressureAttackTokenType.ShieldMinigun, minigunTokenRefreshTime)) {
 					shield.TryStartMinigun();
 				}
 				else {
+					// Stop if another enemy currently owns the minigun pressure token
 					shield.StopMinigunFiring();
 				}
 			}
 			else {
+				// Stop firing as soon as range/cooldown conditions are no longer valid
 				shield.StopMinigunFiring();
 			}
 		}
@@ -135,12 +156,14 @@ namespace Game.AI {
 				return;
 			}
 
+			// While actively suppressing with LOS, hold position and keep facing the player
 			if (shield.HasTarget && shield.HasLineOfSight && shield.IsFiringMinigun) {
 				groundMotor.Stop();
 				shield.FaceTarget(shield.Target.position);
 				return;
 			}
 
+			// Rebuild destinations at a fixed interval to avoid random frame-by-frame NavMesh updates
 			if (Time.time >= nextDestinationRefreshTime || hasDestination == false) {
 				currentDestination = BuildAdvanceDestination();
 				TrySampleNavMesh(currentDestination, out currentDestination);
@@ -150,19 +173,27 @@ namespace Game.AI {
 
 			groundMotor.Chase(currentDestination);
 			shield.FaceTarget(GetFacePoint());
+
+			// Shields stay raised while advancing so their movement reads as defensive pressure
 			shield.SetShieldRaised(true);
 		}
 
 		// Builds the shield destination from live prediction when visible, otherwise from last known awareness
+		// This lets shield enemies advance on the current target while visible and
+		// continue pathing toward the last known fight location after sight is broken
 		private Vector3 BuildAdvanceDestination() {
 			PlayerMotionPredictor predictor = director != null ? director.PlayerPredictor : PlayerMotionPredictor.Active;
+			EnemyAwarenessHub awareness = EnemyAwarenessHub.Active;
+
 			bool canUseLivePrediction = shield.HasTarget && shield.Target != null && shield.HasLineOfSight && predictor != null;
 
 			if (canUseLivePrediction) {
+				// Live sight overrides spawn awareness because the current target state is fresher
 				hasSpawnAwarenessDestination = false;
 				return predictor.ShortFuturePosition;
 			}
 
+			// Use the one-time spawn awareness destination until it is reached, then clear it
 			if (hasSpawnAwarenessDestination) {
 				if (Vector3.Distance(transform.position, spawnAwarenessDestination) > reachedKnownPositionDistance) {
 					return spawnAwarenessDestination;
@@ -171,14 +202,17 @@ namespace Game.AI {
 				hasSpawnAwarenessDestination = false;
 			}
 
-			if (EnemyAwarenessHub.Active != null && EnemyAwarenessHub.Active.TryGetKnownPosition(out Vector3 knownPosition)) {
+			// Fall back to global awareness, this is usually the last known player position reported by enemies
+			if (awareness != null && awareness.TryGetKnownPosition(out Vector3 knownPosition)) {
 				return knownPosition;
 			}
 
+			// Final fallback keeps the pressure controller safe if awareness disappears mid-frame
 			return shield.Target != null ? shield.Target.position : transform.position;
 		}
 
 		private Vector3 GetFacePoint() {
+			// Prefer facing toward the same predictive/awareness point the shield is chasing
 			PlayerMotionPredictor predictor = director != null ? director.PlayerPredictor : PlayerMotionPredictor.Active;
 			if (shield.HasTarget && shield.Target != null && shield.HasLineOfSight && predictor != null) {
 				return predictor.ShortFuturePosition;
@@ -202,6 +236,7 @@ namespace Game.AI {
 				return true;
 			}
 
+			// If sampling fails, keep the unsampled destination rather than discarding movement entirely
 			sampled = desired;
 			return false;
 		}

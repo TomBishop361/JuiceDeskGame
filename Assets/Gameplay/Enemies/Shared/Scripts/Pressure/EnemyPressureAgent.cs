@@ -4,6 +4,8 @@ using Game.AI.Sword;
 using UnityEngine;
 
 namespace Game.AI {
+	// Role assigned to an enemy by the CombatPressureDirector
+	// Pressure Controllers use this value to decide how aggressively or indirectly they should pressure the player
 	public enum EnemyPressureJob {
 		None,
 		DirectPressure,
@@ -13,6 +15,8 @@ namespace Game.AI {
 		BacklineHarass
 	}
 
+	// Enemy category used by the pressure system
+	// Auto lets the component detect the category from the enemy pressure controller attached to the same GameObject
 	public enum EnemyPressureKind {
 		Auto,
 		Sword,
@@ -20,6 +24,8 @@ namespace Game.AI {
 		Drone
 	}
 
+	// Attack token categories used to limit simultaneous high-pressure attacks
+	// The director tracks each token type separately so, for example, drone fire and sword swings can have different limits
 	public enum PressureAttackTokenType {
 		SwordSwing,
 		SwordLunge,
@@ -28,7 +34,7 @@ namespace Game.AI {
 		ShieldSlam
 	}
 
-	//	Registration/assignment component
+	//	Registration/assignment component for enemies that participate in the pressure system
 	// Add this to Sword + Shield + Drone prefabs
 	// This component is the bridge between an enemy prefab and the pressure director
 	// It stores the current job/slot so enemy-specific controllers stay simple
@@ -49,10 +55,15 @@ namespace Game.AI {
 		private EnemyAgentBase enemy;
 		private CombatPressureDirector director;
 
+		// Resolved enemy kind
 		public EnemyPressureKind Kind => enemyKind == EnemyPressureKind.Auto ? DetectKind() : enemyKind;
+
+		// Current pressure assignment data read by enemy pressure controllers
 		public EnemyPressureJob CurrentJob => currentJob;
 		public int SlotIndex => slotIndex;
 		public int SlotCount => Mathf.Max(1, slotCount);
+
+		// Accessors for the underlying enemy state
 		public EnemyAgentBase Enemy => enemy;
 		public bool IsAliveAndEnabled => isActiveAndEnabled && enemy != null && enemy.IsDead == false;
 		public bool HasTarget => enemy != null && enemy.HasTarget;
@@ -60,26 +71,32 @@ namespace Game.AI {
 		public float DistanceToTarget => enemy != null ? enemy.DistanceToTarget : Mathf.Infinity;
 
 		private void Awake() {
+			// Cache the base enemy component so the director does not need to know about each specific enemy type
 			enemy = GetComponent<EnemyAgentBase>();
+
+			// Lock in the detected type once at startup when the inspector is set to Auto
 			if (enemyKind == EnemyPressureKind.Auto) {
 				enemyKind = DetectKind();
 			}
 		}
 
-		// On spawn/enable, inherit recent player awareness so newly spawned enemies do not stand idle
 		private void OnEnable() {
+			// Find the active pressure director and register this enemy when it spawns or becomes enabled.
 			director = CombatPressureDirector.Active;
 			if (director == null) {
-				director = Object.FindFirstObjectByType<CombatPressureDirector>();
+				director = FindFirstObjectByType<CombatPressureDirector>();
 			}
 
 			director?.Register(this);
 		}
 
 		private void OnDisable() {
+			// Unregister so disabled or destroyed enemies stop receiving jobs and release any held tokens
 			director?.Unregister(this);
 		}
 
+		// Store the role and slot assigned by the director
+		// Clamp values so pressure controllers never see invalid slot data
 		public void SetAssignment(EnemyPressureJob job, int index, int count) {
 			currentJob = job;
 			slotIndex = Mathf.Max(0, index);
@@ -87,18 +104,21 @@ namespace Game.AI {
 		}
 
 		// Token gate used by enemies before starting an attack
-		// This prevents dogpiling
+		// This prevents dogpiling by asking the director whether another attack of this type is allowed right now
 		public bool TryRequestAttackToken(PressureAttackTokenType tokenType, float duration) {
+			// Prefer the cached director but fall back to the static active director if this agent was enabled before the director existed
 			CombatPressureDirector activeDirector = director != null ? director : CombatPressureDirector.Active;
 			return activeDirector != null && activeDirector.TryRequestAttackToken(this, tokenType, duration);
 		}
 
 		public void ReleaseAttackToken(PressureAttackTokenType tokenType) {
+			// Release a token when the attack ends early so another enemy can use that attack slot
 			CombatPressureDirector activeDirector = director != null ? director : CombatPressureDirector.Active;
 			activeDirector?.ReleaseAttackToken(this, tokenType);
 		}
 
 		private EnemyPressureKind DetectKind() {
+			// Detect the pressure kind from the pressure controller attached to this prefab
 			if (GetComponent<SwordEnemy>() != null) {
 				return EnemyPressureKind.Sword;
 			}
@@ -111,6 +131,8 @@ namespace Game.AI {
 				return EnemyPressureKind.Drone;
 			}
 
+			// Return Auto if no known enemy pressure controller is found
+			// This makes missing setups more obvious
 			return EnemyPressureKind.Auto;
 		}
 	}
