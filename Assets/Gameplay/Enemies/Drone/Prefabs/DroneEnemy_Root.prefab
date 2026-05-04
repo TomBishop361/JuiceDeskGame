@@ -543,6 +543,7 @@ GameObject:
   - component: {fileID: 2716789458970548036}
   - component: {fileID: 4572627965412102517}
   - component: {fileID: 6482183119070689281}
+  - component: {fileID: 2937022719101833889}
   - component: {fileID: 6013245490068612030}
   - component: {fileID: 7282551018810303331}
   - component: {fileID: 6711099003469655626}
@@ -889,8 +890,6 @@ MonoBehaviour:
   targetMemoryDuration: 15
   losSensor: {fileID: 6013245490068612030}
   allowTargetWithoutSensor: 1
-  shareSightingsWithSquad: 1
-  sightingShareInterval: 0.25
 --- !u!114 &6482183119070689281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -905,6 +904,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sightReportInterval: 0.15
   reportSightOnlyWhenVisible: 1
+--- !u!114 &2937022719101833889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426209685012709754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f69b0f485c535043ad3cd4f6541d03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTransform: {fileID: 3821767889359053709}
+  markerOffset: {x: 0, y: 1.4, z: 0}
+  visibilityRenderers:
+  - {fileID: 633724087821238401}
+  - {fileID: 1131678334439044975}
+  - {fileID: 1835979622684491436}
+  - {fileID: 4880107191298233023}
+  - {fileID: 4676173173778977428}
+  - {fileID: 2535189206424342041}
+  - {fileID: 347479918573195424}
+  - {fileID: 8685290070591294296}
+  - {fileID: 2118326141117137233}
+  fallbackLocalBounds:
+    m_Center: {x: 0, y: 1, z: 0}
+    m_Extent: {x: 0.5, y: 1, z: 0.5}
+  autoFindRevealVisuals: 1
+  revealVisualBehaviours: []
 --- !u!114 &6013245490068612030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1059,22 +1087,11 @@ MonoBehaviour:
   <LastSeenTime>k__BackingField: -Infinity
   <LastSeenPosition>k__BackingField: {x: 0, y: 0, z: 0}
   <HasLastSeenPosition>k__BackingField: 0
-  <ObservedTargetVelocity>k__BackingField: {x: 0, y: 0, z: 0}
-  <LastObservedTargetPosition>k__BackingField: {x: 0, y: 0, z: 0}
-  <HasObservedTargetPosition>k__BackingField: 0
-  <LastObservedTargetTime>k__BackingField: -Infinity
-  <LastSharedAwarenessTime>k__BackingField: -Infinity
   <SuspiciousNoisePosition>k__BackingField: {x: 0, y: 0, z: 0}
   <HasSuspiciousNoise>k__BackingField: 0
   <LastHeardNoiseTime>k__BackingField: -Infinity
   <LastHeardNoiseRadius>k__BackingField: 0
   <LastHeardNoiseKind>k__BackingField: 0
-  <LastNoiseWasShared>k__BackingField: 0
-  <TacticalRole>k__BackingField: 0
-  <RoleAssignedTime>k__BackingField: -Infinity
-  <TacticalDestination>k__BackingField: {x: 0, y: 0, z: 0}
-  <HasTacticalDestination>k__BackingField: 0
-  <LastInterceptTime>k__BackingField: -Infinity
   <IsDead>k__BackingField: 0
   <IsDisabled>k__BackingField: 0
 --- !u!114 &6835325938086037590
@@ -1284,14 +1301,59 @@ PrefabInstance:
       addedObject: {fileID: 6791766650660328431}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+--- !u!23 &347479918573195424 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3272174453064110132, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &633724087821238401 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6813921212374450157, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1131678334439044975 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2742658097081432061, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1835979622684491436 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3513322058998840896, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2118326141117137233 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3809667155623641539, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2535189206424342041 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8460667932051091829, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4676173173778977428 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7592643224382149128, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4837338207519690221 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1541696680867443329, guid: 68040530ca8824347bd2f585025d2198, type: 3}
   m_PrefabInstance: {fileID: 6216262224787439468}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &4880107191298233023 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1584429432503496147, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5894685192833931399 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+  m_PrefabInstance: {fileID: 6216262224787439468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8685290070591294296 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5851089869426641868, guid: 68040530ca8824347bd2f585025d2198, type: 3}
   m_PrefabInstance: {fileID: 6216262224787439468}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7636264929979400044

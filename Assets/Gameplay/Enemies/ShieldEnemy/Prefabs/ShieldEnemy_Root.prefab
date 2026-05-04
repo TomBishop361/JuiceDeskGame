@@ -1578,6 +1578,7 @@ GameObject:
   - component: {fileID: 7334690218744183616}
   - component: {fileID: 1464211298414496071}
   - component: {fileID: 5518201892295104703}
+  - component: {fileID: 5066216934856004940}
   - component: {fileID: 336471975230357279}
   - component: {fileID: 23391880925538615}
   - component: {fileID: 5682261769765402009}
@@ -1923,8 +1924,6 @@ MonoBehaviour:
   targetMemoryDuration: 15
   losSensor: {fileID: 336471975230357279}
   allowTargetWithoutSensor: 1
-  shareSightingsWithSquad: 1
-  sightingShareInterval: 0.25
 --- !u!114 &5518201892295104703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1939,6 +1938,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sightReportInterval: 0.15
   reportSightOnlyWhenVisible: 1
+--- !u!114 &5066216934856004940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8618922778442928813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f69b0f485c535043ad3cd4f6541d03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTransform: {fileID: 5254608935058430753}
+  markerOffset: {x: 0, y: 1.4, z: 0}
+  visibilityRenderers:
+  - {fileID: 4791244671514339268}
+  - {fileID: 6865189856164669908}
+  - {fileID: 106190004326294810}
+  - {fileID: 6139896004810757304}
+  - {fileID: 1562743717665669931}
+  - {fileID: 8807493490366487733}
+  - {fileID: 3449389475543042956}
+  - {fileID: 8442391322799226492}
+  - {fileID: 2000184882922259854}
+  - {fileID: 3189822230520107782}
+  - {fileID: 4339262081285134730}
+  - {fileID: 7100330908553871184}
+  - {fileID: 4151854551548239079}
+  fallbackLocalBounds:
+    m_Center: {x: 0, y: 1, z: 0}
+    m_Extent: {x: 0.5, y: 1, z: 0.5}
+  autoFindRevealVisuals: 1
+  revealVisualBehaviours: []
 --- !u!114 &336471975230357279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2105,22 +2137,11 @@ MonoBehaviour:
   <LastSeenTime>k__BackingField: -Infinity
   <LastSeenPosition>k__BackingField: {x: 0, y: 0, z: 0}
   <HasLastSeenPosition>k__BackingField: 0
-  <ObservedTargetVelocity>k__BackingField: {x: 0, y: 0, z: 0}
-  <LastObservedTargetPosition>k__BackingField: {x: 0, y: 0, z: 0}
-  <HasObservedTargetPosition>k__BackingField: 0
-  <LastObservedTargetTime>k__BackingField: -Infinity
-  <LastSharedAwarenessTime>k__BackingField: -Infinity
   <SuspiciousNoisePosition>k__BackingField: {x: 0, y: 0, z: 0}
   <HasSuspiciousNoise>k__BackingField: 0
   <LastHeardNoiseTime>k__BackingField: -Infinity
   <LastHeardNoiseRadius>k__BackingField: 0
   <LastHeardNoiseKind>k__BackingField: 0
-  <LastNoiseWasShared>k__BackingField: 0
-  <TacticalRole>k__BackingField: 0
-  <RoleAssignedTime>k__BackingField: -Infinity
-  <TacticalDestination>k__BackingField: {x: 0, y: 0, z: 0}
-  <HasTacticalDestination>k__BackingField: 0
-  <LastInterceptTime>k__BackingField: -Infinity
   <IsDead>k__BackingField: 0
   <IsDisabled>k__BackingField: 0
 --- !u!114 &7088472956447957708
@@ -2414,6 +2435,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
+--- !u!23 &4791244671514339268 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}
+  m_PrefabInstance: {fileID: 6177951349175155520}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5924141679832964267 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0f2c05283239a3d4cb4bc86d6cb881da, type: 3}

@@ -1867,6 +1867,7 @@ GameObject:
   - component: {fileID: 6102671430866734951}
   - component: {fileID: 8380730772912573954}
   - component: {fileID: 5939474946296732986}
+  - component: {fileID: 3509087621951527485}
   - component: {fileID: 1847690398170347147}
   - component: {fileID: 1996718449401447096}
   - component: {fileID: 7113598184507878919}
@@ -2176,8 +2177,6 @@ MonoBehaviour:
   targetMemoryDuration: 15
   losSensor: {fileID: 1847690398170347147}
   allowTargetWithoutSensor: 1
-  shareSightingsWithSquad: 1
-  sightingShareInterval: 0.25
 --- !u!114 &5939474946296732986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2192,6 +2191,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sightReportInterval: 0.15
   reportSightOnlyWhenVisible: 1
+--- !u!114 &3509087621951527485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f69b0f485c535043ad3cd4f6541d03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTransform: {fileID: 6149216680073435762}
+  markerOffset: {x: 0, y: 1.4, z: 0}
+  visibilityRenderers:
+  - {fileID: 768027077282367021}
+  - {fileID: 5665426263526964611}
+  - {fileID: 5882997727852247888}
+  - {fileID: 8570947333299095648}
+  - {fileID: 3144207778595499413}
+  - {fileID: 2252954620753872357}
+  - {fileID: 2031797523483698302}
+  - {fileID: 1151576185418030029}
+  - {fileID: 4371479035518543900}
+  fallbackLocalBounds:
+    m_Center: {x: 0, y: 1, z: 0}
+    m_Extent: {x: 0.5, y: 1, z: 0.5}
+  autoFindRevealVisuals: 1
+  revealVisualBehaviours: []
 --- !u!114 &1847690398170347147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2346,22 +2374,11 @@ MonoBehaviour:
   <LastSeenTime>k__BackingField: -Infinity
   <LastSeenPosition>k__BackingField: {x: 0, y: 0, z: 0}
   <HasLastSeenPosition>k__BackingField: 0
-  <ObservedTargetVelocity>k__BackingField: {x: 0, y: 0, z: 0}
-  <LastObservedTargetPosition>k__BackingField: {x: 0, y: 0, z: 0}
-  <HasObservedTargetPosition>k__BackingField: 0
-  <LastObservedTargetTime>k__BackingField: -Infinity
-  <LastSharedAwarenessTime>k__BackingField: -Infinity
   <SuspiciousNoisePosition>k__BackingField: {x: 0, y: 0, z: 0}
   <HasSuspiciousNoise>k__BackingField: 0
   <LastHeardNoiseTime>k__BackingField: -Infinity
   <LastHeardNoiseRadius>k__BackingField: 0
   <LastHeardNoiseKind>k__BackingField: 0
-  <LastNoiseWasShared>k__BackingField: 0
-  <TacticalRole>k__BackingField: 0
-  <RoleAssignedTime>k__BackingField: -Infinity
-  <TacticalDestination>k__BackingField: {x: 0, y: 0, z: 0}
-  <HasTacticalDestination>k__BackingField: 0
-  <LastInterceptTime>k__BackingField: -Infinity
   <IsDead>k__BackingField: 0
   <IsDisabled>k__BackingField: 0
 --- !u!114 &3566807572259405374
