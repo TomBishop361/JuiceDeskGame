@@ -71,7 +71,7 @@ namespace Game.AI.Behavior.Shared {
 		public override bool IsTrue() {
 			EnemyBlackboard blackboard = GameObject.GetComponent<EnemyBlackboard>();
 			EnemyTacticalRole expectedRole = Role != null ? Role.Value : EnemyTacticalRole.None;
-			return blackboard != null && blackboard.TacticalRole == expectedRole;
+			return blackboard != null /*&& blackboard.TacticalRole == expectedRole*/;
 		}
 	}
 
@@ -79,15 +79,15 @@ namespace Game.AI.Behavior.Shared {
 	public sealed class EnemyHasTacticalDestination : Condition {
 		public override bool IsTrue() {
 			EnemyBlackboard blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			return blackboard != null && blackboard.HasTacticalDestination;
+			return blackboard != null /*&& blackboard.HasTacticalDestination*/;
 		}
 	}
 
 	[Condition(name: "Enemy: Can Attempt Intercept", description: "True if route prediction fairness gates allow this enemy to intercept.", story: "Enemy can attempt intercept", category: "Enemy/Shared/Conditions/Tactics", id: "enemy.condition.tactics.can_intercept")]
 	public sealed class EnemyCanAttemptIntercept : Condition {
 		public override bool IsTrue() {
-			EnemyRoutePredictor predictor = GameObject.GetComponent<EnemyRoutePredictor>();
-			return predictor != null && predictor.CanAttemptIntercept();
+			//EnemyRoutePredictor predictor = GameObject.GetComponent<EnemyRoutePredictor>();
+			return true/*predictor != null && predictor.CanAttemptIntercept()*/;
 		}
 	}
 

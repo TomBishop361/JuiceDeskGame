@@ -22,16 +22,16 @@ namespace Game.AI {
 		[field: SerializeField] public Vector3 LastSeenPosition { get; private set; }
 		[Tooltip("True when a valid last-seen position is available for investigate/search movement.")]
 		[field: SerializeField] public bool HasLastSeenPosition { get; private set; }
-		[Tooltip("Estimated target velocity from recent confirmed/shared sightings.")]
-		[field: SerializeField] public Vector3 ObservedTargetVelocity { get; private set; }
-		[Tooltip("Last observed position used for velocity estimation.")]
-		[field: SerializeField] public Vector3 LastObservedTargetPosition { get; private set; }
-		[Tooltip("True after at least one observed position has been recorded.")]
-		[field: SerializeField] public bool HasObservedTargetPosition { get; private set; }
-		[Tooltip("Last time the observed target position was updated.")]
-		[field: SerializeField] public float LastObservedTargetTime { get; private set; } = -Mathf.Infinity;
-		[Tooltip("Last time this enemy received shared visual awareness from squadmates.")]
-		[field: SerializeField] public float LastSharedAwarenessTime { get; private set; } = -Mathf.Infinity;
+		//[Tooltip("Estimated target velocity from recent confirmed/shared sightings.")]
+		//[field: SerializeField] public Vector3 ObservedTargetVelocity { get; private set; }
+		//[Tooltip("Last observed position used for velocity estimation.")]
+		//[field: SerializeField] public Vector3 LastObservedTargetPosition { get; private set; }
+		//[Tooltip("True after at least one observed position has been recorded.")]
+		//[field: SerializeField] public bool HasObservedTargetPosition { get; private set; }
+		//[Tooltip("Last time the observed target position was updated.")]
+		//[field: SerializeField] public float LastObservedTargetTime { get; private set; } = -Mathf.Infinity;
+		//[Tooltip("Last time this enemy received shared visual awareness from squadmates.")]
+		//[field: SerializeField] public float LastSharedAwarenessTime { get; private set; } = -Mathf.Infinity;
 
 		[Header("Suspicion / Hearing")]
 		[Tooltip("Last suspicious noise position heard by this enemy or shared by a squadmate.")]
@@ -44,20 +44,20 @@ namespace Game.AI {
 		[field: SerializeField] public float LastHeardNoiseRadius { get; private set; }
 		[Tooltip("Kind of the latest heard/shared noise.")]
 		[field: SerializeField] public AINoiseKind LastHeardNoiseKind { get; private set; }
-		[Tooltip("True if the latest suspicious noise came from a squadmate instead of this enemy's own hearing sensor.")]
-		[field: SerializeField] public bool LastNoiseWasShared { get; private set; }
+		//[Tooltip("True if the latest suspicious noise came from a squadmate instead of this enemy's own hearing sensor.")]
+		//[field: SerializeField] public bool LastNoiseWasShared { get; private set; }
 
-		[Header("Tactical Coordination")]
-		[Tooltip("Current role assigned by the squad director.")]
-		[field: SerializeField] public EnemyTacticalRole TacticalRole { get; private set; } = EnemyTacticalRole.None;
-		[Tooltip("Time when the current role was assigned.")]
-		[field: SerializeField] public float RoleAssignedTime { get; private set; } = -Mathf.Infinity;
-		[Tooltip("Current tactical movement destination chosen by BT actions.")]
-		[field: SerializeField] public Vector3 TacticalDestination { get; private set; }
-		[Tooltip("True when a tactical movement destination is valid.")]
-		[field: SerializeField] public bool HasTacticalDestination { get; private set; }
-		[Tooltip("Last time this enemy committed to an intercept destination. Used as an anti-psychic fairness cooldown.")]
-		[field: SerializeField] public float LastInterceptTime { get; private set; } = -Mathf.Infinity;
+		//[Header("Tactical Coordination")]
+		//[Tooltip("Current role assigned by the squad director.")]
+		//[field: SerializeField] public EnemyTacticalRole TacticalRole { get; private set; } = EnemyTacticalRole.None;
+		//[Tooltip("Time when the current role was assigned.")]
+		//[field: SerializeField] public float RoleAssignedTime { get; private set; } = -Mathf.Infinity;
+		//[Tooltip("Current tactical movement destination chosen by BT actions.")]
+		//[field: SerializeField] public Vector3 TacticalDestination { get; private set; }
+		//[Tooltip("True when a tactical movement destination is valid.")]
+		//[field: SerializeField] public bool HasTacticalDestination { get; private set; }
+		//[Tooltip("Last time this enemy committed to an intercept destination. Used as an anti-psychic fairness cooldown.")]
+		//[field: SerializeField] public float LastInterceptTime { get; private set; } = -Mathf.Infinity;
 
 		[Header("Finite State")]
 		[Tooltip("True once the enemy has entered its death state.")]
@@ -108,49 +108,49 @@ namespace Game.AI {
 			LastSeenTime = -Mathf.Infinity;
 		}
 
-		// Records a real visual sample and estimates target velocity
-		// This keeps prediction fair because it only uses observed/shared data
-		public void SetObservedTargetPosition(Vector3 position) {
-			float now = Time.time;
-			if (HasObservedTargetPosition) {
-				float dt = Mathf.Max(0.0001f, now - LastObservedTargetTime);
-				Vector3 rawVelocity = (position - LastObservedTargetPosition) / dt;
+		//// Records a real visual sample and estimates target velocity
+		//// This keeps prediction fair because it only uses observed/shared data
+		//public void SetObservedTargetPosition(Vector3 position) {
+		//	float now = Time.time;
+		//	if (HasObservedTargetPosition) {
+		//		float dt = Mathf.Max(0.0001f, now - LastObservedTargetTime);
+		//		Vector3 rawVelocity = (position - LastObservedTargetPosition) / dt;
 
-				// Smooth velocity so prediction is less twitchy
-				ObservedTargetVelocity = Vector3.Lerp(ObservedTargetVelocity, rawVelocity, 0.65f);
-			}
-			else {
-				ObservedTargetVelocity = Vector3.zero;
-			}
+		//		// Smooth velocity so prediction is less twitchy
+		//		ObservedTargetVelocity = Vector3.Lerp(ObservedTargetVelocity, rawVelocity, 0.65f);
+		//	}
+		//	else {
+		//		ObservedTargetVelocity = Vector3.zero;
+		//	}
 
-			LastObservedTargetPosition = position;
-			LastObservedTargetTime = now;
-			HasObservedTargetPosition = true;
-		}
+		//	LastObservedTargetPosition = position;
+		//	LastObservedTargetTime = now;
+		//	HasObservedTargetPosition = true;
+		//}
 
-		// Applies a squadmate's sighting
-		// This gives memory but does not count as direct line of sight
-		public void SetSharedSighting(Transform target, Vector3 position, Vector3 velocity, float reportTime) {
-			// Ignore older reports so fresh information is not overwritten
-			if (reportTime < LastSeenTime) {
-				return;
-			}
+		//// Applies a squadmate's sighting
+		//// This gives memory but does not count as direct line of sight
+		//public void SetSharedSighting(Transform target, Vector3 position, Vector3 velocity, float reportTime) {
+		//	// Ignore older reports so fresh information is not overwritten
+		//	if (reportTime < LastSeenTime) {
+		//		return;
+		//	}
 
-			if (target != null) {
-				Target = target;
-			}
+		//	if (target != null) {
+		//		Target = target;
+		//	}
 
-			HasTarget = Target != null;
-			HasLineOfSight = false;
-			LastSeenPosition = position;
-			HasLastSeenPosition = true;
-			LastSeenTime = reportTime;
-			LastSharedAwarenessTime = Time.time;
-			ObservedTargetVelocity = velocity;
-			LastObservedTargetPosition = position;
-			LastObservedTargetTime = reportTime;
-			HasObservedTargetPosition = true;
-		}
+		//	HasTarget = Target != null;
+		//	HasLineOfSight = false;
+		//	LastSeenPosition = position;
+		//	HasLastSeenPosition = true;
+		//	LastSeenTime = reportTime;
+		//	//LastSharedAwarenessTime = Time.time;
+		//	ObservedTargetVelocity = velocity;
+		//	LastObservedTargetPosition = position;
+		//	LastObservedTargetTime = reportTime;
+		//	HasObservedTargetPosition = true;
+		//}
 
 		// Returns true if the enemy has recent visual/shared memory
 		public bool HasFreshSighting(float maxAge) {
@@ -158,7 +158,7 @@ namespace Game.AI {
 		}
 
 		// Stores a suspicious sound for investigation
-		public void SetSuspiciousNoise(Vector3 position, float radius, AINoiseKind kind, float time, bool shared) {
+		public void SetSuspiciousNoise(Vector3 position, float radius, AINoiseKind kind, float time) {
 			if (time < LastHeardNoiseTime) {
 				return;
 			}
@@ -168,7 +168,7 @@ namespace Game.AI {
 			LastHeardNoiseTime = time;
 			LastHeardNoiseRadius = radius;
 			LastHeardNoiseKind = kind;
-			LastNoiseWasShared = shared;
+			//LastNoiseWasShared = shared;
 		}
 
 		// Clears suspicious sound memory
@@ -178,7 +178,7 @@ namespace Game.AI {
 			LastHeardNoiseTime = -Mathf.Infinity;
 			LastHeardNoiseRadius = 0.0f;
 			LastHeardNoiseKind = AINoiseKind.Generic;
-			LastNoiseWasShared = false;
+			//LastNoiseWasShared = false;
 		}
 
 		// Returns true if the enemy has heard a recent suspicious sound
@@ -186,34 +186,34 @@ namespace Game.AI {
 			return HasSuspiciousNoise && (Time.time - LastHeardNoiseTime) <= maxAge;
 		}
 
-		// Sets the current squad role
-		// The timestamp helps avoid rapid role swapping
-		public void SetTacticalRole(EnemyTacticalRole role) {
-			if (TacticalRole == role) {
-				return;
-			}
+		//// Sets the current squad role
+		//// The timestamp helps avoid rapid role swapping
+		//public void SetTacticalRole(EnemyTacticalRole role) {
+		//	if (TacticalRole == role) {
+		//		return;
+		//	}
 
-			TacticalRole = role;
-			RoleAssignedTime = Time.time;
-		}
+		//	TacticalRole = role;
+		//	RoleAssignedTime = Time.time;
+		//}
 
-		// Stores a destination chosen by a tactical BT node
-		public void SetTacticalDestination(Vector3 destination) {
-			TacticalDestination = destination;
-			HasTacticalDestination = true;
-		}
+		//// Stores a destination chosen by a tactical BT node
+		//public void SetTacticalDestination(Vector3 destination) {
+		//	TacticalDestination = destination;
+		//	HasTacticalDestination = true;
+		//}
 
-		// Clears the current tactical movement destination
-		public void ClearTacticalDestination() {
-			TacticalDestination = Vector3.zero;
-			HasTacticalDestination = false;
-		}
+		//// Clears the current tactical movement destination
+		//public void ClearTacticalDestination() {
+		//	TacticalDestination = Vector3.zero;
+		//	HasTacticalDestination = false;
+		//}
 
-		// Records that this enemy has committed to an intercept
-		// Used to prevent constant cutoffs that may feel psychic
-		public void MarkInterceptCommitted() {
-			LastInterceptTime = Time.time;
-		}
+		//// Records that this enemy has committed to an intercept
+		//// Used to prevent constant cutoffs that may feel psychic
+		//public void MarkInterceptCommitted() {
+		//	LastInterceptTime = Time.time;
+		//}
 
 		// Overrides whether the enemy should act as if it still has a target
 		// Useful when memory keeps the target relevant after LOS is lost
@@ -245,18 +245,18 @@ namespace Game.AI {
 			LastSeenTime = -Mathf.Infinity;
 			LastSeenPosition = Vector3.zero;
 			HasLastSeenPosition = false;
-			ObservedTargetVelocity = Vector3.zero;
-			LastObservedTargetPosition = Vector3.zero;
-			HasObservedTargetPosition = false;
-			LastObservedTargetTime = -Mathf.Infinity;
-			LastSharedAwarenessTime = -Mathf.Infinity;
+			//ObservedTargetVelocity = Vector3.zero;
+			//LastObservedTargetPosition = Vector3.zero;
+			//HasObservedTargetPosition = false;
+			//LastObservedTargetTime = -Mathf.Infinity;
+			//LastSharedAwarenessTime = -Mathf.Infinity;
 
 			ClearSuspiciousNoise();
 
-			TacticalRole = EnemyTacticalRole.None;
-			RoleAssignedTime = -Mathf.Infinity;
-			ClearTacticalDestination();
-			LastInterceptTime = -Mathf.Infinity;
+			//TacticalRole = EnemyTacticalRole.None;
+			//RoleAssignedTime = -Mathf.Infinity;
+			//ClearTacticalDestination();
+			//LastInterceptTime = -Mathf.Infinity;
 
 			IsDead = false;
 			IsDisabled = false;

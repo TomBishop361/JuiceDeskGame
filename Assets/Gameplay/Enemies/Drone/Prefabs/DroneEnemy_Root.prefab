@@ -542,6 +542,7 @@ GameObject:
   - component: {fileID: 962284047258909528}
   - component: {fileID: 2716789458970548036}
   - component: {fileID: 4572627965412102517}
+  - component: {fileID: 6482183119070689281}
   - component: {fileID: 6013245490068612030}
   - component: {fileID: 7282551018810303331}
   - component: {fileID: 6711099003469655626}
@@ -555,7 +556,6 @@ GameObject:
   - component: {fileID: 6835325938086037590}
   - component: {fileID: 4867790311118515996}
   - component: {fileID: 6549758123022710367}
-  - component: {fileID: 6482183119070689281}
   m_Layer: 8
   m_Name: DroneEnemy_Root
   m_TagString: Untagged
@@ -891,6 +891,20 @@ MonoBehaviour:
   allowTargetWithoutSensor: 1
   shareSightingsWithSquad: 1
   sightingShareInterval: 0.25
+--- !u!114 &6482183119070689281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426209685012709754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightReportInterval: 0.15
+  reportSightOnlyWhenVisible: 1
 --- !u!114 &6013245490068612030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1127,20 +1141,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 1
---- !u!114 &6482183119070689281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6426209685012709754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sightReportInterval: 0.15
-  reportSightOnlyWhenVisible: 1
 --- !u!1 &8798408253545502729
 GameObject:
   m_ObjectHideFlags: 0

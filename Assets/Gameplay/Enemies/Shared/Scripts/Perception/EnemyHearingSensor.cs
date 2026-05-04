@@ -79,7 +79,7 @@ namespace Game.AI {
 			}
 
 			// Store the sound as a suspicious point for the BT to investigate
-			blackboard.SetSuspiciousNoise(aINoiseEvent.Position, effectiveRadius, aINoiseEvent.Kind, aINoiseEvent.Time, false);
+			//blackboard.SetSuspiciousNoise(aINoiseEvent.Position, effectiveRadius, aINoiseEvent.Kind, aINoiseEvent.Time);
 
 			// Share the heard noise with the enemy awareness hub so others can react too
 			if (reportNoiseToAwarenessHub) {

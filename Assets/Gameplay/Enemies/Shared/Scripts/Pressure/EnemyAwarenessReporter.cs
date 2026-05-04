@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.XR;
 
 namespace Game.AI {
 	// Enemy-side bridge from existing perception/hearing into EnemyAwarenessHub
@@ -6,6 +8,7 @@ namespace Game.AI {
 	// Sight is reported automatically
 	// Noise can be reported by EnemyHearingSensor
 	// It reports facts only: sight position or heard noise position
+	// Shares visible/heard player position to EnemyAwarenessHub
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(EnemyAgentBase))]
 	public sealed class EnemyAwarenessReporter : MonoBehaviour {

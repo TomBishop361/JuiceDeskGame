@@ -20,22 +20,22 @@ namespace Game.AI.Behavior.Shared {
 	[NodeDescription(name: "Enemy: Compute Intercept Destination", description: "Uses fair route prediction and tactical anchors to choose an intercept destination.", story: "Enemy computes intercept destination", category: "Enemy/Shared/Actions/Tactics", id: "enemy.action.tactics.compute_intercept_destination")]
 	public sealed class EnemyComputeInterceptDestination : Action {
 		private EnemyBlackboard blackboard;
-		private EnemyRoutePredictor predictor;
+		//private EnemyRoutePredictor predictor;
 
 		protected override Status OnStart() {
 			blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			predictor = GameObject.GetComponent<EnemyRoutePredictor>();
+			//predictor = GameObject.GetComponent<EnemyRoutePredictor>();
 
-			if (blackboard == null || predictor == null) {
+			if (blackboard == null /*|| predictor == null*/) {
 				LogFailure("EnemyBlackboard or EnemyRoutePredictor missing.", isError: true);
 				return Status.Failure;
 			}
 
-			if (predictor.TryBuildDestination(EnemyTacticalRole.Interceptor, out Vector3 destination) == false) {
-				return Status.Failure;
-			}
+			//if (predictor.TryBuildDestination(EnemyTacticalRole.Interceptor, out Vector3 destination) == false) {
+			//	return Status.Failure;
+			//}
 
-			blackboard.SetTacticalDestination(destination);
+			//blackboard.SetTacticalDestination(destination);
 			return Status.Success;
 		}
 	}
@@ -43,22 +43,22 @@ namespace Game.AI.Behavior.Shared {
 	[NodeDescription(name: "Enemy: Compute Flank Destination", description: "Chooses a side-lane/flank destination using tactical anchors or a fair fallback.", story: "Enemy computes flank destination", category: "Enemy/Shared/Actions/Tactics", id: "enemy.action.tactics.compute_flank_destination")]
 	public sealed class EnemyComputeFlankDestination : Action {
 		private EnemyBlackboard blackboard;
-		private EnemyRoutePredictor predictor;
+		//private EnemyRoutePredictor predictor;
 
 		protected override Status OnStart() {
 			blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			predictor = GameObject.GetComponent<EnemyRoutePredictor>();
+			//predictor = GameObject.GetComponent<EnemyRoutePredictor>();
 
-			if (blackboard == null || predictor == null) {
+			if (blackboard == null /*|| predictor == null*/) {
 				LogFailure("EnemyBlackboard or EnemyRoutePredictor missing.", isError: true);
 				return Status.Failure;
 			}
 
-			if (predictor.TryBuildDestination(EnemyTacticalRole.Flanker, out Vector3 destination) == false) {
-				return Status.Failure;
-			}
+			//if (predictor.TryBuildDestination(EnemyTacticalRole.Flanker, out Vector3 destination) == false) {
+			//	return Status.Failure;
+			//}
 
-			blackboard.SetTacticalDestination(destination);
+			//blackboard.SetTacticalDestination(destination);
 			return Status.Success;
 		}
 	}
@@ -66,22 +66,22 @@ namespace Game.AI.Behavior.Shared {
 	[NodeDescription(name: "Enemy: Compute Anchor Destination", description: "Chooses a blocking/anchor point from tactical anchors or a fair fallback.", story: "Enemy computes anchor destination", category: "Enemy/Shared/Actions/Tactics", id: "enemy.action.tactics.compute_anchor_destination")]
 	public sealed class EnemyComputeAnchorDestination : Action {
 		private EnemyBlackboard blackboard;
-		private EnemyRoutePredictor predictor;
+		//private EnemyRoutePredictor predictor;
 
 		protected override Status OnStart() {
 			blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			predictor = GameObject.GetComponent<EnemyRoutePredictor>();
+			//predictor = GameObject.GetComponent<EnemyRoutePredictor>();
 
-			if (blackboard == null || predictor == null) {
+			if (blackboard == null /*|| predictor == null*/) {
 				LogFailure("EnemyBlackboard or EnemyRoutePredictor missing.", isError: true);
 				return Status.Failure;
 			}
 
-			if (predictor.TryBuildDestination(EnemyTacticalRole.Anchor, out Vector3 destination) == false) {
-				return Status.Failure;
-			}
+			//if (predictor.TryBuildDestination(EnemyTacticalRole.Anchor, out Vector3 destination) == false) {
+			//	return Status.Failure;
+			//}
 
-			blackboard.SetTacticalDestination(destination);
+			//blackboard.SetTacticalDestination(destination);
 			return Status.Success;
 		}
 	}
@@ -89,15 +89,15 @@ namespace Game.AI.Behavior.Shared {
 	[NodeDescription(name: "Enemy: Move To Tactical Destination (Tick)", description: "Moves toward the blackboard tactical destination. Returns Success when arrived.", story: "Enemy moves to tactical destination", category: "Enemy/Shared/Actions/Movement", id: "enemy.action.move.to_tactical_destination_tick")]
 	public sealed class EnemyMoveToTacticalDestinationTick : Action {
 		private EnemyBlackboard blackboard;
-		private EnemyTacticalMover mover;
+		//private EnemyTacticalMover mover;
 		private IEnemyAgent agent;
 
 		protected override Status OnStart() {
 			blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			mover = GameObject.GetComponent<EnemyTacticalMover>();
+			//mover = GameObject.GetComponent<EnemyTacticalMover>();
 			agent = GameObject.GetComponent<IEnemyAgent>();
 
-			if (blackboard == null || mover == null) {
+			if (blackboard == null /*|| mover == null*/) {
 				LogFailure("EnemyBlackboard or EnemyTacticalMover missing.", isError: true);
 				return Status.Failure;
 			}
@@ -116,7 +116,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 
 		private Status TickMove() {
-			if (blackboard == null || mover == null || blackboard.HasTacticalDestination == false) {
+			if (blackboard == null /*|| mover == null*/ /*|| blackboard.HasTacticalDestination == false*/) {
 				return Status.Failure;
 			}
 
@@ -125,7 +125,7 @@ namespace Game.AI.Behavior.Shared {
 			}
 
 			Transform focus = blackboard.Target;
-			bool arrived = mover.TickMoveTo(blackboard.TacticalDestination, focus);
+			bool arrived = true/*mover.TickMoveTo(blackboard.TacticalDestination, focus)*/;
 			return arrived ? Status.Success : Status.Running;
 		}
 	}
@@ -133,16 +133,16 @@ namespace Game.AI.Behavior.Shared {
 	[NodeDescription(name: "Enemy: Investigate Suspicion (Tick)", description: "Moves to suspicious noise first, otherwise last-seen position. Clears noise after arrival.", story: "Enemy investigates suspicion", category: "Enemy/Shared/Actions/Perception", id: "enemy.action.perception.investigate_suspicion_tick")]
 	public sealed class EnemyInvestigateSuspicionTick : Action {
 		private EnemyBlackboard blackboard;
-		private EnemyTacticalMover mover;
+		//private EnemyTacticalMover mover;
 		private IEnemyAgent agent;
 		private Vector3 destination;
 
 		protected override Status OnStart() {
 			blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			mover = GameObject.GetComponent<EnemyTacticalMover>();
+			//mover = GameObject.GetComponent<EnemyTacticalMover>();
 			agent = GameObject.GetComponent<IEnemyAgent>();
 
-			if (blackboard == null || mover == null) {
+			if (blackboard == null /*|| mover == null*/) {
 				LogFailure("EnemyBlackboard or EnemyTacticalMover missing.", isError: true);
 				return Status.Failure;
 			}
@@ -157,7 +157,7 @@ namespace Game.AI.Behavior.Shared {
 				return Status.Failure;
 			}
 
-			blackboard.SetTacticalDestination(destination);
+			//blackboard.SetTacticalDestination(destination);
 			return TickInvestigate();
 		}
 
@@ -172,7 +172,7 @@ namespace Game.AI.Behavior.Shared {
 		}
 
 		private Status TickInvestigate() {
-			if (blackboard == null || mover == null || agent == null) {
+			if (blackboard == null /*|| mover == null*/ || agent == null) {
 				return Status.Failure;
 			}
 
@@ -180,7 +180,7 @@ namespace Game.AI.Behavior.Shared {
 				return Status.Failure;
 			}
 
-			bool arrived = mover.TickMoveTo(destination, destination);
+			bool arrived = true/*mover.TickMoveTo(destination, destination)*/;
 			if (arrived) {
 				if (blackboard.HasSuspiciousNoise) {
 					blackboard.ClearSuspiciousNoise();
@@ -198,15 +198,15 @@ namespace Game.AI.Behavior.Shared {
 		[SerializeReference] public BlackboardVariable<float> Duration;
 
 		private EnemyBlackboard blackboard;
-		private EnemyTacticalMover mover;
+		//private EnemyTacticalMover mover;
 		private float endTime;
 		private Vector3 focusPoint;
 
 		protected override Status OnStart() {
 			blackboard = GameObject.GetComponent<EnemyBlackboard>();
-			mover = GameObject.GetComponent<EnemyTacticalMover>();
+			//mover = GameObject.GetComponent<EnemyTacticalMover>();
 
-			if (blackboard == null || mover == null || blackboard.HasLastSeenPosition == false) {
+			if (blackboard == null /*|| mover == null*/ || blackboard.HasLastSeenPosition == false) {
 				return Status.Failure;
 			}
 
@@ -218,11 +218,11 @@ namespace Game.AI.Behavior.Shared {
 		}
 
 		protected override Status OnUpdate() {
-			if (blackboard == null || mover == null) {
+			if (blackboard == null /*|| mover == null*/) {
 				return Status.Failure;
 			}
 
-			mover.Stop(focusPoint);
+			//mover.Stop(focusPoint);
 			return Time.time >= endTime ? Status.Success : Status.Running;
 		}
 	}
@@ -274,7 +274,7 @@ namespace Game.AI.Behavior.Shared {
 				return Status.Failure;
 			}
 
-			blackboard.ClearTacticalDestination();
+			//blackboard.ClearTacticalDestination();
 			return Status.Success;
 		}
 	}

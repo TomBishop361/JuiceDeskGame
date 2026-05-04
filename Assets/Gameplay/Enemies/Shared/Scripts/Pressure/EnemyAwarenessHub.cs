@@ -13,6 +13,7 @@ namespace Game.AI {
 	// Attacks should still require real LOS
 	// This is shared memory: last seen/heard position only
 	// Use it for movement and spawn awareness, never for allowing attacks through walls
+	// Shared last-known player position for spawning and corner-following
 	[DisallowMultipleComponent]
 	public sealed class EnemyAwarenessHub : MonoBehaviour {
 		public static EnemyAwarenessHub Active { get; private set; }

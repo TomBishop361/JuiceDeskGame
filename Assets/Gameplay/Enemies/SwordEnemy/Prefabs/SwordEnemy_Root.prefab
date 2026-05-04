@@ -1866,6 +1866,7 @@ GameObject:
   - component: {fileID: 5171767187067607998}
   - component: {fileID: 6102671430866734951}
   - component: {fileID: 8380730772912573954}
+  - component: {fileID: 5939474946296732986}
   - component: {fileID: 1847690398170347147}
   - component: {fileID: 1996718449401447096}
   - component: {fileID: 7113598184507878919}
@@ -1879,7 +1880,6 @@ GameObject:
   - component: {fileID: 3566807572259405374}
   - component: {fileID: 3479799254228814965}
   - component: {fileID: -3342709311437937126}
-  - component: {fileID: 5939474946296732986}
   m_Layer: 8
   m_Name: SwordEnemy_Root
   m_TagString: Untagged
@@ -2178,6 +2178,20 @@ MonoBehaviour:
   allowTargetWithoutSensor: 1
   shareSightingsWithSquad: 1
   sightingShareInterval: 0.25
+--- !u!114 &5939474946296732986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightReportInterval: 0.15
+  reportSightOnlyWhenVisible: 1
 --- !u!114 &1847690398170347147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2414,20 +2428,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 2
---- !u!114 &5939474946296732986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7782458668010283615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sightReportInterval: 0.15
-  reportSightOnlyWhenVisible: 1
 --- !u!1 &8174157530090233896
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Game.AI {
 	// Handles enemy target detection + LOS checks + target memory
 	// Writes perception results into EnemyBlackboard so BT's can react
+	// Local target, distance, LOS, last seen position
 	public sealed class EnemyPerception : MonoBehaviour {
 		[Header("Targeting")]
 		[Tooltip("Optional target assigned directly in the inspector. If set, this target is used before auto-acquiring the player.")]
@@ -20,17 +21,8 @@ namespace Game.AI {
 		[Tooltip("If true, the enemy can still keep a target even when no LOS sensor is assigned.")]
 		[SerializeField] private bool allowTargetWithoutSensor = false;
 
-		[Header("Squad Sharing")]
-		[Tooltip("If true, confirmed sightings are shared through EnemySquadMember / EnemySquadDirector.")]
-		[SerializeField] private bool shareSightingsWithSquad = true;
-		[Tooltip("Minimum seconds between squad sighting reports from this enemy.")]
-		[SerializeField] private float sightingShareInterval = 0.25f;
-
 		// The target currently being tracked by this perception component
 		public Transform CurrentTarget => explicitTarget;
-
-		private EnemySquadMember squadMember;
-		private float nextSightingShareTime;
 
 		private void Reset() {
 			if (losSensor == null) {
@@ -42,8 +34,6 @@ namespace Game.AI {
 			if (losSensor == null) {
 				losSensor = GetComponent<LOSSensor>();
 			}
-
-			squadMember = GetComponent<EnemySquadMember>();
 		}
 
 		// Assigns the LOS sensor used for visibility checks
@@ -62,9 +52,8 @@ namespace Game.AI {
 		}
 
 		// Resets runtime-only state for pooling or respawning
-		// Keep explicitTarget assigned if set in inspector
 		public void ResetRuntime() {
-			nextSightingShareTime = 0.0f;
+			// Keep explicitTarget assigned if set in inspector
 		}
 
 		// Finds the target immediately and writes initial perception data to the blackboard
@@ -142,16 +131,9 @@ namespace Game.AI {
 			blackboard.SetHasTarget(hasLOS || hasFreshMemory);
 		}
 
-		// Stores confirmed visual information and optionally shares it with squadmates
+		// Stores confirmed visual information
 		private void RecordConfirmedSighting(EnemyBlackboard blackboard, Vector3 targetPosition) {
 			blackboard.SetLastSeenPosition(targetPosition);
-			blackboard.SetObservedTargetPosition(targetPosition);
-
-			// Limit squad reports so enemies do not spam shared awareness every frame
-			if (shareSightingsWithSquad && squadMember != null && Time.time >= nextSightingShareTime) {
-				squadMember.ReportPlayerSighting(CurrentTarget, targetPosition, blackboard.ObservedTargetVelocity);
-				nextSightingShareTime = Time.time + sightingShareInterval;
-			}
 		}
 
 		// Attempts to find the player using the configured tag and assign it as the current target

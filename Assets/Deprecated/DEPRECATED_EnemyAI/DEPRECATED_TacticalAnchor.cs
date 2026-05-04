@@ -14,8 +14,8 @@ namespace Game.AI {
 		private static readonly List<TacticalAnchor> ActiveAnchors = new List<TacticalAnchor>();
 
 		[Header("Anchor Identity")]
-		[Tooltip("What kind of level feature this point represents.")]
-		[SerializeField] private TacticalAnchorType anchorType = TacticalAnchorType.PlatformChokepoint;
+		//[Tooltip("What kind of level feature this point represents.")]
+		//[SerializeField] private TacticalAnchorType anchorType = TacticalAnchorType.PlatformChokepoint;
 		[Tooltip("Higher priority anchors are preferred when scores are similar.")]
 		[SerializeField] private float priority = 1.0f;
 		//[Tooltip("How strongly this anchor should be preferred when it is close to the predicted player route.")]
@@ -47,7 +47,7 @@ namespace Game.AI {
 
 		private float claimedUntil = -Mathf.Infinity;
 
-		public TacticalAnchorType AnchorType => anchorType;
+		//public TacticalAnchorType AnchorType => anchorType;
 		public float Priority => priority;
 		public float OccupiedRadius => occupiedRadius;
 		public Vector3 Position => transform.position;
@@ -70,23 +70,23 @@ namespace Game.AI {
 			ActiveAnchors.Remove(this);
 		}
 
-		// Returns true if the supplied tactical role is allowed to use this anchor
-		public bool AllowsRole(EnemyTacticalRole role) {
-			switch (role) {
-				case EnemyTacticalRole.Chaser:
-					return allowChaser;
-				case EnemyTacticalRole.Flanker:
-					return allowFlanker;
-				case EnemyTacticalRole.Interceptor:
-					return allowInterceptor;
-				case EnemyTacticalRole.Suppressor:
-					return allowSuppressor;
-				case EnemyTacticalRole.Anchor:
-					return allowAnchor;
-				default:
-					return false;
-			}
-		}
+		//// Returns true if the supplied tactical role is allowed to use this anchor
+		//public bool AllowsRole(EnemyTacticalRole role) {
+		//	switch (role) {
+		//		case EnemyTacticalRole.Chaser:
+		//			return allowChaser;
+		//		case EnemyTacticalRole.Flanker:
+		//			return allowFlanker;
+		//		case EnemyTacticalRole.Interceptor:
+		//			return allowInterceptor;
+		//		case EnemyTacticalRole.Suppressor:
+		//			return allowSuppressor;
+		//		case EnemyTacticalRole.Anchor:
+		//			return allowAnchor;
+		//		default:
+		//			return false;
+		//	}
+		//}
 
 		// Temporarily reserves this anchor so enemies spread out instead of stacking
 		public void Claim() {

@@ -1577,6 +1577,7 @@ GameObject:
   - component: {fileID: 1122574990893991801}
   - component: {fileID: 7334690218744183616}
   - component: {fileID: 1464211298414496071}
+  - component: {fileID: 5518201892295104703}
   - component: {fileID: 336471975230357279}
   - component: {fileID: 23391880925538615}
   - component: {fileID: 5682261769765402009}
@@ -1591,7 +1592,6 @@ GameObject:
   - component: {fileID: 7088472956447957708}
   - component: {fileID: 8342141347256848035}
   - component: {fileID: 3884055606165247876}
-  - component: {fileID: 5518201892295104703}
   m_Layer: 8
   m_Name: ShieldEnemy_Root
   m_TagString: Untagged
@@ -1925,6 +1925,20 @@ MonoBehaviour:
   allowTargetWithoutSensor: 1
   shareSightingsWithSquad: 1
   sightingShareInterval: 0.25
+--- !u!114 &5518201892295104703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8618922778442928813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sightReportInterval: 0.15
+  reportSightOnlyWhenVisible: 1
 --- !u!114 &336471975230357279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2173,20 +2187,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 3
---- !u!114 &5518201892295104703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8618922778442928813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6eb0d99d75fb4a4fb0cb6447e15bc2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sightReportInterval: 0.15
-  reportSightOnlyWhenVisible: 1
 --- !u!1 &8722368276012395742
 GameObject:
   m_ObjectHideFlags: 0

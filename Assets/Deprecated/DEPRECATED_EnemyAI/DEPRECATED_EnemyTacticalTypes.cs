@@ -2,17 +2,17 @@ using System;
 using UnityEngine;
 
 namespace Game.AI {
-	// Small finite-state layer used by BT's to interrupt tactical decisions cleanly
-	// Tactical choices still live in Unity BT's
-	public enum EnemyFiniteState {
-		Spawned,
-		Alive,
-		AttackLocked,
-		Stunned,
-		KnockedDown,
-		Disabled,
-		Dead
-	}
+	//// Small finite-state layer used by BT's to interrupt tactical decisions cleanly
+	//// Tactical choices still live in Unity BT's
+	//public enum EnemyFiniteState {
+	//	Spawned,
+	//	Alive,
+	//	AttackLocked,
+	//	Stunned,
+	//	KnockedDown,
+	//	Disabled,
+	//	Dead
+	//}
 
 	// Role assigned by the squad director
 	// BT's should branch from this instead of every enemy making the same decision
@@ -41,15 +41,15 @@ namespace Game.AI {
 		Any = ~0
 	}
 
-	// Noise categories emitted by the player and consumed by enemy hearing sensors
-	public enum AINoiseKind {
-		Generic,
-		Movement,
-		Landing,
-		Weapon,
-		Grapple,
-		WallRun,
-		Slide,
-		RailGrind
-	}
+	//// Noise categories emitted by the player and consumed by enemy hearing sensors
+	//public enum AINoiseKind {
+	//	Generic,
+	//	Movement,
+	//	Landing,
+	//	Weapon,
+	//	Grapple,
+	//	WallRun,
+	//	Slide,
+	//	RailGrind
+	//}
 }
