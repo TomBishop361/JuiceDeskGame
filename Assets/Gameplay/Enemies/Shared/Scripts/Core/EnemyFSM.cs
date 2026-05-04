@@ -2,7 +2,6 @@ using Game.AI.Drone;
 using UnityEngine;
 namespace Game.AI {
     // Small FSM for hard interruption states only
-    // BT's should still own tactical choices such as chase, flank, intercept, suppress and attack
     [DisallowMultipleComponent]
     [RequireComponent(typeof(EnemyBlackboard))]
     public sealed class EnemyFSM : MonoBehaviour {
@@ -12,7 +11,7 @@ namespace Game.AI {
 		// Core enemy reference used to check stun and attack lock state
 		private EnemyAgentBase agent;
 
-		// Shared memory/state component used by perception + BT nodes + squad systems
+		// Shared memory/state component used by perception + BT nodes
 		private EnemyBlackboard blackboard;
 
 		// Optional drone combat interface
@@ -41,7 +40,7 @@ namespace Game.AI {
 				blackboard.SetDisabled(disabled);
 			}
 
-			// Disabled enemies should not run normal tactical behaviour
+			// Disabled enemies should not run normal behaviour
 			CurrentState = disabled ? EnemyFiniteState.Disabled : EnemyFiniteState.Alive;
 		}
 
@@ -78,7 +77,7 @@ namespace Game.AI {
 				return;
 			}
 
-			// Default normal state where the BT can choose tactical actions
+			// Default normal state
 			CurrentState = EnemyFiniteState.Alive;
 		}
 	}
