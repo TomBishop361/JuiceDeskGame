@@ -66,7 +66,7 @@ public class MusicManager : MonoBehaviour
         trackIndex = 0;
         foreach (AudioSource track in tracks)
         {
-            if (trackIndex <= 15 && trackIndex >= 11 | trackIndex == 0)
+            if (trackIndex <= 21 && trackIndex >= 11 | trackIndex == 0)
             {
                 track.mute = false;
             }
