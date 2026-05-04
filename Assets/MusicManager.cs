@@ -5,6 +5,8 @@ public class MusicManager : MonoBehaviour
     [SerializeField]
     AudioSource[] tracks;
     int trackIndex = 0;
+    public EnemyTracker script;
+    public int AliveNow = 0;
 
     void Start()
     {
@@ -15,9 +17,25 @@ public class MusicManager : MonoBehaviour
             track.PlayScheduled(startTime);
             track.mute = true;
             trackIndex = trackIndex + 1;
-            Debug.Log(trackIndex);
+
         }
-        PlayMain();
+    }
+
+    private void Update()
+    {
+        AliveNow = script.AliveNow;
+        if (AliveNow == 0)
+        {
+            PlayRelaxed();
+        }
+        if (AliveNow > 0 && AliveNow < 4)
+        {
+            PlayMain();
+        }
+        if (AliveNow > 5)
+        {
+            PlayIntense();
+        }
     }
 
     private void OnValidate()
@@ -34,6 +52,10 @@ public class MusicManager : MonoBehaviour
             {
                 track.mute = false;
             }
+            else
+            {
+                track.mute = true;
+            }
             trackIndex = trackIndex + 1;
             Debug.Log(trackIndex);
         }
@@ -48,6 +70,10 @@ public class MusicManager : MonoBehaviour
             {
                 track.mute = false;
             }
+            else
+            {
+                track.mute = true;
+            }
             trackIndex = trackIndex + 1;
             Debug.Log(trackIndex);
         }
@@ -61,6 +87,10 @@ public class MusicManager : MonoBehaviour
             if (trackIndex <= 11 && trackIndex >= 0)
             {
                 track.mute = false;
+            }
+            else
+            {
+                track.mute = true;
             }
             trackIndex = trackIndex + 1;
             Debug.Log(trackIndex);
