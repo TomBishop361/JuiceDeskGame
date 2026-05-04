@@ -74,7 +74,6 @@ public class GenericSpawner : MonoBehaviour {
 		}
 	}
 
-	
 	public void SetEnemyTracker(EnemyTracker tracker) {
 		enemyTracker = tracker;
 	}
@@ -487,7 +486,7 @@ public class GenericSpawner : MonoBehaviour {
 		EnemyCombat enemyCombat = item.GetComponent<EnemyCombat>();
 		if (enemyCombat != null && enemyTracker != null) {
 			enemyCombat.SetEnemyTracker(enemyTracker);
-			enemyTracker.EnemySpawned();
+			enemyTracker.EnemySpawned(enemyCombat);
 		}
 
 		item.gameObject.SetActive(true);
@@ -506,7 +505,7 @@ public class GenericSpawner : MonoBehaviour {
 		// Tracks enemies that have despawned but not died (i.e. despawn on player death)
 		EnemyCombat enemyCombat = item.GetComponent<EnemyCombat>();
 		if (enemyCombat != null && enemyTracker != null && enemyCombat.HasReportedDeath == false) {
-			enemyTracker.EnemyDespawnedAlive();
+			enemyTracker.EnemyDespawnedAlive(enemyCombat);
 		}
 
 		// Notify components before disabling
