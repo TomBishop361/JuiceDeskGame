@@ -1,16 +1,9 @@
 using System;
 using System.Collections;
 using TMPro;
-using Unity.Cinemachine;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 using UnityEngine.Splines;
-using UnityEngine.Windows;
-
-
-
 
 
 [RequireComponent((typeof(Rigidbody)))]
@@ -20,10 +13,11 @@ public class InputController : MonoBehaviour
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
-    [SerializeField] GameObject _camera;   
+    [SerializeField] GameObject _camera;
 
     [Header("Movement Values")]
-    float moveSpeed = 7;
+    float moveSpeed  = 7;
+    public float Velocity { get; private set; }
     [SerializeField] float walkSpeed = 7;
     [SerializeField] float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
@@ -123,8 +117,9 @@ public class InputController : MonoBehaviour
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
 
-    public event Action JumpEvent = delegate { };   
-    
+    public event Action JumpEvent = delegate { };
+
+    public event Action OnStateChange = delegate { };
 
     public MovementState state;
 
@@ -271,7 +266,7 @@ public class InputController : MonoBehaviour
     private IEnumerator SmoothLerpSpeed()
     {
         float t = 0;        
-        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed)-1;
         float startValue = moveSpeed;
         while (t < difference)
         {
@@ -548,7 +543,8 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        if(VelocityUI == null) return;
+        Velocity = new Vector3 (rb.linearVelocity.x,0,rb.linearVelocity.z).magnitude;
+        if (VelocityUI == null) return;
        VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
         
     }
