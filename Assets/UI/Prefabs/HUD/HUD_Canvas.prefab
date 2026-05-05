@@ -433,6 +433,74 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4936031062223812401
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 553514743510904798}
+  - component: {fileID: 5070729220459869145}
+  m_Layer: 5
+  m_Name: HuntMarkersRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &553514743510904798
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4936031062223812401}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3380088000826588582}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5070729220459869145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4936031062223812401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a13dfdc81f9ce4bb02ed823d0f7043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  markerRoot: {fileID: 553514743510904798}
+  markerPrefab: {fileID: 1053630533473159602, guid: 9186c85887d2df0408ab2e89d26d7c5d, type: 3}
+  parentCanvas: {fileID: 4588251817277671055}
+  initialPoolSize: 8
+  screenEdgeMargin: 72
+  showDistanceText: 1
+  showVerticalIcon: 1
+  verticalIconThreshold: 4
+  minOpacityDistance: 8
+  maxOpacityDistance: 50
+  minMarkerOpacity: 0.25
+  maxMarkerOpacity: 1
+  playerCamera: {fileID: 0}
+  playerTransform: {fileID: 0}
+  useLineOfSightCheck: 1
+  visibilityBlockingLayers:
+    serializedVersion: 2
+    m_Bits: 24648
+  visibilityBoundsPadding: 0.1
+  visibilityRayOriginOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &5193552798962112258
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,6 +838,7 @@ RectTransform:
   - {fileID: 8393437544514533271}
   - {fileID: 2359773298593933891}
   - {fileID: 7719390875212967303}
+  - {fileID: 553514743510904798}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

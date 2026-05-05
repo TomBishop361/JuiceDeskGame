@@ -1868,6 +1868,7 @@ GameObject:
   - component: {fileID: 8380730772912573954}
   - component: {fileID: 5939474946296732986}
   - component: {fileID: 3509087621951527485}
+  - component: {fileID: 5223253840561751181}
   - component: {fileID: 1847690398170347147}
   - component: {fileID: 1996718449401447096}
   - component: {fileID: 7113598184507878919}
@@ -1880,6 +1881,7 @@ GameObject:
   - component: {fileID: 5180549574186250285}
   - component: {fileID: 3566807572259405374}
   - component: {fileID: 3479799254228814965}
+  - component: {fileID: 1672390439981171153}
   - component: {fileID: -3342709311437937126}
   m_Layer: 8
   m_Name: SwordEnemy_Root
@@ -2204,15 +2206,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetTransform: {fileID: 6149216680073435762}
-  markerOffset: {x: 0, y: 1.4, z: 0}
+  markerOffset: {x: 0, y: 2.4, z: 0}
   visibilityRenderers:
   - {fileID: 768027077282367021}
   - {fileID: 5665426263526964611}
-  - {fileID: 5882997727852247888}
-  - {fileID: 8570947333299095648}
-  - {fileID: 3144207778595499413}
-  - {fileID: 2252954620753872357}
-  - {fileID: 2031797523483698302}
   - {fileID: 1151576185418030029}
   - {fileID: 4371479035518543900}
   fallbackLocalBounds:
@@ -2220,6 +2217,29 @@ MonoBehaviour:
     m_Extent: {x: 0.5, y: 1, z: 0.5}
   autoFindRevealVisuals: 1
   revealVisualBehaviours: []
+--- !u!114 &5223253840561751181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30de06dfbae0384eadb7d6a38b40fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderers:
+  - {fileID: 768027077282367021}
+  - {fileID: 5665426263526964611}
+  - {fileID: 5882997727852247888}
+  - {fileID: 8570947333299095648}
+  - {fileID: 3144207778595499413}
+  - {fileID: 1151576185418030029}
+  - {fileID: 4371479035518543900}
+  outlineMaterial: {fileID: 2100000, guid: 5f56cca5c56134a4b9c8b2a32ba51783, type: 2}
+  appendOutlineMaterialOnAwake: 1
+  alphaPropertyName: _Alpha
 --- !u!114 &1847690398170347147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2432,6 +2452,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1672390439981171153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf38c37372521fd40817acb55c7dd0b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-3342709311437937126
 MonoBehaviour:
   m_ObjectHideFlags: 0

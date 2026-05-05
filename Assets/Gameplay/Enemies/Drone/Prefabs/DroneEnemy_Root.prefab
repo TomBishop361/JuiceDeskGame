@@ -544,6 +544,7 @@ GameObject:
   - component: {fileID: 4572627965412102517}
   - component: {fileID: 6482183119070689281}
   - component: {fileID: 2937022719101833889}
+  - component: {fileID: 5619690369948951454}
   - component: {fileID: 6013245490068612030}
   - component: {fileID: 7282551018810303331}
   - component: {fileID: 6711099003469655626}
@@ -917,7 +918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetTransform: {fileID: 3821767889359053709}
-  markerOffset: {x: 0, y: 1.4, z: 0}
+  markerOffset: {x: 0, y: 3, z: 0}
   visibilityRenderers:
   - {fileID: 633724087821238401}
   - {fileID: 1131678334439044975}
@@ -933,6 +934,31 @@ MonoBehaviour:
     m_Extent: {x: 0.5, y: 1, z: 0.5}
   autoFindRevealVisuals: 1
   revealVisualBehaviours: []
+--- !u!114 &5619690369948951454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426209685012709754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a30de06dfbae0384eadb7d6a38b40fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderers:
+  - {fileID: 633724087821238401}
+  - {fileID: 1131678334439044975}
+  - {fileID: 1835979622684491436}
+  - {fileID: 4880107191298233023}
+  - {fileID: 4676173173778977428}
+  - {fileID: 2535189206424342041}
+  - {fileID: 347479918573195424}
+  - {fileID: 8685290070591294296}
+  - {fileID: 2118326141117137233}
+  outlineMaterial: {fileID: 2100000, guid: a91075c62f8a3e04c81bb054eb687a5e, type: 2}
+  appendOutlineMaterialOnAwake: 1
+  alphaPropertyName: _Alpha
 --- !u!114 &6013245490068612030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1246,6 +1272,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: -8133851500778019967, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3531144097156965738, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -2742658097081432061, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -2742658097081432061, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: -306814016193731184, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -1253,6 +1295,10 @@ PrefabInstance:
     - target: {fileID: -164158837300625868, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 637591753984050457, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Name
@@ -1270,9 +1316,25 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 1541696680867443329, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1670729542096357445, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1775376747117469568, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2210817412144224182, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2790170642986030314, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5283981028096087548, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Name
@@ -1282,13 +1344,29 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 5299781890434928863, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6371263373278627073, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 6813921212374450157, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6813921212374450157, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8f14c1a5a89991f46b1892884972d70f, type: 2}
     - target: {fileID: 7963875340130767413, guid: 68040530ca8824347bd2f585025d2198, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8537032387392357324, guid: 68040530ca8824347bd2f585025d2198, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

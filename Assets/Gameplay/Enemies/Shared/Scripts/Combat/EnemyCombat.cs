@@ -32,7 +32,7 @@ public class EnemyCombat : MonoBehaviour {
 		deathReported = true;
 
 		if (enemyTracker != null) {
-			enemyTracker.EnemyDied();
+			enemyTracker.EnemyDied(this);
 		}
 	}
 }
