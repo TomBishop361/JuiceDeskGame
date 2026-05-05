@@ -33,6 +33,10 @@ namespace Game.AI {
 		[Header("Attack Fairness")]
 		[Tooltip("How often this controller checks if it may start a swing/lunge.")]
 		[SerializeField] private float attackCheckInterval = 0.10f;
+		[Tooltip("Maximum horizontal angle allowed for a sword swing. Higher values make melee more forgiving once the enemy reaches the player.")]
+		[SerializeField] private float startMeleeSwingFacingAngle = 95.0f;
+		[Tooltip("Maximum vertical height difference allowed for a basic sword swing. Prevents swords hitting through floors or attacking players far above/below them.")]
+		[SerializeField] private float meleeSwingMaxVerticalDifference = 2.25f;
 		[Tooltip("Minimum continuous visible time before a sword can lunge. Prevents instant psychic lunges.")]
 		[SerializeField] private float minVisibleTimeBeforeLunge = 0.25f;
 		[Tooltip("Maximum angle to the target before lunge is allowed. Lower is stricter and more readable.")]
@@ -152,7 +156,7 @@ namespace Game.AI {
 
 		// Attacks are intentionally stricter than movement: require LOS + cooldown/range/token checks
 		private void TickAttacks() {
-			if (sword.HasTarget == false || sword.Target == null || sword.HasLineOfSight == false) {
+			if (sword.HasTarget == false || sword.Target == null) {
 				return;
 			}
 
@@ -160,15 +164,22 @@ namespace Game.AI {
 				return;
 			}
 
-			// Prefer a close-range swing when available
+			// Prefer a close-range swing when available even if the normal LOS ray is unreliable on
+			// platforms, ramps or when other enemies are nearby
 			// Tokens prevent too many swords from attacking at once and keep pressure fair/readable
-			if (sword.InSwingRange && sword.CanSwing) {
+			if (sword.InSwingRange && sword.CanSwing && CanMeleeSwingAtPlayer()) {
 				if (pressureAgent.TryRequestAttackToken(PressureAttackTokenType.SwordSwing, swordSwingTokenTime)) {
 					if (sword.TryStartSwing() == false) {
 						// Release the token if the attack start failed so another enemy can use it
 						pressureAgent.ReleaseAttackToken(PressureAttackTokenType.SwordSwing);
 					}
 				}
+
+				return;
+			}
+
+			// Lunges stay stricter because psychic lunges through geometry would feel unfair
+			if (sword.HasLineOfSight == false) {
 				return;
 			}
 
@@ -198,12 +209,40 @@ namespace Game.AI {
 			}
 		}
 
+		private bool CanMeleeSwingAtPlayer() {
+			if (sword.Target == null) {
+				return false;
+			}
+
+			Vector3 toTarget = sword.Target.position - transform.position;
+
+			float verticalDifference = Mathf.Abs(toTarget.y);
+			if (verticalDifference > meleeSwingMaxVerticalDifference) {
+				return false;
+			}
+
+			Vector3 flatToTarget = Vector3.ProjectOnPlane(toTarget, Vector3.up);
+			if (flatToTarget.sqrMagnitude < 0.0001f) {
+				return true;
+			}
+
+			Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
+			if (flatForward.sqrMagnitude < 0.0001f) {
+				return false;
+			}
+
+			float angle = Vector3.Angle(flatForward.normalized, flatToTarget.normalized);
+
+			// Wider than lunge facing angle because melee swings should be forgiving once the enemy has successfully reached the player
+			return angle <= startMeleeSwingFacingAngle;
+		}
+
 		// Movement is pressure/memory driven
 		// LOS is not required for movement around corners
 		private void TickMovement() {
 			// Only stop to swing if the enemy really has LOS
 			// If LOS is false, keep pathing to last known position
-			if (sword.HasTarget && sword.HasLineOfSight && sword.InSwingRange) {
+			if (sword.HasTarget && sword.Target != null && sword.InSwingRange && CanMeleeSwingAtPlayer()) {
 				groundMotor.Stop();
 				sword.FaceTarget(sword.Target.position);
 				return;

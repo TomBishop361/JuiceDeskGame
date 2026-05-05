@@ -868,7 +868,7 @@ namespace Game.AI.Sword {
 		}
 
 		// Returns the supplied vector projected onto the XZ plane
-		private static Vector3 Flatten(Vector3 value) {
+		private Vector3 Flatten(Vector3 value) {
 			value.y = 0.0f;
 			return value;
 		}
