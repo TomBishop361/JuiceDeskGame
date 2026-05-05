@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -278,7 +278,7 @@ public sealed class HuntHUDMarker : MonoBehaviour {
 				showDirectionalIcon = true;
 
 				// TODO: add < , > then rotate arrowRotationOffset
-				directionalIcon = verticalDelta > 0.0f ? "UP" : "DN";
+				directionalIcon = verticalDelta > 0.0f ? "▲" : "▼";
 			}
 		}
 
