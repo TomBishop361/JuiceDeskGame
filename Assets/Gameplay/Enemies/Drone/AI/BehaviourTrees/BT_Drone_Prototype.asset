@@ -211,7 +211,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001980571550309
         m_Children:
-        - rid: 4349001980571550320
+        - rid: -2
         - rid: 4349001980571550321
         m_RegisteredObservers: []
     - rid: 4349001980571550314
@@ -230,7 +230,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001980571550310
         m_Children:
-        - rid: 4349001980571550322
+        - rid: -2
         - rid: 4349001980571550323
         m_RegisteredObservers: []
     - rid: 4349001980571550316
@@ -282,19 +282,9 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001980571550311
         m_Children:
-        - rid: 4349001980571550329
+        - rid: -2
         - rid: 4349001980571550330
         m_RegisteredObservers: []
-    - rid: 4349001980571550320
-      type: {class: EnemyDie, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 2283429554904677411
-          m_Value1: 13277822037749628581
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 4349001980571550313
     - rid: 4349001980571550321
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -309,16 +299,6 @@ MonoBehaviour:
           rid: 4349001980571550242
         LogLevel:
           rid: 4349001980571550243
-    - rid: 4349001980571550322
-      type: {class: DroneRecoverFromKnockdown, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 10711928669854247474
-          m_Value1: 17127681492034520210
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 4349001980571550315
     - rid: 4349001980571550323
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -344,7 +324,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001980571550317
         m_Children:
-        - rid: 4349001980571550331
+        - rid: -2
         - rid: 4349001980571550332
         m_RegisteredObservers: []
     - rid: 4349001980571550325
@@ -368,7 +348,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001980571550318
         m_Children:
-        - rid: 4349001980571550333
+        - rid: -2
         - rid: 4349001980571550334
         m_RegisteredObservers: []
     - rid: 4349001980571550328
@@ -376,16 +356,6 @@ MonoBehaviour:
       data:
         Graph:
           rid: 7112529902252327530
-    - rid: 4349001980571550329
-      type: {class: DroneMaintainRangeTick, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 2125984946493677486
-          m_Value1: 3016655687988450668
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 4349001980571550319
     - rid: 4349001980571550330
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -400,16 +370,6 @@ MonoBehaviour:
           rid: 4349001980571550335
         LogLevel:
           rid: 4349001980571550336
-    - rid: 4349001980571550331
-      type: {class: DroneFireProjectile, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 7804913688540353845
-          m_Value1: 13924574982401917399
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 4349001980571550324
     - rid: 4349001980571550332
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -424,16 +384,6 @@ MonoBehaviour:
           rid: 4349001980571550250
         LogLevel:
           rid: 4349001980571550251
-    - rid: 4349001980571550333
-      type: {class: DroneMoveAwayTick, ns: Game.AI.Behavior.Drone, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 10844926782569446110
-          m_Value1: 9247155106464276653
-        Graph:
-          rid: 7112529902252327530
-        m_Parent:
-          rid: 4349001980571550327
     - rid: 4349001980571550334
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -598,7 +548,7 @@ MonoBehaviour:
   - rid: 7112529948010348721
   - rid: 7112529948010348778
   - rid: 4349001980571549905
-  m_VersionTimestamp: 639116048466817246
+  m_VersionTimestamp: 639137804782768783
   m_SerializedVersion: 2
   m_DebugInfo: {fileID: 8522848657885155476}
   m_RuntimeGraph: {fileID: -2347024426253386433}
@@ -679,7 +629,7 @@ MonoBehaviour:
       m_Value1: 940126422461058784
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Enemy: Die'
     Story: Enemy dies
     RuntimeTypeString: Game.AI.Behavior.Shared.EnemyDie, Assembly-CSharp, Version=0.0.0.0,
@@ -689,7 +639,7 @@ MonoBehaviour:
       m_Value1: 53472
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Drone: Fire Projectile'
     Story: Drone enemy fires a projectile
     RuntimeTypeString: Game.AI.Behavior.Drone.DroneFireProjectile, Assembly-CSharp,
@@ -699,7 +649,7 @@ MonoBehaviour:
       m_Value1: 13838998705206722746
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Drone: Move Away (Tick)'
     Story: Drone enemy moves away from target
     RuntimeTypeString: Game.AI.Behavior.Drone.DroneMoveAwayTick, Assembly-CSharp,
@@ -709,7 +659,7 @@ MonoBehaviour:
       m_Value1: 11038300831744
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Drone: Maintain Range (Tick)'
     Story: Drone enemy maintains range
     RuntimeTypeString: Game.AI.Behavior.Drone.DroneMaintainRangeTick, Assembly-CSharp,
@@ -719,15 +669,15 @@ MonoBehaviour:
       m_Value1: 11529215089018798080
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   m_Blackboards: []
   m_MainBlackboardAuthoringAsset: {fileID: 2584460764198514922}
   m_CommandBuffer:
     m_Commands: []
   m_SubgraphsInfo: []
   m_BlackboardMissingManagedRef: 0
-  m_GraphMissingManagedRef: 0
-  m_HasMissingTypeInManagedRef: 0
+  m_GraphMissingManagedRef: 1
+  m_HasMissingTypeInManagedRef: 1
   references:
     version: 2
     RefIds:

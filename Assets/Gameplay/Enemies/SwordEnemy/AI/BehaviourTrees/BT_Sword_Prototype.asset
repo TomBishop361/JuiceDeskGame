@@ -268,7 +268,7 @@ MonoBehaviour:
   - rid: 7112529948010349168
   - rid: 7112529968244458198
   - rid: 4349001982376935730
-  m_VersionTimestamp: 639116225769714720
+  m_VersionTimestamp: 639137804782768783
   m_SerializedVersion: 2
   m_DebugInfo: {fileID: -6767487214571463491}
   m_RuntimeGraph: {fileID: 864767987304456625}
@@ -349,7 +349,7 @@ MonoBehaviour:
       m_Value1: 53472
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Enemy: Recover (Tick)'
     Story: Enemy recovers from stun
     RuntimeTypeString: Game.AI.Behavior.Shared.EnemyRecoverTick, Assembly-CSharp,
@@ -359,7 +359,7 @@ MonoBehaviour:
       m_Value1: 54043195775913696
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Enemy: Chase Target (Tick)'
     Story: Enemy chases target
     RuntimeTypeString: Game.AI.Behavior.Shared.EnemyChaseTargetTick, Assembly-CSharp,
@@ -369,7 +369,7 @@ MonoBehaviour:
       m_Value1: 63050441501491424
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Sword: Lunge Attack'
     Story: Sword enemy performs a lunge
     RuntimeTypeString: Game.AI.Behavior.Sword.SwordLungeAttack, Assembly-CSharp,
@@ -379,7 +379,7 @@ MonoBehaviour:
       m_Value1: 13838049688982388922
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Sword: Swing Attack'
     Story: Sword enemy performs a swing
     RuntimeTypeString: Game.AI.Behavior.Sword.SwordSwingAttack, Assembly-CSharp,
@@ -389,7 +389,7 @@ MonoBehaviour:
       m_Value1: 13838048726909714618
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Enemy: Primary Attack'
     Story: Enemy performs primary attack
     RuntimeTypeString: Game.AI.Behavior.Shared.EnemyPrimaryAttack, Assembly-CSharp,
@@ -399,15 +399,15 @@ MonoBehaviour:
       m_Value1: 765612623847751866
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   m_Blackboards: []
   m_MainBlackboardAuthoringAsset: {fileID: -54798161795798349}
   m_CommandBuffer:
     m_Commands: []
   m_SubgraphsInfo: []
   m_BlackboardMissingManagedRef: 0
-  m_GraphMissingManagedRef: 0
-  m_HasMissingTypeInManagedRef: 0
+  m_GraphMissingManagedRef: 1
+  m_HasMissingTypeInManagedRef: 1
   references:
     version: 2
     RefIds:
@@ -1963,7 +1963,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001982376935868
         m_Children:
-        - rid: 4349001982376935879
+        - rid: -2
         - rid: 4349001982376935880
         m_RegisteredObservers: []
     - rid: 4349001982376935873
@@ -1982,7 +1982,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001982376935869
         m_Children:
-        - rid: 4349001982376935881
+        - rid: -2
         - rid: 4349001982376935882
         m_RegisteredObservers: []
     - rid: 4349001982376935875
@@ -2035,19 +2035,9 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001982376935870
         m_Children:
-        - rid: 4349001982376935889
+        - rid: -2
         - rid: 4349001982376935890
         m_RegisteredObservers: []
-    - rid: 4349001982376935879
-      type: {class: EnemyDie, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 6265402623554310578
-          m_Value1: 14581470676824625047
-        Graph:
-          rid: 7112529880627806401
-        m_Parent:
-          rid: 4349001982376935872
     - rid: 4349001982376935880
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -2062,16 +2052,6 @@ MonoBehaviour:
           rid: 4349001982376935752
         LogLevel:
           rid: 4349001982376935753
-    - rid: 4349001982376935881
-      type: {class: EnemyRecoverTick, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 12175501720213435708
-          m_Value1: 896767280853697843
-        Graph:
-          rid: 7112529880627806401
-        m_Parent:
-          rid: 4349001982376935874
     - rid: 4349001982376935882
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -2097,7 +2077,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001982376935876
         m_Children:
-        - rid: 4349001982376935891
+        - rid: -2
         - rid: 4349001982376935892
         m_RegisteredObservers: []
     - rid: 4349001982376935884
@@ -2121,7 +2101,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001982376935877
         m_Children:
-        - rid: 4349001982376935893
+        - rid: -2
         - rid: 4349001982376935894
         m_RegisteredObservers: []
     - rid: 4349001982376935887
@@ -2134,16 +2114,6 @@ MonoBehaviour:
       data:
         Graph:
           rid: 7112529880627806401
-    - rid: 4349001982376935889
-      type: {class: EnemyChaseTargetTick, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 14408725092096692600
-          m_Value1: 4560615701169889458
-        Graph:
-          rid: 7112529880627806401
-        m_Parent:
-          rid: 4349001982376935878
     - rid: 4349001982376935890
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -2158,16 +2128,6 @@ MonoBehaviour:
           rid: 4349001982376935860
         LogLevel:
           rid: 4349001982376935861
-    - rid: 4349001982376935891
-      type: {class: SwordLungeAttack, ns: Game.AI.Behavior.Sword, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 8634498138230433567
-          m_Value1: 6882426102464905496
-        Graph:
-          rid: 7112529880627806401
-        m_Parent:
-          rid: 4349001982376935883
     - rid: 4349001982376935892
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -2182,16 +2142,6 @@ MonoBehaviour:
           rid: 4349001982376935862
         LogLevel:
           rid: 4349001982376935863
-    - rid: 4349001982376935893
-      type: {class: SwordSwingAttack, ns: Game.AI.Behavior.Sword, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 13816217051149203717
-          m_Value1: 17949035013782736236
-        Graph:
-          rid: 7112529880627806401
-        m_Parent:
-          rid: 4349001982376935886
     - rid: 4349001982376935894
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:

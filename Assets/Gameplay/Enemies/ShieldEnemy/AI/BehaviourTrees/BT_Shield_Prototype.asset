@@ -98,14 +98,6 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 0
-    - rid: 4349001916144681257
-      type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 0
-          m_Value1: 0
-        Name: 
-        m_Value: 1
     - rid: 4349001916144681258
       type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -266,7 +258,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001916144681264
         m_Children:
-        - rid: 4349001916144681277
+        - rid: -2
         - rid: 4349001916144681278
         m_RegisteredObservers: []
     - rid: 4349001916144681270
@@ -285,7 +277,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001916144681265
         m_Children:
-        - rid: 4349001916144681279
+        - rid: -2
         - rid: 4349001916144681280
         m_RegisteredObservers: []
     - rid: 4349001916144681272
@@ -336,16 +328,6 @@ MonoBehaviour:
       data:
         Graph:
           rid: 7112529899975082055
-    - rid: 4349001916144681277
-      type: {class: EnemyDie, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 16463358571501219727
-          m_Value1: 7492032093198034128
-        Graph:
-          rid: 7112529899975082055
-        m_Parent:
-          rid: 4349001916144681269
     - rid: 4349001916144681278
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -360,16 +342,6 @@ MonoBehaviour:
           rid: 4349001916144681241
         LogLevel:
           rid: 4349001916144681242
-    - rid: 4349001916144681279
-      type: {class: EnemyRecoverTick, ns: Game.AI.Behavior.Shared, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 755681828809832690
-          m_Value1: 229080240155133897
-        Graph:
-          rid: 7112529899975082055
-        m_Parent:
-          rid: 4349001916144681271
     - rid: 4349001916144681280
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -429,8 +401,8 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001916144681275
         m_Children:
-        - rid: 4349001916144681290
-        - rid: 4349001916144681291
+        - rid: -2
+        - rid: -2
         m_RegisteredObservers: []
     - rid: 4349001916144681284
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
@@ -443,7 +415,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001916144681281
         m_Children:
-        - rid: 4349001916144681292
+        - rid: -2
         - rid: 4349001916144681293
         m_RegisteredObservers: []
     - rid: 4349001916144681285
@@ -467,7 +439,7 @@ MonoBehaviour:
         m_Parent:
           rid: 4349001916144681282
         m_Children:
-        - rid: 4349001916144681294
+        - rid: -2
         - rid: 4349001916144681295
         m_RegisteredObservers: []
     - rid: 4349001916144681288
@@ -480,38 +452,6 @@ MonoBehaviour:
       data:
         Graph:
           rid: 7112529899975082055
-    - rid: 4349001916144681290
-      type: {class: ShieldSetShieldRaised, ns: Game.AI.Behavior.Shield, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 9876124585419514904
-          m_Value1: 14773537683750552906
-        Graph:
-          rid: 7112529899975082055
-        m_Parent:
-          rid: 4349001916144681283
-        Raised:
-          rid: 4349001916144681257
-    - rid: 4349001916144681291
-      type: {class: ShieldAdvanceRaisedTick, ns: Game.AI.Behavior.Shield, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 2229394109618362840
-          m_Value1: 4453416102865177458
-        Graph:
-          rid: 7112529899975082055
-        m_Parent:
-          rid: 4349001916144681283
-    - rid: 4349001916144681292
-      type: {class: ShieldSlamShockwave, ns: Game.AI.Behavior.Shield, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 3644911207616776797
-          m_Value1: 14939152730189588084
-        Graph:
-          rid: 7112529899975082055
-        m_Parent:
-          rid: 4349001916144681284
     - rid: 4349001916144681293
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -526,16 +466,6 @@ MonoBehaviour:
           rid: 4349001916144681258
         LogLevel:
           rid: 4349001916144681259
-    - rid: 4349001916144681294
-      type: {class: ShieldFireMinigunTick, ns: Game.AI.Behavior.Shield, asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 4805577234197496752
-          m_Value1: 8605576245907025320
-        Graph:
-          rid: 7112529899975082055
-        m_Parent:
-          rid: 4349001916144681287
     - rid: 4349001916144681295
       type: {class: LogMessageToConsoleAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -818,7 +748,7 @@ MonoBehaviour:
   - rid: 7112529998836138005
   - rid: 7112529998836138203
   - rid: 4349001980571550357
-  m_VersionTimestamp: 639116089364360386
+  m_VersionTimestamp: 639137804782768783
   m_SerializedVersion: 2
   m_DebugInfo: {fileID: -7831261502972002596}
   m_RuntimeGraph: {fileID: -5318482443493427073}
@@ -899,7 +829,7 @@ MonoBehaviour:
       m_Value1: 53472
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Enemy: Recover (Tick)'
     Story: Enemy recovers from stun
     RuntimeTypeString: Game.AI.Behavior.Shared.EnemyRecoverTick, Assembly-CSharp,
@@ -909,7 +839,7 @@ MonoBehaviour:
       m_Value1: 54043195775913696
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Shield: Advance Raised (Tick)'
     Story: Shield enemy advances with shield raised
     RuntimeTypeString: Game.AI.Behavior.Shield.ShieldAdvanceRaisedTick, Assembly-CSharp,
@@ -919,7 +849,7 @@ MonoBehaviour:
       m_Value1: 1053843200265947662
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Shield: Slam Attack (Opens Grapple Window)'
     Story: Shield enemy slams and opens grapple window
     RuntimeTypeString: Game.AI.Behavior.Shield.ShieldSlamAttackOpenGrapple, Assembly-CSharp,
@@ -929,7 +859,7 @@ MonoBehaviour:
       m_Value1: 63050394951000075
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Shield: Slam Shockwave'
     Story: Shield slams a shockwave
     RuntimeTypeString: Game.AI.Behavior.Shield.ShieldSlamShockwave, Assembly-CSharp,
@@ -939,7 +869,7 @@ MonoBehaviour:
       m_Value1: 3377699888341003
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Shield: Punch Attack'
     Story: Shield enemy punches
     RuntimeTypeString: Game.AI.Behavior.Shield.ShieldPunchAttack, Assembly-CSharp,
@@ -949,7 +879,7 @@ MonoBehaviour:
       m_Value1: 824633761803
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Shield: Set Shield Raised'
     Story: 'Shield is raised set to [Raised]'
     RuntimeTypeString: Game.AI.Behavior.Shield.ShieldSetShieldRaised, Assembly-CSharp,
@@ -964,7 +894,7 @@ MonoBehaviour:
           PublicKeyToken=b77a5c561934e089
       Tooltip: 
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   - Name: 'Shield: Fire Minigun (Tick)'
     Story: Shield fires minigun
     RuntimeTypeString: Game.AI.Behavior.Shield.ShieldFireMinigunTick, Assembly-CSharp,
@@ -974,15 +904,15 @@ MonoBehaviour:
       m_Value1: 962073698315
     Variables: []
     NamedChildren: []
-    IsPlaceholder: 0
+    IsPlaceholder: 1
   m_Blackboards: []
   m_MainBlackboardAuthoringAsset: {fileID: 3956233504210265991}
   m_CommandBuffer:
     m_Commands: []
   m_SubgraphsInfo: []
   m_BlackboardMissingManagedRef: 0
-  m_GraphMissingManagedRef: 0
-  m_HasMissingTypeInManagedRef: 0
+  m_GraphMissingManagedRef: 1
+  m_HasMissingTypeInManagedRef: 1
   references:
     version: 2
     RefIds:
