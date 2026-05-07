@@ -22,10 +22,18 @@ public class Sniper : MonoBehaviour
     [SerializeField] LineRendererHandler ShotLineEffect;
     [SerializeField] AttackData _attackData;
     [SerializeField] Transform shotOrigin;
+
+    [SerializeField] float StartFOV = 65;
+    [SerializeField] float ZoomFOV = 50;
+
     IGunInputManager gunInputManager => _gunInputManager.InputManager;    
 
     public event Action OnShotTaken = delegate { };
 
+    private void Start()
+    {
+        StartFOV = _camera.Lens.FieldOfView;
+    }
 
     private void OnEnable()
     {
@@ -138,7 +146,7 @@ public class Sniper : MonoBehaviour
         
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = false;
-        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, 50, t);
+        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, ZoomFOV, t);
         Time.timeScale = Mathf.SmoothStep(Time.timeScale, 0.5f, t);        
     }
 
@@ -148,7 +156,7 @@ public class Sniper : MonoBehaviour
         
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = true;
-        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, 90, t);
+        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, StartFOV, t);
         Time.timeScale = Mathf.SmoothStep(Time.timeScale, 1, t);
     }
    
