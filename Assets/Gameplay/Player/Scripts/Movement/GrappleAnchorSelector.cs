@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class GrappleAnchorSelector : MonoBehaviour
@@ -9,8 +10,14 @@ public class GrappleAnchorSelector : MonoBehaviour
     [SerializeField] Camera _camera;
     [SerializeField] LayerMask _layerMask;
     [SerializeField] float grappleMaxDist;
+    public float margin = 50f;
+
+    [Header("UI")]
+    public Transform player;    
+    public RectTransform UIIndicator;
 
     public AnchorPoint bestAnchor;
+    public AnchorPoint ClosestAnchor;
 
     public delegate void anchorFound(AnchorPoint anchor);
     public event anchorFound OnAnchorFound; 
@@ -33,6 +40,8 @@ public class GrappleAnchorSelector : MonoBehaviour
             
         }
         OnAnchorFound?.Invoke(bestAnchor);
+
+        GrappleUI();
     }
 
     public AnchorPoint GetBestAnchorInView(out AnchorPoint result)
@@ -43,6 +52,7 @@ public class GrappleAnchorSelector : MonoBehaviour
         foreach (AnchorPoint anchor in anchorPoints)
         {
             if(Vector3.Distance(_camera.transform.position,anchor.transform.position) > grappleMaxDist) continue;
+            ClosestAnchor = anchor;
             // 1. Get direction from camera to the anchor
             Vector3 dirToAnchor = (anchor.transform.position - _camera.transform.position).normalized;
 
@@ -53,7 +63,7 @@ public class GrappleAnchorSelector : MonoBehaviour
             if (dot > viewThreshold && dot > closestToCenter)
             {
                 // check if anchor isn't behind a wall
-                 if (Physics.Linecast(_camera.transform.position, anchor.transform.position, _layerMask)) continue;
+                 if (Physics.Raycast(_camera.transform.position, anchor.transform.position, _layerMask)) continue;
 
                 closestToCenter = dot;
                 bestTarget = anchor;
@@ -62,4 +72,47 @@ public class GrappleAnchorSelector : MonoBehaviour
         result = bestTarget;
         return result;
     }
+
+
+
+
+
+
+    void GrappleUI()
+    {
+        
+        Vector3 screenPos = _camera.WorldToScreenPoint(ClosestAnchor.transform.position);
+
+        
+        if (screenPos.z < 0)
+        {
+            screenPos.x = -screenPos.x;
+            screenPos.y = -screenPos.y;
+        }
+
+        
+        Vector3 screenCenter = new Vector3(Screen.width, Screen.height, 0) / 2;
+        screenPos -= screenCenter;
+
+        
+        float edgeX = screenCenter.x - margin;
+        float edgeY = screenCenter.y - margin;
+
+        
+        float divisor = Mathf.Max(Mathf.Abs(screenPos.x / edgeX), Mathf.Abs(screenPos.y / edgeY));
+
+        
+        if (divisor > 1)
+        {
+            screenPos /= divisor;
+        }
+
+        
+        UIIndicator.position = screenPos + screenCenter;
+
+        // Rotate the arrow to face the target
+        float angle = Mathf.Atan2(screenPos.y, screenPos.x) * Mathf.Rad2Deg;
+        UIIndicator.rotation = Quaternion.Euler(0, 0, angle - 90); //
+    }
+
 }
