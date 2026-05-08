@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GrappleAnchorSelector : MonoBehaviour
@@ -17,7 +19,12 @@ public class GrappleAnchorSelector : MonoBehaviour
     public RectTransform UIIndicator;
 
     public AnchorPoint bestAnchor;
-    public AnchorPoint ClosestAnchor;
+
+    public AnchorPoint _ClosestAnchor;
+    public AnchorPoint ClosestAnchor { get { return _ClosestAnchor; } set {
+            if (value != null ) UIIndicator.gameObject.SetActive(true);
+            else UIIndicator.gameObject.SetActive(false);
+                _ClosestAnchor = value; } }
 
     public delegate void anchorFound(AnchorPoint anchor);
     public event anchorFound OnAnchorFound; 
@@ -42,6 +49,7 @@ public class GrappleAnchorSelector : MonoBehaviour
         OnAnchorFound?.Invoke(bestAnchor);
 
         GrappleUI();
+        
     }
 
     public AnchorPoint GetBestAnchorInView(out AnchorPoint result)
@@ -51,8 +59,15 @@ public class GrappleAnchorSelector : MonoBehaviour
 
         foreach (AnchorPoint anchor in anchorPoints)
         {
-            if(Vector3.Distance(_camera.transform.position,anchor.transform.position) > grappleMaxDist) continue;
+
+            if(Vector3.Distance(_camera.transform.position,anchor.transform.position) > grappleMaxDist)
+            {
+                if (anchor == ClosestAnchor) ClosestAnchor = null;
+                continue;
+            }
+
             ClosestAnchor = anchor;
+
             // 1. Get direction from camera to the anchor
             Vector3 dirToAnchor = (anchor.transform.position - _camera.transform.position).normalized;
 
@@ -110,9 +125,9 @@ public class GrappleAnchorSelector : MonoBehaviour
         
         UIIndicator.position = screenPos + screenCenter;
 
-        // Rotate the arrow to face the target
-        float angle = Mathf.Atan2(screenPos.y, screenPos.x) * Mathf.Rad2Deg;
-        UIIndicator.rotation = Quaternion.Euler(0, 0, angle - 90); //
+        //// Rotate  arrow to face the target
+        //float angle = Mathf.Atan2(screenPos.y, screenPos.x) * Mathf.Rad2Deg;
+        //UIIndicator.rotation = Quaternion.Euler(0, 0, angle - 90); //
     }
 
 }
