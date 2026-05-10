@@ -17,7 +17,7 @@ public class Bullet : ProjectileBase {
 	[SerializeField]
 	GameObject testHitParticle;
 
-	[SerializeField] float lifeTime = 2f;
+	[SerializeField] float lifeTime = 0.25f;
 
 	float lifeTimer;
 	bool isActive;
@@ -35,6 +35,7 @@ public class Bullet : ProjectileBase {
 
 	private void Awake() {
 		rb = GetComponent<Rigidbody>();
+		
 
 		projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
 	}
@@ -46,7 +47,8 @@ public class Bullet : ProjectileBase {
 
 		lifeTimer = lifeTime;
 		isActive = true;
-	}
+		transform.rotation = Quaternion.LookRotation(direction);
+    }
 
 
 	private void Update() {
@@ -59,28 +61,24 @@ public class Bullet : ProjectileBase {
 		if (lifeTimer <= 0) OnBulletHit(this);
 	}
 
-	//private void OnCollisionEnter(Collision collision) {
-	//	isActive = false;
-	//	IDamageable hit;
-	//	if (collision.gameObject.TryGetComponent<IDamageable>(out hit)) {
-			
-	//		//AttackData attackData = new AttackData {
-	//		//	Attacker = gameObject,
-	//		//	AttackerFaction = Faction.Player,
-	//		//	Damage = 0.1f,
-	//		//	Knockback = new KnockbackData {
-	//		//		Force = 2.0f,
-	//		//		UpwardModifier = 0.0f,
-	//		//		TorqueStrength = 0.0f
-	//		//	},
-	//		//	Type = DamageType.Ranged
-	//		//};
-
-	//		hit.TakeDamage(playerSettings.attackData);
-	//	}
-	//	OnBulletHit(this);
-	//	Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
-	//}
+	private void OnCollisionEnter(Collision collision)
+	{
+		isActive = false;
+		IDamageable hit;
+		if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
+		{
+			hit.TakeDamage(bulletAttackData);
+		}
+		else
+		{
+			if(collision.transform.root.TryGetComponent<IDamageable>(out hit))
+			{
+                hit.TakeDamage(bulletAttackData);
+            }
+		}
+			OnBulletHit(this);
+		Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
+	}
 
 	public void HandleProjectileHitImpact(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
 		if (isActive == false) {

@@ -17,7 +17,8 @@ public class CameraShoulderHandler : MonoBehaviour
     float currentDutch;
 
     [Header("References")]
-    [SerializeField]WallRunning controller;
+    [SerializeField] WallRunning wallRunController;
+    [SerializeField] InputController _controller;
     [SerializeField] CinemachineThirdPersonFollow cineCam;
     [SerializeField] CinemachineCamera cinemachineCamera;
 
@@ -29,23 +30,40 @@ public class CameraShoulderHandler : MonoBehaviour
     [SerializeField] Vector3 RightSideGunPlacement;
     [SerializeField] Vector3 LeftSideGunPlacement;
 
+
+    [Header("FOV")]
+    float startFOV;
+    public float FOVMulti;
+
     private void Start()
     {
         currentOffset = XShoulderOffset;
-        
+        startFOV = cinemachineCamera.Lens.FieldOfView;
         cineCam.ShoulderOffset.x = XShoulderOffset;
         
     }
     private void OnEnable()
-    {
-        controller.OnWallRunStart += changeShoulder;
-        controller.OnWallRunEnd += resetDutch;
+    {        
+        wallRunController.OnWallRunStart += changeShoulder;
+        wallRunController.OnWallRunEnd += resetDutch;
         
     }
     private void OnDisable()
     {
-        controller.OnWallRunStart -= changeShoulder;
-        controller.OnWallRunEnd -= resetDutch;
+        wallRunController.OnWallRunStart -= changeShoulder;
+        wallRunController.OnWallRunEnd -= resetDutch;
+    }
+
+    private void Update()
+    {
+        ChangeFOV();
+    }
+
+    void ChangeFOV()
+    {   
+        float t = Mathf.InverseLerp(8,15,Mathf.Clamp(_controller.Velocity, 8,15));
+        Debug.Log(t);
+        cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, startFOV + (FOVMulti*t), t);        
     }
 
     void changeShoulder(bool right)
@@ -54,15 +72,11 @@ public class CameraShoulderHandler : MonoBehaviour
         if (right)
         {
             targetOffset = -XShoulderOffset;
-            targetDutch = DutchTilt;
-            //TEMORARY STOPPED
-            //gunObj.transform.localPosition = LeftSideGunPlacement;
+            targetDutch = DutchTilt;            
         }
         else
         {            
-            targetDutch = -DutchTilt;
-            //TEMORARY STOPPED
-            // gunObj.transform.localPosition = RightSideGunPlacement;
+            targetDutch = -DutchTilt;            
         }
 
         //Begin Lerp

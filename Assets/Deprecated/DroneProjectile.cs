@@ -32,7 +32,7 @@ namespace Game.Combat.Projectiles {
 
 		[Header("Visuals")]
 		//[SerializeField] private float projectileVisualSpinSpeed = 720.0f;
-		[SerializeField] private float gizmoHitRadius = 0.30f;
+		[SerializeField] private float gizmoExplosionRadius = 0.30f;
 		[SerializeField] private LayerMask groundLayers;
 
 		[Space(5)]
