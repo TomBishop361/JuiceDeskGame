@@ -8,6 +8,7 @@ public class GrappleAnchorSelector : MonoBehaviour
     [Header("Detection Settings")]
     [Range(0.7f, 1f)]
     [SerializeField] float viewThreshold = 0.92f; // 1.0 is center, 0.9 is roughly the inner screen area
+    //[SerializeField] AnchorPoint anchorPointParent;
     [SerializeField] AnchorPoint[] anchorPoints;
     [SerializeField] Camera _camera;
     [SerializeField] LayerMask _layerMask;
@@ -27,7 +28,14 @@ public class GrappleAnchorSelector : MonoBehaviour
                 _ClosestAnchor = value; } }
 
     public delegate void anchorFound(AnchorPoint anchor);
-    public event anchorFound OnAnchorFound; 
+    public event anchorFound OnAnchorFound;
+
+
+    private void Start()
+    {
+
+        anchorPoints = FindObjectsOfType<AnchorPoint>();
+    }
 
     private void Update()
     {
@@ -48,7 +56,8 @@ public class GrappleAnchorSelector : MonoBehaviour
         }
         OnAnchorFound?.Invoke(bestAnchor);
 
-        GrappleUI();
+        if(ClosestAnchor != null)
+            GrappleUI();
         
     }
 

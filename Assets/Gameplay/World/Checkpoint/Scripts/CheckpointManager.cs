@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class CheckpointManager : MonoBehaviour {
 	public static CheckpointManager Instance;
 
-	[SerializeField] private Transform player;
+	[SerializeField] private Rigidbody player;
 	[SerializeField] private Vector3 currentCheckpoint;
 	[SerializeField] private bool hasCheckpoint;
 
@@ -22,7 +22,12 @@ public class CheckpointManager : MonoBehaviour {
 		}
 	}
 
-	public void SetPlayer(Transform newPlayer) {
+	private void Start()
+	{
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody>();
+	}
+
+    public void SetPlayer(Rigidbody newPlayer) {
 		player = newPlayer;
 
 		if (hasCheckpoint == false) {
