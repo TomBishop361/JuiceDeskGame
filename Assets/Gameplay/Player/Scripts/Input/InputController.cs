@@ -139,7 +139,9 @@ public class InputController : MonoBehaviour
 
     private void OnEnable()
     {
-        if(toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
+       
+
+        if (toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
 
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
@@ -546,7 +548,8 @@ public class InputController : MonoBehaviour
         Velocity = new Vector3 (rb.linearVelocity.x,0,rb.linearVelocity.z).magnitude;
         if (VelocityUI == null) return;
        VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-        
+
+
     }
     private void FixedUpdate()
     {
