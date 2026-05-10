@@ -2901,12 +2901,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   XShoulderOffset: 0.9
   DutchTilt: 20
-  controller: {fileID: 1127249066402206109}
+  wallRunController: {fileID: 0}
+  _controller: {fileID: 0}
   cineCam: {fileID: 0}
   cinemachineCamera: {fileID: 0}
   gunObj: {fileID: 0}
   RightSideGunPlacement: {x: 0.526, y: 0, z: 0.307}
   LeftSideGunPlacement: {x: -0.526, y: 0, z: 0.307}
+  FOVMulti: 0
 --- !u!114 &8330575932952866227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3011,9 +3013,13 @@ MonoBehaviour:
   _camera: {fileID: 0}
   _layerMask:
     serializedVersion: 2
-    m_Bits: 65
+    m_Bits: 0
   grappleMaxDist: 20
+  margin: 50
+  player: {fileID: 8776520717299130423}
+  UIIndicator: {fileID: 0}
   bestAnchor: {fileID: 0}
+  ClosestAnchor: {fileID: 0}
 --- !u!114 &3102673259003457122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3184,6 +3190,8 @@ MonoBehaviour:
     Type: 0
     AttackerFaction: 0
   shotOrigin: {fileID: 6373591792510189152}
+  StartFOV: 0
+  ZoomFOV: 30
   isOnCoolDown: 0
 --- !u!114 &1772563188392651328
 MonoBehaviour:
