@@ -55,6 +55,8 @@ public class GunBase : MonoBehaviour
     public float StartNaturalCoolDownTime = 1;
     float StartNaturalCoolDownTimer;
 
+   
+
 
     float overHeatLvl
     {
@@ -102,6 +104,8 @@ public class GunBase : MonoBehaviour
     private void OnEnable()
     {
         gunInputManager.onShootReceived += Shoot;
+
+        
        // gunInputManager.onReload += reload;
     }
 
@@ -123,6 +127,8 @@ public class GunBase : MonoBehaviour
         reloadTimer = fireRate;
         if(isDrawn) Instantiate(gunObject, transform.position, transform.rotation, transform.parent);
        // gunAnimationHandler = gunObject.GetComponent<GunAnimationHandler>();
+
+
     }
 
     private void FixedUpdate()

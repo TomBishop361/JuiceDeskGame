@@ -5,6 +5,7 @@ using UnityEngine;
 public class WallRunning : MonoBehaviour
 {
     [Header("Referneces")]
+    TimerManager _timerManager;
     public LayerMask wallLayer;
     public LayerMask groundLayer;
     public float wallRunForce;
@@ -17,12 +18,17 @@ public class WallRunning : MonoBehaviour
     [Header("Wall Run")]
     public float wallCheckDist =0.7f;
     public float minJumpHeight;
-    public float wallRunTime;
-    float wallRunTimer;
+
+    public float wallRunTime;    
+    int wallRunTimerID;
+
+
     private RaycastHit leftWallCheck;
     private RaycastHit rightWallCheck;
+
     public float SameWallTime =5;
-    float sameWallTimer;
+    private int SameWallTimerID;
+
     public Transform LastWall;
     private bool wallLeft;
     private bool wallRight;
@@ -30,8 +36,10 @@ public class WallRunning : MonoBehaviour
     [Header("Wall Jumping")]
     public float wallJumpUpForce;
     public float wallJumpSideForce;
+
+    private int wallRunExitTimerID;
     public float exitWallTime;
-    float exitWallTimer;
+    
     bool exitingWall;  
    
 
@@ -41,6 +49,11 @@ public class WallRunning : MonoBehaviour
     public ForceMode forceMode;
     private void OnEnable()
     {
+        _timerManager = TimerManager.instance;
+        wallRunExitTimerID = _timerManager.NewTimer(exitWallTime, ExitTimerComplete, "Exit Wall Time");
+        wallRunTimerID = _timerManager.NewTimer(wallRunTime, WallRunTimerComplete, "Wall Time");
+        SameWallTimerID = _timerManager.NewTimer(SameWallTime, SameWallTimerComplete, "Same Wall Timer");
+
        controller.InputManager.OnMoveReceived += MoveInput;
         controller.InputManager.OnJumpReceived += JumpInput;
 
@@ -86,13 +99,14 @@ public class WallRunning : MonoBehaviour
             //Start Wall Run
             if (!controller.wallRunning) startWallRun();
 
-            if (wallRunTimer > 0) wallRunTimer -= Time.deltaTime;
+           // if (wallRunTimer > 0) wallRunTimer -= Time.deltaTime;
 
-            if(wallRunTimer <=0 && controller.wallRunning)
-            {
-                exitingWall = true;
-                exitWallTimer = exitWallTime;
-            }
+            //if(wallRunTimer <=0 && controller.wallRunning)
+            //{
+            //    exitingWall = true;
+            //    // exitWallTimer = exitWallTime;
+            //    _timerManager.RestartTimer(wallRunExitTimerID);
+            //}
 
             
 
@@ -102,49 +116,60 @@ public class WallRunning : MonoBehaviour
             if (controller.wallRunning)
             {
                 StopWallRun();
-            }
-            if(exitWallTimer > 0)
-            {
-                exitWallTimer -= +Time.deltaTime;
-            }
-            if(exitWallTimer <= 0)
-            {
-                exitingWall = false;
-                
-            }
+            }            
         }
         else
         {
             if (controller.wallRunning) StopWallRun();
         }
     }
-    void lastWallTimeCounter()
+
+    void ExitTimerComplete()
     {
-        if(sameWallTimer <= 0 || !AboveGround())
+        exitingWall = false;
+    }
+
+    void WallRunTimerComplete()
+    {
+        if (controller.wallRunning)
         {
-            LastWall = null;
-        }
-        else
-        {
-            sameWallTimer -= Time.deltaTime;    
+            exitingWall = true;
+            // exitWallTimer = exitWallTime;
+            _timerManager.RestartTimer(wallRunExitTimerID);
         }
     }
+    void SameWallTimerComplete()
+    {
+        LastWall = null;
+    }
+
+    
 
     void startWallRun()
     {
         Transform wall = wallRight ? rightWallCheck.transform : leftWallCheck.transform;
         if (wall != LastWall)
         {
-            wallRunTimer = wallRunTime;
-        }        
-        LastWall = wall;
-        sameWallTimer = SameWallTime;
+           // wallRunTimer = wallRunTime;
+           _timerManager.RestartTimer(wallRunTimerID);
+        }
+        else
+        {
+            _timerManager.SetTimerState(wallRunTimerID, true);
+        }
+            LastWall = wall;
+
+
+        _timerManager.RestartTimer(SameWallTimerID);
+
+
         controller.wallRunning = true;
         OnWallRunStart?.Invoke(wallRight);        
     }
 
     void StopWallRun()
     {
+        _timerManager.SetTimerState(wallRunTimerID, false);
         controller.wallRunning = false;
         OnWallRunEnd?.Invoke();
         //OnWallRunStart?.Invoke(false);
@@ -187,14 +212,19 @@ public class WallRunning : MonoBehaviour
     {
      CheckForWall();
         StateMachine();
-        lastWallTimeCounter();
+        if (!AboveGround())
+        {
+            LastWall = null;
+            _timerManager.SetTimerState(SameWallTimerID, false);
+        }
     }
 
     private void WallJump()
     {
         if (controller.wallRunning == false) return;
         exitingWall = true;
-        exitWallTimer = exitWallTime;
+        //exitWallTimer = exitWallTime;
+        _timerManager.RestartTimer(wallRunExitTimerID);
 
         Vector3 wallNormal = wallRight ? rightWallCheck.normal : leftWallCheck.normal;
 

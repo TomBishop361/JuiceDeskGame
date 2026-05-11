@@ -14,6 +14,7 @@ public class InputController : MonoBehaviour
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
     [SerializeField] GameObject _camera;
+    [SerializeField] TimerManager _timerManager;
 
     [Header("Movement Values")]
     float moveSpeed  = 7;
@@ -49,11 +50,14 @@ public class InputController : MonoBehaviour
     [Header("Grinding")]
     // Debug
     public bool toggleKnockOffRail = true;
-    //
+
+    //Rail
     public bool onRail;
     bool canRailGrind = true;
-    public float railGrindTime = 1;
-    float railGrindTimer;
+
+    public float railGrindTime = 1;    
+    private int RailtimerID;
+
     public float railBoost;
 
     [SerializeField] float grindSpeed;
@@ -139,7 +143,8 @@ public class InputController : MonoBehaviour
 
     private void OnEnable()
     {
-       
+        _timerManager = TimerManager.instance;
+       RailtimerID = _timerManager.NewTimer(railGrindTime, RailTimerEnd, "RailGrind Timer");
 
         if (toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
 
@@ -560,15 +565,20 @@ public class InputController : MonoBehaviour
         StateHandler();
         HandleCrouch();
         movePlayerAlongRail();
-        if(railGrindTimer > 0)
-        {
-            railGrindTimer -= Time.deltaTime;
-            if(railGrindTimer <= 0)
-            {
-                canRailGrind = true;
-            }
-        }
+        //if(railGrindTimer > 0)
+        //{
+        //    railGrindTimer -= Time.deltaTime;
+        //    if(railGrindTimer <= 0)
+        //    {
+        //        canRailGrind = true;
+        //    }
+        //}
 
+    }
+
+    void RailTimerEnd()
+    {
+        canRailGrind = true;
     }
 
     private void OnDisable()
@@ -688,7 +698,8 @@ private void OnCollisionEnter(Collision collision)
             currentRailScript = null;
             rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
             canRailGrind = false;
-            railGrindTimer = railGrindTime;
+            //railGrindTimer = railGrindTime;
+            _timerManager.RestartTimer(RailtimerID);
 
             desiredMoveSpeed = walkSpeed;
         }
