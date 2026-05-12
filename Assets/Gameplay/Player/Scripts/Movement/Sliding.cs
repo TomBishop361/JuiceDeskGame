@@ -11,9 +11,14 @@ public class Sliding : MonoBehaviour
 
     [Header("Sliding")]
     [SerializeField] float maxSlideTime;
+    private int SlideTimerID;
     [SerializeField] float SlideDownforce;
     public float slideForce;
-    private float slideTimer;
+
+    TimerManager _timerManager;
+
+    //private float slideTimer;
+    
     //bool isSliding;
 
     [Header("Scaling")]
@@ -24,8 +29,13 @@ public class Sliding : MonoBehaviour
     float slideInput;
     //bool jump;
 
+
+
     private void OnEnable()
     {
+        _timerManager = TimerManager.instance;
+        SlideTimerID =  _timerManager.NewTimer(maxSlideTime, SlideTimerComplete, "Slide Timer");
+
         controller.InputManager.OnSlideReceived += SlideInput;
         controller.InputManager.OnMoveReceived += MoveInput;
         controller.JumpEvent += jumpListener;
@@ -49,6 +59,10 @@ public class Sliding : MonoBehaviour
         moveDir = input;
     }
     
+    void SlideTimerComplete()
+    {
+        StopSlide();
+    }
 
     void SlidingMovement()
     {
@@ -59,18 +73,14 @@ public class Sliding : MonoBehaviour
         {
             rb.AddForce(slideDirection.normalized * slideForce, ForceMode.Force);
 
-            slideTimer -= Time.deltaTime;            
         }
         else
         {
             rb.AddForce(controller.GetSlopeMoveDirection(slideDirection) * slideForce, ForceMode.Force);
+            _timerManager.RestartTimer(SlideTimerID);
         }
 
-        if (slideTimer <= 0)
-        {
-            StopSlide();
-        }
-        //Adds down force when sliding
+       
         rb.AddForce(Vector3.down * SlideDownforce, ForceMode.Force);
     }
 
@@ -86,7 +96,8 @@ public class Sliding : MonoBehaviour
         rb.AddForce(Vector3.down, ForceMode.Impulse);
 
 
-        slideTimer = maxSlideTime;
+        //slideTimer = maxSlideTime;
+        _timerManager.RestartTimer(SlideTimerID);
     }
 
     void StopSlide()

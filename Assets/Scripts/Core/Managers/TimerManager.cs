@@ -34,7 +34,7 @@ public class TimerManager : MonoBehaviour
         {
             timers[ID].isActive = isActive;
         }
-    }
+    }       
 
 
     public void RestartTimer(int ID)
@@ -56,8 +56,10 @@ public class TimerManager : MonoBehaviour
                 t.timer -= Time.deltaTime;
                 if (t.isActive && t.timer <= 0)
                 {
-                    t.callback?.Invoke();
+                    t.timer = 0;
                     t.isActive = false;
+                    t.callback?.Invoke();
+                    
                 }
                 timers[i] = t;
             }

@@ -565,14 +565,7 @@ public class InputController : MonoBehaviour
         StateHandler();
         HandleCrouch();
         movePlayerAlongRail();
-        //if(railGrindTimer > 0)
-        //{
-        //    railGrindTimer -= Time.deltaTime;
-        //    if(railGrindTimer <= 0)
-        //    {
-        //        canRailGrind = true;
-        //    }
-        //}
+       
 
     }
 
