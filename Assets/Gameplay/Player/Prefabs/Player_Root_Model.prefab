@@ -2712,8 +2712,6 @@ GameObject:
   - component: {fileID: 8303638504209387791}
   - component: {fileID: 3088120483906418636}
   - component: {fileID: 7128203245387133486}
-  - component: {fileID: 1311496588835139791}
-  - component: {fileID: 5054759390921801900}
   - component: {fileID: 5447062614033670975}
   - component: {fileID: 8330575932952866227}
   - component: {fileID: 1127249066402206109}
@@ -2721,16 +2719,16 @@ GameObject:
   - component: {fileID: 7401631509944898134}
   - component: {fileID: 3102673259003457122}
   - component: {fileID: 2912212841907514719}
-  - component: {fileID: 1772563188392651328}
-  - component: {fileID: 5467415593500749781}
   - component: {fileID: 3184003480799253394}
   - component: {fileID: 3360952311824732236}
   - component: {fileID: 6915328010031275841}
   - component: {fileID: 3248711495759387962}
   - component: {fileID: 315411460745086423}
+  - component: {fileID: 7761443611690410262}
+  - component: {fileID: 5467415593500749781}
+  - component: {fileID: 1772563188392651328}
   - component: {fileID: 6374130247521770732}
   - component: {fileID: 1159540030383532587}
-  - component: {fileID: 7761443611690410262}
   m_Layer: 7
   m_Name: Player_Root_Model
   m_TagString: Player
@@ -2856,7 +2854,6 @@ MonoBehaviour:
   onRail: 0
   railGrindTime: 1
   railBoost: 0
-  railGrindNoiseInterval: 0.3
   grindSpeed: 12
   heightOffset: 1
   currentRailScript: {fileID: 0}
@@ -2890,52 +2887,6 @@ MonoBehaviour:
   PlayerRoot: {fileID: 2597609611847294696}
   rb: {fileID: 8303638504209387791}
   state: 0
---- !u!114 &1311496588835139791
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 084fdd4367e17a7429a6f8cc94434ee3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shortLeadTime: 0.25
-  mediumLeadTime: 0.65
-  longLeadTime: 1.1
-  velocitySmoothing: 14
-  maxPredictionSpeed: 24
-  verticalPredictionScale: 0.35
-  useTransformForwardWhenSlow: 1
-  slowSpeedThreshold: 0.75
---- !u!114 &5054759390921801900
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a483c1acd21fe941bb7eb65fec84437, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoEmitMovementNoise: 1
-  minMovementSpeed: 5.5
-  movementNoiseInterval: 0.35
-  movementNoiseRadius: 7
-  fastMovementBonusRadius: 6
-  fastMovementSpeed: 12
-  autoEmitLandingNoise: 1
-  landingVerticalSpeedThreshold: 6
-  landingNoiseRadius: 16
-  weaponNoiseRadius: 28
-  grappleNoiseRadius: 18
-  wallRunNoiseRadius: 14
-  slideNoiseRadius: 20
-  railGrindNoiseRadius: 18
 --- !u!114 &5447062614033670975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2950,12 +2901,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   XShoulderOffset: 0.9
   DutchTilt: 20
-  controller: {fileID: 1127249066402206109}
+  wallRunController: {fileID: 0}
+  _controller: {fileID: 0}
   cineCam: {fileID: 0}
   cinemachineCamera: {fileID: 0}
   gunObj: {fileID: 0}
   RightSideGunPlacement: {x: 0.526, y: 0, z: 0.307}
   LeftSideGunPlacement: {x: -0.526, y: 0, z: 0.307}
+  FOVMulti: 0
 --- !u!114 &8330575932952866227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2975,7 +2928,6 @@ MonoBehaviour:
   maxSlideTime: 0.75
   SlideDownforce: 2
   slideForce: 35
-  slideNoiseInterval: 0.35
   slideYScale: 0.5
 --- !u!114 &1127249066402206109
 MonoBehaviour:
@@ -3004,7 +2956,6 @@ MonoBehaviour:
   wallRunTime: 4
   SameWallTime: 5
   LastWall: {fileID: 0}
-  wallRunNoiseInterval: 0.4
   wallJumpUpForce: 40
   wallJumpSideForce: 20
   exitWallTime: 0.5
@@ -3062,9 +3013,13 @@ MonoBehaviour:
   _camera: {fileID: 0}
   _layerMask:
     serializedVersion: 2
-    m_Bits: 65
+    m_Bits: 0
   grappleMaxDist: 20
+  margin: 50
+  player: {fileID: 8776520717299130423}
+  UIIndicator: {fileID: 0}
   bestAnchor: {fileID: 0}
+  ClosestAnchor: {fileID: 0}
 --- !u!114 &3102673259003457122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3092,7 +3047,6 @@ MonoBehaviour:
   CoolDownRate: 10
   StartNaturalCoolDownTime: 1
   bulletPoolManager: {fileID: 0}
-  weaponNoiseInterval: 0.15
 --- !u!114 &2912212841907514719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3105,54 +3059,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2280ca9627c4a4b439c23ef730b6bd6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1772563188392651328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e423cb73769ea543845bbee45560613, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _controller: {fileID: 7128203245387133486}
-  _Sniper: {fileID: 5467415593500749781}
-  Fillimage: {fileID: 0}
-  CanPrimaryFire: 1
-  sniperCDTime: 15
---- !u!114 &5467415593500749781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc76a002d686c3948affce9a98ffd556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _camera: {fileID: 0}
-  _cameraTarget: {fileID: 0}
-  _gunInputManager: {fileID: 2912212841907514719}
-  _weaponManager: {fileID: 1772563188392651328}
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 16705
-  ShotLineEffect: {fileID: 2666334844587432012}
-  _attackData:
-    Damage: 25
-    Knockback:
-      Force: 0
-      UpwardModifier: 0
-      TorqueStrength: 0
-    Attacker: {fileID: 0}
-    Type: 0
-    AttackerFaction: 0
-  shotOrigin: {fileID: 6373591792510189152}
-  isOnCoolDown: 0
 --- !u!114 &3184003480799253394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3224,6 +3130,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28da05ac540cdd748beab802feec6244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7761443611690410262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &5467415593500749781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc76a002d686c3948affce9a98ffd556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 0}
+  _cameraTarget: {fileID: 0}
+  _gunInputManager: {fileID: 2912212841907514719}
+  _weaponManager: {fileID: 1772563188392651328}
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 16705
+  ShotLineEffect: {fileID: 2666334844587432012}
+  _attackData:
+    Damage: 25
+    Knockback:
+      Force: 0
+      UpwardModifier: 0
+      TorqueStrength: 0
+    Attacker: {fileID: 0}
+    Type: 0
+    AttackerFaction: 0
+  shotOrigin: {fileID: 6373591792510189152}
+  StartFOV: 0
+  ZoomFOV: 30
+  isOnCoolDown: 0
+--- !u!114 &1772563188392651328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e423cb73769ea543845bbee45560613, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 7128203245387133486}
+  _Sniper: {fileID: 5467415593500749781}
+  Fillimage: {fileID: 0}
+  CanPrimaryFire: 1
+  sniperCDTime: 15
 --- !u!114 &6374130247521770732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3260,36 +3246,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 8593586654675245498}
   _controller: {fileID: 7128203245387133486}
---- !u!114 &7761443611690410262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1 &7925212583705595643
 GameObject:
   m_ObjectHideFlags: 0
@@ -3575,7 +3531,7 @@ GameObject:
   - component: {fileID: 8206727841588321192}
   - component: {fileID: 2666334844587432012}
   m_Layer: 7
-  m_Name: Muzzle
+  m_Name: Muzzel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

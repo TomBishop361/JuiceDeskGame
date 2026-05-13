@@ -12,6 +12,8 @@ public class PlayerSettings : MonoBehaviour, IFactionOwner, IHealthSettings {
 	[Header("References")]
 	[SerializeField] private Health playerHealthComponent;
 	[SerializeField] private Animator playerAnimator;
+	[SerializeField] private Rigidbody playerCharacter;
+	public PlayerLoader playerLoader;
 
 	[Header("Stats")]
 	[Tooltip("Maximum health for the player")]
@@ -27,6 +29,7 @@ public class PlayerSettings : MonoBehaviour, IFactionOwner, IHealthSettings {
 	private float lastDamageTime = -Mathf.Infinity; // TODO: use for invunerability window
 
 	private void Awake() {
+		playerLoader = FindFirstObjectByType<PlayerLoader>();
 		// Sync health
 		currentHealth = maxHealth;
 
@@ -35,7 +38,14 @@ public class PlayerSettings : MonoBehaviour, IFactionOwner, IHealthSettings {
 		}
 	}
 
-	private void Update() {
+    private void Start()
+    {
+		playerCharacter.position = playerLoader.PlayerSpawnPos.position;
+        playerCharacter.position = playerLoader.PlayerSpawnPos.position;
+        
+    }
+
+    private void Update() {
 		// Update health for debugging purposes
 		currentHealth = playerHealthComponent.CurrentHealth;
 	}
