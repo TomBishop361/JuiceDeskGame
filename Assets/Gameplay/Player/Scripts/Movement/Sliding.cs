@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Rendering;
-using Game.AI;
 
 public class Sliding : MonoBehaviour
 {
@@ -12,29 +11,31 @@ public class Sliding : MonoBehaviour
 
     [Header("Sliding")]
     [SerializeField] float maxSlideTime;
+    private int SlideTimerID;
     [SerializeField] float SlideDownforce;
     public float slideForce;
-    private float slideTimer;
-	//bool isSliding;
-	[SerializeField] private float slideNoiseInterval = 0.35f;
 
-	[Header("Scaling")]
+    TimerManager _timerManager;
+
+    //private float slideTimer;
+    
+    //bool isSliding;
+
+    [Header("Scaling")]
     public float slideYScale;
     float startYScale;
 
     Vector2 moveDir;
     float slideInput;
-	//bool jump;
+    //bool jump;
 
-	private PlayerNoiseEmitter noiseEmitter;
-	private float nextSlideNoiseTime;
 
-	private void Awake() {
-		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
-	}
 
-	private void OnEnable()
+    private void OnEnable()
     {
+        _timerManager = TimerManager.instance;
+        SlideTimerID =  _timerManager.NewTimer(maxSlideTime, SlideTimerComplete, "Slide Timer");
+
         controller.InputManager.OnSlideReceived += SlideInput;
         controller.InputManager.OnMoveReceived += MoveInput;
         controller.JumpEvent += jumpListener;
@@ -58,6 +59,10 @@ public class Sliding : MonoBehaviour
         moveDir = input;
     }
     
+    void SlideTimerComplete()
+    {
+        StopSlide();
+    }
 
     void SlidingMovement()
     {
@@ -68,27 +73,16 @@ public class Sliding : MonoBehaviour
         {
             rb.AddForce(slideDirection.normalized * slideForce, ForceMode.Force);
 
-            slideTimer -= Time.deltaTime;            
         }
         else
         {
             rb.AddForce(controller.GetSlopeMoveDirection(slideDirection) * slideForce, ForceMode.Force);
+            _timerManager.RestartTimer(SlideTimerID);
         }
 
-        if (slideTimer <= 0)
-        {
-            StopSlide();
-            //return;
-        }
-
-        //Adds down force when sliding
+       
         rb.AddForce(Vector3.down * SlideDownforce, ForceMode.Force);
-
-		if (Time.time >= nextSlideNoiseTime) {
-			noiseEmitter?.EmitSlideNoise(0.65f);
-			nextSlideNoiseTime = Time.time + slideNoiseInterval;
-		}
-	}
+    }
 
     void StartSlide()
     {
@@ -102,11 +96,9 @@ public class Sliding : MonoBehaviour
         rb.AddForce(Vector3.down, ForceMode.Impulse);
 
 
-        slideTimer = maxSlideTime;
-
-		noiseEmitter?.EmitSlideNoise();
-		nextSlideNoiseTime = Time.time + slideNoiseInterval;
-	}
+        //slideTimer = maxSlideTime;
+        _timerManager.RestartTimer(SlideTimerID);
+    }
 
     void StopSlide()
     {

@@ -7,10 +7,20 @@ public class TimerManager : MonoBehaviour
 {
     [SerializeField]
     List<Timer> timers = new List<Timer>(); //pool
+    public static TimerManager instance;
 
-    int NewTimer(float time, Action Callback)
+    private void Awake()
     {
-        Timer _timer = new Timer(time,Callback,false);
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(this);
+
+    }
+
+    public int NewTimer(float time, Action Callback, string Name)
+    {
+        Timer _timer = new Timer(time,Callback,false, Name);
         timers.Add(_timer);
 
         int id = timers.Count-1;
@@ -18,20 +28,20 @@ public class TimerManager : MonoBehaviour
         return id;
     }
 
-    void SetTimerState(int ID, bool isActive)
+    public void SetTimerState(int ID, bool isActive)
     {
         if (ID >= 0 && ID < timers.Count)
         {
             timers[ID].isActive = isActive;
         }
-    }
+    }       
 
 
-    void RestartTimer(int ID, float time)
+    public void RestartTimer(int ID)
     {
         if (ID >= 0 && ID < timers.Count)
         {
-            timers[ID].time = time;
+            timers[ID].timer = timers[ID].time;
             timers[ID].isActive = true;
         }
     }
@@ -43,11 +53,13 @@ public class TimerManager : MonoBehaviour
             Timer t = timers[i];
             if (t.isActive)
             {
-                t.time -= Time.deltaTime;
-                if (t.isActive && t.time <= 0)
+                t.timer -= Time.deltaTime;
+                if (t.isActive && t.timer <= 0)
                 {
-                    t.callback?.Invoke();
+                    t.timer = 0;
                     t.isActive = false;
+                    t.callback?.Invoke();
+                    
                 }
                 timers[i] = t;
             }
@@ -58,13 +70,15 @@ public class TimerManager : MonoBehaviour
 [Serializable]
 public class Timer
 {
+    public string name;
     public float time;
     public float timer;
     public Action callback;
     public bool isActive;
 
-    public Timer(float time, Action callback, bool active)
-    {
+    public Timer(float time, Action callback, bool active, string name)
+    { 
+        this.name = name;
         this.time = time;
         this.callback = callback;
         this.isActive = active;
