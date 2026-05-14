@@ -1,3 +1,4 @@
+using Game.AI;
 using Game.AI.Sword;
 using System;
 using System.Collections;
@@ -10,6 +11,7 @@ using UnityEngine;
 public class Bullet : ProjectileBase {
 	[Header("Bullet Stats")]
 	[SerializeField] private AttackData bulletAttackData = new AttackData();
+	[SerializeField] private float weaponNoiseInterval = 0.15f;
 
 	Rigidbody rb;
 
@@ -17,7 +19,7 @@ public class Bullet : ProjectileBase {
 	[SerializeField]
 	GameObject testHitParticle;
 
-	[SerializeField] float lifeTime = 2f;
+	[SerializeField] float lifeTime = 0.25f;
 
 	float lifeTimer;
 	bool isActive;
@@ -26,17 +28,15 @@ public class Bullet : ProjectileBase {
 	private Transform player; 
 	private PlayerSettings playerSettings; // TODO: Remove later as this script can be used by anyone not just the player
 	private ProjectileHitbox projectileHitbox;
-	//private AttackData attackData;
-
-	//public AttackData attackData => projectileAttackData;
-
-	// Runtime params
-	//PlayerSettings playerSettings;
+	private PlayerNoiseEmitter noiseEmitter;
+	private float nextWeaponNoiseTime;
 
 	private void Awake() {
 		rb = GetComponent<Rigidbody>();
+		
 
 		projectileHitbox = GetComponentInChildren<ProjectileHitbox>();
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
 	}
 
 	public override void Fire(Vector3 direction, Vector3 origin, float speed, float damage) {
@@ -46,6 +46,13 @@ public class Bullet : ProjectileBase {
 
 		lifeTimer = lifeTime;
 		isActive = true;
+		transform.rotation = Quaternion.LookRotation(direction);
+
+		// Pulse SMG Fire noise
+		if (Time.time >= nextWeaponNoiseTime) {
+			noiseEmitter?.EmitWeaponNoise();
+			nextWeaponNoiseTime = Time.time + weaponNoiseInterval;
+		}
 	}
 
 
@@ -59,28 +66,24 @@ public class Bullet : ProjectileBase {
 		if (lifeTimer <= 0) OnBulletHit(this);
 	}
 
-	//private void OnCollisionEnter(Collision collision) {
-	//	isActive = false;
-	//	IDamageable hit;
-	//	if (collision.gameObject.TryGetComponent<IDamageable>(out hit)) {
-			
-	//		//AttackData attackData = new AttackData {
-	//		//	Attacker = gameObject,
-	//		//	AttackerFaction = Faction.Player,
-	//		//	Damage = 0.1f,
-	//		//	Knockback = new KnockbackData {
-	//		//		Force = 2.0f,
-	//		//		UpwardModifier = 0.0f,
-	//		//		TorqueStrength = 0.0f
-	//		//	},
-	//		//	Type = DamageType.Ranged
-	//		//};
-
-	//		hit.TakeDamage(playerSettings.attackData);
-	//	}
-	//	OnBulletHit(this);
-	//	Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
-	//}
+	private void OnCollisionEnter(Collision collision)
+	{
+		isActive = false;
+		IDamageable hit;
+		if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
+		{
+			hit.TakeDamage(bulletAttackData);
+		}
+		else
+		{
+			if(collision.transform.root.TryGetComponent<IDamageable>(out hit))
+			{
+                hit.TakeDamage(bulletAttackData);
+            }
+		}
+			OnBulletHit(this);
+		Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
+	}
 
 	public void HandleProjectileHitImpact(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
 		if (isActive == false) {

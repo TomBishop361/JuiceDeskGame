@@ -323,16 +323,35 @@ namespace Game.AI {
 		}
 
 		// Anchors flyer to a specific Y position to avoid clipping roofs
+		//public void HoldPosition(Vector3 facePoint, float anchorY) {
+		//	receivedMovementCommandThisFrame = true;
+
+		//	Vector3 pos = transform.position;
+
+		//	pos.y = GetDesiredY(anchorY);
+		//	pos.y = GetCeilingClampedY(pos);
+		//	pos.y = Mathf.Clamp(pos.y, minWorldY, maxWorldY);
+
+		//	transform.position = pos;
+		//	currentMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, 0.0f, braking * Time.deltaTime);
+		//	LastMoveSpeed = currentMoveSpeed;
+
+		//	FaceTarget(facePoint);
+		//}
+
+		// Anchors flyer to a specific Y position to avoid clipping roofs
 		public void HoldPosition(Vector3 facePoint, float anchorY) {
 			receivedMovementCommandThisFrame = true;
 
 			Vector3 pos = transform.position;
 
-			pos.y = GetDesiredY(anchorY);
+			float targetY = Mathf.Clamp(anchorY, minWorldY, maxWorldY);
+			pos.y = Mathf.MoveTowards(pos.y, targetY, maxMoveSpeed * Time.deltaTime);
 			pos.y = GetCeilingClampedY(pos);
 			pos.y = Mathf.Clamp(pos.y, minWorldY, maxWorldY);
 
 			transform.position = pos;
+
 			currentMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, 0.0f, braking * Time.deltaTime);
 			LastMoveSpeed = currentMoveSpeed;
 

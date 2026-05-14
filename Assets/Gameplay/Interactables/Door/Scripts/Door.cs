@@ -57,8 +57,13 @@ public class Door : MonoBehaviour {
 
 		playerInside = false;
 
-		// Close door on exit (if load scene is disabled)
-		if (loadsScene == false && animator != null) {
+        if (animator != null)
+        {
+            animator.SetTrigger("Close");
+        }
+
+        // Close door on exit (if load scene is disabled)
+        if (loadsScene == false && animator != null) {
 			animator.SetTrigger("Close");
 		}
 	}

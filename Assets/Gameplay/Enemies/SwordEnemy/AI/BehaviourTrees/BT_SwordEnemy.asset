@@ -1,0 +1,412 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9119660222859712558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c02bb70996b49eba31d0c206e28da24, type: 3}
+  m_Name: BT_SwordEnemy Blackboard
+  m_EditorClassIdentifier: 
+  VersionTimestamp: 639132810911553069
+  AssetID:
+    m_Value0: 0
+    m_Value1: 0
+  m_Blackboard:
+    m_Variables:
+    - rid: 885137683255919115
+    - rid: 885137689230704659
+    - rid: 885137689440420507
+    - rid: 885137689230704754
+  m_SharedBlackboardVariableGuids: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 885137683255919115
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Agent
+        m_Value: {fileID: 0}
+    - rid: 885137689230704659
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 8394715662950409337
+          m_Value1: 7531425894384577849
+        Name: MaxAgeLastSeen
+        m_Value: 2
+    - rid: 885137689230704754
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 7479255745606646
+          m_Value1: 2489860093274302070
+        Name: SearchDuration
+        m_Value: 2.5
+    - rid: 885137689440420507
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 9755536950168820828
+          m_Value1: 11858622104956370442
+        Name: MaxAgeNoise
+        m_Value: 4
+--- !u!114 &-7713352198075070591
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dd922ae02c94c87a66e46a10a7319b9, type: 3}
+  m_Name: BT_SwordEnemy Blackboard
+  m_EditorClassIdentifier: 
+  AssetID:
+    m_Value0: 8421420902804824445
+    m_Value1: 15631030902280949066
+  m_Variables:
+  - rid: 885137683255919116
+  - rid: 885137689230704657
+  - rid: 885137689440420506
+  - rid: 885137689230704753
+  m_VersionTimestamp: 639132810911553069
+  m_CommandBuffer:
+    m_Commands: []
+  m_RuntimeBlackboardAsset: {fileID: -9119660222859712558}
+  references:
+    version: 2
+    RefIds:
+    - rid: 885137683255919116
+      type: {class: 'TypedVariableModel`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Agent
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: {fileID: 0}
+    - rid: 885137689230704657
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 8394715662950409337
+          m_Value1: 7531425894384577849
+        Name: MaxAgeLastSeen
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 2
+    - rid: 885137689230704753
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 7479255745606646
+          m_Value1: 2489860093274302070
+        Name: SearchDuration
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 2.5
+    - rid: 885137689440420506
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 9755536950168820828
+          m_Value1: 11858622104956370442
+        Name: MaxAgeNoise
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 4
+--- !u!114 &-6523494079674301558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db920e62f70f420bb33c771449926fa4, type: 3}
+  m_Name: BT_SwordEnemy
+  m_EditorClassIdentifier: 
+  Graphs:
+  - rid: 885137683255919117
+  m_DebugInfo: {fileID: 5128579760551450833}
+  m_WasCompileWithPlaceholderNode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 885137683255919117
+      type: {class: BehaviorGraphModule, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        AuthoringAssetID:
+          m_Value0: 8421420902804824445
+          m_Value1: 15631030902280949066
+        m_DebugInfo: {fileID: 5128579760551450833}
+        BlackboardReference:
+          rid: 885137683255919118
+        BlackboardGroupReferences: []
+        Root:
+          rid: 885137736995963420
+        m_VersionTimestamp: 639134573044376396
+    - rid: 885137683255919118
+      type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        m_Blackboard:
+          rid: 885137683255919120
+        m_Source: {fileID: -9119660222859712558}
+    - rid: 885137683255919120
+      type: {class: Blackboard, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        m_Variables:
+        - rid: 885137736995963422
+        - rid: 885137736995963423
+        - rid: 885137736995963424
+        - rid: 885137736995963425
+    - rid: 885137736995963420
+      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 5115956674521637261
+          m_Value1: 11008221933893294134
+        Graph:
+          rid: 885137683255919117
+        m_Parent:
+          rid: -2
+        m_Child:
+          rid: 885137736995963421
+        Repeat: 1
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 885137736995963421
+      type: {class: SelectorComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 6117490004739288491
+          m_Value1: 13761112943073840580
+        Graph:
+          rid: 885137683255919117
+        m_Parent:
+          rid: 885137736995963420
+        m_Children: []
+        m_RegisteredObservers: []
+    - rid: 885137736995963422
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Agent
+        m_Value: {fileID: 0}
+    - rid: 885137736995963423
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 8394715662950409337
+          m_Value1: 7531425894384577849
+        Name: MaxAgeLastSeen
+        m_Value: 2
+    - rid: 885137736995963424
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 9755536950168820828
+          m_Value1: 11858622104956370442
+        Name: MaxAgeNoise
+        m_Value: 4
+    - rid: 885137736995963425
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 7479255745606646
+          m_Value1: 2489860093274302070
+        Name: SearchDuration
+        m_Value: 2.5
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad8f2220607dac4db5082ff333fafb8, type: 3}
+  m_Name: BT_SwordEnemy
+  m_EditorClassIdentifier: 
+  Blackboard: {fileID: -7713352198075070591}
+  m_Description: 
+  m_Nodes:
+  - rid: 885137683255919122
+  - rid: 885137683255919124
+  - rid: 885137689518539250
+  - rid: 885137736893727022
+  m_VersionTimestamp: 639134573044376396
+  m_SerializedVersion: 2
+  m_DebugInfo: {fileID: 5128579760551450833}
+  m_RuntimeGraph: {fileID: -6523494079674301558}
+  AssetID:
+    m_Value0: 8421420902804824445
+    m_Value1: 15631030902280949066
+  Story:
+    Story: 
+    StoryVariableNames: []
+    Variables: []
+  m_NodeModelsInfo:
+  - Name: On Start
+    Story: 
+    RuntimeTypeString: Unity.Behavior.Start, Unity.Behavior, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    RuntimeTypeID:
+      m_Value0: 3335272451348827663
+      m_Value1: 11549843281177505721
+    Variables: []
+    NamedChildren: []
+    IsPlaceholder: 0
+  - Name: Try In Order
+    Story: 
+    RuntimeTypeString: Unity.Behavior.SelectorComposite, Unity.Behavior, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    RuntimeTypeID:
+      m_Value0: 11477120919463386923
+      m_Value1: 7730102824742023565
+    Variables: []
+    NamedChildren: []
+    IsPlaceholder: 0
+  m_Blackboards: []
+  m_MainBlackboardAuthoringAsset: {fileID: -7713352198075070591}
+  m_CommandBuffer:
+    m_Commands: []
+  m_SubgraphsInfo: []
+  m_BlackboardMissingManagedRef: 0
+  m_GraphMissingManagedRef: 0
+  m_HasMissingTypeInManagedRef: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 885137683255919122
+      type: {class: StartNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: 0, y: 0}
+        ID:
+          m_Value0: 5115956674521637261
+          m_Value1: 11008221933893294134
+        Parents: []
+        PortModels:
+        - rid: 885137683255919123
+        NodeType:
+          m_SerializableType: Unity.Behavior.Start, Unity.Behavior, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 3335272451348827663
+          m_Value1: 11549843281177505721
+        m_FieldValues: []
+        Repeat: 1
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 885137683255919123
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 885137683255919122
+        m_Connections:
+        - rid: 885137683255919125
+    - rid: 885137683255919124
+      type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -0.8999383, y: 79.807106}
+        ID:
+          m_Value0: 6117490004739288491
+          m_Value1: 13761112943073840580
+        Parents: []
+        PortModels:
+        - rid: 885137683255919125
+        - rid: 885137683255919126
+        NodeType:
+          m_SerializableType: Unity.Behavior.SelectorComposite, Unity.Behavior, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 11477120919463386923
+          m_Value1: 7730102824742023565
+        m_FieldValues: []
+    - rid: 885137683255919125
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 885137683255919124
+        m_Connections:
+        - rid: 885137683255919123
+    - rid: 885137683255919126
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 885137683255919124
+        m_Connections: []
+    - rid: 885137689518539250
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: -1.6390836, y: -53.083687}
+        ID:
+          m_Value0: 9428723082446778721
+          m_Value1: 748998012725615192
+        Parents: []
+        PortModels: []
+        Text: SWORD ENEMY
+    - rid: 885137736893727022
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: 313.55865, y: -104.34928}
+        ID:
+          m_Value0: 17271905119610522951
+          m_Value1: 7752477072245810470
+        Parents: []
+        PortModels: []
+        Text: 'USE FSM STATE FOR:
+
+          Death
+
+          Stun
+
+          Knockdown
+
+          Spawn
+          enable/disable
+
+          Attack lock
+
+          Hit reactions
+
+          Animation
+          state gates
+
+          Temporary invulnerability'
+--- !u!114 &5128579760551450833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b27bb6d9a2c8d540a10dff10acc543e, type: 3}
+  m_Name: BT_SwordEnemy Debug Info
+  m_EditorClassIdentifier: 
+  m_CodeBreakPointsList: []

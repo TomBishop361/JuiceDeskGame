@@ -155,7 +155,11 @@ namespace Game.AI.Drone {
 				return;
 			}
 
-			homingProjectile.transform.SetPositionAndRotation(projectileSpawn.position, rotation);
+			//Vector3 spawnPosition = projectileSpawn.position + direction.normalized * 0.5f;
+			//homingProjectile.transform.SetPositionAndRotation(spawnPosition, rotation);
+
+			Vector3 spawnPosition = projectileSpawn.position + direction.normalized * 0.5f;
+			homingProjectile.SetSpawnPose(spawnPosition, rotation);
 
 			// Kick the drone slightly backwards to visualise them shooting
 			droneVisualMotion?.PlayShotRecoil();

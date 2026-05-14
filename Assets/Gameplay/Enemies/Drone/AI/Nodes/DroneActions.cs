@@ -10,7 +10,7 @@ namespace Game.AI.Behavior.Drone {
 	// NOTE: For continuous actions (maintain range/move away) -> they should return Success so the selector re-evaluates them every frame
 
 	// - ID INFORMATION -
-	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+	//<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
@@ -67,7 +67,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 			
-			droneEnemy.ChaseTargetTick(); // droneEnemy.MoveAwayTick(); New method will make this happen if it should
+			droneEnemy.ChaseTargetTick();
 
 			return Status.Success; 
 		}
@@ -80,7 +80,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
-			droneEnemy.ChaseTargetTick(); // droneEnemy.MoveAwayTick(); New method will make this happen if it should
+			droneEnemy.ChaseTargetTick();
 
 			return Status.Success; 
 		}
@@ -101,7 +101,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE 
 			}
 
-			droneEnemy.ChaseTargetTick(); // droneEnemy.MaintainRangeTick(); New method will make this happen if it should
+			droneEnemy.ChaseTargetTick();
 
 
 			return Status.Success; 
@@ -115,7 +115,7 @@ namespace Game.AI.Behavior.Drone {
 				return Status.Failure; // TODO: REMOVE IF HAVING INSIDE BT AS CONDITION NODE
 			}
 
-			droneEnemy.ChaseTargetTick(); // droneEnemy.MaintainRangeTick(); New method will make this happen if it should
+			droneEnemy.ChaseTargetTick();
 
 			return Status.Success; 
 		}

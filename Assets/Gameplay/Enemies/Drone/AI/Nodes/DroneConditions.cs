@@ -8,7 +8,7 @@ namespace Game.AI.Behavior.Drone {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+	//<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition

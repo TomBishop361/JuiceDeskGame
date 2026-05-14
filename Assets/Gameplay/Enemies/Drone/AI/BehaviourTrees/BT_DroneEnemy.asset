@@ -1,0 +1,380 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8116526831974758224
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dd922ae02c94c87a66e46a10a7319b9, type: 3}
+  m_Name: BT_DroneEnemy Blackboard
+  m_EditorClassIdentifier: 
+  AssetID:
+    m_Value0: 324101613457381187
+    m_Value1: 2928601772680169304
+  m_Variables:
+  - rid: 885137690270368428
+  - rid: 885137690682458219
+  - rid: 885137690682458255
+  - rid: 885137690682458293
+  - rid: 885137690805666649
+  m_VersionTimestamp: 639132811532037521
+  m_CommandBuffer:
+    m_Commands: []
+  m_RuntimeBlackboardAsset: {fileID: -630970791952334814}
+  references:
+    version: 2
+    RefIds:
+    - rid: 885137690270368428
+      type: {class: 'TypedVariableModel`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Agent
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: {fileID: 0}
+    - rid: 885137690682458219
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 11597620607099276886
+          m_Value1: 17184447815646526793
+        Name: MaxAgeLastSeen
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 2
+    - rid: 885137690682458255
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 12473626053766548980
+          m_Value1: 4443674371690605431
+        Name: MaxAgeNoise
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 4
+    - rid: 885137690682458293
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 13429752065001319893
+          m_Value1: 234873420354082115
+        Name: SearchDuration
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 2.5
+    - rid: 885137690805666649
+      type: {class: 'TypedVariableModel`1[[System.Single, mscorlib]]', ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 13061384902819061925
+          m_Value1: 7572676211062068818
+        Name: OrbitDirection
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: 1
+--- !u!114 &-1611866823083519834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db920e62f70f420bb33c771449926fa4, type: 3}
+  m_Name: BT_DroneEnemy
+  m_EditorClassIdentifier: 
+  Graphs:
+  - rid: 885137690270368429
+  m_DebugInfo: {fileID: 382913552595587975}
+  m_WasCompileWithPlaceholderNode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 885137690270368429
+      type: {class: BehaviorGraphModule, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        AuthoringAssetID:
+          m_Value0: 324101613457381187
+          m_Value1: 2928601772680169304
+        m_DebugInfo: {fileID: 382913552595587975}
+        BlackboardReference:
+          rid: 885137690270368430
+        BlackboardGroupReferences: []
+        Root:
+          rid: 885137736995963438
+        m_VersionTimestamp: 639134573134734273
+    - rid: 885137690270368430
+      type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        m_Blackboard:
+          rid: 885137690270368432
+        m_Source: {fileID: -630970791952334814}
+    - rid: 885137690270368432
+      type: {class: Blackboard, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        m_Variables:
+        - rid: 885137736995963439
+        - rid: 885137736995963440
+        - rid: 885137736995963441
+        - rid: 885137736995963442
+        - rid: 885137736995963443
+    - rid: 885137736995963438
+      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 15249262425395021462
+          m_Value1: 18029790329920993778
+        Graph:
+          rid: 885137690270368429
+        m_Parent:
+          rid: -2
+        m_Child:
+          rid: -2
+        Repeat: 1
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 885137736995963439
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Agent
+        m_Value: {fileID: 0}
+    - rid: 885137736995963440
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 11597620607099276886
+          m_Value1: 17184447815646526793
+        Name: MaxAgeLastSeen
+        m_Value: 2
+    - rid: 885137736995963441
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 12473626053766548980
+          m_Value1: 4443674371690605431
+        Name: MaxAgeNoise
+        m_Value: 4
+    - rid: 885137736995963442
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 13429752065001319893
+          m_Value1: 234873420354082115
+        Name: SearchDuration
+        m_Value: 2.5
+    - rid: 885137736995963443
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 13061384902819061925
+          m_Value1: 7572676211062068818
+        Name: OrbitDirection
+        m_Value: 1
+--- !u!114 &-630970791952334814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c02bb70996b49eba31d0c206e28da24, type: 3}
+  m_Name: BT_DroneEnemy Blackboard
+  m_EditorClassIdentifier: 
+  VersionTimestamp: 639132811532037521
+  AssetID:
+    m_Value0: 0
+    m_Value1: 0
+  m_Blackboard:
+    m_Variables:
+    - rid: 885137690270368434
+    - rid: 885137690682458237
+    - rid: 885137690682458274
+    - rid: 885137690682458313
+    - rid: 885137690805666693
+  m_SharedBlackboardVariableGuids: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 885137690270368434
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Agent
+        m_Value: {fileID: 0}
+    - rid: 885137690682458237
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 11597620607099276886
+          m_Value1: 17184447815646526793
+        Name: MaxAgeLastSeen
+        m_Value: 2
+    - rid: 885137690682458274
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 12473626053766548980
+          m_Value1: 4443674371690605431
+        Name: MaxAgeNoise
+        m_Value: 4
+    - rid: 885137690682458313
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 13429752065001319893
+          m_Value1: 234873420354082115
+        Name: SearchDuration
+        m_Value: 2.5
+    - rid: 885137690805666693
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 13061384902819061925
+          m_Value1: 7572676211062068818
+        Name: OrbitDirection
+        m_Value: 1
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad8f2220607dac4db5082ff333fafb8, type: 3}
+  m_Name: BT_DroneEnemy
+  m_EditorClassIdentifier: 
+  Blackboard: {fileID: -8116526831974758224}
+  m_Description: 
+  m_Nodes:
+  - rid: 885137690270368435
+  - rid: 885137690730955554
+  - rid: 885137736893727149
+  m_VersionTimestamp: 639134573134734273
+  m_SerializedVersion: 2
+  m_DebugInfo: {fileID: 382913552595587975}
+  m_RuntimeGraph: {fileID: -1611866823083519834}
+  AssetID:
+    m_Value0: 324101613457381187
+    m_Value1: 2928601772680169304
+  Story:
+    Story: 
+    StoryVariableNames: []
+    Variables: []
+  m_NodeModelsInfo:
+  - Name: On Start
+    Story: 
+    RuntimeTypeString: Unity.Behavior.Start, Unity.Behavior, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    RuntimeTypeID:
+      m_Value0: 3335272451348827663
+      m_Value1: 11549843281177505721
+    Variables: []
+    NamedChildren: []
+    IsPlaceholder: 0
+  m_Blackboards: []
+  m_MainBlackboardAuthoringAsset: {fileID: -8116526831974758224}
+  m_CommandBuffer:
+    m_Commands: []
+  m_SubgraphsInfo: []
+  m_BlackboardMissingManagedRef: 0
+  m_GraphMissingManagedRef: 0
+  m_HasMissingTypeInManagedRef: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 885137690270368435
+      type: {class: StartNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: 11.875188, y: -34.000076}
+        ID:
+          m_Value0: 15249262425395021462
+          m_Value1: 18029790329920993778
+        Parents: []
+        PortModels:
+        - rid: 885137690270368436
+        NodeType:
+          m_SerializableType: Unity.Behavior.Start, Unity.Behavior, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 3335272451348827663
+          m_Value1: 11549843281177505721
+        m_FieldValues: []
+        Repeat: 1
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 885137690270368436
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 885137690270368435
+        m_Connections: []
+    - rid: 885137690730955554
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: 13.527888, y: -86.28131}
+        ID:
+          m_Value0: 11155932924618959987
+          m_Value1: 18216338381651185245
+        Parents: []
+        PortModels: []
+        Text: DRONE ENEMY
+    - rid: 885137736893727149
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: 291.46024, y: -144.42017}
+        ID:
+          m_Value0: 11424739089852116198
+          m_Value1: 12841100017021405445
+        Parents: []
+        PortModels: []
+        Text: 'USE FSM STATE FOR:
+
+          Death
+
+          Stun
+
+          Knockdown
+
+          Spawn
+          enable/disable
+
+          Attack lock
+
+          Hit reactions
+
+          Animation
+          state gates
+
+          Temporary invulnerability'
+--- !u!114 &382913552595587975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b27bb6d9a2c8d540a10dff10acc543e, type: 3}
+  m_Name: BT_DroneEnemy Debug Info
+  m_EditorClassIdentifier: 
+  m_CodeBreakPointsList: []

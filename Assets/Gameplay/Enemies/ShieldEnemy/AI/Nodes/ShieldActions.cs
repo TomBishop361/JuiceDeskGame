@@ -8,7 +8,7 @@ namespace Game.AI.Behavior.Shield {
 	// If nodes/conditions go missing in the add menu, it’s often an id/attribute issue.
 
 	// - ID INFORMATION -
-	//com.juicedesk.projectark.<scope>.<kind>.<domain>.<name>
+	//<scope>.<kind>.<domain>.<name>
 
 	//scope = enemy(shared) or sword / shield / drone
 	//kind = action or condition
@@ -36,7 +36,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Success;
 			}
 
-			shieldEnemy.ChaseTargetTick(); // AdvanceRaisedTick();
+			shieldEnemy.ChaseTargetTick();
 
 
 			return Status.Running;
@@ -54,36 +54,9 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Success;
 			}
 
-			shieldEnemy.ChaseTargetTick(); // AdvanceRaisedTick();
+			shieldEnemy.ChaseTargetTick();
 
 			return Status.Running;
-		}
-	}
-
-	// TODO: DELETE LATER AFTER COMMITTING - JUST IN CASE IT BREAKS THE OTHER BT NODES FROM DELETING
-	[NodeDescription(name: "Shield: Punch Attack", description: "Triggers punch attack and waits until finished.", story: "Shield enemy punches", category: "Enemy/Shield/Actions/Combat", id: "shield.action.combat.punch")]
-	public sealed class ShieldPunchAttack : Action {
-		private ShieldEnemy shieldEnemy;
-
-		protected override Status OnStart() {
-			shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
-			if (shieldEnemy == null) {
-				LogFailure("ShieldEnemy component missing.", isError: true);
-				return Status.Failure;
-			}
-
-			bool hasStartedPunchAttack = false/*shieldEnemy.TryStartPunch()*/;
-
-			return hasStartedPunchAttack ? Status.Running : Status.Failure;
-		}
-
-		protected override Status OnUpdate() {
-			if (shieldEnemy == null) {
-				return Status.Failure;
-			}
-
-			// Running whilst the Punch animation/attack is active (Returns Success once finished)
-			return shieldEnemy.IsAttacking ? Status.Running : Status.Success;
 		}
 	}
 
@@ -124,7 +97,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			bool hasStartedSlamShockwave = shieldEnemy.TryStartSlam(); // TryStartSlamShockwave();
+			bool hasStartedSlamShockwave = shieldEnemy.TryStartSlam();
 
 			return hasStartedSlamShockwave ? Status.Running : Status.Failure;
 		}
@@ -154,7 +127,7 @@ namespace Game.AI.Behavior.Shield {
 			}
 
 			// Start firing immediately (PROTOTYPE: no spin-up)
-			bool canFireMinigun = shieldEnemy.TryStartMinigun(); // FireMinigunTick();
+			bool canFireMinigun = shieldEnemy.TryStartMinigun();
 
 			return canFireMinigun ? Status.Running : Status.Failure;
 		}
@@ -167,7 +140,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			bool canFireMinigun = shieldEnemy.TryStartMinigun(); // FireMinigunTick();
+			bool canFireMinigun = shieldEnemy.TryStartMinigun();
 
 			return canFireMinigun ? Status.Running : Status.Success; //RETRUN SUCCESS?
 		}
@@ -192,7 +165,7 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			shieldEnemy.SetShieldRaised(Raised);
+			shieldEnemy.SetShieldRaised(Raised.Value);
 
 			return Status.Success;
 		}
@@ -211,14 +184,10 @@ namespace Game.AI.Behavior.Shield {
 				return Status.Failure;
 			}
 
-			shieldEnemy.EnterExposedState(Duration);
+			shieldEnemy.EnterExposedState(Duration.Value);
 			return Status.Success;
 		}
 	}
-
-
-	// TODO: ADD ShieldBlockReact ACTION NODE CLASS
-
 
 	// Category: Enemy/Shield/Actions
 

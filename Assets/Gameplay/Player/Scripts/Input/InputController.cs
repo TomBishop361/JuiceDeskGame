@@ -1,16 +1,10 @@
+using Game.AI;
 using System;
 using System.Collections;
 using TMPro;
-using Unity.Cinemachine;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 using UnityEngine.Splines;
-using UnityEngine.Windows;
-
-
-
 
 
 [RequireComponent((typeof(Rigidbody)))]
@@ -20,10 +14,12 @@ public class InputController : MonoBehaviour
     [Header ("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
-    [SerializeField] GameObject _camera;   
+    [SerializeField] GameObject _camera;
+    [SerializeField] TimerManager _timerManager;
 
     [Header("Movement Values")]
-    private float moveSpeed = 7;
+    float moveSpeed  = 7;
+    public float Velocity { get; private set; }
     [SerializeField] float walkSpeed = 7;
     [SerializeField] float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
@@ -55,14 +51,19 @@ public class InputController : MonoBehaviour
     [Header("Grinding")]
     // Debug
     public bool toggleKnockOffRail = true;
-    //
+
+    //Rail
     public bool onRail;
     bool canRailGrind = true;
-    public float railGrindTime = 1;
-    float railGrindTimer;
-    public float railBoost;
 
-    [SerializeField] float grindSpeed;
+    public float railGrindTime = 1;
+	float railGrindTimer;
+	private int RailtimerID;
+
+    public float railBoost;
+	[SerializeField] private float railGrindNoiseInterval = 0.3f;
+
+	[SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2
     float timeForFullSpline;
     float elapsdTime;    
@@ -103,8 +104,12 @@ public class InputController : MonoBehaviour
     public bool activeGrapple;
     bool exitingSlope;
     bool enableMoveOnNextTouch;
+	private PlayerNoiseEmitter noiseEmitter;
+	private float nextRailGrindNoiseTime;
+	private bool wasGrounded;
+	private float previousYVelocity;
 
-    [SerializeField] GameObject IKGunTarget;
+	[SerializeField] GameObject IKGunTarget;
     [SerializeField] GameObject PlayerRoot;
 
 
@@ -123,8 +128,9 @@ public class InputController : MonoBehaviour
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] Rigidbody rb;
 
-    public event Action JumpEvent = delegate { };   
-    
+    public event Action JumpEvent = delegate { };
+
+    public event Action OnStateChange = delegate { };
 
     public MovementState state;
 
@@ -140,11 +146,20 @@ public class InputController : MonoBehaviour
         idle,
         air
     }
-  
 
-    private void OnEnable()
+	private void Awake() {
+		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+		wasGrounded = _isGrounded;
+		previousYVelocity = rb != null ? rb.linearVelocity.y : 0.0f;
+	}
+
+
+	private void OnEnable()
     {
-        if(toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
+        _timerManager = TimerManager.instance;
+       RailtimerID = _timerManager.NewTimer(railGrindTime, RailTimerEnd, "RailGrind Timer");
+
+        if (toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
 
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
@@ -154,6 +169,7 @@ public class InputController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         startScaleYscale = transform.localScale.y;
+        
     }
 
     public bool _isGrounded
@@ -270,7 +286,7 @@ public class InputController : MonoBehaviour
     private IEnumerator SmoothLerpSpeed()
     {
         float t = 0;        
-        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed)-1;
         float startValue = moveSpeed;
         while (t < difference)
         {
@@ -296,6 +312,7 @@ public class InputController : MonoBehaviour
         moveSpeed = desiredMoveSpeed;
     }
 
+    #region Inputs
     private void LookMoved(Vector2 vector)
     {
         LookDirection = vector;
@@ -321,6 +338,8 @@ public class InputController : MonoBehaviour
     {
         crouch = value;
     }
+
+    #endregion
 
     void GroundCheck()
     {
@@ -544,9 +563,19 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        if(VelocityUI == null) return;
-       VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-        
+		bool groundedNow = _isGrounded;
+
+		if (!wasGrounded && groundedNow && previousYVelocity < -6.0f) {
+			noiseEmitter?.EmitLandingNoise();
+		}
+
+		wasGrounded = groundedNow;
+		previousYVelocity = rb.linearVelocity.y;
+
+		Velocity = new Vector3 (rb.linearVelocity.x,0,rb.linearVelocity.z).magnitude;
+        if (VelocityUI != null) {
+			VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
+		}
     }
     private void FixedUpdate()
     {
@@ -557,15 +586,18 @@ public class InputController : MonoBehaviour
         StateHandler();
         HandleCrouch();
         movePlayerAlongRail();
-        if(railGrindTimer > 0)
-        {
-            railGrindTimer -= Time.deltaTime;
-            if(railGrindTimer <= 0)
-            {
-                canRailGrind = true;
-            }
-        }
 
+		if (railGrindTimer > 0) {
+			railGrindTimer -= Time.deltaTime;
+			if (railGrindTimer <= 0) {
+				canRailGrind = true;
+			}
+		}
+	}
+
+    void RailTimerEnd()
+    {
+        canRailGrind = true;
     }
 
     private void OnDisable()
@@ -606,7 +638,9 @@ private void OnCollisionEnter(Collision collision)
             currentRailScript = collision.gameObject.GetComponent<RailScript>();
             CalculateAndSetRailPosition();
 
-        }
+			noiseEmitter?.EmitRailGrindNoise();
+			nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
+		}
     }
 
 
@@ -660,7 +694,13 @@ private void OnCollisionEnter(Collision collision)
             elapsdTime += Time.fixedDeltaTime;
         else
             elapsdTime -= Time.fixedDeltaTime;
-    }
+
+		// Pulse noise for continued rail grinding
+		if (isRailGrinding && Time.time >= nextRailGrindNoiseTime) {
+			noiseEmitter?.EmitRailGrindNoise(0.7f);
+			nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
+		}
+	}
 
     private void CalculateAndSetRailPosition()
     {
@@ -686,6 +726,7 @@ private void OnCollisionEnter(Collision collision)
             rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
             canRailGrind = false;
             railGrindTimer = railGrindTime;
+            _timerManager.RestartTimer(RailtimerID);
 
             desiredMoveSpeed = walkSpeed;
         }

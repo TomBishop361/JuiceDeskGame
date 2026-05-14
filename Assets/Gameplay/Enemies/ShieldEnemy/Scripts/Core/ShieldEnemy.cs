@@ -156,7 +156,6 @@ namespace Game.AI.Shield {
 			groundMotor?.FaceTarget(worldPos);
 		}
 
-		// TBD COMMENT
 		public bool TryStartMinigun() {
 			bool started = minigunWeapon != null && minigunWeapon.TryStartFiring(this, animator, Target);
 			if (started) {
@@ -166,7 +165,6 @@ namespace Game.AI.Shield {
 			return started;
 		}
 
-		// TBD COMMENT
 		public bool TryStartSlam() {
 			bool started = shockwaveAttack != null && shockwaveAttack.TryStart(this, animator);
 			if (started) {

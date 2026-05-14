@@ -1,8 +1,9 @@
 using UnityEngine;
 
 namespace Game.AI {
-	// Handles target acquiring + LOS checks + target memory for an enemy
-	// Writes results to the shared enemy blackboard
+	// Handles enemy target detection + LOS checks + target memory
+	// Writes perception results into EnemyBlackboard so BT's can react
+	// Local target, distance, LOS, last seen position
 	public sealed class EnemyPerception : MonoBehaviour {
 		[Header("Targeting")]
 		[Tooltip("Optional target assigned directly in the inspector. If set, this target is used before auto-acquiring the player.")]
@@ -12,7 +13,7 @@ namespace Game.AI {
 		[Tooltip("Tag used when auto-acquiring the player target.")]
 		[SerializeField] private string playerTag = "Player";
 		[Tooltip("How long the enemy remembers the player after losing line of sight.")]
-		[SerializeField] private float targetMemoryDuration = 1.25f;
+		[SerializeField] private float targetMemoryDuration = 1.75f;
 
 		[Header("Sensors")]
 		[Tooltip("Optional LOS sensor used to confirm whether the current target is visible.")]
@@ -21,10 +22,15 @@ namespace Game.AI {
 		[SerializeField] private bool allowTargetWithoutSensor = false;
 
 		// The target currently being tracked by this perception component
-		// May be assigned explicitly or found automatically by tag.
 		public Transform CurrentTarget => explicitTarget;
 
 		private void Reset() {
+			if (losSensor == null) {
+				losSensor = GetComponent<LOSSensor>();
+			}
+		}
+
+		private void Awake() {
 			if (losSensor == null) {
 				losSensor = GetComponent<LOSSensor>();
 			}
@@ -40,78 +46,74 @@ namespace Game.AI {
 			explicitTarget = target;
 		}
 
-		// Clears the currently assigned explicit target
+		// Clears the manually assigned target
 		public void ClearTarget() {
 			explicitTarget = null;
 		}
 
-		// Resets runtime state while preserving any inspector-assigned explicit target
-		// Useful when the enemy is reused from a pool.
+		// Resets runtime-only state for pooling or respawning
 		public void ResetRuntime() {
 			// Keep explicitTarget assigned if set in inspector
 		}
 
-		// Immediately finds the current target and writes initial target and distance data into the blackboard
+		// Finds the target immediately and writes initial perception data to the blackboard
+		// Useful when an enemy spawns or is reused from a pool
 		public void AcquireTargetImmediately(Transform owner, EnemyBlackboard blackboard) {
 			if (blackboard == null) {
 				return;
 			}
 
+			// Find the player automatically if no target has been assigned
 			if (explicitTarget == null && autoAcquirePlayerByTag) {
 				TryFindPlayer();
 			}
 
 			blackboard.SetTarget(explicitTarget);
 
-			if (explicitTarget != null) {
-				blackboard.SetDistance(Vector3.Distance(owner.position, explicitTarget.position));
-				//blackboard.SetHasTarget(false);
-				//blackboard.SetLineOfSight(false);
-				//blackboard.SetDistance(Mathf.Infinity);
+			if (explicitTarget == null || owner == null) {
+				return;
 			}
 
-			//float distance = Vector3.Distance(owner.position, explicitTarget.position);
-			//blackboard.SetDistance(distance);
+			// Store distance so BT conditions can check ranges without recalculating
+			float distance = Vector3.Distance(owner.position, explicitTarget.position);
+			blackboard.SetDistance(distance);
 
-			//bool hasLOS = allowTargetWithoutSensor;
-			//if (losSensor != null) {
-			//	hasLOS = losSensor.HasLOS(explicitTarget);
+			// Check LOS using the sensor
+			bool hasLOS = allowTargetWithoutSensor || losSensor == null ? allowTargetWithoutSensor : losSensor.HasLOS(explicitTarget);
+			blackboard.SetLineOfSight(hasLOS);
 
-			//}
-
-			//blackboard.SetLineOfSight(hasLOS);
-
-			//if (hasLOS) {
-			//	blackboard.SetLastSeenPosition(explicitTarget.position);
-			//}
-
-			//bool keepTarget = hasLOS || blackboard.HasLastSeenPosition;
-			//blackboard.SetHasTarget(keepTarget);
+			// A confirmed sighting refreshes visual memory and can be shared with the squad
+			if (hasLOS) {
+				RecordConfirmedSighting(blackboard, explicitTarget.position);
+			}
 		}
 
-		// Updates target + distance + line of sight + memory-based target retention, then writes the results to the blackboard
+		// Updates target + distance + line of sight + memory-based target retention every AI tick
 		public void Tick(Transform owner, EnemyBlackboard blackboard) {
 			if (blackboard == null) {
 				return;
 			}
 
+			// Reacquire the player if the current target is missing
 			if (explicitTarget == null && autoAcquirePlayerByTag) {
 				TryFindPlayer();
 			}
 
 			blackboard.SetTarget(explicitTarget);
 
-			if (explicitTarget == null) {
+			// If no target exists then clear active target data
+			if (explicitTarget == null || owner == null) {
 				blackboard.SetHasTarget(false);
 				blackboard.SetLineOfSight(false);
 				blackboard.SetDistance(Mathf.Infinity);
-				//blackboard.ClearLastSeenPosition();
 				return;
 			}
 
+			// Update distance for range-based BT conditions
 			float distance = Vector3.Distance(owner.position, explicitTarget.position);
 			blackboard.SetDistance(distance);
 
+			// Confirm whether the target is visible this tick
 			bool hasLOS = allowTargetWithoutSensor;
 			if (losSensor != null) {
 				hasLOS = losSensor.HasLOS(explicitTarget);
@@ -119,16 +121,19 @@ namespace Game.AI {
 
 			blackboard.SetLineOfSight(hasLOS);
 
-			bool keepTarget = hasLOS || (Time.time - blackboard.LastSeenTime) <= targetMemoryDuration;
-			blackboard.SetHasTarget(keepTarget);
+			// Seeing the target updates last-seen position and velocity estimate
+			if (hasLOS) {
+				RecordConfirmedSighting(blackboard, explicitTarget.position);
+			}
 
-			//if (hasLOS) {
-			//	blackboard.SetLastSeenPosition(explicitTarget.position);
-			//}
+			// Keep the target active briefly after LOS is lost so enemies can investigate
+			bool hasFreshMemory = blackboard.HasLastSeenPosition && (Time.time - blackboard.LastSeenTime) <= targetMemoryDuration;
+			blackboard.SetHasTarget(hasLOS || hasFreshMemory);
+		}
 
-			//bool hasFreshMemory = blackboard.HasLastSeenPosition && (Time.time - blackboard.LastSeenTime) <= targetMemoryDuration;
-
-			//blackboard.SetHasTarget(hasLOS || hasFreshMemory);
+		// Stores confirmed visual information
+		private void RecordConfirmedSighting(EnemyBlackboard blackboard, Vector3 targetPosition) {
+			blackboard.SetLastSeenPosition(targetPosition);
 		}
 
 		// Attempts to find the player using the configured tag and assign it as the current target
