@@ -7443,7 +7443,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!220 &169613377
 LightProbeGroup:
   m_ObjectHideFlags: 0
@@ -17936,7 +17936,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &399371067
 Transform:
   m_ObjectHideFlags: 0
@@ -36270,7 +36270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!220 &877148299
 LightProbeGroup:
   m_ObjectHideFlags: 0
@@ -46774,6 +46774,68 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 583630563501807725, guid: ba001dba6292bc041860da6c043c279e, type: 3}
   m_PrefabInstance: {fileID: 1323765558}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1035637266
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1035637268}
+  - component: {fileID: 1035637267}
+  m_Layer: 0
+  m_Name: Light Probe Group
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!220 &1035637267
+LightProbeGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035637266}
+  m_Enabled: 1
+  m_SourcePositions:
+  - {x: -0.5971298, y: 1, z: 1.3722916}
+  - {x: 1.7661743, y: 1, z: -0.871933}
+  - {x: -0.5971298, y: -1, z: 1.3722916}
+  - {x: 1.7661743, y: -1, z: -0.871933}
+  - {x: -1.6832199, y: 1, z: -0.9151001}
+  - {x: -0.8666992, y: 1, z: -2.1209526}
+  - {x: -1.6832199, y: -1, z: -0.9151001}
+  - {x: -0.8666992, y: -1, z: -2.1209526}
+  - {x: -3.427269, y: 1, z: 0.9864502}
+  - {x: -3.427269, y: -1, z: 0.9864502}
+  - {x: -2.3091354, y: 1, z: 3.1547012}
+  - {x: -2.3091354, y: -1, z: 3.1547012}
+  - {x: -5.21381, y: 1, z: 2.6782799}
+  - {x: -5.21381, y: -1, z: 2.6782799}
+  - {x: -4.12772, y: 1, z: 4.9656715}
+  - {x: -4.12772, y: -1, z: 4.9656715}
+  - {x: -7.4207783, y: 1, z: 4.516903}
+  - {x: -7.4207783, y: -1, z: 4.516903}
+  - {x: -6.334688, y: 1, z: 6.8042946}
+  - {x: -6.334688, y: -1, z: 6.8042946}
+  m_Dering: 1
+--- !u!4 &1035637268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035637266}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.93, y: 0.4, z: 55.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1038574720 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1557699981322312734, guid: a01ebcfa00eb6c742ac4341e1697d67d, type: 3}
@@ -88949,6 +89011,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8953030848575341612, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5807530e692c6ec4baac39605414c6a5, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -88962,6 +89028,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 73984130}
     m_Modifications:
+    - target: {fileID: 864054589268656216, guid: a633ee26a38fcec45ac668fd49b761a7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 864054589268656216, guid: a633ee26a38fcec45ac668fd49b761a7, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -89026,6 +89096,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8755969439434290276, guid: a633ee26a38fcec45ac668fd49b761a7, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -89054,3 +89128,4 @@ SceneRoots:
   - {fileID: 691011988}
   - {fileID: 310097042}
   - {fileID: 2112931876}
+  - {fileID: 1035637268}
