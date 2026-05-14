@@ -16,6 +16,12 @@ public class EnemyTracker : MonoBehaviour {
 	[Tooltip("Invoked once when the planned number of enemies has been killed.")]
 	public UnityEvent onAllEnemiesDead;
 
+	[Tooltip("Invoked once when the first enemy spawns in this tracker. Useful for alarms, music escalation, or lockdowns.")]
+	public UnityEvent onFirstEnemySpawned;
+
+	[Tooltip("Invoked every time an enemy spawns in this tracker.")]
+	public UnityEvent onEnemySpawned;
+
 	// Total number of enemies expected in this level/encounter
 	// Usually set by SceneEnemyTrackerInitializer
 	public int TotalPlanned { get; private set; }
@@ -42,6 +48,8 @@ public class EnemyTracker : MonoBehaviour {
 	public event Action<int> OnRemainingEnemiesChanged;
 	public event Action<int> OnAliveEnemyCountChanged;
 	public event Action OnAllEnemiesDead;
+	public event Action<EnemyCombat> OnEnemySpawned;
+	public event Action<EnemyCombat> OnFirstEnemySpawned;
 
 	// Internal reusable list of living enemies
 	// Hunt Mode reads from this so it does not need FindObjectsOfType during gameplay
@@ -49,6 +57,9 @@ public class EnemyTracker : MonoBehaviour {
 
 	// Prevents onAllEnemiesDead from firing more than once
 	private bool triggered = false;
+
+	// Prevents first-spawn systems such as alarms/music lockdowns from triggering more than once per tracker reset
+	private bool firstEnemySpawnedTriggered = false;
 
 	// Called by SceneEnemyTrackerInitializer when the level/encounter starts
 	// This sets the planned number of enemies before they are all spawned
@@ -61,6 +72,7 @@ public class EnemyTracker : MonoBehaviour {
 
 		// If there are zero planned enemies, completion is already considered triggered
 		triggered = TotalPlanned == 0;
+		firstEnemySpawnedTriggered = false;
 
 		aliveEnemies.Clear();
 
@@ -76,6 +88,7 @@ public class EnemyTracker : MonoBehaviour {
 		KilledSoFar = 0;
 
 		triggered = false;
+		firstEnemySpawnedTriggered = false;
 
 		aliveEnemies.Clear();
 
@@ -89,10 +102,22 @@ public class EnemyTracker : MonoBehaviour {
 	}
 
 	// Called by spawners when an enemy becomes active
-	// Passing the EnemyCombat reference allows systems like Hunt Mode to know
+	// Passing the EnemyCombat reference allows systems like Hunt Mode and Alarm Mode to know
 	// exactly which enemies are alive without scene searches
 	public void EnemySpawned(EnemyCombat enemy) {
 		SpawnedSoFar++;
+
+		// Fire first-spawn events before normal spawn processing
+		// This is mainly for encounter-wide systems such as alarms, music escalation, and lockdown doors
+		if (firstEnemySpawnedTriggered == false) {
+			firstEnemySpawnedTriggered = true;
+
+			onFirstEnemySpawned?.Invoke();
+			OnFirstEnemySpawned?.Invoke(enemy);
+		}
+
+		onEnemySpawned?.Invoke();
+		OnEnemySpawned?.Invoke(enemy);
 
 		if (enemy != null) {
 			RegisterEnemyInternal(enemy);
