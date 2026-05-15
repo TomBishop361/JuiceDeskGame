@@ -6,19 +6,19 @@ public class DemoTarget : MonoBehaviour, IDamageable
 
     public void adjustHealth(int damage)
     {
-        OnDestroy();
+        GlassOnDestroy();
     }
 
     // Needed to implement interface
 	public void TakeDamage(AttackData attackData) {
         // Configure Attack data for sword enemy
 
-        OnDestroy();
+        GlassOnDestroy();
 
 
     }
 
-    private void OnDestroy() 
+    private void GlassOnDestroy()
     {
         if (particleEffect != null)
         {
