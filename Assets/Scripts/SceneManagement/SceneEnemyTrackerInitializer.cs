@@ -48,7 +48,7 @@ public class SceneEnemyTrackerInitializer : MonoBehaviour {
 				continue;
 			}
 
-			// For additive loading we ignore spawners from other loaded scenes
+			// For additive loading, ignore spawners from other loaded scenes
 			if (spawner.gameObject.scene != gameObject.scene) {
 				continue;
 			}
@@ -59,12 +59,13 @@ public class SceneEnemyTrackerInitializer : MonoBehaviour {
 			if (autoAssignTrackerToSpawners) {
 				spawner.SetEnemyTracker(enemyTracker);
 			}
+		}
 
-			enemyTracker.SetSceneTotal(totalPlanned);
+		// Set the total once, after all same-scene spawners have been counted
+		enemyTracker.SetSceneTotal(totalPlanned);
 
-			if (debugLogging) {
-				Debug.Log($"SceneEnemyTrackerInitializer: Scene '{gameObject.scene.name}' found {sceneSpawnerCount} spawner(s), planned enemies = {totalPlanned}.", this);
-			}
+		if (debugLogging) {
+			Debug.Log($"SceneEnemyTrackerInitializer: Scene '{gameObject.scene.name}' found {sceneSpawnerCount} spawner(s), planned enemies = {totalPlanned}.", this);
 		}
 	}
 }

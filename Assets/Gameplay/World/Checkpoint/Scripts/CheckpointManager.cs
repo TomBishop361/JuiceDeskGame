@@ -22,19 +22,6 @@ public class CheckpointManager : MonoBehaviour {
 		RegisterIfBestInstance();
 		ResolvePlayer();
 		SetDefaultCheckpointIfNeeded();
-
-		if (Instance == null) {
-			Instance = this;
-		} 
-		else {
-			Destroy(gameObject);
-			return;
-		}
-
-		if (player != null) {
-			// default spawn
-			currentCheckpoint = player.position; 
-		}
 	}
 
 	private void OnEnable() {
