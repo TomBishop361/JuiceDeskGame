@@ -241,8 +241,8 @@ public sealed class AlarmWallSignController : MonoBehaviour {
 
 			glowLight.enabled = disableLightsWhenInactive == false || fadeWeight > 0.01f;
 
-			// Force red here so every assigned light behaves consistently even if the prefab colours are different
-			glowLight.color = Color.red;
+			//// Force red here so every assigned light behaves consistently even if the prefab colours are different
+			//glowLight.color = Color.red;
 			glowLight.intensity = finalIntensity;
 		}
 	}

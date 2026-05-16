@@ -2724,6 +2724,7 @@ GameObject:
   - component: {fileID: 1772563188392651328}
   - component: {fileID: 5467415593500749781}
   - component: {fileID: 3184003480799253394}
+  - component: {fileID: 749521401872351453}
   - component: {fileID: 3360952311824732236}
   - component: {fileID: 6915328010031275841}
   - component: {fileID: 3248711495759387962}
@@ -3184,6 +3185,23 @@ MonoBehaviour:
   regenPerSecond: 0.2
   respawnDelay: 1
   respawnInvulnerabilityTime: 1.5
+--- !u!114 &749521401872351453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c527024a5301d654e8c9cb48b1efe89f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerRigidbody: {fileID: 8303638504209387791}
+  playerInput: {fileID: 7761443611690410262}
+  inputController: {fileID: 7128203245387133486}
+  additionalComponentsToDisable: []
+  debugLogging: 1
 --- !u!114 &3360952311824732236
 MonoBehaviour:
   m_ObjectHideFlags: 0
