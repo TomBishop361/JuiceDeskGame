@@ -1,9 +1,12 @@
 using UnityEngine;
+using System;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
+[Obsolete("SeamlessSceneTriggerVolume is now obsolete. Use the AirlockTransitionVolume instead.")]
 // Trigger volume used by SeamlessScenePortal
 // Typical setup:
 // - A larger trigger before the door uses Preload

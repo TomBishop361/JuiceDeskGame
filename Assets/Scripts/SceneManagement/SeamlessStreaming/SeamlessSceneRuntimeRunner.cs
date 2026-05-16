@@ -1,8 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-// Coroutine runner used only for delayed scene unloads
-// It exists so the previous scene can unload even after the door object is destroyed
+// Persistent coroutine runner used by scene transitions
+// This lets the airlock transition continue even if the old level scene unloads
+// and destroys the door, trigger, or portal object that started the transition
+[DisallowMultipleComponent]
 public sealed class SeamlessSceneRuntimeRunner : MonoBehaviour {
 	private static SeamlessSceneRuntimeRunner instance;
 

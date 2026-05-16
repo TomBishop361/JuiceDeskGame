@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 #endif
 
+[Obsolete("SeamlessScenePortal is now obsolete. Use the AirlockSceneTransitionPortal instead.")]
 // Seamless door/portal controller
 // This one component owns the entire seamless transition:
 // - preloads the next level additively,
@@ -386,13 +387,13 @@ public sealed class SeamlessScenePortal : MonoBehaviour {
 			return;
 		}
 
-		// Main seamless-loading step
-		// The streamed level is moved so its chosen entry point exactly matches the current scenes door exit anchor
-		bool aligned = loadedRoot.AlignEntryPointToExit(targetEntryPointId, exitAnchor);
-		if (aligned == false) {
-			SetStatus(PortalStatus.Failed);
-			return;
-		}
+		//// Main seamless-loading step
+		//// The streamed level is moved so its chosen entry point exactly matches the current scenes door exit anchor
+		////bool aligned = loadedRoot.AlignEntryPointToExit(targetEntryPointId, exitAnchor);
+		//if (aligned == false) {
+		//	SetStatus(PortalStatus.Failed);
+		//	return;
+		//}
 
 		loadingProgress = 1.0f;
 		sceneReady = true;

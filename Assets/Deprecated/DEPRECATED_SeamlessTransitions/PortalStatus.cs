@@ -1,3 +1,6 @@
+using System;
+
+[Obsolete("PortalStatus enum is now obsolete. Use the AirlockStatus enum instead.")]
 // Runtime state used by SeamlessScenePortal when tracking an additive scene
 // Useful for sci-fi door lights, holograms, and UI text etc
 public enum PortalStatus {
