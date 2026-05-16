@@ -812,6 +812,7 @@ GameObject:
   - component: {fileID: 4588251817277671055}
   - component: {fileID: 3568021127886932692}
   - component: {fileID: 2038245779470263428}
+  - component: {fileID: 8836062049383629707}
   m_Layer: 5
   m_Name: HUD_Canvas
   m_TagString: Untagged
@@ -909,6 +910,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8836062049383629707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8472273941961877517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3a1fdf6664638943a2540761435fa22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeGroup: {fileID: 8627946133683133535}
+  startInvisible: 1
 --- !u!1 &8640166754536864186
 GameObject:
   m_ObjectHideFlags: 0
@@ -1256,5 +1271,10 @@ PrefabInstance:
 --- !u!224 &8393437544514533271 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2622185735306056350, guid: ed24f2d58e79cb04eb01caf8ac49e9f3, type: 3}
+  m_PrefabInstance: {fileID: 5771533284453688585}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &8627946133683133535 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 2856414363476556118, guid: ed24f2d58e79cb04eb01caf8ac49e9f3, type: 3}
   m_PrefabInstance: {fileID: 5771533284453688585}
   m_PrefabAsset: {fileID: 0}

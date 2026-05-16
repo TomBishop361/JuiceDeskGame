@@ -22,6 +22,8 @@ using UnityEditor;
 // - unloads the previous level before fading back in
 [DisallowMultipleComponent]
 public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
+	public static event Action OnAnyPlayerHandoff;
+
 	[Serializable]
 	public sealed class LoadingProgressEvent : UnityEvent<float> { }
 
@@ -165,6 +167,8 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 
 	private void Awake() {
 		locked = startsLocked;
+		ResolveFadeGroup();
+
 		SetStatus(locked ? AirlockStatus.Locked : AirlockStatus.Idle);
 
 		// If the portal starts locked, also lock the entrance door visually/physically
@@ -395,7 +399,11 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 				clearAngularVelocity
 			);
 
+			// Inspector event on the transition portal
 			onPlayerHandoff?.Invoke();
+
+			// Runtime event that newly loaded scene objects can listen to
+			OnAnyPlayerHandoff?.Invoke();
 		}
 		else {
 			FailTransition("Player handoff failed because the player handoff or target entry point is missing.");
@@ -541,6 +549,28 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		return true;
 	}
 
+	// Finds the persistent fade CanvasGroup from the additive Player scene
+	private void ResolveFadeGroup() {
+		if (fadeGroup != null) {
+			return;
+		}
+
+		if (AirlockFadeGroupLocator.Instance != null) {
+			fadeGroup = AirlockFadeGroupLocator.Instance.FadeGroup;
+		}
+
+		if (fadeGroup == null) {
+			AirlockFadeGroupLocator locator = FindFirstObjectByType<AirlockFadeGroupLocator>(FindObjectsInactive.Include);
+			if (locator != null) {
+				fadeGroup = locator.FadeGroup;
+			}
+		}
+
+		if (fadeGroup == null) {
+			Debug.LogWarning($"{name}: No fade group found. Add AirlockFadeGroupLocator to the fade CanvasGroup in the persistent Player scene.", this);
+		}
+	}
+
 	private void OpenAirlockEntranceDoor() {
 		if (airlockEntranceDoor == null || locked) {
 			return;
@@ -606,6 +636,8 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	}
 
 	private IEnumerator FadeTo(float targetAlpha, float duration) {
+		ResolveFadeGroup();
+
 		if (fadeGroup == null) {
 			yield break;
 		}

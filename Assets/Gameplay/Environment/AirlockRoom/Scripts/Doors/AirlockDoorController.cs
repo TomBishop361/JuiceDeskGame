@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 // Door wrapper used by the airlock transition system
 // Centralises animator triggers, blockers, and feedback hooks
@@ -9,8 +10,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	[SerializeField] private Animator animator;
 	[Tooltip("Collider that blocks the doorway while the door is closed or locked.")]
 	[SerializeField] private Collider blockingCollider;
-	//[Tooltip("Optional audio source used for simple one-shot door feedback.")]
-	//[SerializeField] private AudioSource audioSource;
+	[Tooltip("Optional audio source used for simple one-shot door feedback.")]
+	[SerializeField] private AudioSource audioSource;
 
 	[Header("Animator Parameters")]
 	[Tooltip("Animator trigger fired when the door opens.")]
@@ -24,25 +25,25 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	[Tooltip("If true, the door begins locked and cannot open until UnlockDoor is called.")]
 	[SerializeField] private bool startsLocked = false;
 
-	//[Header("Audio Clips")]
-	//[Tooltip("Optional one-shot clip played when the door is asked to open.")]
-	//[SerializeField] private AudioClip openClip;
-	//[Tooltip("Optional one-shot clip played when the door is asked to close.")]
-	//[SerializeField] private AudioClip closeClip;
-	//[Tooltip("Optional one-shot clip played when the door is locked or denied.")]
-	//[SerializeField] private AudioClip lockedClip;
+	[Header("Audio Clips")]
+	[Tooltip("Optional one-shot clip played when the door is asked to open.")]
+	[SerializeField] private AudioClip openClip;
+	[Tooltip("Optional one-shot clip played when the door is asked to close.")]
+	[SerializeField] private AudioClip closeClip;
+	[Tooltip("Optional one-shot clip played when the door is locked or denied.")]
+	[SerializeField] private AudioClip lockedClip;
 
-	//[Header("Unity Events")]
-	//[Tooltip("Invoked when the door receives an open request.")]
-	//[SerializeField] private UnityEvent onOpenRequested;
-	//[Tooltip("Invoked when the door receives a close request.")]
-	//[SerializeField] private UnityEvent onCloseRequested;
-	//[Tooltip("Invoked when the door is locked.")]
-	//[SerializeField] private UnityEvent onLocked;
-	//[Tooltip("Invoked when the door is unlocked.")]
-	//[SerializeField] private UnityEvent onUnlocked;
-	//[Tooltip("Invoked when the door refuses to open because it is locked.")]
-	//[SerializeField] private UnityEvent onOpenDenied;
+	[Header("Unity Events")]
+	[Tooltip("Invoked when the door receives an open request.")]
+	[SerializeField] private UnityEvent onOpenRequested;
+	[Tooltip("Invoked when the door receives a close request.")]
+	[SerializeField] private UnityEvent onCloseRequested;
+	[Tooltip("Invoked when the door is locked.")]
+	[SerializeField] private UnityEvent onLocked;
+	[Tooltip("Invoked when the door is unlocked.")]
+	[SerializeField] private UnityEvent onUnlocked;
+	[Tooltip("Invoked when the door refuses to open because it is locked.")]
+	[SerializeField] private UnityEvent onOpenDenied;
 
 	[Header("Debug")]
 	[Tooltip("If true, door state changes and requests are logged to the Unity Console.")]
@@ -58,13 +59,13 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	private void Reset() {
 		animator = GetComponentInChildren<Animator>();
 		blockingCollider = GetComponentInChildren<Collider>();
-		//audioSource = GetComponentInChildren<AudioSource>();
+		audioSource = GetComponentInChildren<AudioSource>();
 	}
 
 	private void Awake() {
-		//if (animator == null) {
-		//	animator = GetComponentInChildren<Animator>();
-		//}
+		if (animator == null) {
+			animator = GetComponentInChildren<Animator>();
+		}
 
 		// Apply starting lock state
 		locked = startsLocked;
@@ -82,8 +83,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	// Called by AirlockSceneTransitionPortal when the player is allowed into the airlock
 	public void OpenDoor() {
 		if (locked) {
-			//PlayOneShot(lockedClip);
-			//onOpenDenied?.Invoke();
+			PlayOneShot(lockedClip);
+			onOpenDenied?.Invoke();
 			Log("Open denied because the door is locked.");
 			return;
 		}
@@ -95,8 +96,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		isOpen = true;
 
 		SetAnimatorTrigger(openTriggerName);
-		//PlayOneShot(openClip);
-		//onOpenRequested?.Invoke();
+		PlayOneShot(openClip);
+		onOpenRequested?.Invoke();
 		UpdateBlocker();
 
 		Log("Open requested.");
@@ -113,8 +114,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		isOpen = false;
 
 		SetAnimatorTrigger(closeTriggerName);
-		//PlayOneShot(closeClip);
-		//onCloseRequested?.Invoke();
+		PlayOneShot(closeClip);
+		onCloseRequested?.Invoke();
 		UpdateBlocker();
 
 		Log("Close requested.");
@@ -131,8 +132,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		}
 
 		ApplyLockedAnimatorState();
-		//PlayOneShot(lockedClip);
-		//onLocked?.Invoke();
+		PlayOneShot(lockedClip);
+		onLocked?.Invoke();
 		UpdateBlocker();
 
 		Log("Locked.");
@@ -143,7 +144,7 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		locked = false;
 
 		ApplyLockedAnimatorState();
-		//onUnlocked?.Invoke();
+		onUnlocked?.Invoke();
 		// The door may still be closed after unlocking, so keep the blocker synced
 		UpdateBlocker();
 
@@ -180,13 +181,13 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		animator.SetTrigger(triggerName);
 	}
 
-	//private void PlayOneShot(AudioClip clip) {
-	//	if (audioSource == null || clip == null) {
-	//		return;
-	//	}
+	private void PlayOneShot(AudioClip clip) {
+		if (audioSource == null || clip == null) {
+			return;
+		}
 
-	//	audioSource.PlayOneShot(clip);
-	//}
+		audioSource.PlayOneShot(clip);
+	}
 
 	private void Log(string message) {
 		if (debugLogging) {
