@@ -209,6 +209,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 				// Make sure loading has started, then close the door behind the player
 				RequestPreload();
 				CloseAirlockEntranceDoorBehindPlayer();
+				onInnerDoorClosed?.Invoke();
 				break;
 
 			case AirlockTransitionVolume.TriggerAction.Commit:
@@ -362,8 +363,8 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			playerHandoff.MoveToHoldPoint(airlockPlayerHoldPoint, true, true);
 		}
 
-		CloseAirlockEntranceDoorBehindPlayer();
-		onInnerDoorClosed?.Invoke();
+		//CloseAirlockEntranceDoorBehindPlayer();
+		//onInnerDoorClosed?.Invoke();
 
 		if (airlockEntranceCloseDelay > 0.0f) {
 			yield return new WaitForSeconds(airlockEntranceCloseDelay);
@@ -572,12 +573,18 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	}
 
 	private void OpenAirlockEntranceDoor() {
-		if (airlockEntranceDoor == null || locked) {
+		if (airlockEntranceDoor == null) {
 			return;
 		}
 
-		airlockEntranceDoor.UnlockDoor();
-		airlockEntranceDoor.OpenDoor();
+		// If the portal is locked, deny the open request
+		if (locked) {
+			airlockEntranceDoor.DenyOpenRequest();
+			return;
+		}
+
+		// This is the outside approach/open attempt, so play scanner SFX first
+		airlockEntranceDoor.RequestOpenFromOutside();
 	}
 
 	private void CloseAirlockEntranceDoorBehindPlayer() {
@@ -724,7 +731,9 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		onPreloadComplete?.Invoke(nextSceneName);
 
 		SetStatus(AirlockStatus.ReadyToActivate);
-		OpenAirlockEntranceDoor();
+		if (airlockEntranceDoor != null && airlockEntranceDoor.IsOpen == false && locked == false) {
+			airlockEntranceDoor.OpenDoor();
+		}
 
 		Log($"Scene '{nextSceneName}' is preloaded and waiting for blackout activation.");
 	}

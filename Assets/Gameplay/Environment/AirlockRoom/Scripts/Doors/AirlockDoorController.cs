@@ -26,6 +26,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	[SerializeField] private bool startsLocked = false;
 
 	[Header("Audio Clips")]
+	[Tooltip("Optional one-shot scanner/access beep played when the player attempts to open the door from the outside.")]
+	[SerializeField] private AudioClip scannerClip;
 	[Tooltip("Optional one-shot clip played when the door is asked to open.")]
 	[SerializeField] private AudioClip openClip;
 	[Tooltip("Optional one-shot clip played when the door is asked to close.")]
@@ -77,6 +79,22 @@ public sealed class AirlockDoorController : MonoBehaviour {
 
 		// Make sure the doorway is blocked at scene start if the door is closed or locked
 		UpdateBlocker();
+	}
+
+	// Called when the player approaches/uses the door from the outside
+	// Plays the scanner/access sound before deciding whether the door can actually open
+	public void RequestOpenFromOutside() {
+		PlayOneShot(scannerClip);
+
+		// If the door is locked, play the denied/locked feedback instead of opening
+		if (locked) {
+			PlayOneShot(lockedClip);
+			onOpenDenied?.Invoke();
+			Log("Outside open request denied because the door is locked.");
+			return;
+		}
+
+		OpenDoor();
 	}
 
 	// Opens the door if it is not locked
@@ -149,6 +167,15 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		UpdateBlocker();
 
 		Log("Unlocked.");
+	}
+
+	// Called when something tries to open the door but the portal/system refuses it
+	// Plays scanner first, then denied/locked feedback
+	public void DenyOpenRequest() {
+		PlayOneShot(scannerClip);
+		PlayOneShot(lockedClip);
+		onOpenDenied?.Invoke();
+		Log("Open denied.");
 	}
 
 	// Enables the blocking collider when the door is closed or locked
