@@ -8599,6 +8599,12 @@ MonoBehaviour:
           m_StringArgument: Level_1
           m_BoolArgument: 0
         m_CallState: 2
+  onFirstEnemySpawned:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnemySpawned:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &242651378
 Transform:
   m_ObjectHideFlags: 0
@@ -8629,6 +8635,7 @@ MonoBehaviour:
   enemyTracker: {fileID: 242651377}
   includeInactiveSpawners: 0
   autoAssignTrackerToSpawners: 1
+  debugLogging: 1
 --- !u!1 &245110364
 GameObject:
   m_ObjectHideFlags: 0
@@ -67374,6 +67381,26 @@ PrefabInstance:
     - target: {fileID: 6012658772453824952, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112831015683390760, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
+      propertyPath: m_ControlledAudioTrackCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112831015683390760, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
+      propertyPath: m_DirectAudioMutes.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112831015683390760, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
+      propertyPath: m_DirectAudioVolumes.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112831015683390760, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
+      propertyPath: m_EnabledAudioTracks.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7112831015683390760, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
+      propertyPath: m_TargetAudioSources.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8469884974121892191, guid: 11c369557e842cd4b85bfa66750cdff6, type: 3}
       propertyPath: m_LocalScale.x
