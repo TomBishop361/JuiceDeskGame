@@ -90,6 +90,7 @@ namespace Game.AI.Shield {
 				return;
 			}
 
+			AttackData attackData = BuildShockwaveAttackData(owner);
 			Vector3 center = transform.position;
 
 			// Cast a ray downwards to find the ground
@@ -122,11 +123,21 @@ namespace Game.AI.Shield {
 					continue;
 				}
 
-				damageable.TakeDamage(shockwaveAttackData);
+				damageable.TakeDamage(attackData);
 			}
 
 			owner.EnterExposedState(slamExposeDuration);
 		}
+
+		private AttackData BuildShockwaveAttackData(ShieldEnemy owner) {
+			AttackData attackData = shockwaveAttackData;
+			attackData.Attacker = owner != null ? owner.gameObject : gameObject;
+			attackData.AttackerFaction = owner != null ? owner.OwnerFaction : Faction.Enemy;
+			attackData.Type = DamageType.Melee;
+
+			return attackData;
+		}
+
 
 		// - DEPRECATED - 
 

@@ -36,7 +36,7 @@ namespace Game.AI.Sword {
 		[Tooltip("Delay before the enemy is allowed to roll lunge chance again after deciding not to lunge. This prevents chance checks from happening every frame while in range.")]
 		[SerializeField] private float failedLungeChanceRetryDelay = 0.65f;
 		[Tooltip("Chance that the enemy will actually commit to a lunge when all normal lunge requirements are valid. 1 = always lunge, 0 = never lunge.")]
-		[SerializeField] [Range(0.0f, 1.0f)] private float lungeChance = 0.65f;
+		[SerializeField][Range(0.0f, 1.0f)] private float lungeChance = 0.65f;
 
 		[Header("Timing")]
 		[Tooltip("Cooldown after a completed or attempted lunge.")]
@@ -362,6 +362,7 @@ namespace Game.AI.Sword {
 		public void SetupLungeData(SwordEnemy owner) {
 			lungeAttackData.Attacker = owner != null ? owner.gameObject : gameObject;
 			lungeAttackData.AttackerFaction = owner != null ? owner.OwnerFaction : Faction.Enemy;
+			lungeAttackData.Type = DamageType.Melee;
 
 			if (lungeHitbox != null) {
 				lungeHitbox.Initialise(lungeAttackData);
