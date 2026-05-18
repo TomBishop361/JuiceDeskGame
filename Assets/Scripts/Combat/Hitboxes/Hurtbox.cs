@@ -18,6 +18,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 	private IFactionOwner factionOwner;
 	private int takeDamageTriggerHash;
 
+	public static event Action<Hurtbox, AttackData> OnAnyDamageAttempted;
 	public static event Action<Hurtbox, AttackData> OnAnyDamaged;
 
 	private void Awake() {
@@ -30,17 +31,21 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 	}
 
 	public void TakeDamage(AttackData attackData) {
-		
 		// Ignore damaging own faction
 		if (CanBeDamaged(attackData.AttackerFaction) == false) {
-			Debug.LogWarning("Hurtbox: " + gameObject.name + "Cannot be damaged by " + attackData.Attacker.name);
+			string attackerName = attackData.Attacker != null ? attackData.Attacker.name : "Unknown Attacker";
+			Debug.LogWarning("Hurtbox: " + gameObject.name + " cannot be damaged by " + attackerName);
 			return;
 		}
+
+		// Fired before Health.ApplyDamage so listeners can cache the AttackData and
+		// then wait for Health.OnHealthChanged to confirm real health loss
+		OnAnyDamageAttempted?.Invoke(this, attackData);
 
 		ApplyDamage(attackData);
 		ApplyKnockback(attackData);
 
-		// TODO: REMOVE this later once we have death animations playing and pooling drones are not done immediately 
+		// MAJOR TODO: REMOVE this later once we have death animations playing and pooling drones are not done immediately 
 		// Checks if the object has been disabled in the hierarchy (e.g. pooled)
 		if (gameObject.activeInHierarchy == false) {
 			return;
@@ -49,7 +54,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		// Notify executors that damage has been received
 		OnAnyDamaged?.Invoke(this, attackData);
 
-		// Trigger damage reaction animation (Optional - set inside each entities inspector)
+		// Optional trigger damage reaction animation
 		if (playTakeDamageAnimation && animator != null) {
 			animator.SetTrigger(takeDamageTriggerHash);
 			StartCoroutine(ResetTakeDamageTriggerOnNextFrame());
@@ -85,6 +90,10 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 	}
 
 	private void ApplyKnockback(AttackData attackData) {
+		if (attackData.Attacker == null) {
+			return;
+		}
+
 		if (transform.gameObject.TryGetComponent(out Rigidbody rigidbody) == false) {
 			Debug.LogWarning("Hurtbox: Rigidbody component not found on " + gameObject.name);
 			return;
@@ -101,14 +110,16 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		knockbackDirection.Normalize();
 
 		Vector3 forceToApply = knockbackDirection * attackData.Knockback.Force;
-		// Fixed upward modifier - prevents doubling vertical height knockback to entity
+		// Fixed upward modifier prevents doubling the vertical height knockback to entity
 		forceToApply.y = attackData.Knockback.UpwardModifier;
 
-		// Apply forces - NOTE: Can directly set velocity instead (more consistent)
+		// Apply forces
+		// NOTE: Can directly set velocity instead (more consistent)
 		rigidbody.AddForce(forceToApply, ForceMode.VelocityChange);
 		//rigidbody.AddForce(knockbackDirection * attackData.Knockback.Force + Vector3.up * attackData.Knockback.UpwardModifier, ForceMode.Impulse);
 
-		// Clamp upward velocity (in the case of the player already rising, they won't be sent too high)
+		// Clamp upward velocity
+		// In cases where the player is already rising, they won't be sent too high
 		float maxUpVelocity = 8.0f; // TODO: MAKE THIS A VARIABLE [STORE INSIDE AttackData]
 
 		Vector3 velocity = rigidbody.linearVelocity;
@@ -143,39 +154,39 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 		animator.ResetTrigger(takeDamageTriggerHash);
 	}
 
-	// TODO: REMOVE LATER -> REPLACED WITH TakeDamage()
-	// FOR NOW COPIED OVER SOME LOGIC FROM TakeDamage above
-	// This is because the DemoTarget uses this still
-	public void adjustHealth(int damage) {
-		// Ignore damaging own faction
-		//if (CanBeDamaged(attackData.AttackerFaction)) {
-		//return;
-		//}
+	//// TODO: REMOVE LATER -> REPLACED WITH TakeDamage()
+	//// FOR NOW COPIED OVER SOME LOGIC FROM TakeDamage above
+	//// This is because the DemoTarget uses this still
+	//public void adjustHealth(int damage) {
+	//	// Ignore damaging own faction
+	//	//if (CanBeDamaged(attackData.AttackerFaction)) {
+	//	//return;
+	//	//}
 
-		// NOTE: Initialise here as don't want to add param to adjustHealth (merge conflicts)
-		// Configure Attack data for sword enemy
-		AttackData attackData = new AttackData {
-			Attacker = gameObject,
-			AttackerFaction = Faction.Player, // if you have IFactionOwner
-			Damage = damage,
-			Knockback = new KnockbackData {
-			Force = 8.0f,
-			UpwardModifier = 2.0f,
-			TorqueStrength = 0.0f
-			},
-			Type = DamageType.Melee
-		};
+	//	// NOTE: Initialise here as don't want to add param to adjustHealth (merge conflicts)
+	//	// Configure Attack data for sword enemy
+	//	AttackData attackData = new AttackData {
+	//		Attacker = gameObject,
+	//		AttackerFaction = Faction.Player, // if you have IFactionOwner
+	//		Damage = damage,
+	//		Knockback = new KnockbackData {
+	//		Force = 8.0f,
+	//		UpwardModifier = 2.0f,
+	//		TorqueStrength = 0.0f
+	//		},
+	//		Type = DamageType.Melee
+	//	};
 
-		ApplyDamage(attackData);
-		ApplyKnockback(attackData);
+	//	ApplyDamage(attackData);
+	//	ApplyKnockback(attackData);
 
-		// Notify executors that damage has been received
-		OnAnyDamaged?.Invoke(this, attackData);
+	//	// Notify executors that damage has been received
+	//	OnAnyDamaged?.Invoke(this, attackData);
 
-		// Trigger damage reaction animation
-		if (animator != null) {
-			animator.SetTrigger("TakeDamage");
-			StartCoroutine(ResetTakeDamageTriggerOnNextFrame());
-		}
-	}
+	//	// Trigger damage reaction animation
+	//	if (animator != null) {
+	//		animator.SetTrigger("TakeDamage");
+	//		StartCoroutine(ResetTakeDamageTriggerOnNextFrame());
+	//	}
+	//}
 }
