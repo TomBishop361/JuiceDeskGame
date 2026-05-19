@@ -56,7 +56,7 @@ public class CameraShoulderHandler : MonoBehaviour
 
     private void Update()
     {
-        ChangeFOV();
+        //ChangeFOV();
     }
 
     void ChangeFOV()
