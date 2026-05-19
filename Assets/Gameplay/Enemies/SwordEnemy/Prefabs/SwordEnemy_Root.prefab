@@ -1858,6 +1858,7 @@ GameObject:
   - component: {fileID: 8971865296739883366}
   - component: {fileID: 3916483571648877885}
   - component: {fileID: 4006545848731893060}
+  - component: {fileID: 8658969637960868964}
   - component: {fileID: 7378980808233261917}
   - component: {fileID: 5572920745596892322}
   - component: {fileID: 596960630571841368}
@@ -1980,6 +1981,38 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &8658969637960868964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7782458668010283615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 158e0028458acd2438e3b2e669a853fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMode: 1
+  animator: {fileID: 3479799254228814965}
+  moveSpeedParameter: MoveSpeed
+  swingTriggerParameter: Swing
+  lungeTriggerParameter: Lunge
+  hitTriggerParameter: Hit
+  dieTriggerParameter: Die
+  idleMoveSpeed: 0
+  runMoveSpeed: 6
+  crossFadeLocomotionStates: 1
+  idleStateName: Sword Idle
+  runStateName: Sword Run
+  crossFadeDuration: 0.08
+  idleKey: 49
+  runKey: 50
+  swingKey: 51
+  lungeKey: 52
+  hitKey: 53
+  dieKey: 54
+  resetKey: 114
 --- !u!114 &7378980808233261917
 MonoBehaviour:
   m_ObjectHideFlags: 0
