@@ -347,7 +347,7 @@ GameObject:
   - component: {fileID: 4521221736187457118}
   - component: {fileID: 3796453608409247369}
   m_Layer: 0
-  m_Name: PreloadTrigger
+  m_Name: ApproachTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -856,27 +856,15 @@ MonoBehaviour:
   airlockStartClip: {fileID: 0}
   handoffClip: {fileID: 0}
   transitionCompleteClip: {fileID: 0}
-  onPreloadStarted:
+  onSceneLoadStarted:
     m_PersistentCalls:
       m_Calls: []
-  onPreloadProgress:
+  onSceneLoadProgress:
     m_PersistentCalls:
       m_Calls: []
-  onPreloadComplete:
+  onSceneLoadComplete:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2669864441015248965}
-        m_TargetAssemblyTypeName: UnityEngine.Light, UnityEngine
-        m_MethodName: set_intensity
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 25
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onAirlockStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -910,6 +898,7 @@ MonoBehaviour:
   onTransitionFailed:
     m_PersistentCalls:
       m_Calls: []
+  loadTimeoutSeconds: 20
   debugLogging: 1
   holdPointGizmoColor: {r: 0.1, g: 0.85, b: 1, a: 1}
 --- !u!1 &7183280718815088869
@@ -1626,11 +1615,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 336121078251628392}
   m_SourcePrefab: {fileID: 100100000, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
---- !u!108 &2669864441015248965 stripped
-Light:
-  m_CorrespondingSourceObject: {fileID: 4587859217906527117, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
-  m_PrefabInstance: {fileID: 1920251114510926792}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3407897033977823938 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3885852750761935114, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}

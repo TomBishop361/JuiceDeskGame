@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using static UnityEditor.Recorder.OutputPath;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -105,12 +103,12 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	[SerializeField] private AudioClip transitionCompleteClip;
 
 	[Header("Unity Events")]
-	[Tooltip("Invoked when preload starts.")]
-	[SerializeField] private SceneNameEvent onPreloadStarted;
-	[Tooltip("Invoked while preloading. Value is 0-1.")]
-	[SerializeField] private LoadingProgressEvent onPreloadProgress;
-	[Tooltip("Invoked when preload reaches Unity's activation-ready point.")]
-	[SerializeField] private SceneNameEvent onPreloadComplete;
+	[Tooltip("Invoked when the next scene starts loading during blackout.")]
+	[SerializeField] private SceneNameEvent onSceneLoadStarted;
+	[Tooltip("Invoked while the next scene is loading. Value is 0-1.")]
+	[SerializeField] private LoadingProgressEvent onSceneLoadProgress;
+	[Tooltip("Invoked when the next scene has finished loading.")]
+	[SerializeField] private SceneNameEvent onSceneLoadComplete;
 	[Tooltip("Invoked when the sealed airlock sequence begins.")]
 	[SerializeField] private UnityEvent onAirlockStarted;
 	[Tooltip("Invoked after the old airlock door has been told to close.")]
@@ -126,6 +124,10 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	[Tooltip("Invoked if the transition fails.")]
 	[SerializeField] private UnityEvent onTransitionFailed;
 
+	[Header("Loading Safety")]
+	[Tooltip("Maximum seconds to wait for the next scene to load before failing the transition.")]
+	[SerializeField] private float loadTimeoutSeconds = 20f;
+
 	[Header("Debug")]
 	[Tooltip("If true, the airlock transition process is logged to the Unity Console.")]
 	[SerializeField] private bool debugLogging = true;
@@ -135,20 +137,20 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	public AirlockStatus CurrentStatus => currentStatus;
 	public bool IsLocked => locked;
 
-	// This stays true only while the scene is actively loading toward the activation-ready point
-	public bool IsPreloading => preloadRequested && preloadReadyToActivate == false;
+	//// This stays true only while the scene is actively loading toward the activation-ready point
+	//public bool IsPreloading => preloadRequested && preloadReadyToActivate == false;
 
-	public bool IsReadyToActivate => preloadReadyToActivate;
+	//public bool IsReadyToActivate => preloadReadyToActivate;
 	public bool IsTransitionRunning => transitionRunning;
 	public float LoadingProgress => loadingProgress;
 
 	private AirlockStatus currentStatus = AirlockStatus.Idle;
 
-	private AsyncOperation preloadOperation;
-	private Coroutine preloadRoutine;
+	//private AsyncOperation preloadOperation;
+	//private Coroutine preloadRoutine;
 
-	private bool preloadRequested;
-	private bool preloadReadyToActivate;
+	//private bool preloadRequested;
+	//private bool preloadReadyToActivate;
 	private bool transitionRunning;
 	private bool locked;
 
@@ -186,12 +188,12 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		Log("Airlock portal locked.");
 	}
 	
-	//  Unlocks this transition portal so preload and handoff can begin
-	 // Called when the level is allowed to transition
+	// Unlocks this transition portal so preload and handoff can begin
+	// Called when the level is allowed to transition
 	public void UnlockPortal() {
 		locked = false;
 		airlockEntranceDoor?.UnlockDoor();
-		SetStatus(preloadReadyToActivate ? AirlockStatus.ReadyToActivate : AirlockStatus.Idle);
+		SetStatus(AirlockStatus.Idle);
 		Log("Airlock portal unlocked.");
 	}
 
@@ -199,19 +201,15 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	// Called by AirlockTransitionVolume when the player enters a airlock transition trigger
 	public void HandleAirlockVolumeEntered(AirlockTransitionVolume.TriggerAction action, Collider playerCollider) {
 		switch (action) {
-			case AirlockTransitionVolume.TriggerAction.Preload:
-				// Start loading early and open the entrance door into the old-scene airlock room
-				RequestPreload();
+			case AirlockTransitionVolume.TriggerAction.Approach:
 				OpenAirlockEntranceDoor();
 				break;
 
 			case AirlockTransitionVolume.TriggerAction.AirlockEntered:
-				// Make sure loading has started, then close the door behind the player
-				RequestPreload();
+				// Close the door behind the player.
 				CloseAirlockEntranceDoorBehindPlayer();
 				onInnerDoorClosed?.Invoke();
 				break;
-
 			case AirlockTransitionVolume.TriggerAction.Commit:
 				// Player has reached the sealed part of the airlock
 				// Start the hidden handoff
@@ -220,30 +218,6 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		}
 	}
 
-
-	// Starts additive preloading
-	// The loaded scene is loaded to just before activation (90%), then held inactive until airlock blackout moment
-	[ContextMenu("Request Preload")]
-	public void RequestPreload() {
-		if (locked) {
-			Debug.LogWarning($"{name}: Preload requested while the airlock portal is locked.", this);
-			SetStatus(AirlockStatus.Locked);
-			return;
-		}
-
-		// Prevent multiple preload operations for the same portal
-		if (preloadRequested) {
-			return;
-		}
-
-		if (ValidatePortal(false) == false) {
-			FailTransition("Preload validation failed.");
-			return;
-		}
-
-		preloadRequested = true;
-		preloadRoutine = StartCoroutine(PreloadRoutine());
-	}
 
 	// Starts the full sealed airlock transition
 	[ContextMenu("Begin Airlock Transition")]
@@ -289,55 +263,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		return ValidatePortal(true);
 	}
 
-	private IEnumerator PreloadRoutine() {
-		SetStatus(AirlockStatus.Preloading);
-
-		loadingProgress = 0.0f;
-		onPreloadProgress?.Invoke(loadingProgress);
-		onPreloadStarted?.Invoke(nextSceneName);
-
-		Log($"Preloading next scene '{nextSceneName}'.");
-
-		// If something else already loaded this scene, treat it as ready
-		Scene alreadyLoadedScene = SceneManager.GetSceneByName(nextSceneName);
-		if (alreadyLoadedScene.IsValid() && alreadyLoadedScene.isLoaded) {
-			loadedScene = alreadyLoadedScene;
-			MarkPreloadComplete();
-			yield break;
-		}
-
-		try {
-			preloadOperation = SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Additive);
-		} 
-		catch (Exception exception) {
-			Debug.LogError($"{name}: Could not start additive load for scene '{nextSceneName}'. Make sure it is added to Build Settings?\n{exception}", this);
-			FailTransition("LoadSceneAsync threw an exception.");
-			yield break;
-		}
-
-		if (preloadOperation == null) {
-			FailTransition("LoadSceneAsync returned null.");
-			yield break;
-		}
-
-		// Unity loads the scene in the background but does not activate/render it into the world yet
-		preloadOperation.allowSceneActivation = false;
-
-		while (preloadOperation.isDone == false) {
-			// When allowSceneActivation is false, Unity stops async scene loading at 0.9
-			// Dividing by 0.9 so UI/events receive a normalised 0-1 loading value
-			loadingProgress = Mathf.Clamp01(preloadOperation.progress / 0.9f);
-			onPreloadProgress?.Invoke(loadingProgress);
-
-			if (preloadOperation.progress >= 0.9f) {
-				// Scene is loaded as far as Unity allows before activation
-				MarkPreloadComplete();
-				yield break;
-			}
-
-			yield return null;
-		}
-	}
+	
 
 	private IEnumerator AirlockTransitionRoutine(Scene previousScene, Collider playerCollider) {
 		SetStatus(AirlockStatus.AirlockSealing);
@@ -345,8 +271,8 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		onAirlockStarted?.Invoke();
 		PlayOneShot(airlockStartClip);
 
-		// If the player reached the commit trigger before preload started, start it now
-		RequestPreload();
+		//// If the player reached the commit trigger before preload started, start it now
+		//RequestPreload();
 
 		if (ResolvePlayer(playerCollider) == false) {
 			FailTransition("Player could not be found.");
@@ -380,8 +306,8 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		// Hide the screen before activating the next scene
 		yield return FadeTo(1.0f, fadeOutDuration);
 
-		SetStatus(AirlockStatus.ActivatingNextScene);
-		yield return ActivateLoadedSceneDuringBlackout();
+		SetStatus(AirlockStatus.LoadingNextScene);
+		yield return LoadNextSceneDuringBlackout();
 
 		if (currentStatus == AirlockStatus.Failed) {
 			yield break;
@@ -449,29 +375,55 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		Destroy(gameObject);
 	}
 
-	private IEnumerator ActivateLoadedSceneDuringBlackout() {
-		// The player may reach the commit trigger before loading has reached 90%is ready
-		// Wait here while the screen is hidden
-		while (preloadReadyToActivate == false && currentStatus != AirlockStatus.Failed) {
-			yield return null;
-		}
+	// Loads the next scene only after the screen is already black
+	// This is the refined method since early additive preloading was causing visible gameplay hitching/lag spiking
+	private IEnumerator LoadNextSceneDuringBlackout() {
+		SetStatus(AirlockStatus.LoadingNextScene);
 
-		if (currentStatus == AirlockStatus.Failed) {
+		loadingProgress = 0.0f;
+		onSceneLoadProgress?.Invoke(loadingProgress);
+		onSceneLoadStarted?.Invoke(nextSceneName);
+
+		AsyncOperation loadOperation = null;
+
+		try {
+			loadOperation = SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Additive);
+		} catch (Exception exception) {
+			FailTransition($"LoadSceneAsync failed for scene '{nextSceneName}'. {exception.Message}");
 			yield break;
 		}
 
-		// Allow Unity to activate the preloaded scene now that the screen is black
-		if (preloadOperation != null && preloadOperation.isDone == false) {
-			preloadOperation.allowSceneActivation = true;
-
-			while (preloadOperation.isDone == false) {
-				yield return null;
-			}
+		if (loadOperation == null) {
+			FailTransition($"LoadSceneAsync returned null for scene '{nextSceneName}'.");
+			yield break;
 		}
+
+		// Allow activation immediately because the screen is already black
+		loadOperation.allowSceneActivation = true;
+
+		float loadTimer = 0f;
+
+		while (loadOperation.isDone == false) {
+			loadTimer += Time.deltaTime;
+
+			if (loadTimer >= loadTimeoutSeconds) {
+				FailTransition($"Scene '{nextSceneName}' took too long to load.");
+				yield break;
+			}
+
+			loadingProgress = Mathf.Clamp01(loadOperation.progress);
+			onSceneLoadProgress?.Invoke(loadingProgress);
+
+			yield return null;
+		}
+
+		loadingProgress = 1.0f;
+		onSceneLoadProgress?.Invoke(loadingProgress);
+		onSceneLoadComplete?.Invoke(nextSceneName);
 
 		loadedScene = SceneManager.GetSceneByName(nextSceneName);
 		if (loadedScene.IsValid() == false || loadedScene.isLoaded == false) {
-			FailTransition($"Loaded scene '{nextSceneName}' is not valid after activation.");
+			FailTransition($"Loaded scene '{nextSceneName}' is not valid after loading.");
 			yield break;
 		}
 
@@ -487,12 +439,12 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			yield break;
 		}
 
-		// New objects created after this point are then associated with the new level scene
 		SceneManager.SetActiveScene(loadedScene);
 
 		onNextSceneActivated?.Invoke(nextSceneName);
-		Log($"Scene '{nextSceneName}' activated.");
+		Log($"Trial load complete. Scene '{nextSceneName}' is now active.");
 	}
+	
 
 	private IEnumerator UnloadPreviousSceneRoutine(Scene previousScene) {
 		if (IsSceneSafeToUnload(previousScene) == false) {
@@ -723,21 +675,6 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	}
 #endif
 
-	private void MarkPreloadComplete() {
-		preloadReadyToActivate = true;
-		loadingProgress = 1.0f;
-
-		onPreloadProgress?.Invoke(loadingProgress);
-		onPreloadComplete?.Invoke(nextSceneName);
-
-		SetStatus(AirlockStatus.ReadyToActivate);
-		if (airlockEntranceDoor != null && airlockEntranceDoor.IsOpen == false && locked == false) {
-			airlockEntranceDoor.OpenDoor();
-		}
-
-		Log($"Scene '{nextSceneName}' is preloaded and waiting for blackout activation.");
-	}
-
 	private void FailTransition(string reason) {
 		SetStatus(AirlockStatus.Failed);
 		onTransitionFailed?.Invoke();
@@ -809,4 +746,143 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		Handles.Label(airlockPlayerHoldPoint.position + Vector3.up * 0.5f, "Airlock Hold Point");
 #endif
 	}
+
+	// - DEPRECATED -
+
+	// REASON: Used in old preload async system, replaced by LoadNextSceneDuringBlackout()
+	//// Starts additive preloading
+	//// The loaded scene is loaded to just before activation (90%), then held inactive until airlock blackout moment
+	//[ContextMenu("Request Preload")]
+	//public void RequestPreload() {
+	//	if (locked) {
+	//		Debug.LogWarning($"{name}: Preload requested while the airlock portal is locked.", this);
+	//		SetStatus(AirlockStatus.Locked);
+	//		return;
+	//	}
+
+	//	// Prevent multiple preload operations for the same portal
+	//	if (preloadRequested) {
+	//		return;
+	//	}
+
+	//	if (ValidatePortal(false) == false) {
+	//		FailTransition("Preload validation failed.");
+	//		return;
+	//	}
+
+	//	preloadRequested = true;
+	//	preloadRoutine = StartCoroutine(PreloadRoutine());
+	//}
+
+	// REASON: Used in old preload async system, replaced by LoadNextSceneDuringBlackout()
+	//private IEnumerator PreloadRoutine() {
+	//	SetStatus(AirlockStatus.Preloading);
+
+	//	loadingProgress = 0.0f;
+	//	onPreloadProgress?.Invoke(loadingProgress);
+	//	onPreloadStarted?.Invoke(nextSceneName);
+
+	//	Log($"Preloading next scene '{nextSceneName}'.");
+
+	//	// If something else already loaded this scene, treat it as ready
+	//	Scene alreadyLoadedScene = SceneManager.GetSceneByName(nextSceneName);
+	//	if (alreadyLoadedScene.IsValid() && alreadyLoadedScene.isLoaded) {
+	//		loadedScene = alreadyLoadedScene;
+	//		MarkPreloadComplete();
+	//		yield break;
+	//	}
+
+	//	try {
+	//		preloadOperation = SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Additive);
+	//	} catch (Exception exception) {
+	//		Debug.LogError($"{name}: Could not start additive load for scene '{nextSceneName}'. Make sure it is added to Build Settings?\n{exception}", this);
+	//		FailTransition("LoadSceneAsync threw an exception.");
+	//		yield break;
+	//	}
+
+	//	if (preloadOperation == null) {
+	//		FailTransition("LoadSceneAsync returned null.");
+	//		yield break;
+	//	}
+
+	//	// Unity loads the scene in the background but does not activate/render it into the world yet
+	//	preloadOperation.allowSceneActivation = false;
+
+	//	while (preloadOperation.isDone == false) {
+	//		// When allowSceneActivation is false, Unity stops async scene loading at 0.9
+	//		// Dividing by 0.9 so UI/events receive a normalised 0-1 loading value
+	//		loadingProgress = Mathf.Clamp01(preloadOperation.progress / 0.9f);
+	//		onPreloadProgress?.Invoke(loadingProgress);
+
+	//		if (preloadOperation.progress >= 0.9f) {
+	//			// Scene is loaded as far as Unity allows before activation
+	//			MarkPreloadComplete();
+	//			yield break;
+	//		}
+
+	//		yield return null;
+	//	}
+	//}
+
+	// REASON: Used in old preload async system, replaced by LoadNextSceneDuringBlackout()
+	//private IEnumerator ActivateLoadedSceneDuringBlackout() {
+	//	// The player may reach the commit trigger before loading has reached 90%is ready
+	//	// Wait here while the screen is hidden
+	//	while (preloadReadyToActivate == false && currentStatus != AirlockStatus.Failed) {
+	//		yield return null;
+	//	}
+
+	//	if (currentStatus == AirlockStatus.Failed) {
+	//		yield break;
+	//	}
+
+	//	// Allow Unity to activate the preloaded scene now that the screen is black
+	//	if (preloadOperation != null && preloadOperation.isDone == false) {
+	//		preloadOperation.allowSceneActivation = true;
+
+	//		while (preloadOperation.isDone == false) {
+	//			yield return null;
+	//		}
+	//	}
+
+	//	loadedScene = SceneManager.GetSceneByName(nextSceneName);
+	//	if (loadedScene.IsValid() == false || loadedScene.isLoaded == false) {
+	//		FailTransition($"Loaded scene '{nextSceneName}' is not valid after activation.");
+	//		yield break;
+	//	}
+
+	//	loadedRoot = FindSceneRoot(loadedScene);
+	//	if (loadedRoot == null) {
+	//		FailTransition($"Scene '{nextSceneName}' loaded but has no SeamlessSceneRoot.");
+	//		yield break;
+	//	}
+
+	//	targetEntryPoint = loadedRoot.GetEntryPoint();
+	//	if (targetEntryPoint == null) {
+	//		FailTransition($"Scene '{nextSceneName}' loaded but has no SeamlessSceneEntryPoint.");
+	//		yield break;
+	//	}
+
+	//	// New objects created after this point are then associated with the new level scene
+	//	SceneManager.SetActiveScene(loadedScene);
+
+	//	onNextSceneActivated?.Invoke(nextSceneName);
+	//	Log($"Scene '{nextSceneName}' activated.");
+	//}
+
+	// REASON: Used in old preload async system, replaced by LoadNextSceneDuringBlackout()
+	//private void MarkPreloadComplete() {
+	//	preloadReadyToActivate = true;
+	//	loadingProgress = 1.0f;
+
+	//	onPreloadProgress?.Invoke(loadingProgress);
+	//	onPreloadComplete?.Invoke(nextSceneName);
+
+	//	SetStatus(AirlockStatus.ReadyToActivate);
+	//	if (airlockEntranceDoor != null && airlockEntranceDoor.IsOpen == false && locked == false) {
+	//		airlockEntranceDoor.OpenDoor();
+	//	}
+
+	//	Log($"Scene '{nextSceneName}' is preloaded and waiting for blackout activation.");
+	//}
 }

@@ -10,8 +10,8 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public sealed class AirlockTransitionVolume : MonoBehaviour {
 	public enum TriggerAction {
-		// Starts additive preloading before the player reaches the exit door
-		Preload = 0,
+		// Starts to unlock as the player reaches the exit door
+		Approach = 0,
 
 		// Reports that the player has entered the old-scene airlock chamber so the first door can close behind them
 		AirlockEntered = 1,
@@ -24,7 +24,7 @@ public sealed class AirlockTransitionVolume : MonoBehaviour {
 	[Tooltip("Airlock portal that receives this trigger event.")]
 	[SerializeField] private AirlockSceneTransitionPortal portal;
 	[Tooltip("Which stage of transition this trigger represents.")]
-	[SerializeField] private TriggerAction action = TriggerAction.Preload;
+	[SerializeField] private TriggerAction action = TriggerAction.Approach;
 
 	[Header("Trigger Rules")]
 	[Tooltip("Only colliders with this tag can activate the trigger.")]
