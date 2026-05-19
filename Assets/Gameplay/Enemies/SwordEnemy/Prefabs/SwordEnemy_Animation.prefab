@@ -478,7 +478,6 @@ GameObject:
   - component: {fileID: 2410423239132621132}
   - component: {fileID: 7255477341949615398}
   - component: {fileID: 3988708840998953184}
-  - component: {fileID: 3275069586360708746}
   - component: {fileID: 3450685849929555331}
   - component: {fileID: 5355598434883947736}
   - component: {fileID: 815274470949295011}
@@ -500,7 +499,6 @@ GameObject:
   - component: {fileID: 7009185607296977528}
   - component: {fileID: 7644472270529740481}
   - component: {fileID: 7547812709073978510}
-  - component: {fileID: 7329830903933872543}
   - component: {fileID: 3295442843264916995}
   m_Layer: 8
   m_Name: SwordEnemy_Animation
@@ -599,38 +597,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &3275069586360708746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4991432948065649370}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 158e0028458acd2438e3b2e669a853fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugMode: 1
-  animator: {fileID: 7329830903933872543}
-  moveSpeedParameter: MoveSpeed
-  swingTriggerParameter: Swing
-  lungeTriggerParameter: Lunge
-  hitTriggerParameter: Hit
-  dieTriggerParameter: Die
-  idleMoveSpeed: 0
-  runMoveSpeed: 6
-  crossFadeLocomotionStates: 1
-  idleStateName: Sword Idle
-  runStateName: Sword Run
-  crossFadeDuration: 0.08
-  idleKey: 49
-  runKey: 50
-  swingKey: 51
-  lungeKey: 52
-  hitKey: 53
-  dieKey: 54
-  resetKey: 114
 --- !u!114 &3450685849929555331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,7 +655,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 272dd56d22581a4438fff1bf11ba6f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 7329830903933872543}
+  animator: {fileID: 0}
   healthComponent: {fileID: 2673018615013700407}
   blackboard: {fileID: 7547812709073978510}
   perception: {fileID: 7203495469788558371}
@@ -999,7 +965,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e335d70feb4452d44a7cf8f0d25c0354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 7329830903933872543}
+  animator: {fileID: 0}
   playTakeDamageAnimation: 0
   takeDamageTriggerName: TakeDamage
 --- !u!114 &7009185607296977528
@@ -1053,28 +1019,6 @@ MonoBehaviour:
   <LastHeardNoiseKind>k__BackingField: 0
   <IsDead>k__BackingField: 0
   <IsDisabled>k__BackingField: 0
---- !u!95 &7329830903933872543
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4991432948065649370}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8522da97fe5559047aaadb1f3f62ee86, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3295442843264916995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2009,6 +1953,14 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: de72df20175bc4ccf8a848b1aa12653d, type: 2}
+    - target: {fileID: 5866666021909216657, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6425942783847069004, guid: e4a47841e13734d44adf786b432fa674, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
