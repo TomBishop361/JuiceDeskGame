@@ -323,10 +323,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startsLocked: 0
-  loadsScene: 0
-  sceneToLoad: 
-  transition: {fileID: 0}
-  loadDelay: 0.75
+  openFromTrigger: 1
+  playerTag: Player
+  openTriggerName: Open
+  closeTriggerName: Close
+  debugLogging: 1
 --- !u!65 &7568168628114665844
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -358,7 +359,7 @@ Animator:
   m_GameObject: {fileID: 3885852750761935114}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 27724133677dbaa42bad9f1a47eae405, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6f40d9e25d80d634ba9df574bdc4c03b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

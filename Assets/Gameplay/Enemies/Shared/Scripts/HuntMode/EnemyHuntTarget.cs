@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.InputManagerEntry;
 
 // Add this component to every enemy prefab that should participate in Hunt Mode
 // This script does not decide when Hunt Mode activates
