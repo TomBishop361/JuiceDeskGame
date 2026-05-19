@@ -27,6 +27,9 @@ namespace Game.AI.Sword {
 		[Tooltip("Stun module used to apply hit stun and interrupt the enemy when damaged.")]
 		[SerializeField] private SwordStunState stunState;
 
+		// Animator IDs
+		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
+
 		// Implement IHealthSettings
 		public float MaxHealth => maxHealth;
 		public float LowHealthThreshold => lowHealthThreshold;
@@ -84,7 +87,7 @@ namespace Game.AI.Sword {
 			lungeAttack?.TickLunge(this);
 
 			if (animator != null && groundMotor != null) {
-				animator.SetFloat("MoveSpeed", groundMotor.VelocityMagnitude);
+				animator.SetFloat(AnimMoveSpeed, groundMotor.VelocityMagnitude);
 			}
 		}
 

@@ -21,10 +21,10 @@ namespace Game.AI.Drone {
 		}
 
 		// Start the death fall transition for the drone
-		public void Play(DroneEnemy owner, EnemyDeathHandler deathHandler, Animator animator, Transform sourceTarget) {
-			if (animator != null) {
-				animator.SetTrigger("Die");
-			}
+		public void Play(DroneEnemy owner, EnemyDeathHandler deathHandler, /*Animator animator,*/ Transform sourceTarget) {
+			//if (animator != null) {
+			//	animator.SetTrigger("Die");
+			//}
 
 			// TODO: death FX
 			if (deathFX != null) {

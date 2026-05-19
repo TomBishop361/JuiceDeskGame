@@ -22,6 +22,9 @@ namespace Game.AI.Drone {
 		[SerializeField] private DroneDeathFall deathFall;
 		[SerializeField] private DroneVisualMotion visualMotion;
 
+		//// Animator IDs
+		//private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
+
 		// Implement IHealthSettings
 		public float MaxHealth => maxHealth;
 		public float LowHealthThreshold => lowHealthThreshold;
@@ -63,35 +66,35 @@ namespace Game.AI.Drone {
 		protected override void ResetEnemyRuntime() {
 			droneFlightMotor?.ResetRuntime();
 			projectileWeapon?.ResetRuntime();
-			knockdownState?.ResetRuntime(animator);
+			knockdownState?.ResetRuntime(/*animator*/);
 			deathFall?.ResetRuntime();
 			visualMotion?.ResetRuntime();
 		}
 
 		// Updates active knockdown behaviour and pushes movement speed into the animator for locomotion blending
 		protected override void TickAlive() {
-			knockdownState?.Tick(this, animator);
+			knockdownState?.Tick(this/*, animator*/);
 
-			if (animator != null && droneFlightMotor != null) {
-				animator.SetFloat("MoveSpeed", droneFlightMotor.CurrentSpeed);
-			}
+			//if (animator != null && droneFlightMotor != null) {
+			//	animator.SetFloat(AnimMoveSpeed, droneFlightMotor.CurrentSpeed);
+			//}
 		}
 
 		// Interrupts behaviour and applies a knockdown stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
-			knockdownState?.EnterKnockdown(this, animator);
+			knockdownState?.EnterKnockdown(this/*, animator*/);
 		}
 
 		// Handles drone-specific death cleanup by cancelling any projectile firing + movement
 		protected override void OnDieStarted() {
 			projectileWeapon?.Cancel();
-			knockdownState?.OnDeath(animator);
+			knockdownState?.OnDeath(/*animator*/);
 		}
 
 		// Handles drone-specific death transition
 		protected override void BeginDeathFlow() {
 			if (deathFall != null) {
-				deathFall.Play(this, deathHandler, animator, Target);
+				deathFall.Play(this, deathHandler/*, animator*/, Target);
 				return;
 			}
 
@@ -137,7 +140,7 @@ namespace Game.AI.Drone {
 			// PROTOTYPE: Fire immediately (Move this to an Anim event later)
 			//projectileWeapon?.FireProjectile(Target);
 
-			return projectileWeapon != null && projectileWeapon.TryStartFire(this, animator);
+			return projectileWeapon != null && projectileWeapon.TryStartFire(this/*, animator*/);
 		}
 
 		// Animation Events

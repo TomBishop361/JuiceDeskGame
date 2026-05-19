@@ -35,15 +35,15 @@ namespace Game.AI.Drone {
 		[Tooltip("Populate the projectile pool during Awake so the first shot doesn't cause any lag.")]
 		[SerializeField] private bool populateProjectilePoolAtStartup = true;
 
-		[Header("Animation")]
-		[Tooltip("Whether the drone will fire a projectile based on the animation event or not.")]
-		[SerializeField] private bool fireOnAnimationEvent = true;
-		[Tooltip("Animator trigger name used to start the fire animation.")]
-		[SerializeField] private string fireTriggerName = "Fire";
+		//[Header("Animation")]
+		//[Tooltip("Whether the drone will fire a projectile based on the animation event or not.")]
+		//[SerializeField] private bool fireOnAnimationEvent = true;
+		//[Tooltip("Animator trigger name used to start the fire animation.")]
+		//[SerializeField] private string fireTriggerName = "Fire";
 
 		// Cooldown/State timers
 		private float nextFireTime = -Mathf.Infinity;
-		private int fireTriggerHash;
+		//private int fireTriggerHash;
 
 		private DroneVisualMotion droneVisualMotion;
 		private DroneEnemy activeOwner;
@@ -53,7 +53,7 @@ namespace Game.AI.Drone {
 		public DroneHomingProjectileStats HomingProjectileStats => homingProjectileStats;
 
 		private void Awake() {
-			fireTriggerHash = Animator.StringToHash(fireTriggerName);
+			//fireTriggerHash = Animator.StringToHash(fireTriggerName);
 			droneVisualMotion = GetComponent<DroneVisualMotion>();
 			SetupProjectilePool();
 		}
@@ -81,7 +81,7 @@ namespace Game.AI.Drone {
 		}
 
 		// Attempts to start the fire attack by setting cooldowns + attack lock timing + the fire animation trigger
-		public bool TryStartFire(DroneEnemy owner, Animator animator) {
+		public bool TryStartFire(DroneEnemy owner/*, Animator animator*/) {
 			if (owner == null || owner.HasTarget == false) {
 				return false;
 			}
@@ -101,7 +101,6 @@ namespace Game.AI.Drone {
 			SetupProjectilePool();
 			if (projectilePool == null) {
 				Debug.LogWarning($"{name}: Projectile pool could not be created because no projectile prefab is assigned.", this);
-
 				return false;
 			}
 
@@ -109,14 +108,17 @@ namespace Game.AI.Drone {
 			nextFireTime = Time.time + fireCooldown;
 			owner.BeginAttackLock(fireLockTime);
 
-			if (animator != null) {
-				animator.SetTrigger(fireTriggerHash);
-			}
+			//if (animator != null) {
+			//	animator.SetTrigger(fireTriggerHash);
+			//}
 
-			// Fire immediately if not using an animation event
-			if (fireOnAnimationEvent == false) {
-				FireProjectile(owner.Target);
-			}
+			//// Fire immediately if not using an animation event
+			//if (fireOnAnimationEvent == false) {
+			//	FireProjectile(owner.Target);
+			//}
+
+			// Fire immediately 
+			FireProjectile(owner.Target);
 
 			return true;
 		}

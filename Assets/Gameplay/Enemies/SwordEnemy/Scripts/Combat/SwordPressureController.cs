@@ -56,7 +56,6 @@ namespace Game.AI {
 		[Tooltip("If true, this pressure controller moves the enemy. Disable if another system owns movement.")]
 		[SerializeField] private bool driveMovement = true;
 		
-
 		private SwordEnemy sword;
 		private GroundEnemyMotor groundMotor;
 		private EnemyPressureAgent pressureAgent;

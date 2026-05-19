@@ -7850,13 +7850,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6426209685012709754, guid: 73770458930eb6b4aa6881b3bc019c94, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6835325938086037590, guid: 73770458930eb6b4aa6881b3bc019c94, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6835325938086037590, guid: 73770458930eb6b4aa6881b3bc019c94, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -14657,10 +14654,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 228830281}
     m_Modifications:
-    - target: {fileID: 3566807572259405374, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6149216680073435762, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.7261
@@ -14707,12 +14700,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7782458668010283615, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3566807572259405374, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7782458668010283615, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
+      insertIndex: 4
+      addedObject: {fileID: 1974995562}
   m_SourcePrefab: {fileID: 100100000, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
 --- !u!4 &1670393958 stripped
 Transform:
@@ -17076,6 +17073,48 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1972617025}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1974995537 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7782458668010283615, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
+  m_PrefabInstance: {fileID: 1670393957}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1974995540 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3479799254228814965, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
+  m_PrefabInstance: {fileID: 1670393957}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1974995562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974995537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 158e0028458acd2438e3b2e669a853fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMode: 1
+  animator: {fileID: 1974995540}
+  moveSpeedParameter: MoveSpeed
+  swingTriggerParameter: Swing
+  lungeTriggerParameter: Lunge
+  hitTriggerParameter: Hit
+  dieTriggerParameter: Die
+  idleMoveSpeed: 0
+  runMoveSpeed: 6
+  crossFadeLocomotionStates: 1
+  idleStateName: Sword Idle
+  runStateName: Sword Run
+  crossFadeDuration: 0.08
+  idleKey: 49
+  runKey: 50
+  swingKey: 51
+  lungeKey: 52
+  hitKey: 53
+  dieKey: 54
+  resetKey: 114
 --- !u!1 &1978460224
 GameObject:
   m_ObjectHideFlags: 0
@@ -18307,7 +18346,7 @@ PrefabInstance:
       objectReference: {fileID: 1329676343}
     - target: {fileID: 4297917144100886662, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       propertyPath: m_VersionIndex
-      value: 5389
+      value: 5395
       objectReference: {fileID: 0}
     - target: {fileID: 4569956402090022634, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       propertyPath: lockedClip
@@ -18439,7 +18478,7 @@ PrefabInstance:
       objectReference: {fileID: 1880971956}
     - target: {fileID: 4913131129021804039, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       propertyPath: m_VersionIndex
-      value: 2139
+      value: 2145
       objectReference: {fileID: 0}
     - target: {fileID: 5788948906133730978, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       propertyPath: m_Mesh
