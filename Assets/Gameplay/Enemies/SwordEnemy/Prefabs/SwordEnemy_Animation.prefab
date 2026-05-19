@@ -500,6 +500,7 @@ GameObject:
   - component: {fileID: 7644472270529740481}
   - component: {fileID: 7547812709073978510}
   - component: {fileID: 3295442843264916995}
+  - component: {fileID: 5785542859047922581}
   m_Layer: 8
   m_Name: SwordEnemy_Animation
   m_TagString: Untagged
@@ -573,7 +574,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 1
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 2
 --- !u!195 &3988708840998953184
 NavMeshAgent:
@@ -655,7 +656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 272dd56d22581a4438fff1bf11ba6f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 5785542859047922581}
   healthComponent: {fileID: 2673018615013700407}
   blackboard: {fileID: 7547812709073978510}
   perception: {fileID: 7203495469788558371}
@@ -965,7 +966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e335d70feb4452d44a7cf8f0d25c0354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 5785542859047922581}
   playTakeDamageAnimation: 0
   takeDamageTriggerName: TakeDamage
 --- !u!114 &7009185607296977528
@@ -1032,6 +1033,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 2
+--- !u!95 &5785542859047922581
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4991432948065649370}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+  m_Controller: {fileID: 9100000, guid: de72df20175bc4ccf8a848b1aa12653d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5005257338026456386
 GameObject:
   m_ObjectHideFlags: 0
@@ -1949,6 +1972,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 83aef810da1938f43932129693ae8d0b, type: 2}
+    - target: {fileID: 5866666021909216657, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: e4a47841e13734d44adf786b432fa674, type: 3}
       propertyPath: m_Controller
       value: 
