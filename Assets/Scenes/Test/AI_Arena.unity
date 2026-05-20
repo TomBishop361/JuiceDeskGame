@@ -6370,7 +6370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyTracker: {fileID: 1073341730}
   availablePrefabs:
-  - {fileID: 6308464576384138355, guid: ab995d7fb418b4a469db2d85a0fdc321, type: 3}
+  - {fileID: 7009185607296977528, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
   - {fileID: 5668271648837770725, guid: 73770458930eb6b4aa6881b3bc019c94, type: 3}
   waves:
   - entries:
@@ -18322,9 +18322,49 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 163358954}
     m_Modifications:
+    - target: {fileID: 1305309966939656212, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: swingRange
+      value: 2.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1305309966939656212, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: swingCooldown
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1305309966939656212, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: swingLockTime
+      value: 0.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 1305309966939656212, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: swingAttackData.Knockback.Force
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1305309966939656212, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: swingAttackData.Knockback.UpwardModifier
+      value: 1.75
+      objectReference: {fileID: 0}
     - target: {fileID: 3706704026287101437, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030750630536327469, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: m_Size.x
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030750630536327469, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: m_Size.y
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030750630536327469, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: m_Size.z
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030750630536327469, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: m_Center.y
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030750630536327469, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: m_Center.z
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 4991432948065649370, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
       propertyPath: m_Name
@@ -18332,11 +18372,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5174069857074034965, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5908566697621236776, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
       propertyPath: debugMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7200327389530630562, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7874243344993646819, guid: f4ddf13d72aadf7499b817042093e686, type: 3}
       propertyPath: m_LocalPosition.x
