@@ -1,8 +1,8 @@
 using UnityEngine;
 
 namespace Game.AI.Sword {
-	// Temporary keyboard-driven animation tester for the Sword enemy.
-	// Add this to the SwordEnemy_Root prefab only while checking animation/controller setup, then remove or disable it before builds.
+	// Temporary keyboard-driven animation tester for the Sword enemy
+	// Add this to the SwordEnemy_Root prefab only while checking animation/controller setup, then remove or disable it before making any builds
 	[DisallowMultipleComponent]
 	public sealed class SwordEnemyAnimationDebugTool : MonoBehaviour {
 		[Header("Debug Toggle")]
@@ -63,18 +63,16 @@ namespace Game.AI.Sword {
 		private int hitHash;
 		private int dieHash;
 
-		// Auto-fills the Animator reference when the component is added or reset in the Inspector.
 		private void Reset() {
 			FindAnimatorIfNeeded();
 		}
 
-		// Caches Animator parameter hashes once so key presses stay cheap at runtime.
 		private void Awake() {
 			FindAnimatorIfNeeded();
 			CacheHashes();
 		}
 
-		// Rebuilds hashes after Inspector value changes.
+		// Rebuilds hashes after Inspector value changes
 		private void OnValidate() {
 			idleMoveSpeed = Mathf.Max(0.0f, idleMoveSpeed);
 			runMoveSpeed = Mathf.Max(0.0f, runMoveSpeed);
@@ -82,7 +80,7 @@ namespace Game.AI.Sword {
 			CacheHashes();
 		}
 
-		// Handles keyboard input only while debugMode is enabled.
+		// Handles keyboard input only while debugMode is enabled
 		private void Update() {
 			if (debugMode == false || animator == null) {
 				return;
@@ -117,7 +115,7 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		// Sends the same MoveSpeed value the real SwordEnemy script uses when standing still.
+		// Sends the same MoveSpeed value the real SwordEnemy script uses when standing still
 		private void PlayIdle() {
 			ResetCombatTriggers();
 			animator.SetFloat(moveSpeedHash, idleMoveSpeed);
@@ -127,7 +125,7 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		// Sends a movement value high enough to preview the run state/blend.
+		// Sends a movement value high enough to preview the run state/blend
 		private void PlayRun() {
 			ResetCombatTriggers();
 			animator.SetFloat(moveSpeedHash, runMoveSpeed);
@@ -137,13 +135,13 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		// Clears competing triggers before firing the requested action trigger.
+		// Clears competing triggers before firing the requested action trigger
 		private void FireTrigger(int triggerHash) {
 			ResetCombatTriggers();
 			animator.SetTrigger(triggerHash);
 		}
 
-		// Clears temporary inputs and returns the preview to the normal idle value.
+		// Clears temporary inputs and returns the preview to the normal idle value
 		private void ResetPreview() {
 			ResetCombatTriggers();
 			animator.SetFloat(moveSpeedHash, idleMoveSpeed);
@@ -153,7 +151,7 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		// Prevents old one-shot triggers from leaking into the next preview key press.
+		// Prevents old one-shot triggers from leaking into the next preview key press
 		private void ResetCombatTriggers() {
 			if (animator == null) {
 				return;
@@ -165,7 +163,7 @@ namespace Game.AI.Sword {
 			animator.ResetTrigger(dieHash);
 		}
 
-		// Finds the Animator on the root first, then falls back to child visuals.
+		// Finds the Animator on the root first, then falls back to child visuals
 		private void FindAnimatorIfNeeded() {
 			if (animator != null) {
 				return;
@@ -178,7 +176,7 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		// Converts parameter names to hashes used by Animator.SetFloat/SetTrigger.
+		// Converts parameter names to hashes used by Animator.SetFloat/SetTrigger
 		private void CacheHashes() {
 			moveSpeedHash = Animator.StringToHash(moveSpeedParameter);
 			swingHash = Animator.StringToHash(swingTriggerParameter);
