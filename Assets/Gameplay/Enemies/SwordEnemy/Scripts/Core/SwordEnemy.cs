@@ -234,7 +234,7 @@ namespace Game.AI.Sword {
 			lungeAttack?.OnLungeDashStart(this);
 		}
 
-		// Called by animation when the lunge dash motion is over to end the dash phase cleanly.
+		// Called by animation when the lunge dash motion is over to end the dash phase cleanly
 		public void OnLungeDashEnd() {
 			lungeAttack?.OnLungeDashEnd(this);
 		}
