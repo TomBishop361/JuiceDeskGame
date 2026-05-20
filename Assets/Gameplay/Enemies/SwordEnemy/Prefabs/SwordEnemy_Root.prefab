@@ -478,7 +478,6 @@ GameObject:
   - component: {fileID: 2410423239132621132}
   - component: {fileID: 7255477341949615398}
   - component: {fileID: 3988708840998953184}
-  - component: {fileID: 5908566697621236776}
   - component: {fileID: 3450685849929555331}
   - component: {fileID: 5355598434883947736}
   - component: {fileID: 815274470949295011}
@@ -501,6 +500,7 @@ GameObject:
   - component: {fileID: 7644472270529740481}
   - component: {fileID: 7547812709073978510}
   - component: {fileID: 3295442843264916995}
+  - component: {fileID: 5908566697621236776}
   - component: {fileID: 5785542859047922581}
   m_Layer: 8
   m_Name: SwordEnemy_Root
@@ -599,38 +599,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5908566697621236776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4991432948065649370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 158e0028458acd2438e3b2e669a853fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugMode: 0
-  animator: {fileID: 5785542859047922581}
-  moveSpeedParameter: MoveSpeed
-  swingTriggerParameter: Swing
-  lungeTriggerParameter: Lunge
-  hitTriggerParameter: Hit
-  dieTriggerParameter: Die
-  idleMoveSpeed: 0
-  runMoveSpeed: 6
-  crossFadeLocomotionStates: 0
-  idleStateName: Sword_Idle
-  runStateName: Sword_Run
-  crossFadeDuration: 0.08
-  idleKey: 49
-  runKey: 50
-  swingKey: 51
-  lungeKey: 52
-  hitKey: 53
-  dieKey: 54
-  resetKey: 114
 --- !u!114 &3450685849929555331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1136,6 +1104,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: 2
+--- !u!114 &5908566697621236776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4991432948065649370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 158e0028458acd2438e3b2e669a853fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMode: 0
+  animator: {fileID: 5785542859047922581}
+  moveSpeedParameter: MoveSpeed
+  swingTriggerParameter: Swing
+  lungeTriggerParameter: Lunge
+  hitTriggerParameter: Hit
+  dieTriggerParameter: Die
+  idleMoveSpeed: 0
+  runMoveSpeed: 6
+  crossFadeLocomotionStates: 0
+  idleStateName: Sword_Idle
+  runStateName: Sword_Run
+  crossFadeDuration: 0.08
+  idleKey: 49
+  runKey: 50
+  swingKey: 51
+  lungeKey: 52
+  hitKey: 53
+  dieKey: 54
+  resetKey: 114
 --- !u!95 &5785542859047922581
 Animator:
   serializedVersion: 7

@@ -10,7 +10,7 @@ namespace Game.AI.Sword {
 		[SerializeField] private bool debugMode = false;
 
 		[Header("References")]
-		[Tooltip("Animator used by the Sword enemy. Leave empty to auto-find one on this GameObject or its children.")]
+		[Tooltip("Animator used by the Sword enemy.")]
 		[SerializeField] private Animator animator;
 
 		[Header("Animator Parameters")]
@@ -32,13 +32,13 @@ namespace Game.AI.Sword {
 		[SerializeField] private float runMoveSpeed = 6.0f;
 
 		[Header("Optional Direct State Preview")]
-		[Tooltip("When enabled, Idle and Run also crossfade directly to the named states. Disable this when testing only normal controller transitions.")]
+		[Tooltip("When enabled, Idle and Run also crossfade directly to the named states. This should be disabled when testing only normal controller transitions.")]
 		[SerializeField] private bool crossFadeLocomotionStates = true;
 		[Tooltip("Animator state name for the idle animation.")]
 		[SerializeField] private string idleStateName = "Sword Idle";
 		[Tooltip("Animator state name for the run animation.")]
 		[SerializeField] private string runStateName = "Sword Run";
-		[Tooltip("Short blend time used when directly previewing Idle/Run states.")]
+		[Tooltip("Blend time used when directly previewing Idle/Run states.")]
 		[SerializeField] private float crossFadeDuration = 0.08f;
 
 		[Header("Keyboard Shortcuts")]
