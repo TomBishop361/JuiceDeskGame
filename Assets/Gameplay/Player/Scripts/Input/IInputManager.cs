@@ -7,6 +7,7 @@ public interface IInputManager
     Vector2 Look { get; }
     bool jump { get; }
 
+    bool pause { get; }
     bool sprint { get; }
     float crouch { get; }
 
@@ -18,6 +19,7 @@ public interface IInputManager
     event Action<Vector2> OnMoveReceived;
     event Action<Vector2> OnLookReceived;
     event Action<bool> OnJumpReceived;
+    event Action<bool> OnPauseReceived;
     event Action<bool> OnGrappleReceived;
     event Action<bool> OnSprintReceived;
     event Action<float> OnCrouchReceived;

@@ -1,9 +1,7 @@
 using System;
-using System.Runtime.CompilerServices;
-using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Rendering;
+
 
 public class Sniper : MonoBehaviour
 {
@@ -19,12 +17,16 @@ public class Sniper : MonoBehaviour
     [SerializeField] WeaponManager _weaponManager;    
     float aimTimer;
     [SerializeField] LayerMask hitMask;
-    [SerializeField] LineRendererHandler ShotLineEffect;
+    [SerializeField] LayerMask DamagehitMask;
+    
     [SerializeField] AttackData _attackData;
+    [SerializeField] float sniperHitRadius = 1f;
     [SerializeField] Transform shotOrigin;
 
     [SerializeField] float StartFOV = 65;
     [SerializeField] float ZoomFOV = 50;
+
+    [SerializeField] LaserVFXManager laserVFX;
 
     IGunInputManager gunInputManager => _gunInputManager.InputManager;    
 
@@ -97,26 +99,36 @@ public class Sniper : MonoBehaviour
     {
         isOnCoolDown = false;
     }
+    
 
     void HandleShoot()
     {        
         if (_aim !=0 && isAimed && !isOnCoolDown)
         {            
             //ShotLineEffect.SetPosition(0, shotOrigin.position);            
-            if (Physics.SphereCast(_cameraTarget.transform.position, 0.5f, _camera.transform.forward.normalized, out RaycastHit hit, 100, hitMask))
-            {                
-                ShotLineEffect.DrawLine(shotOrigin.position, hit.point);
-                if (hit.transform.TryGetComponent<IDamageable>(out IDamageable damageable) || hit.transform.root.TryGetComponent<IDamageable>(out damageable))
+            if (Physics.Raycast(_cameraTarget.transform.position, _camera.transform.forward.normalized, out RaycastHit hit, 100, hitMask))
+            {
+                RaycastHit[] results = new RaycastHit[5];
+                if (Physics.SphereCastNonAlloc(_cameraTarget.transform.position, sniperHitRadius, _camera.transform.forward.normalized, results, 100, DamagehitMask) > 0)
                 {
-                    damageable.TakeDamage(_attackData);
-                }               
+                    foreach (RaycastHit _hit in results)
+                    {
+                        if (_hit.transform == null) continue;
+                        if ( _hit.transform.TryGetComponent<IDamageable>(out IDamageable damageable) || _hit.transform.root.TryGetComponent<IDamageable>(out damageable))
+                        {
+                            damageable.TakeDamage(_attackData);
+                        }
+                    }
+                }
+                laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(hit.point - shotOrigin.transform.position),Vector3.Distance(shotOrigin.position,hit.point));
             }
             else
             {
-                ShotLineEffect.DrawLine(shotOrigin.position, _cameraTarget.transform.forward * 10);
                 
+                laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(hit.point - _cameraTarget.transform.forward * 10), 30);
             }
             isOnCoolDown = true;
+            
             OnShotTaken?.Invoke();
         }
     }
@@ -142,8 +154,7 @@ public class Sniper : MonoBehaviour
     }
 
     void AimIn()
-    {
-        
+    {        
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = false;
         _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, ZoomFOV, t);
@@ -151,9 +162,7 @@ public class Sniper : MonoBehaviour
     }
 
     void AimOut()
-    {           
-        
-        
+    {  
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = true;
         _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, StartFOV, t);

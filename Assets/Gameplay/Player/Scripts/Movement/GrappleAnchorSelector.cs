@@ -45,6 +45,7 @@ public class GrappleAnchorSelector : MonoBehaviour
         {            
             if(bestAnchor != null) bestAnchor.deactivate();
             bestAnchor = newAnchor;
+            ClosestAnchor = bestAnchor;
             bestAnchor.activate();
             
         }
@@ -74,8 +75,8 @@ public class GrappleAnchorSelector : MonoBehaviour
                 if (anchor == ClosestAnchor) ClosestAnchor = null;
                 continue;
             }
-
-            ClosestAnchor = anchor;
+            if(bestAnchor = null)
+                ClosestAnchor = anchor;
 
             // 1. Get direction from camera to the anchor
             Vector3 dirToAnchor = (anchor.transform.position - _camera.transform.position).normalized;

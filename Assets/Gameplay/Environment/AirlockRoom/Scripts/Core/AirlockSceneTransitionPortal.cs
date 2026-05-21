@@ -82,6 +82,14 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	[Tooltip("Minimum time to keep the screen black after teleporting the player.")]
 	[SerializeField] private float minimumBlackoutTime = 0.15f;
 
+	[Header("Level Transition Animation")]
+	[Tooltip("If true, the fullscreen UI animation can play while the screen is black, after player handoff and before fading back in.")]
+	[SerializeField] private bool playLevelTransitionAnimation = true;
+	[Tooltip("Fullscreen PNG sequence player used for the level transition animation.")]
+	[SerializeField] private LevelTransitionSequencePlayer levelTransitionAnimation;
+	//[Tooltip("If true, the portal searches the loaded scenes for a LevelTransitionSequencePlayer when the reference is not assigned manually.")]
+	//[SerializeField] private bool autoFindLevelTransitionAnimation = true;
+
 	[Header("Timing")]
 	[Tooltip("Delay after closing the airlock entrance door before the fade begins.")]
 	[SerializeField] private float airlockEntranceCloseDelay = 0.35f;
@@ -351,9 +359,14 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		}
 
 		// Unload the previous level while the screen is still black
+		// Avoids showing any old-scene cleanup to the player
 		yield return UnloadPreviousSceneRoutine(previousScene);
 
-		// Reveal the new scene level
+		// Play the fullscreen transition animation after the hidden load and handoff is finished, but before the fade clears
+		// The fade panel remains black behind the animation
+		yield return PlayLevelTransitionAnimationDuringBlackout();
+
+		// Reveal the new scene level only after the transition animation has completed
 		yield return FadeTo(0.0f, fadeInDuration);
 
 		if (restoreControlDelay > 0.0f) {
@@ -496,7 +509,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		playerHandoff = playerObject.GetComponent<AirlockPlayerHandoff>();
 		if (playerHandoff == null) {
 			playerHandoff = playerObject.AddComponent<AirlockPlayerHandoff>();
-			Log("Added AirlockPlayerHandoff at runtime. Add it to the Player prefab for cleaner setup.");
+			Log("Added AirlockPlayerHandoff at runtime.");
 		}
 
 		return true;
@@ -522,6 +535,38 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		if (fadeGroup == null) {
 			Debug.LogWarning($"{name}: No fade group found. Add AirlockFadeGroupLocator to the fade CanvasGroup in the persistent Player scene.", this);
 		}
+	}
+
+	// Finds the fullscreen transition animation player from the persistent UI scene
+	// This allows the level airlock portals to use one shared UI animation without using any scene specific references
+	private void ResolveLevelTransitionAnimation() {
+		if (levelTransitionAnimation != null) {
+			return;
+		}
+
+		levelTransitionAnimation = FindFirstObjectByType<LevelTransitionSequencePlayer>(FindObjectsInactive.Include);
+	}
+
+	// Plays the level transition animation while the blackout fade is still active
+	// The coroutine is yielded by the portal so the fade-in cannot start until the animation actually finishes
+	private IEnumerator PlayLevelTransitionAnimationDuringBlackout() {
+		if (playLevelTransitionAnimation == false) {
+			yield break;
+		}
+
+		ResolveLevelTransitionAnimation();
+
+		if (levelTransitionAnimation == null) {
+			Log("No LevelTransitionSequencePlayer found. Skipping the level transition animation.");
+			yield break;
+		}
+
+		if (levelTransitionAnimation.CanPlay == false) {
+			Log("LevelTransitionSequencePlayer is assigned but has no playable frames and/or references. Skipping level transition animation.");
+			yield break;
+		}
+
+		yield return levelTransitionAnimation.PlayRoutine();
 	}
 
 	private void OpenAirlockEntranceDoor() {

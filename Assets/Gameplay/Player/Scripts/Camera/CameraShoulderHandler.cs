@@ -56,13 +56,13 @@ public class CameraShoulderHandler : MonoBehaviour
 
     private void Update()
     {
-        ChangeFOV();
+        //ChangeFOV();
     }
 
     void ChangeFOV()
     {   
         float t = Mathf.InverseLerp(8,15,Mathf.Clamp(_controller.Velocity, 8,15));
-        Debug.Log(t);
+        //Debug.Log(t);
         cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, startFOV + (FOVMulti*t), t);        
     }
 
