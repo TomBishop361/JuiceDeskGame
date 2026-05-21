@@ -75,7 +75,8 @@ public class Sniper : MonoBehaviour
 
     private void Update()
     {
-        
+        if (PauseManager.IsPaused) return;
+
         if (_aim == 1)
         {
             AimIn();
