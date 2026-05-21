@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.ProBuilder;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 // Shows a large centre-screen title after an Airlock scene transition
 // To be placed in the Player persistent scene
