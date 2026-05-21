@@ -31,7 +31,7 @@ public class PlayerAnimationHandler : MonoBehaviour
         animator.SetBool("WallRunRight", _controller.state == MovementState.wallRunning && _controller.WallRunRight);
         animator.SetBool("WallRunLeft", _controller.state == MovementState.wallRunning && _controller.WallRunLeft);
         animator.SetBool("Air", _controller.state == MovementState.air);
-        //animator.SetBool("RailGrinding", isRailGrinding);
+        animator.SetBool("RailGrinding", _controller.isRailGrinding);
         //animator.SetBool("Grappling", activeGrapple);
 
         //animator.SetInteger("State", (int)state);

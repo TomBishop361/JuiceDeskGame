@@ -2863,6 +2863,8 @@ MonoBehaviour:
   grindSpeed: 12
   heightOffset: 1
   currentRailScript: {fileID: 0}
+  PausePanel: {fileID: 0}
+  HUDPanel: {fileID: 0}
   animator: {fileID: 8593586654675245498}
   acceleration: 50
   airAcceleration: 50
@@ -3104,7 +3106,9 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 16705
-  ShotLineEffect: {fileID: 2666334844587432012}
+  DamagehitMask:
+    serializedVersion: 2
+    m_Bits: 256
   _attackData:
     Damage: 25
     Knockback:
@@ -3117,6 +3121,7 @@ MonoBehaviour:
   shotOrigin: {fileID: 6373591792510189152}
   StartFOV: 0
   ZoomFOV: 30
+  laserVFX: {fileID: 0}
   isOnCoolDown: 0
 --- !u!114 &3360952311824732236
 MonoBehaviour:
