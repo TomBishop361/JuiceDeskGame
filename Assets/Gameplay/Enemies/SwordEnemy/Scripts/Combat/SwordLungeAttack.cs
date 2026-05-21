@@ -115,8 +115,11 @@ namespace Game.AI.Sword {
 
 		// True while the lunge attack is currently in progress
 		public bool IsLunging => CurrentPhase != SwordLungePhase.None;
-		// True only during the active dash movement. SwordEnemy uses this to ignore stun only during the actual committed dash
+		// True only during the active dash movement
+		// Usef for animation + VFX + dash-specific checks
 		public bool IsDashPhase => CurrentPhase == SwordLungePhase.Dash;
+		// True when normal damage should still apply but must not cancel the committed lunge or trigger hit stun
+		public bool BlocksDamageInterrupts => ShouldBlockDamageInterrupts();
 		// Minimum valid distance for the lunge attack
 		public float LungeMinRange => lungeMinRange;
 		// Maximum valid distance for the lunge attack
@@ -855,6 +858,22 @@ namespace Game.AI.Sword {
 				glowRenderer.GetPropertyBlock(glowPropertyBlock);
 				glowPropertyBlock.SetColor(windupGlowColorPropertyHash, visible ? glowColor : Color.black);
 				glowRenderer.SetPropertyBlock(glowPropertyBlock);
+			}
+		}
+
+		// Returns whether incoming damage should be allowed to interrupt this lunge phase
+		// Fixes the bug where the players bullets could intefere with the sword enemy lunge attack
+		private bool ShouldBlockDamageInterrupts() {
+			switch (CurrentPhase) {
+				case SwordLungePhase.Windup:
+				case SwordLungePhase.Dash:
+					return true;
+
+				case SwordLungePhase.Recovery:
+					return true;
+
+				default:
+					return false;
 			}
 		}
 

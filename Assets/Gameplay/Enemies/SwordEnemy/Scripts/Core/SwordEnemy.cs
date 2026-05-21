@@ -93,7 +93,7 @@ namespace Game.AI.Sword {
 
 		// Interrupts lunge behaviour and applies hit stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
-			if (lungeAttack != null && lungeAttack.IsDashPhase) {
+			if (lungeAttack != null && lungeAttack.BlocksDamageInterrupts) {
 				// TODO: Play hit VFX SFX only (but do not cancel dash)
 				return;
 			}

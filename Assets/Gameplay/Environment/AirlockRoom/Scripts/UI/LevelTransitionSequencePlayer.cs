@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Plays a fullscreen PNG/sprite sequence during the airlock blackout.
-// Place this on a persistent UI object, usually in the Player scene, so it survives level unloads.
+// Plays a fullscreen sprite sequence during the airlock blackout
 [DisallowMultipleComponent]
 public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 	[Header("UI References")]
@@ -13,9 +12,9 @@ public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 	[SerializeField] private Image frameImage;
 
 	[Header("Frames")]
-	[Tooltip("Ordered sprite frames for the transition animation. Drag Intro_00000 through Intro_00032 here in filename order.")]
+	[Tooltip("Ordered sprite frames for the transition animation.")]
 	[SerializeField] private Sprite[] frames;
-	[Tooltip("How many sprite frames are shown per second. 24 is usually a good cinematic value for exported PNG sequences.")]
+	[Tooltip("How many sprite frames are shown per second.")]
 	[SerializeField] private float framesPerSecond = 24.0f;
 
 	[Header("Playback")]
@@ -27,16 +26,16 @@ public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 	[SerializeField] private bool clearSpriteWhenHidden = false;
 
 	[Header("Startup")]
-	[Tooltip("If true, the sequence starts hidden when this object wakes. Keep this enabled for normal airlock use.")]
+	[Tooltip("If true, the sequence starts hidden when this object wakes. For the airlock this should remain enabled")]
 	[SerializeField] private bool startHidden = true;
 
 	[Header("Debug")]
-	[Tooltip("If true, missing references and playback issues are logged to the Unity Console.")]
+	[Tooltip("If true, missing references and any level sequence playback issues are logged to the Unity Console.")]
 	[SerializeField] private bool debugLogging = false;
 
 	public bool IsPlaying => isPlaying;
 
-	// The portal checks this before yielding the animation routine.
+	// The portal checks this before yielding the animation routine
 	public bool CanPlay => sequenceGroup != null && frameImage != null && frames != null && frames.Length > 0;
 
 	private bool isPlaying;
@@ -53,8 +52,8 @@ public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 		}
 	}
 
-	// Plays the sprite sequence from the first frame to the last frame.
-	// AirlockSceneTransitionPortal yields this coroutine so fade-in waits until playback has finished.
+	// Plays the sprite sequence from the first frame to the last frame
+	// AirlockSceneTransitionPortal yields this coroutine so fade-in waits until playback has finished
 	public IEnumerator PlayRoutine() {
 		ResolveReferences();
 
@@ -71,7 +70,7 @@ public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 		float secondsPerFrame = 1.0f / safeFramesPerSecond;
 
 		for (int i = 0; i < frames.Length; i++) {
-			// Null checks allow one missing frame without breaking the whole transition.
+			// Null checks allow one missing frame without breaking the whole transition
 			if (frames[i] != null) {
 				frameImage.sprite = frames[i];
 			}
@@ -86,13 +85,11 @@ public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 		isPlaying = false;
 	}
 
-	// Immediately shows the transition UI above the black fade panel.
+	// Immediately shows the transition UI above the black fade panel
 	public void ShowInstant() {
 		if (sequenceGroup != null) {
 			sequenceGroup.gameObject.SetActive(true);
 			sequenceGroup.alpha = 1.0f;
-
-			// This overlay is visual only; it should never block player/UI input by itself.
 			sequenceGroup.blocksRaycasts = false;
 			sequenceGroup.interactable = false;
 		}
@@ -102,7 +99,7 @@ public sealed class LevelTransitionSequencePlayer : MonoBehaviour {
 		}
 	}
 
-	// Immediately hides the transition UI and optionally clears the last displayed sprite.
+	// Immediately hides the transition UI and optionally clears the last displayed sprite
 	public void HideInstant() {
 		if (sequenceGroup != null) {
 			sequenceGroup.alpha = 0.0f;
