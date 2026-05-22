@@ -69,9 +69,7 @@ public class InputController : MonoBehaviour
     float elapsdTime;    
     [SerializeField] RailScript currentRailScript;
 
-    [Header("Misc")]
-    [SerializeField] GameObject PausePanel;
-    [SerializeField] GameObject HUDPanel;
+    [Header("Misc")]  
     [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
@@ -92,7 +90,7 @@ public class InputController : MonoBehaviour
 
     public const float gravity = -9.81f;
     public bool jump;
-    bool IsPaused;
+    
     private bool sprint;
     private float crouch;
     bool crouching;
@@ -167,7 +165,7 @@ public class InputController : MonoBehaviour
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
-        InputManager.OnPauseReceived += PausePressed;
+       
         InputManager.OnSprintReceived += SprintPressed;
         InputManager.OnCrouchReceived += CrouchPressed;        
         Cursor.lockState = CursorLockMode.Locked;
@@ -334,26 +332,7 @@ public class InputController : MonoBehaviour
             //_isGrounded = false;
     }
 
-    private void PausePressed(bool value)
-    {
-        IsPaused = (value == IsPaused) ? !value : value;
-        Debug.Log($"IsPaused = {IsPaused}");
-        PausePanel.SetActive(IsPaused);
-        HUDPanel.SetActive(!IsPaused);
 
-        if (IsPaused)
-        {
-            Time.timeScale = 0;
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Time.timeScale = 1;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-    }
 
     private void SprintPressed(bool value)
     {
@@ -585,7 +564,7 @@ public class InputController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (IsPaused) return;
+        if (PauseManager.IsPaused) return;
         HandleLook(LookDirection);
     }
 
