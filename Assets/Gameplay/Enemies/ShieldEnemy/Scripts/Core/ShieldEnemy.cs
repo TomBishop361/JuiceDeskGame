@@ -94,7 +94,6 @@ namespace Game.AI.Shield {
 			stunState?.ResetRuntime();
 		}
 
-		// Updates TBD
 		protected override void TickAlive() {
 			defenseState?.TickState(Target, animator);
 			minigunWeapon?.TickFire(this, animator, Target);

@@ -255,9 +255,6 @@ namespace Game.AI.Shield {
 				minigunBarrel.Rotate(0.0f, 0.0f, spinSpeed * Time.deltaTime, Space.Self);
 			}
 
-			float heatPercent = GetHeatPercent();
-			UpdateEmission(heatPercent);
-
 			// Overheat check
 			if (HasMinigunOverheated()) {
 				StopFiring(animator);
@@ -327,9 +324,9 @@ namespace Game.AI.Shield {
 
 			return finalPoint;
 		}
-		
+
 		// Returns a delayed aim point from history interpolated between samples
-		// Assumes aimHistory is sorted newest -> oldest
+		// Aim history is stored oldest -> newest because new samples are appended to the end
 		private Vector3 GetDelayedAimPoint(List<AimSample> aimHistory, float delay, Vector3 fallbackPoint) {
 			if (aimHistory == null || aimHistory.Count == 0) {
 				return fallbackPoint;
@@ -342,13 +339,14 @@ namespace Game.AI.Shield {
 				return aimHistory[0].Position;
 			}
 
-			// If the target time is newer than the newest sample: use the latest known target position
 			int lastIndex = aimHistory.Count - 1;
+
+			// If the target time is newer than the newest sample: use the latest known target position
 			if (targetTime >= aimHistory[lastIndex].Time) {
 				return aimHistory[lastIndex].Position;
 			}
 
-			for (int i = 0; i < aimHistory.Count; i++) {
+			for (int i = 1; i < aimHistory.Count; i++) {
 				AimSample older = aimHistory[i - 1];
 				AimSample newer = aimHistory[i];
 
