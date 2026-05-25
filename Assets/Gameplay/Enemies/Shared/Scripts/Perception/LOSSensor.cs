@@ -108,7 +108,7 @@ namespace Game.AI {
 		//	return false;
 		//}
 
-		//// TODO: Put this in a CombatHelper.cs script
+		//// Put this in a CombatHelper.cs script
 		//// Check distance between two given vectors
 		//public static float CheckDistanceToTarget(Vector3 self, Vector3 target) {
 		//	if (self == null || target == null) {

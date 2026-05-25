@@ -379,7 +379,7 @@ namespace Game.AI.Shield {
 			var shotAttackData = BuildMinigunAttackData(owner);
 
 			// Cast ray towards bullet tracer direction - check for contact
-			if (Physics.Raycast(bulletOrigin, direction, out RaycastHit hit, minigunMaxRange, minigunHitMask, QueryTriggerInteraction.Ignore)) {
+			if (Physics.Raycast(bulletOrigin, direction, out RaycastHit hit, minigunMaxRange, minigunHitMask, QueryTriggerInteraction.Collide)) {
 				// Adjust minigun bullet tracer to match hit point
 				endPoint = hit.point;
 

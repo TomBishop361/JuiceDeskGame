@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.AI.Shield {
@@ -26,6 +27,8 @@ namespace Game.AI.Shield {
 		[SerializeField] private LayerMask shockwaveDamageMask;
 		[Tooltip("Layer mask used to detect ground surfaces for shockwave placement and effects.")]
 		[SerializeField] private LayerMask shockwaveGroundMask = ~0;
+		[Tooltip("How the shockwave overlap should treat trigger colliders.")]
+		[SerializeField] private QueryTriggerInteraction shockwaveTriggerInteraction = QueryTriggerInteraction.Collide;
 
 		[Header("Debug FX")]
 		[Tooltip("Whether to spawn a debug shockwave ring visual when the slam is performed.")]
@@ -38,6 +41,10 @@ namespace Game.AI.Shield {
 		[Header("Animation")]
 		[Tooltip("Animator trigger name used to start the slam animation.")]
 		[SerializeField] private string slamTriggerName = "Slam";
+
+		// Reused shockwave buffers to avoid allocations when the slam attack runs
+		private readonly Collider[] slamShockwaveOverlapBuffer = new Collider[32];
+		private readonly HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
 
 		// Shield slam attack cooldown/state timers
 		private float nextSlamTime = -Mathf.Infinity;
@@ -105,10 +112,13 @@ namespace Game.AI.Shield {
 			}
 
 			// Get colliders that overlap the Shockwave Slam AOE
-			Collider[] hits = Physics.OverlapSphere(center, shockwaveRadius, shockwaveDamageMask, QueryTriggerInteraction.Ignore);
+			damagedTargets.Clear();
 
+			int hitCount = Physics.OverlapSphereNonAlloc(center, shockwaveRadius, slamShockwaveOverlapBuffer, shockwaveDamageMask, shockwaveTriggerInteraction);
 
-			foreach (Collider hit in hits) {
+			for (int i = 0; i < hitCount; i++) {
+				Collider hit = slamShockwaveOverlapBuffer[i];
+
 				if (hit == null) {
 					continue;
 				}
@@ -119,10 +129,11 @@ namespace Game.AI.Shield {
 
 				// Check if colliders in AOE contains a hurtbox (can it take damage)
 				IDamageable damageable = hit.GetComponentInParent<IDamageable>();
-				if (damageable == null) {
+				if (damageable == null || damagedTargets.Add(damageable) == false) {
 					continue;
 				}
 
+				// A target can have multiple colliders, but should only take shockwave damage once
 				damageable.TakeDamage(attackData);
 			}
 
@@ -138,6 +149,14 @@ namespace Game.AI.Shield {
 			return attackData;
 		}
 
+		private void OnValidate() {
+			slamRange = Mathf.Max(0.0f, slamRange);
+			slamCooldown = Mathf.Max(0.0f, slamCooldown);
+			slamLockTime = Mathf.Max(0.0f, slamLockTime);
+			slamExposeDuration = Mathf.Max(0.0f, slamExposeDuration);
+			shockwaveRadius = Mathf.Max(0.0f, shockwaveRadius);
+			shockwaveDebugLifetime = Mathf.Max(0.0f, shockwaveDebugLifetime);
+		}
 
 		// - DEPRECATED - 
 

@@ -187,30 +187,6 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		private void OnValidate() {
-			lungeMinRange = Mathf.Max(0.0f, lungeMinRange);
-			lungeMaxRange = Mathf.Max(lungeMinRange, lungeMaxRange);
-			lungeCooldown = Mathf.Max(0.0f, lungeCooldown);
-			failedLungeChanceRetryDelay = Mathf.Max(0.0f, failedLungeChanceRetryDelay);
-			lungeChance = Mathf.Clamp01(lungeChance);
-			lungeWindupTime = Mathf.Max(0.0f, lungeWindupTime);
-			lungeDuration = Mathf.Max(0.01f, lungeDuration);
-			lungeRecoveryTime = Mathf.Max(0.0f, lungeRecoveryTime);
-			lungeAttackLockBuffer = Mathf.Max(0.0f, lungeAttackLockBuffer);
-			lungeEventFailsafeBuffer = Mathf.Max(0.0f, lungeEventFailsafeBuffer);
-			lungeAimLagTime = Mathf.Max(0.0f, lungeAimLagTime);
-			lungeUndershootDistance = Mathf.Max(0.0f, lungeUndershootDistance);
-			lungeAimHeight = Mathf.Max(0.0f, lungeAimHeight);
-			targetHistorySampleInterval = Mathf.Max(0.0f, targetHistorySampleInterval);
-			lungeDashDistance = Mathf.Max(0.0f, lungeDashDistance);
-			lungeDashSpeed = Mathf.Max(0.0f, lungeDashSpeed);
-			lungeMaxLaunchAngle = Mathf.Clamp(lungeMaxLaunchAngle, 0.0f, 180.0f);
-			dashEndpointTolerance = Mathf.Max(0.001f, dashEndpointTolerance);
-			hitSlowSpeedMultiplier = Mathf.Clamp01(hitSlowSpeedMultiplier);
-			hitSlowDuration = Mathf.Max(0.0f, hitSlowDuration);
-			windupGlowIntensity = Mathf.Max(0.0f, windupGlowIntensity);
-		}
-
 		// Clears lunge cooldown and state so the module is ready for pooling or respawn
 		public void ResetRuntime(SwordEnemy owner) {
 			nextLungeTime = -Mathf.Infinity;
@@ -483,87 +459,6 @@ namespace Game.AI.Sword {
 			lungeRB.angularVelocity = Vector3.zero;
 		}
 
-		//// Begins the dash phase of the lunge using the prepared lunge direction
-		//// Calculate dash direction at exact launch moment + ensure enemy is facing within a given angle
-		//public void OnLungeDashStart(SwordEnemy owner) {
-		//	// Stop lunge
-		//	if (owner == null || owner.Target == null || lungeRB == null) {
-		//		return;
-		//	}
-
-		//	// Compute the lunge dash direction (this is locked at launch to prevent aimbot-like tracking)
-		//	Vector3 predictedPosition = PredictAimPoint(owner.Target);
-		//	Vector3 flatDirection = predictedPosition - transform.position;
-		//	flatDirection.y = 0.0f;
-
-		//	if (flatDirection.sqrMagnitude < 0.0001f) {
-		//		flatDirection = transform.forward;
-		//	}
-
-		//	//// Check if sword enemy is facing enough within a given angle
-		//	//// If not, snap rotation to the dash direction before launch
-		//	//if (IsFacingDirection(owner.Target, lungeDirection) == false) {
-		//	//	Quaternion desiredRotation = Quaternion.LookRotation(lungeDirection);
-		//	//	transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime);
-		//	//}
-
-		//	float angle = Vector3.Angle(transform.forward, flatDirection.normalized);
-		//	if (angle > lungeMaxLaunchAngle) {
-		//		flatDirection = transform.forward;
-		//	}
-
-		//	lungeDirection = flatDirection.normalized;
-
-		//	owner.DisableNavAgent();
-
-		//	//// Disable NavMesh agent (for physX lunge movement)
-		//	//if (navMeshAgent != null) {
-		//	//	navMeshAgent.enabled = false;
-		//	//}
-
-		//	lungeRB.isKinematic = false;
-		//	lungeRB.linearVelocity = Vector3.zero;
-		//	//lungeRB.angularVelocity = Vector3.zero;
-
-		//	// Dash in the same direction used for enemy facing 
-		//	lungeRB.AddForce(lungeDirection * lungeForce, ForceMode.VelocityChange);
-		//}
-
-		//private void SetLayerRecursively(GameObject obj, int layer) {
-		//	obj.layer = layer;
-		//	foreach (Transform child in obj.transform)
-		//		SetLayerRecursively(child.gameObject, layer);
-		//}
-
-		//// Predict the player position using player velocity alongside a time lead (predicat ahead of time)
-		//private Vector3 PredictAimPoint(Transform target) {
-		//	// Aim at players chest (0.8 - 1.2 for the multiplier depending on player height)
-		//	Vector3 baseAim = target.position + target.forward /*Vector3.up * 1.0f*/;
-
-		//	if (target.TryGetComponent(out Rigidbody rb)) {
-		//		return baseAim + rb.linearVelocity * lungeLeadTime;
-		//	}
-
-		//	// TODO: Expose velocity & use that instead
-		//	return baseAim;
-		//}
-
-		//// Ensure that enemy is facing their targets direction within a given angle (prevents side-ways lunging)
-		//private bool IsFacingDirection(Transform target, Vector3 worldDirection) {
-		//	if (target == null) {
-		//		return false;
-		//	}
-
-		//	worldDirection.y = 0.0f;
-		//	if (worldDirection.sqrMagnitude < 0.001f) {
-		//		return true;
-		//	}
-
-		//	float facingAngle = Vector3.Angle(transform.forward, worldDirection);
-
-		//	return facingAngle <= lungeMaxLaunchAngle;
-		//}
-
 		// Ends dash movement and moves into recovery
 		// This is safe to call from animation events, hit reactions or failsafes
 		private void EndDash(SwordEnemy owner) {
@@ -586,29 +481,6 @@ namespace Game.AI.Sword {
 				owner.StopMove();
 			}
 		}
-
-		//// Ends the dash phase and transitions the lunge into recovery
-		//public void OnLungeDashEnd(SwordEnemy owner) {
-		//	if (owner == null) {
-		//		owner = GetComponent<SwordEnemy>();
-		//		if (owner == null) {
-		//			Debug.LogError("SwordLungeAttack.OnLungeDashEnd: SwordEnemy owner is null.");
-		//			return;
-		//		}
-		//	}
-
-		//	if (lungeRB != null) {
-		//		lungeRB.linearVelocity = Vector3.zero;
-		//		//lungeRB.angularVelocity = Vector3.zero;
-		//		lungeRB.isKinematic = true;
-		//	}
-
-		//	owner.EnableNavAgent();
-
-		//	if (owner != null && gameObject.activeInHierarchy) {
-		//		StartCoroutine(RecoveryRoutine(owner));
-		//	}
-		//}
 
 		// Main phase controller
 		// Animation events can still control exact timing, but this prevents the lunge from getting stuck
@@ -664,32 +536,6 @@ namespace Game.AI.Sword {
 
 			FinishLunge(owner);
 		}
-
-		//private IEnumerator LungeWindupRoutine(SwordEnemy owner) {
-		//	IsLunging = true;
-
-		//	float endTime = Time.time + lungeWindupTime;
-		//	while (Time.time < endTime) {
-		//		if (owner == null || owner.IsDead || owner.HasTarget == false) {
-		//			CancelLunge(owner, true);
-		//			yield break;
-		//		}
-
-		//		owner.StopMove();
-		//		owner.FaceTarget(owner.Target.position);
-		//		yield return null;
-		//	}
-
-		//	float dashEndTime = Time.time + lungeDuration;
-		//	while (Time.time < dashEndTime) {
-		//		if (owner == null || owner.IsDead) {
-		//			CancelLunge(owner, true);
-		//			yield break;
-		//		}
-
-		//		yield return null;
-		//	}
-		//}
 
 		// Moves the Rigidbody toward the locked endpoint and clamps travel so the dash cannot overshoot
 		private void MoveDashStep(SwordEnemy owner) {
@@ -908,14 +754,159 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		//// TODO: COMMENT
-		//private IEnumerator RecoveryRoutine(SwordEnemy owner) {
-		//	yield return new WaitForSeconds(lungeRecoveryTime);
-		//	IsLunging = false;
-		//	DisableLungeHitbox();
+		private void OnValidate() {
+			lungeMinRange = Mathf.Max(0.0f, lungeMinRange);
+			lungeMaxRange = Mathf.Max(lungeMinRange, lungeMaxRange);
+			lungeCooldown = Mathf.Max(0.0f, lungeCooldown);
+			failedLungeChanceRetryDelay = Mathf.Max(0.0f, failedLungeChanceRetryDelay);
+			lungeChance = Mathf.Clamp01(lungeChance);
+			lungeWindupTime = Mathf.Max(0.0f, lungeWindupTime);
+			lungeDuration = Mathf.Max(0.01f, lungeDuration);
+			lungeRecoveryTime = Mathf.Max(0.0f, lungeRecoveryTime);
+			lungeAttackLockBuffer = Mathf.Max(0.0f, lungeAttackLockBuffer);
+			lungeEventFailsafeBuffer = Mathf.Max(0.0f, lungeEventFailsafeBuffer);
+			lungeAimLagTime = Mathf.Max(0.0f, lungeAimLagTime);
+			lungeUndershootDistance = Mathf.Max(0.0f, lungeUndershootDistance);
+			lungeAimHeight = Mathf.Max(0.0f, lungeAimHeight);
+			targetHistorySampleInterval = Mathf.Max(0.0f, targetHistorySampleInterval);
+			lungeDashDistance = Mathf.Max(0.0f, lungeDashDistance);
+			lungeDashSpeed = Mathf.Max(0.0f, lungeDashSpeed);
+			lungeMaxLaunchAngle = Mathf.Clamp(lungeMaxLaunchAngle, 0.0f, 180.0f);
+			dashEndpointTolerance = Mathf.Max(0.001f, dashEndpointTolerance);
+			hitSlowSpeedMultiplier = Mathf.Clamp01(hitSlowSpeedMultiplier);
+			hitSlowDuration = Mathf.Max(0.0f, hitSlowDuration);
+			windupGlowIntensity = Mathf.Max(0.0f, windupGlowIntensity);
+		}
 
-		//	if (owner != null && owner.IsDead == false) {
-		//		owner.EndAttackLock();
+		// - DEPRECATED -
+
+		//// Begins the dash phase of the lunge using the prepared lunge direction
+		//// Calculate dash direction at exact launch moment + ensure enemy is facing within a given angle
+		//public void OnLungeDashStart(SwordEnemy owner) {
+		//	// Stop lunge
+		//	if (owner == null || owner.Target == null || lungeRB == null) {
+		//		return;
+		//	}
+
+		//	// Compute the lunge dash direction (this is locked at launch to prevent aimbot-like tracking)
+		//	Vector3 predictedPosition = PredictAimPoint(owner.Target);
+		//	Vector3 flatDirection = predictedPosition - transform.position;
+		//	flatDirection.y = 0.0f;
+
+		//	if (flatDirection.sqrMagnitude < 0.0001f) {
+		//		flatDirection = transform.forward;
+		//	}
+
+		//	//// Check if sword enemy is facing enough within a given angle
+		//	//// If not, snap rotation to the dash direction before launch
+		//	//if (IsFacingDirection(owner.Target, lungeDirection) == false) {
+		//	//	Quaternion desiredRotation = Quaternion.LookRotation(lungeDirection);
+		//	//	transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime);
+		//	//}
+
+		//	float angle = Vector3.Angle(transform.forward, flatDirection.normalized);
+		//	if (angle > lungeMaxLaunchAngle) {
+		//		flatDirection = transform.forward;
+		//	}
+
+		//	lungeDirection = flatDirection.normalized;
+
+		//	owner.DisableNavAgent();
+
+		//	//// Disable NavMesh agent (for physX lunge movement)
+		//	//if (navMeshAgent != null) {
+		//	//	navMeshAgent.enabled = false;
+		//	//}
+
+		//	lungeRB.isKinematic = false;
+		//	lungeRB.linearVelocity = Vector3.zero;
+		//	//lungeRB.angularVelocity = Vector3.zero;
+
+		//	// Dash in the same direction used for enemy facing 
+		//	lungeRB.AddForce(lungeDirection * lungeForce, ForceMode.VelocityChange);
+		//}
+
+		//private void SetLayerRecursively(GameObject obj, int layer) {
+		//	obj.layer = layer;
+		//	foreach (Transform child in obj.transform)
+		//		SetLayerRecursively(child.gameObject, layer);
+		//}
+
+		//// Predict the player position using player velocity alongside a time lead (predicat ahead of time)
+		//private Vector3 PredictAimPoint(Transform target) {
+		//	// Aim at players chest (0.8 - 1.2 for the multiplier depending on player height)
+		//	Vector3 baseAim = target.position + target.forward /*Vector3.up * 1.0f*/;
+
+		//	if (target.TryGetComponent(out Rigidbody rb)) {
+		//		return baseAim + rb.linearVelocity * lungeLeadTime;
+		//	}
+
+		//	// TODO: Expose velocity & use that instead
+		//	return baseAim;
+		//}
+
+		//// Ensure that enemy is facing their targets direction within a given angle (prevents side-ways lunging)
+		//private bool IsFacingDirection(Transform target, Vector3 worldDirection) {
+		//	if (target == null) {
+		//		return false;
+		//	}
+
+		//	worldDirection.y = 0.0f;
+		//	if (worldDirection.sqrMagnitude < 0.001f) {
+		//		return true;
+		//	}
+
+		//	float facingAngle = Vector3.Angle(transform.forward, worldDirection);
+
+		//	return facingAngle <= lungeMaxLaunchAngle;
+		//}
+
+		//// Ends the dash phase and transitions the lunge into recovery
+		//public void OnLungeDashEnd(SwordEnemy owner) {
+		//	if (owner == null) {
+		//		owner = GetComponent<SwordEnemy>();
+		//		if (owner == null) {
+		//			Debug.LogError("SwordLungeAttack.OnLungeDashEnd: SwordEnemy owner is null.");
+		//			return;
+		//		}
+		//	}
+
+		//	if (lungeRB != null) {
+		//		lungeRB.linearVelocity = Vector3.zero;
+		//		//lungeRB.angularVelocity = Vector3.zero;
+		//		lungeRB.isKinematic = true;
+		//	}
+
+		//	owner.EnableNavAgent();
+
+		//	if (owner != null && gameObject.activeInHierarchy) {
+		//		StartCoroutine(RecoveryRoutine(owner));
+		//	}
+		//}
+
+		//private IEnumerator LungeWindupRoutine(SwordEnemy owner) {
+		//	IsLunging = true;
+
+		//	float endTime = Time.time + lungeWindupTime;
+		//	while (Time.time < endTime) {
+		//		if (owner == null || owner.IsDead || owner.HasTarget == false) {
+		//			CancelLunge(owner, true);
+		//			yield break;
+		//		}
+
+		//		owner.StopMove();
+		//		owner.FaceTarget(owner.Target.position);
+		//		yield return null;
+		//	}
+
+		//	float dashEndTime = Time.time + lungeDuration;
+		//	while (Time.time < dashEndTime) {
+		//		if (owner == null || owner.IsDead) {
+		//			CancelLunge(owner, true);
+		//			yield break;
+		//		}
+
+		//		yield return null;
 		//	}
 		//}
 	}

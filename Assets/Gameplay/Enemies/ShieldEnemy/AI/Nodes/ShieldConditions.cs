@@ -78,10 +78,6 @@ namespace Game.AI.Behavior.Shield {
 		}
 	}
 
-	// TODO: ADD ShieldPlayerBehind CONDITION NODE CLASS
-
-
-
 	// Category: Enemy/Shield/Conditions
 
 	// - SHIELD CONDITIONS ID NAMES -

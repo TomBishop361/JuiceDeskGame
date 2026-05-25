@@ -131,12 +131,16 @@ namespace Game.AI {
 			}
 
 			// Prefer a slam when the player is close enough and the slam cooldown is ready
+			// Face the player before starting so the slam looks visually correct even if the NavMesh path was turning
 			// Tokens prevent too many shield enemies from using high-impact attacks at once
 			if (shield.InSlamRange && shield.CanSlam) {
 				if (pressureAgent.TryRequestAttackToken(PressureAttackTokenType.ShieldSlam, slamTokenTime)) {
+					shield.FaceTarget(shield.Target.position);
+
 					if (shield.TryStartSlam()) {
 						return;
 					}
+
 					// Return the token if the slam did not actually begin
 					pressureAgent.ReleaseAttackToken(PressureAttackTokenType.ShieldSlam);
 				}
@@ -168,7 +172,7 @@ namespace Game.AI {
 			}
 
 			// While actively suppressing with LOS, hold position and keep facing the player
-			if (shield.HasTarget && shield.HasLineOfSight && shield.IsFiringMinigun) {
+			if (shield.HasTarget && shield.Target != null && shield.HasLineOfSight && shield.IsFiringMinigun) {
 				groundMotor.Stop();
 				shield.FaceTarget(shield.Target.position);
 				return;
@@ -179,7 +183,7 @@ namespace Game.AI {
 				currentDestination = BuildAdvanceDestination();
 				TrySampleNavMesh(currentDestination, out currentDestination);
 				hasDestination = true;
-				nextDestinationRefreshTime = Time.time + Mathf.Max(0.05f, destinationRefreshInterval);
+				nextDestinationRefreshTime = Time.time + destinationRefreshInterval;
 			}
 
 			groundMotor.Chase(currentDestination);
