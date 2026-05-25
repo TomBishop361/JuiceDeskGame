@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 8765070490560940808}
   - component: {fileID: 8081440965179177430}
   - component: {fileID: 8486488370571241742}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shield_BlockHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,7 +198,7 @@ Transform:
   m_GameObject: {fileID: 2801203226655837324}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.969, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -331,10 +331,41 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.9
-  m_Height: 3.8221054
+  m_Radius: 0.95
+  m_Height: 5.35
   m_Direction: 1
-  m_Center: {x: 0, y: -0.3426919, z: 0}
+  m_Center: {x: 0, y: 2.65, z: 0}
+--- !u!1 &5241963242649215353
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3514383600822182733}
+  m_Layer: 0
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3514383600822182733
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5241963242649215353}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.1585, y: -1.8101, z: 0.4027}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4616454480828417729}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5981915146911534288
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,7 +540,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 3.8}
+  m_AnchoredPosition: {x: 0, y: 5.5}
   m_SizeDelta: {x: 220, y: 36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &595598029150481850
@@ -734,7 +765,7 @@ Transform:
   m_GameObject: {fileID: 8279697402223132824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.8, z: 0}
+  m_LocalPosition: {x: 0, y: 5.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -824,10 +855,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.8
-  m_Height: 3.65
+  m_Radius: 0.85
+  m_Height: 5.3
   m_Direction: 1
-  m_Center: {x: 0, y: 2, z: 0}
+  m_Center: {x: 0, y: 2.65, z: 0}
 --- !u!54 &5554221476752247085
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -853,7 +884,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 1
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 2
 --- !u!195 &3964159061307939131
 NavMeshAgent:
@@ -1031,14 +1062,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitScanHitbox: {fileID: 3712372061465919918}
-  minigunBarrel: {fileID: 2369224774257302872}
-  minigunMuzzle: {fileID: 7771533410874305813}
+  minigunBarrel: {fileID: 766744070661830660}
+  minigunMuzzle: {fileID: 3514383600822182733}
   minigunBulletTracerPrefab: {fileID: 7337224773031513817, guid: 10d60da6f83739c41be049e395b04306, type: 3}
   minigunRenderer: {fileID: 2230260894595425602}
   minigunAttackData:
-    Damage: 0.5
+    Damage: 0.75
     Knockback:
-      Force: 1
+      Force: 0
       UpwardModifier: 0
       TorqueStrength: 0
     Attacker: {fileID: 8618922778442928813}
@@ -1051,14 +1082,14 @@ MonoBehaviour:
   minigunFullDamageRange: 20
   minigunMediumDamageRange: 35
   minigunMaxRange: 45
-  minigunFireRate: 7
+  minigunFireRate: 8
   minigunBulletLifetime: 0.06
-  minigunAimDelay: 0.8
-  minigunAimOffsetRadius: 0.5
-  minigunInaccuracyDegrees: 2
-  minigunMaxAimSnapPerShot: 1.5
+  minigunAimDelay: 0.65
+  minigunAimOffsetRadius: 0.65
+  minigunInaccuracyDegrees: 3
+  minigunMaxAimSnapPerShot: 1.25
   minigunExposeDuration: 4
-  minigunOverheatDuration: 3.5
+  minigunOverheatDuration: 3
   baseEmissionColor: {r: 0, g: 0, b: 0, a: 1}
   maxEmissionColor: {r: 1.5, g: 0.4, b: 0.1, a: 1}
   emissionColorProperty: _EmissionColor
@@ -1081,17 +1112,17 @@ MonoBehaviour:
   shockwaveAttackData:
     Damage: 2.5
     Knockback:
-      Force: 15
-      UpwardModifier: 3.5
+      Force: 12
+      UpwardModifier: 2.75
       TorqueStrength: 0
     Attacker: {fileID: 8618922778442928813}
     Type: 0
     AttackerFaction: 1
-  slamRange: 6.5
-  slamCooldown: 5
-  slamLockTime: 1
-  slamExposeDuration: 4.5
-  shockwaveRadius: 8
+  slamRange: 7
+  slamCooldown: 6.5
+  slamLockTime: 1.45
+  slamExposeDuration: 4
+  shockwaveRadius: 7.5
   shockwaveDamageMask:
     serializedVersion: 2
     m_Bits: 128
@@ -1100,7 +1131,7 @@ MonoBehaviour:
     m_Bits: 8
   spawnShockwaveDebugRing: 1
   shockwaveRingPrefab: {fileID: 3616850448136473984, guid: 290d4698bde3e9b4da736ae27f7327e7, type: 3}
-  shockwaveDebugLifetime: 1.25
+  shockwaveDebugLifetime: 1
   slamTriggerName: Slam
 --- !u!114 &1122574990893991801
 MonoBehaviour:
@@ -1114,9 +1145,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9b1beccbc2a2a048a80d23d38653042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitStunDuration: 0.4
+  hitStunDuration: 0
   stopMinigunOnStun: 0
-  lowerShieldOnStun: 1
+  lowerShieldOnStun: 0
   hitTriggerName: Hit
 --- !u!114 &7334690218744183616
 MonoBehaviour:
@@ -2145,6 +2176,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5741100956133900050, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3514383600822182733}
     - targetCorrespondingSourceObject: {fileID: 9166346350026587631, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8765070490560940808}
@@ -2178,6 +2212,11 @@ SkinnedMeshRenderer:
 --- !u!137 &748331101961510733 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 422800905369757342, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
+  m_PrefabInstance: {fileID: 1133935149856979411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &766744070661830660 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8856177305313967657, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
   m_PrefabInstance: {fileID: 1133935149856979411}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &868948816705601529 stripped
@@ -2305,11 +2344,6 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1247486605640588433, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
   m_PrefabInstance: {fileID: 1133935149856979411}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &2369224774257302872 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3413061543135585419, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
-  m_PrefabInstance: {fileID: 1133935149856979411}
-  m_PrefabAsset: {fileID: 0}
 --- !u!137 &2554558320796648402 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -5994553608797439487, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
@@ -2368,6 +2402,11 @@ SkinnedMeshRenderer:
 --- !u!137 &4334212356019681923 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -5504881786785332400, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
+  m_PrefabInstance: {fileID: 1133935149856979411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4616454480828417729 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5741100956133900050, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
   m_PrefabInstance: {fileID: 1133935149856979411}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &4625844471577705745 stripped
@@ -2538,11 +2577,6 @@ SkinnedMeshRenderer:
 --- !u!137 &7599116254192049266 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 7406723717038761377, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
-  m_PrefabInstance: {fileID: 1133935149856979411}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7771533410874305813 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -1988756547547441978, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
   m_PrefabInstance: {fileID: 1133935149856979411}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &7812612898198616485 stripped
