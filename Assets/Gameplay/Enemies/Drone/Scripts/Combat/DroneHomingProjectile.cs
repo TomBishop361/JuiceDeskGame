@@ -336,9 +336,9 @@ namespace Game.Combat.Projectiles {
 
 		// Deals splash damage to indirect targets found inside the explosion radius
 		private void DealSplashDamage(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
-			Collider[] overlaps = Physics.OverlapSphere(hitPoint, explosionRadius, damageLayers, QueryTriggerInteraction.Ignore);
+			Collider[] overlaps = Physics.OverlapSphere(hitPoint, explosionRadius, damageLayers, QueryTriggerInteraction.Ignore); //Use Physics.OverlapSphereNonAlloc() instead 
 
-			HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
+            HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
 
 			foreach (Collider hit in overlaps) {
 				if (hit == null) {

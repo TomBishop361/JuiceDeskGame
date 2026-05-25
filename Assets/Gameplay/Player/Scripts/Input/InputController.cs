@@ -347,9 +347,8 @@ public class InputController : MonoBehaviour
 
     void GroundCheck()
     {
-        Collider[] hit = new Collider[1];
         
-        _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, hit, Ground) > 0;
+        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, Ground);
         if (_isGrounded)
             exitingSlope = false;
     }
