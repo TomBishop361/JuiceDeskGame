@@ -133,6 +133,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7213d9c06ae3d5243872248314535ce3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1285193847394981118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1229142522212218843}
+  m_Layer: 0
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1229142522212218843
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1285193847394981118}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.1717757, y: -1.7668693, z: 1.8219182}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1669120998644656201}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1294206786067599301
 GameObject:
   m_ObjectHideFlags: 0
@@ -204,6 +235,37 @@ Transform:
   m_Children:
   - {fileID: 4126148468231495170}
   m_Father: {fileID: 5254608935058430753}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2901949701800534834
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 892362536815990535}
+  m_Layer: 0
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &892362536815990535
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2901949701800534834}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.73716027, y: 2.4849324, z: 3.2479305}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 591719223629225528}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3302204446464145650
 GameObject:
@@ -345,7 +407,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3514383600822182733}
   m_Layer: 0
-  m_Name: Muzzle
+  m_Name: MuzzleOLD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -969,6 +1031,9 @@ MonoBehaviour:
   destinationRefreshInterval: 0.18
   navMeshSampleRadius: 2
   reachedKnownPositionDistance: 1.75
+  facePlayerWhileVisible: 1
+  faceDesiredVelocityWithoutLineOfSight: 1
+  movementFaceVelocityThreshold: 0.12
   minigunTokenRefreshTime: 0.35
   slamTokenTime: 1.25
   autoAcquireTarget: 1
@@ -1018,8 +1083,9 @@ MonoBehaviour:
   moveSpeed: 4.5
   acceleration: 16
   angularSpeed: 540
-  toggleSmoothRotation: 1
-  rotationSpeed: 180
+  useManualRotation: 1
+  toggleSmoothRotation: 0
+  rotationSpeed: 300
   rotationSmoothing: 6
 --- !u!114 &5090258675412554558
 MonoBehaviour:
@@ -1048,7 +1114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitScanHitbox: {fileID: 3712372061465919918}
   minigunBarrel: {fileID: 766744070661830660}
-  minigunMuzzle: {fileID: 3514383600822182733}
+  minigunMuzzle: {fileID: 892362536815990535}
   minigunBulletTracerPrefab: {fileID: 7337224773031513817, guid: 10d60da6f83739c41be049e395b04306, type: 3}
   minigunHeatRenderers:
   - {fileID: 2230260894595425602}
@@ -1806,7 +1872,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1814,7 +1880,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       propertyPath: m_LocalRotation.z
@@ -1826,7 +1892,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -2543,9 +2609,15 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 892362536815990535}
     - targetCorrespondingSourceObject: {fileID: -6505665391579257479, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2517745914273605385}
+    - targetCorrespondingSourceObject: {fileID: -7451939272366370406, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1229142522212218843}
     - targetCorrespondingSourceObject: {fileID: 5741100956133900050, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3514383600822182733}
@@ -2662,6 +2734,11 @@ SkinnedMeshRenderer:
 --- !u!137 &1626482887799288065 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1814635723048536274, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
+  m_PrefabInstance: {fileID: 1133935149856979411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1669120998644656201 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7451939272366370406, guid: cb0dce8e023794c83b2815a1eba314eb, type: 3}
   m_PrefabInstance: {fileID: 1133935149856979411}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &1701298104698284107 stripped

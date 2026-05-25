@@ -22,6 +22,14 @@ namespace Game.AI {
 		[Tooltip("Distance at which a remembered/spawn awareness destination is considered reached.")]
 		[SerializeField] private float reachedKnownPositionDistance = 1.75f;
 
+		[Header("Facing")]
+		[Tooltip("If true, the shield enemy faces the player whenever direct line of sight exists.")]
+		[SerializeField] private bool facePlayerWhileVisible = true;
+		[Tooltip("If true, the shield enemy faces its NavMesh desired velocity while pathing without line of sight.")]
+		[SerializeField] private bool faceDesiredVelocityWithoutLineOfSight = true;
+		[Tooltip("Minimum desired velocity needed before the enemy trusts the NavMesh direction for facing.")]
+		[SerializeField] private float movementFaceVelocityThreshold = 0.12f;
+
 		[Header("Attack Tokens")]
 		[Tooltip("How long the shield minigun token is refreshed while suppressing.")]
 		[SerializeField] private float minigunTokenRefreshTime = 0.35f;
@@ -62,6 +70,9 @@ namespace Game.AI {
 		// Newly spawned/enabled enemies inherit recent player awareness so they can immediately
 		// path toward the known fight location instead of waiting idle for direct line of sight
 		private void OnEnable() {
+			hasDestination = false;
+			nextDestinationRefreshTime = -Mathf.Infinity;
+
 			EnemyAwarenessHub hub = EnemyAwarenessHub.Active;
 			if (hub != null && hub.TryGetKnownPositionForSpawn(out Vector3 position)) {
 				hasSpawnAwarenessDestination = true;
@@ -172,10 +183,36 @@ namespace Game.AI {
 			}
 
 			groundMotor.Chase(currentDestination);
-			shield.FaceTarget(GetFacePoint());
+			FaceForCurrentMovement();
 
 			// Shields stay raised while advancing so their movement reads as defensive pressure
 			shield.SetShieldRaised(true);
+		}
+
+		// Chooses facing separately from path destination
+		// Visible player = face player
+		// No LOS = face actual NavMesh travel direction
+		// Initial Fallback = destination
+		// Final Fallback = target position
+		private void FaceForCurrentMovement() {
+			if (facePlayerWhileVisible && shield.HasTarget && shield.Target != null && shield.HasLineOfSight) {
+				shield.FaceTarget(shield.Target.position);
+				return;
+			}
+
+			if (faceDesiredVelocityWithoutLineOfSight && groundMotor.HasUsefulDesiredVelocity(movementFaceVelocityThreshold)) {
+				groundMotor.FaceDirection(groundMotor.DesiredVelocity);
+				return;
+			}
+
+			if (hasDestination && (currentDestination - transform.position).sqrMagnitude > 0.25f) {
+				shield.FaceTarget(currentDestination);
+				return;
+			}
+
+			if (shield.Target != null) {
+				shield.FaceTarget(shield.Target.position);
+			}
 		}
 
 		// Builds the shield destination from live prediction when visible, otherwise from last known awareness
@@ -211,23 +248,7 @@ namespace Game.AI {
 			return shield.Target != null ? shield.Target.position : transform.position;
 		}
 
-		private Vector3 GetFacePoint() {
-			// Prefer facing toward the same predictive/awareness point the shield is chasing
-			PlayerMotionPredictor predictor = director != null ? director.PlayerPredictor : PlayerMotionPredictor.Active;
-			if (shield.HasTarget && shield.Target != null && shield.HasLineOfSight && predictor != null) {
-				return predictor.ShortFuturePosition;
-			}
 
-			if (EnemyAwarenessHub.Active != null && EnemyAwarenessHub.Active.TryGetKnownPosition(out Vector3 knownPosition)) {
-				return knownPosition;
-			}
-
-			if (hasSpawnAwarenessDestination) {
-				return spawnAwarenessDestination;
-			}
-
-			return shield.Target != null ? shield.Target.position : currentDestination;
-		}
 
 		// Snaps destinations onto the NavMesh so corner pursuit uses pathfinding instead of wall hugging
 		private bool TrySampleNavMesh(Vector3 desired, out Vector3 sampled) {
@@ -252,5 +273,34 @@ namespace Game.AI {
 			}
 		}
 
+		private void OnValidate() {
+			destinationRefreshInterval = Mathf.Max(0.05f, destinationRefreshInterval);
+			navMeshSampleRadius = Mathf.Max(0.05f, navMeshSampleRadius);
+			reachedKnownPositionDistance = Mathf.Max(0.0f, reachedKnownPositionDistance);
+			movementFaceVelocityThreshold = Mathf.Max(0.0f, movementFaceVelocityThreshold);
+			minigunTokenRefreshTime = Mathf.Max(0.0f, minigunTokenRefreshTime);
+			slamTokenTime = Mathf.Max(0.0f, slamTokenTime);
+		}
+
+		// - DEPRECATED - 
+		
+		// REASON: Shield enemy would face the wrong direction when walking (was facing the predicted direction)
+		//private Vector3 GetFacePoint() {
+		//	// Prefer facing toward the same predictive/awareness point the shield is chasing
+		//	PlayerMotionPredictor predictor = director != null ? director.PlayerPredictor : PlayerMotionPredictor.Active;
+		//	if (shield.HasTarget && shield.Target != null && shield.HasLineOfSight && predictor != null) {
+		//		return predictor.ShortFuturePosition;
+		//	}
+
+		//	if (EnemyAwarenessHub.Active != null && EnemyAwarenessHub.Active.TryGetKnownPosition(out Vector3 knownPosition)) {
+		//		return knownPosition;
+		//	}
+
+		//	if (hasSpawnAwarenessDestination) {
+		//		return spawnAwarenessDestination;
+		//	}
+
+		//	return shield.Target != null ? shield.Target.position : currentDestination;
+		//}
 	}
 }
