@@ -1,8 +1,6 @@
 using UnityEngine;
 using Game.AI.Drone;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine.ProBuilder;
 
 // DroneHomingProjectile:
 // Uses a Rigidbody and steers toward the target with a configurable turn rate
@@ -91,7 +89,7 @@ namespace Game.Combat.Projectiles {
 			}
 		}
 
-		// Configure the drone homing projectile stats (Called from DroneProjectileWeapon right before launch)
+		// Configure the drone homing projectile stats (called from DroneProjectileWeapon right before launch)
 		public void Configure(AttackData projectileAttackData, DroneHomingProjectileStats stats) {
 			activeAttackData = projectileAttackData;
 
@@ -100,6 +98,8 @@ namespace Game.Combat.Projectiles {
 			explosionRadius = stats != null ? Mathf.Max(0.01f, stats.ExplosionRadius) : 0.75f;
 			explodeOnTimeout = stats == null || stats.ExplodeOnTimeout;
 			timeoutAttackData = stats != null ? stats.TimeoutAttackData : projectileAttackData;
+			timeoutAttackData.Attacker = projectileAttackData.Attacker;
+			timeoutAttackData.AttackerFaction = projectileAttackData.AttackerFaction;
 			damageLayers = stats != null ? stats.DamageLayers : ~0;
 
 			float lifetime = stats != null ? stats.Lifetime : 3.0f;
@@ -336,9 +336,9 @@ namespace Game.Combat.Projectiles {
 
 		// Deals splash damage to indirect targets found inside the explosion radius
 		private void DealSplashDamage(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
-			Collider[] overlaps = Physics.OverlapSphere(hitPoint, explosionRadius, damageLayers, QueryTriggerInteraction.Ignore);
+			Collider[] overlaps = Physics.OverlapSphere(hitPoint, explosionRadius, damageLayers, QueryTriggerInteraction.Ignore); //Use Physics.OverlapSphereNonAlloc() instead 
 
-			HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
+            HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
 
 			foreach (Collider hit in overlaps) {
 				if (hit == null) {
@@ -400,11 +400,11 @@ namespace Game.Combat.Projectiles {
 		private void ExplodeOnTimeout() {
 			// Prevents double explosion damage in the case of a collision
 			if (hasHit) {
-				return;        
+				return;
 			}
 			hasHit = true;
 
-			// Timeout explosion has no directReceiver since no collision was made so it’s just splash damage
+			// Timeout explosion has no directReceiver since no collision was made, so it's just splash damage
 			DealSplashDamage(timeoutAttackData, null, transform.position);
 			Explode(/*transform.position*/);
 		}
@@ -482,7 +482,7 @@ namespace Game.Combat.Projectiles {
 		}
 
 		// Shows explosion hit radius + proximity fuse radius as gizmos (scene view only)
-		// TODO: Show explosion predicted impact point as a gizmo (scene view only)
+		// MINOR TODO: Show explosion predicted impact point as a gizmo (scene view only)
 		// NOTE: DEBUG HIT RADIUS (DIRECT = DIRECT DAMAGE | ANYTHING ELSE BUT STILL IN HIT RADIUS = SPLASH DAMAGE)
 		private void OnDrawGizmos() {
 			//if (hasPredictedHit == false) {

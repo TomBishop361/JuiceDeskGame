@@ -32,6 +32,7 @@ namespace Game.AI.Sword {
 		// Time when the next swing becomes available
 		private float nextSwingTime = -Mathf.Infinity;
 		private int swingTriggerHash;
+		private SwordEnemy activeOwner;
 
 		// Sword Enemy Swing Attack Specific Properties
 
@@ -51,6 +52,7 @@ namespace Game.AI.Sword {
 		// Clears swing cooldown state and ensures all melee hitboxes are disabled
 		public void ResetRuntime() {
 			nextSwingTime = -Mathf.Infinity;
+			activeOwner = null;
 			DisableAllHitboxes();
 		}
 
@@ -74,10 +76,11 @@ namespace Game.AI.Sword {
 				return false;
 			}
 
+			activeOwner = owner;
 			nextSwingTime = Time.time + swingCooldown;
 			owner.BeginAttackLock(swingLockTime);
 
-			SetupSwingData();
+			SetupSwingData(owner);
 			DisableAllHitboxes();
 
 			if (animator != null) {
@@ -89,6 +92,15 @@ namespace Game.AI.Sword {
 
 		// Reinitialises swing attack data before the swing active frames begin
 		public void SetupSwingData() {
+			SetupSwingData(activeOwner != null ? activeOwner : GetComponentInParent<SwordEnemy>());
+		}
+
+		// Records attacker data so player damage feedback can identify the source and type of hit
+		public void SetupSwingData(SwordEnemy owner) {
+			swingAttackData.Attacker = owner != null ? owner.gameObject : gameObject;
+			swingAttackData.AttackerFaction = owner != null ? owner.OwnerFaction : Faction.Enemy;
+			swingAttackData.Type = DamageType.Melee;
+
 			if (swingHitbox != null) {
 				swingHitbox.Initialise(swingAttackData);
 			}

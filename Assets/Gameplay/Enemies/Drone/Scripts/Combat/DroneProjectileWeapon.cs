@@ -14,7 +14,7 @@ namespace Game.AI.Drone {
 		[SerializeField] private Transform projectileSpawn;
 		[Tooltip("Gameplay tuning pushed into each homing projectile when this drone fires.")]
 		[SerializeField] private DroneHomingProjectileStats homingProjectileStats = new DroneHomingProjectileStats();
-		
+
 		[Header("Range")]
 		[Tooltip("Maximum distance at which the drone is allowed to fire.")]
 		[SerializeField] private float fireRange = 10.0f;
@@ -35,24 +35,25 @@ namespace Game.AI.Drone {
 		[Tooltip("Populate the projectile pool during Awake so the first shot doesn't cause any lag.")]
 		[SerializeField] private bool populateProjectilePoolAtStartup = true;
 
-		[Header("Animation")]
-		[Tooltip("Whether the drone will fire a projectile based on the animation event or not.")]
-		[SerializeField] private bool fireOnAnimationEvent = true;
-		[Tooltip("Animator trigger name used to start the fire animation.")]
-		[SerializeField] private string fireTriggerName = "Fire";
+		//[Header("Animation")]
+		//[Tooltip("Whether the drone will fire a projectile based on the animation event or not.")]
+		//[SerializeField] private bool fireOnAnimationEvent = true;
+		//[Tooltip("Animator trigger name used to start the fire animation.")]
+		//[SerializeField] private string fireTriggerName = "Fire";
 
 		// Cooldown/State timers
 		private float nextFireTime = -Mathf.Infinity;
-		private int fireTriggerHash;
+		//private int fireTriggerHash;
 
 		private DroneVisualMotion droneVisualMotion;
+		private DroneEnemy activeOwner;
 		private IObjectPool<PooledObject> projectilePool;
 
 		public float FireRange => fireRange;
 		public DroneHomingProjectileStats HomingProjectileStats => homingProjectileStats;
 
 		private void Awake() {
-			fireTriggerHash = Animator.StringToHash(fireTriggerName);
+			//fireTriggerHash = Animator.StringToHash(fireTriggerName);
 			droneVisualMotion = GetComponent<DroneVisualMotion>();
 			SetupProjectilePool();
 		}
@@ -60,6 +61,7 @@ namespace Game.AI.Drone {
 		// Resets weapon runtime state when the owner respawns or is reused from a pool
 		public void ResetRuntime() {
 			nextFireTime = -Mathf.Infinity;
+			activeOwner = null;
 		}
 
 		// Returns true if the supplied distance is inside fire range
@@ -79,7 +81,7 @@ namespace Game.AI.Drone {
 		}
 
 		// Attempts to start the fire attack by setting cooldowns + attack lock timing + the fire animation trigger
-		public bool TryStartFire(DroneEnemy owner, Animator animator) {
+		public bool TryStartFire(DroneEnemy owner/*, Animator animator*/) {
 			if (owner == null || owner.HasTarget == false) {
 				return false;
 			}
@@ -99,21 +101,24 @@ namespace Game.AI.Drone {
 			SetupProjectilePool();
 			if (projectilePool == null) {
 				Debug.LogWarning($"{name}: Projectile pool could not be created because no projectile prefab is assigned.", this);
-
 				return false;
 			}
 
+			activeOwner = owner;
 			nextFireTime = Time.time + fireCooldown;
 			owner.BeginAttackLock(fireLockTime);
 
-			if (animator != null) {
-				animator.SetTrigger(fireTriggerHash);
-			}
+			//if (animator != null) {
+			//	animator.SetTrigger(fireTriggerHash);
+			//}
 
-			// Fire immediately if not using an animation event
-			if (fireOnAnimationEvent == false) {
-                FireProjectile(owner.Target);
-            }
+			//// Fire immediately if not using an animation event
+			//if (fireOnAnimationEvent == false) {
+			//	FireProjectile(owner.Target);
+			//}
+
+			// Fire immediately 
+			FireProjectile(owner.Target);
 
 			return true;
 		}
@@ -165,7 +170,7 @@ namespace Game.AI.Drone {
 			droneVisualMotion?.PlayShotRecoil();
 
 			// Launch homing projectile
-			homingProjectile.Configure(projectileAttackData, homingProjectileStats);
+			homingProjectile.Configure(BuildProjectileAttackData(), homingProjectileStats);
 			homingProjectile.Init(target);
 			homingProjectile.Launch(direction);
 
@@ -174,7 +179,17 @@ namespace Game.AI.Drone {
 			//}
 		}
 
-		public void Cancel() {
+		public void Cancel() {}
+
+		private AttackData BuildProjectileAttackData() {
+			DroneEnemy owner = activeOwner != null ? activeOwner : GetComponentInParent<DroneEnemy>();
+
+			AttackData attackData = projectileAttackData;
+			attackData.Attacker = owner != null ? owner.gameObject : gameObject;
+			attackData.AttackerFaction = owner != null ? owner.OwnerFaction : Faction.Enemy;
+			attackData.Type = DamageType.Ranged;
+
+			return attackData;
 		}
 
 		private void SetupProjectilePool() {

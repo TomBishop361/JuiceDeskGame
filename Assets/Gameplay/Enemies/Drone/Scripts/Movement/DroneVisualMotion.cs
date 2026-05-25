@@ -30,6 +30,16 @@ namespace Game.AI.Drone {
 		[Tooltip("How quickly the recoil returns back to neutral.")]
 		[SerializeField] private float recoilReturnSpeed = 10.0f;
 
+		[Header("Anti-Clipping")]
+		[Tooltip("Keeps the visual mesh pivot inside a local safety bubble around the drone root. Prevents visual motion from leaving the collider's protected space.")]
+		[SerializeField] private bool keepVisualInsideRootBubble = true;
+		[Tooltip("Local centre of the safety bubble. Only needs adjusting if the drone root/collider is not centred properly.")]
+		[SerializeField] private Vector3 visualBubbleCentreLocal = Vector3.zero;
+		[Tooltip("Maximum distance the visual pivot may move from the safety bubble centre. Set this slightly smaller than the drone body/collider radius.")]
+		[SerializeField] private float visualBubbleRadius = 0.45f;
+		[Tooltip("Draws the visual safety bubble when the drone is selected.")]
+		[SerializeField] private bool drawVisualBubbleGizmo = true;
+
 		private Vector3 baseLocalPosition;
 		private Quaternion baseLocalRotation;
 		private Vector3 lastWorldPosition;
@@ -97,9 +107,23 @@ namespace Game.AI.Drone {
 			recoilOffset = Mathf.MoveTowards(recoilOffset, 0.0f, recoilReturnSpeed * deltaTime);
 
 			// Local bob and recoil remain on the visual transform only
-			visualRoot.localPosition = baseLocalPosition + Vector3.up * bobOffset + Vector3.back * recoilOffset;
+			Vector3 intendedLocalPosition = baseLocalPosition + Vector3.up * bobOffset + Vector3.back * recoilOffset;
+
+			// Keep the visual pivot inside that same protected space as the root/collider (FlightEnemyMotor ensures that the root/collider is clear of geometry)
+			visualRoot.localPosition = keepVisualInsideRootBubble ? ClampLocalPositionToVisualBubble(intendedLocalPosition) : intendedLocalPosition;
 
 			visualRoot.localRotation = baseLocalRotation * Quaternion.Euler(smoothedPitch, 0.0f, smoothedBank);
+		}
+
+		private Vector3 ClampLocalPositionToVisualBubble(Vector3 localPosition) {
+			float safeRadius = Mathf.Max(0.01f, visualBubbleRadius);
+			Vector3 fromCentre = localPosition - visualBubbleCentreLocal;
+
+			if (fromCentre.sqrMagnitude <= safeRadius * safeRadius) {
+				return localPosition;
+			}
+
+			return visualBubbleCentreLocal + fromCentre.normalized * safeRadius;
 		}
 
 		// Resets visual runtime state when the drone is spawned or reused from a pool
@@ -121,6 +145,16 @@ namespace Game.AI.Drone {
 		// Called by the weapon when a projectile is fired
 		public void PlayShotRecoil() {
 			recoilOffset = Mathf.Max(recoilOffset, recoilDistance);
+		}
+
+		private void OnDrawGizmosSelected() {
+			if (!drawVisualBubbleGizmo) {
+				return;
+			}
+
+			Gizmos.color = Color.cyan;
+			Gizmos.matrix = transform.localToWorldMatrix;
+			Gizmos.DrawWireSphere(visualBubbleCentreLocal, Mathf.Max(0.01f, visualBubbleRadius));
 		}
 
 	}

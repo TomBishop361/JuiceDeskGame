@@ -27,6 +27,9 @@ namespace Game.AI.Sword {
 		[Tooltip("Stun module used to apply hit stun and interrupt the enemy when damaged.")]
 		[SerializeField] private SwordStunState stunState;
 
+		// Animator IDs
+		private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
+
 		// Implement IHealthSettings
 		public float MaxHealth => maxHealth;
 		public float LowHealthThreshold => lowHealthThreshold;
@@ -84,13 +87,13 @@ namespace Game.AI.Sword {
 			lungeAttack?.TickLunge(this);
 
 			if (animator != null && groundMotor != null) {
-				animator.SetFloat("MoveSpeed", groundMotor.VelocityMagnitude);
+				animator.SetFloat(AnimMoveSpeed, groundMotor.VelocityMagnitude);
 			}
 		}
 
 		// Interrupts lunge behaviour and applies hit stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
-			if (lungeAttack != null && lungeAttack.IsDashPhase) {
+			if (lungeAttack != null && lungeAttack.BlocksDamageInterrupts) {
 				// TODO: Play hit VFX SFX only (but do not cancel dash)
 				return;
 			}
@@ -231,7 +234,7 @@ namespace Game.AI.Sword {
 			lungeAttack?.OnLungeDashStart(this);
 		}
 
-		// Called by animation when the lunge dash motion is over to end the dash phase cleanly.
+		// Called by animation when the lunge dash motion is over to end the dash phase cleanly
 		public void OnLungeDashEnd() {
 			lungeAttack?.OnLungeDashEnd(this);
 		}

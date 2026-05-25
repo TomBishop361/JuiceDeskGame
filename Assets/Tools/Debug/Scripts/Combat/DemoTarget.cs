@@ -1,27 +1,14 @@
 using UnityEngine;
 
-public class DemoTarget : MonoBehaviour, IDamageable
-{
+public class DemoTarget : MonoBehaviour, IDamageable {
     [SerializeField] private GameObject particleEffect;
 
-    public void adjustHealth(int damage)
-    {
-        OnDestroy();
+    public void TakeDamage(AttackData attackData) {
+        GlassOnDestroy();
     }
 
-    // Needed to implement interface
-	public void TakeDamage(AttackData attackData) {
-        // Configure Attack data for sword enemy
-
-        OnDestroy();
-
-
-    }
-
-    private void OnDestroy() 
-    {
-        if (particleEffect != null)
-        {
+    private void GlassOnDestroy() {
+        if (particleEffect != null) {
             Instantiate(particleEffect, transform.position, Quaternion.identity);
         }
         Destroy(gameObject);

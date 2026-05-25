@@ -97,9 +97,9 @@ namespace Game.AI.Shield {
 		private Vector3 lastMinigunAimPoint;
 		private bool hasLastMinigunAimPoint;
 		private Material minigunMaterial;
+		private ShieldEnemy activeOwner;
 
 		private IObjectPool<PooledObject> tracerPool;
-
 
 		// Shield Enemy Minigun Specific Properties 
 
@@ -133,6 +133,7 @@ namespace Game.AI.Shield {
 			nextMinigunShotTime = -Mathf.Infinity;
 			minigunFireStartTime = -Mathf.Infinity;
 			IsFiring = false;
+			activeOwner = null;
 
 			ClearMinigunAimHistory();
 
@@ -165,6 +166,7 @@ namespace Game.AI.Shield {
 				minigunFireStartTime = Time.time;
 			}
 
+			activeOwner = null;
 			IsFiring = true;
 			RecordTargetSample(target.position);
 
@@ -183,6 +185,7 @@ namespace Game.AI.Shield {
 		// Stops continuous firing and clears temporary aim state
 		public void StopFiring(Animator animator) {
 			IsFiring = false;
+			activeOwner = null;
 			minigunFireStartTime = -Mathf.Infinity;
 			ClearMinigunAimHistory();
 
@@ -228,7 +231,7 @@ namespace Game.AI.Shield {
 			// Fire cooldown check
 			if (Time.time >= nextMinigunShotTime) {
 				Vector3 aimPoint = GetLaggedAimPoint(target.position);
-				FireShot(aimPoint);
+				FireShot(owner, aimPoint);
 				nextMinigunShotTime = Time.time + (1.0f / Mathf.Max(0.01f, minigunFireRate));
 			}
 
@@ -306,7 +309,7 @@ namespace Game.AI.Shield {
 			Vector3 finalPoint = minigunMuzzle.position + (direction * minigunMaxRange);
 
 			// Store pre-direction delayed target point
-			lastMinigunAimPoint = delayedPoint; 
+			lastMinigunAimPoint = delayedPoint;
 			hasLastMinigunAimPoint = true;
 
 			return finalPoint;
@@ -349,7 +352,7 @@ namespace Game.AI.Shield {
 			return Vector3.Lerp(older.Position, newer.Position, t);
 		}
 
-		private void FireShot(Vector3 aimPoint) {
+		private void FireShot(ShieldEnemy owner, Vector3 aimPoint) {
 			if (hitScanHitbox == null || minigunMuzzle == null) {
 				return;
 			}
@@ -365,7 +368,7 @@ namespace Game.AI.Shield {
 			Vector3 endPoint = bulletOrigin + direction * minigunMaxRange;
 
 			// Prevent changing attack data by storing a copy
-			var shotAttackData = minigunAttackData;
+			var shotAttackData = BuildMinigunAttackData(owner);
 
 			// Cast ray towards bullet tracer direction - check for contact
 			if (Physics.Raycast(bulletOrigin, direction, out RaycastHit hit, minigunMaxRange, minigunHitMask, QueryTriggerInteraction.Ignore)) {
@@ -386,22 +389,34 @@ namespace Game.AI.Shield {
 			SpawnHitScanTracer(bulletOrigin, endPoint);
 		}
 
+		private AttackData BuildMinigunAttackData(ShieldEnemy owner) {
+			ShieldEnemy sourceOwner = owner != null ? owner : activeOwner;
+
+			AttackData attackData = minigunAttackData;
+			attackData.Attacker = sourceOwner != null ? sourceOwner.gameObject : gameObject;
+			attackData.AttackerFaction = sourceOwner != null ? sourceOwner.OwnerFaction : Faction.Enemy;
+			attackData.Type = DamageType.Ranged;
+
+			return attackData;
+		}
+
+
 		// Distance-based damage falloff
 		private float CalculateDamageFalloff(Vector3 origin, Vector3 target) {
 			float distanceToHit = Vector3.Distance(origin, target);
 
 			// Damage Falloff
-			// 0–20m = 100% damage
+			// 0-20m = 100% damage
 			if (distanceToHit <= minigunFullDamageRange) {
-				return  minigunAttackData.Damage;
+				return minigunAttackData.Damage;
 			}
 
-			// 20–35m = 75% damage
+			// 20-35m = 75% damage
 			if (distanceToHit <= minigunMediumDamageRange) {
 				return minigunAttackData.Damage * 0.75f;
 			}
 
-			// 35–45m = 50% damage OR 45m+ = 50% damage
+			// 35-45m = 50% damage OR 45m+ = 50% damage
 			return minigunAttackData.Damage * 0.50f;
 		}
 

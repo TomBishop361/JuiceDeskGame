@@ -69,7 +69,7 @@ public class InputController : MonoBehaviour
     float elapsdTime;    
     [SerializeField] RailScript currentRailScript;
 
-    [Header("Misc")]
+    [Header("Misc")]  
     [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
@@ -90,6 +90,7 @@ public class InputController : MonoBehaviour
 
     public const float gravity = -9.81f;
     public bool jump;
+    
     private bool sprint;
     private float crouch;
     bool crouching;
@@ -164,6 +165,7 @@ public class InputController : MonoBehaviour
         InputManager.OnMoveReceived += MovePressed;
         InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
+       
         InputManager.OnSprintReceived += SprintPressed;
         InputManager.OnCrouchReceived += CrouchPressed;        
         Cursor.lockState = CursorLockMode.Locked;
@@ -330,6 +332,8 @@ public class InputController : MonoBehaviour
             //_isGrounded = false;
     }
 
+
+
     private void SprintPressed(bool value)
     {
         sprint = value;
@@ -343,9 +347,8 @@ public class InputController : MonoBehaviour
 
     void GroundCheck()
     {
-        Collider[] hit = new Collider[1];
         
-        _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, hit, Ground) > 0;
+        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, Ground);
         if (_isGrounded)
             exitingSlope = false;
     }
@@ -470,9 +473,11 @@ public class InputController : MonoBehaviour
 
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
-        Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        if (horizontalView.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        }
 
         rb.useGravity = !OnSlope();
         ClampSpeed();
@@ -558,6 +563,7 @@ public class InputController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (PauseManager.IsPaused) return;
         HandleLook(LookDirection);
     }
 
@@ -579,6 +585,7 @@ public class InputController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+    
         GroundCheck();
         Jump();
         HandleMove(MoveDirection);

@@ -26,8 +26,4 @@ public class DestroyableEnemyProjectile : MonoBehaviour, IDamageable {
 		// Fallback for non-pooled test objects.
 		gameObject.SetActive(false);
 	}
-
-	public void adjustHealth(int damage) {
-		throw new System.NotImplementedException();
-	}
 }

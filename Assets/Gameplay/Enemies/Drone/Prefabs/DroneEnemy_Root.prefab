@@ -656,7 +656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97443b648dee46b48af9c661dd24b5d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 4867790311118515996}
+  animator: {fileID: 0}
   healthComponent: {fileID: 8058414518214028440}
   blackboard: {fileID: 4590514767511177929}
   perception: {fileID: 4572627965412102517}
@@ -699,7 +699,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 24649
-  bodyRadius: 1.2
+  bodyRadius: 1.35
   probeOriginLift: 0.1
   forwardProbeDistance: 1.2
   sideProbeDistance: 1
@@ -715,7 +715,7 @@ MonoBehaviour:
   maxAvoidanceForce: 2.5
   enableCeilingClamp: 1
   ceilingProbeDistance: 1.75
-  ceilingClearance: 0.3
+  ceilingClearance: 1.05
   toggleSmoothRotation: 1
   rotationSpeed: 300
   rotationSmoothing: 8
@@ -820,8 +820,6 @@ MonoBehaviour:
   defaultProjectilePoolCapacity: 4
   maxProjectilePoolSize: 12
   populateProjectilePoolAtStartup: 1
-  fireOnAnimationEvent: 0
-  fireTriggerName: Fire
 --- !u!114 &8051029756593719978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -843,6 +841,10 @@ MonoBehaviour:
   tiltSmoothing: 8
   recoilDistance: 0.18
   recoilReturnSpeed: 10
+  keepVisualInsideRootBubble: 1
+  visualBubbleCentreLocal: {x: 0, y: 0, z: 0}
+  visualBubbleRadius: 1.3
+  drawVisualBubbleGizmo: 1
 --- !u!114 &962284047258909528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -856,8 +858,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knockdownDuration: 0
-  knockedBoolName: KnockedDown
-  hitTriggerName: Hit
 --- !u!114 &2716789458970548036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e335d70feb4452d44a7cf8f0d25c0354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 4867790311118515996}
+  animator: {fileID: 0}
   playTakeDamageAnimation: 0
   takeDamageTriggerName: TakeDamage
 --- !u!114 &5668271648837770725
@@ -1132,7 +1132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Graph: {fileID: -1611866823083519834, guid: 43174245b3707f0458472ebdcb7ba428, type: 2}
+  m_Graph: {fileID: 0}
   m_BlackboardVariableOverridesList:
   - rid: 7112529884375679607
   m_OriginalGraph: {fileID: 0}
@@ -1157,7 +1157,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6426209685012709754}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 9c987230b9f3b9e4d8b2fab7d032b84e, type: 2}
   m_CullingMode: 0

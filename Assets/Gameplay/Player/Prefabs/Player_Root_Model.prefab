@@ -2587,7 +2587,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 99308492047455641}
-  - component: {fileID: 1299384109808734316}
+  - component: {fileID: 6018522855691643311}
   m_Layer: 7
   m_Name: HealthBar
   m_TagString: Untagged
@@ -2610,7 +2610,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 952415781016506688}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1299384109808734316
+--- !u!114 &6018522855691643311
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2619,20 +2619,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 7484224418122996233}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fc10420de9b9324abd0270b2eba5dd0, type: 3}
+  m_Script: {fileID: 11500000, guid: 196c0073223e8664d9c043ff4e87078a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 6915328010031275841}
-  healthSlider: {fileID: 0}
   fillImage: {fileID: 0}
-  hpText: {fileID: 0}
-  followTarget: 1
-  worldAnchor: {fileID: 0}
-  uiOffset: {x: 0, y: 1.5, z: 0}
-  fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
-  segmentsContainer: {fileID: 0}
-  segmentDividerPrefab: {fileID: 3935628914579274362, guid: cfcd38def143893488aba330cae20197, type: 3}
+  delayedDamageImage: {fileID: 0}
+  pulseTarget: {fileID: 0}
+  fullHealthColor: {r: 0.3, g: 1, b: 0.53, a: 1}
+  warningHealthColor: {r: 1, g: 0.7, b: 0.23, a: 1}
+  criticalHealthColor: {r: 1, g: 0.18, b: 0.18, a: 1}
+  warningHealthPercent: 0.55
+  criticalHealthPercent: 0.25
+  smoothFill: 1
+  fillLerpSpeed: 12
+  useDelayedDamageBar: 1
+  delayedDamageHoldTime: 0.12
+  delayedDamageDrainSpeed: 1.35
+  delayedDamageColor: {r: 1, g: 0.12, b: 0.08, a: 0.55}
+  flashOnDamage: 1
+  damageFlashColor: {r: 1, g: 0.9490196, b: 0.65882355, a: 1}
+  damageFlashDuration: 0.18
+  damageFlashStrength: 1
+  pulseOnDamage: 1
+  damagePulseScale: 1.12
+  damagePulseDuration: 0.22
+  pulseWhenCritical: 1
+  criticalPulseColor: {r: 1, g: 1, b: 1, a: 1}
+  criticalPulseSpeed: 8.5
+  criticalPulseStrength: 0.65
 --- !u!1 &7638635240246966113
 GameObject:
   m_ObjectHideFlags: 0
@@ -2710,10 +2725,7 @@ GameObject:
   - component: {fileID: 952415781016506688}
   - component: {fileID: 659562499392369981}
   - component: {fileID: 8303638504209387791}
-  - component: {fileID: 3088120483906418636}
   - component: {fileID: 7128203245387133486}
-  - component: {fileID: 5197262658874264425}
-  - component: {fileID: 5431877660010416040}
   - component: {fileID: 5447062614033670975}
   - component: {fileID: 8330575932952866227}
   - component: {fileID: 1127249066402206109}
@@ -2723,14 +2735,20 @@ GameObject:
   - component: {fileID: 2912212841907514719}
   - component: {fileID: 1772563188392651328}
   - component: {fileID: 5467415593500749781}
-  - component: {fileID: 3184003480799253394}
   - component: {fileID: 3360952311824732236}
+  - component: {fileID: 6374130247521770732}
+  - component: {fileID: 1159540030383532587}
   - component: {fileID: 6915328010031275841}
   - component: {fileID: 3248711495759387962}
   - component: {fileID: 315411460745086423}
-  - component: {fileID: 6374130247521770732}
-  - component: {fileID: 1159540030383532587}
+  - component: {fileID: 3088120483906418636}
+  - component: {fileID: 5197262658874264425}
+  - component: {fileID: 5431877660010416040}
+  - component: {fileID: 6004627866533404591}
+  - component: {fileID: 3184003480799253394}
+  - component: {fileID: 749521401872351453}
   - component: {fileID: 7761443611690410262}
+  - component: {fileID: 3639359626453078628}
   m_Layer: 7
   m_Name: Player_Root_Model
   m_TagString: Player
@@ -2807,24 +2825,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &3088120483906418636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c75462de12a77b844a9237f7fb87dd8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerHealthComponent: {fileID: 6915328010031275841}
-  playerAnimator: {fileID: 0}
-  playerCharacter: {fileID: 0}
-  playerLoader: {fileID: 0}
-  maxHealth: 9
-  lowHealth: 3
 --- !u!114 &7128203245387133486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2863,6 +2863,8 @@ MonoBehaviour:
   grindSpeed: 12
   heightOffset: 1
   currentRailScript: {fileID: 0}
+  PausePanel: {fileID: 0}
+  HUDPanel: {fileID: 0}
   animator: {fileID: 8593586654675245498}
   acceleration: 50
   airAcceleration: 50
@@ -2893,52 +2895,6 @@ MonoBehaviour:
   PlayerRoot: {fileID: 2597609611847294696}
   rb: {fileID: 8303638504209387791}
   state: 0
---- !u!114 &5197262658874264425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 084fdd4367e17a7429a6f8cc94434ee3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shortLeadTime: 0.25
-  mediumLeadTime: 0.65
-  longLeadTime: 1.1
-  velocitySmoothing: 14
-  maxPredictionSpeed: 24
-  verticalPredictionScale: 0.35
-  useTransformForwardWhenSlow: 1
-  slowSpeedThreshold: 0.75
---- !u!114 &5431877660010416040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a483c1acd21fe941bb7eb65fec84437, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoEmitMovementNoise: 1
-  minMovementSpeed: 5.5
-  movementNoiseInterval: 0.35
-  movementNoiseRadius: 7
-  fastMovementBonusRadius: 6
-  fastMovementSpeed: 12
-  autoEmitLandingNoise: 1
-  landingVerticalSpeedThreshold: 6
-  landingNoiseRadius: 16
-  weaponNoiseRadius: 28
-  grappleNoiseRadius: 18
-  wallRunNoiseRadius: 14
-  slideNoiseRadius: 20
-  railGrindNoiseRadius: 18
 --- !u!114 &5447062614033670975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2953,8 +2909,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   XShoulderOffset: 0.9
   DutchTilt: 20
-  wallRunController: {fileID: 0}
-  _controller: {fileID: 0}
+  wallRunController: {fileID: 1127249066402206109}
+  _controller: {fileID: 7128203245387133486}
   cineCam: {fileID: 0}
   cinemachineCamera: {fileID: 0}
   gunObj: {fileID: 0}
@@ -3150,7 +3106,9 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 16705
-  ShotLineEffect: {fileID: 2666334844587432012}
+  DamagehitMask:
+    serializedVersion: 2
+    m_Bits: 256
   _attackData:
     Damage: 25
     Knockback:
@@ -3163,27 +3121,8 @@ MonoBehaviour:
   shotOrigin: {fileID: 6373591792510189152}
   StartFOV: 0
   ZoomFOV: 30
+  laserVFX: {fileID: 0}
   isOnCoolDown: 0
---- !u!114 &3184003480799253394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7743499516999693894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36b4dd06c0dedc74c8db4fecad1eed61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: {fileID: 6915328010031275841}
-  rb: {fileID: 8303638504209387791}
-  playerModel: {fileID: 7957883448529750283}
-  enableRegen: 1
-  regenDelay: 5
-  regenPerSecond: 0.2
-  respawnDelay: 1
-  respawnInvulnerabilityTime: 1.5
 --- !u!114 &3360952311824732236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3196,6 +3135,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 757d90cd0ee3f454d8dd8b559252610e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6374130247521770732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77eae2dcf33dbb444bef738bff144106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerIKRoot: {fileID: 2597609611847294696}
+  _camera: {fileID: 1312244048495141995}
+  _controller: {fileID: 7128203245387133486}
+  _grapple: {fileID: 2481668657288226550}
+  debugIK: 0
+  IKGunTarget: {fileID: 226746330427770559}
+  minIKDistance: 0.6
+  maxIKDistance: 2.6
+  IKGrappleTarget: {fileID: 6716559204881952616}
+  _rig: {fileID: 115191584633388127}
+--- !u!114 &1159540030383532587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ac8901b6de185d4686428391791b646, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 8593586654675245498}
+  _controller: {fileID: 7128203245387133486}
 --- !u!114 &6915328010031275841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3235,7 +3210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28da05ac540cdd748beab802feec6244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6374130247521770732
+--- !u!114 &3088120483906418636
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3244,20 +3219,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 7743499516999693894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77eae2dcf33dbb444bef738bff144106, type: 3}
+  m_Script: {fileID: 11500000, guid: c75462de12a77b844a9237f7fb87dd8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerIKRoot: {fileID: 2597609611847294696}
-  _camera: {fileID: 1312244048495141995}
-  _controller: {fileID: 7128203245387133486}
-  _grapple: {fileID: 2481668657288226550}
-  debugIK: 0
-  IKGunTarget: {fileID: 226746330427770559}
-  minIKDistance: 0.6
-  maxIKDistance: 2.6
-  IKGrappleTarget: {fileID: 6716559204881952616}
-  _rig: {fileID: 115191584633388127}
---- !u!114 &1159540030383532587
+  playerHealthComponent: {fileID: 6915328010031275841}
+  playerAnimator: {fileID: 0}
+  playerCharacter: {fileID: 8303638504209387791}
+  playerLoader: {fileID: 0}
+  maxHealth: 9
+  lowHealth: 3
+--- !u!114 &5197262658874264425
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3266,11 +3237,115 @@ MonoBehaviour:
   m_GameObject: {fileID: 7743499516999693894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ac8901b6de185d4686428391791b646, type: 3}
+  m_Script: {fileID: 11500000, guid: 084fdd4367e17a7429a6f8cc94434ee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 8593586654675245498}
-  _controller: {fileID: 7128203245387133486}
+  shortLeadTime: 0.25
+  mediumLeadTime: 0.65
+  longLeadTime: 1.1
+  velocitySmoothing: 14
+  maxPredictionSpeed: 24
+  verticalPredictionScale: 0.35
+  useTransformForwardWhenSlow: 1
+  slowSpeedThreshold: 0.75
+--- !u!114 &5431877660010416040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a483c1acd21fe941bb7eb65fec84437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoEmitMovementNoise: 1
+  minMovementSpeed: 5.5
+  movementNoiseInterval: 0.35
+  movementNoiseRadius: 7
+  fastMovementBonusRadius: 6
+  fastMovementSpeed: 12
+  autoEmitLandingNoise: 1
+  landingVerticalSpeedThreshold: 6
+  landingNoiseRadius: 16
+  weaponNoiseRadius: 28
+  grappleNoiseRadius: 18
+  wallRunNoiseRadius: 14
+  slideNoiseRadius: 20
+  railGrindNoiseRadius: 18
+--- !u!114 &6004627866533404591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a213c5bf4de544db427f8fcad80d26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 6915328010031275841}
+  playerHurtbox: {fileID: 3248711495759387962}
+  feedbackUI: {fileID: 0}
+  directionIndicator: {fileID: 0}
+  playerCamera: {fileID: 0}
+  audioSource: {fileID: 3639359626453078628}
+  lightDamageAmount: 0.5
+  fullFeedbackDamageAmount: 4
+  heavyDamageThreshold: 8.36
+  heavyKnockbackThreshold: 9
+  attackDataCacheWindow: 0.08
+  normalFeedbackInterval: 0.12
+  rangedFeedbackInterval: 0.18
+  meleeHitClips:
+  - {fileID: 8300000, guid: 01f76cfb545e8c1408ecaa1586bdf3d2, type: 3}
+  - {fileID: 8300000, guid: d9962a40de49dc044a1ea2409a93751a, type: 3}
+  rangedHitClips:
+  - {fileID: 8300000, guid: 2f4604b6b1e9b014db4ba177cb6354db, type: 3}
+  - {fileID: 8300000, guid: fe862ed7f26db3a41997f3ee0042e56e, type: 3}
+  - {fileID: 8300000, guid: 1bd362c7a14cc644cb39fc4a776cc608, type: 3}
+  heavyHitClips: []
+  randomPitchRange: {x: 0.94, y: 1.06}
+  hitVolume: 0.85
+--- !u!114 &3184003480799253394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36b4dd06c0dedc74c8db4fecad1eed61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 6915328010031275841}
+  rb: {fileID: 8303638504209387791}
+  playerModel: {fileID: 7957883448529750283}
+  enableRegen: 1
+  regenDelay: 5
+  regenPerSecond: 0.2
+  respawnDelay: 1
+  respawnInvulnerabilityTime: 1.5
+--- !u!114 &749521401872351453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c527024a5301d654e8c9cb48b1efe89f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerRigidbody: {fileID: 8303638504209387791}
+  playerInput: {fileID: 7761443611690410262}
+  inputController: {fileID: 7128203245387133486}
+  additionalComponentsToDisable: []
+  debugLogging: 1
 --- !u!114 &7761443611690410262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3301,6 +3376,103 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!82 &3639359626453078628
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 64
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7925212583705595643
 GameObject:
   m_ObjectHideFlags: 0
