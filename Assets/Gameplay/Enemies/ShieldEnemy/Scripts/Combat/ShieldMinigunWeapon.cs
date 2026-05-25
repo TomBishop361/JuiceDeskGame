@@ -54,6 +54,8 @@ namespace Game.AI.Shield {
 		[SerializeField] private float minigunExposeDuration = 2.0f;
 		[Tooltip("How long the minigun can fire continuously before overheating.")]
 		[SerializeField] private float minigunOverheatDuration = 3.0f;
+		[Tooltip("How long the minigun takes to visually cool down after it stops firing.")]
+		[SerializeField] private float minigunCooldownDuration = 1.5f;
 
 		[Header("Heat Visuals")]
 		[Tooltip("Base emission color when the minigun is idle.")]
@@ -86,17 +88,17 @@ namespace Game.AI.Shield {
 				Time = time;
 			}
 		}
-		// List of recent target positions (stores newest -> oldest)
+		// List of recent target positions (stores oldest -> newest)
 		private readonly List<AimSample> minigunAimHistory = new List<AimSample>();
 
 		// Cooldown/State timers
 		private float nextMinigunShotTime = -Mathf.Infinity;
 		private float minigunFireStartTime = -Mathf.Infinity;
+		private float currentHeatPercent;
 		private int fireBoolHash;
 
 		private Vector3 lastMinigunAimPoint;
 		private bool hasLastMinigunAimPoint;
-		private Material minigunMaterial;
 		private MaterialPropertyBlock minigunEmissionBlock;
 		private int emissionColorPropertyId;
 		private ShieldEnemy activeOwner;
@@ -125,7 +127,7 @@ namespace Game.AI.Shield {
 			emissionColorPropertyId = Shader.PropertyToID(emissionColorProperty);
 			minigunEmissionBlock = new MaterialPropertyBlock();
 
-			// Make sure all assigned heat renderers start cold
+			// Make sure all assigned heat renderers start on base emission
 			UpdateEmission(0.0f);
 
 			SetupTracerPool();
@@ -136,6 +138,7 @@ namespace Game.AI.Shield {
 		public void ResetRuntime(Animator animator) {
 			nextMinigunShotTime = -Mathf.Infinity;
 			minigunFireStartTime = -Mathf.Infinity;
+			currentHeatPercent = 0.0f;
 			IsFiring = false;
 			activeOwner = null;
 
@@ -170,11 +173,12 @@ namespace Game.AI.Shield {
 				minigunFireStartTime = Time.time;
 			}
 
-			activeOwner = null;
+			activeOwner = owner;
 			IsFiring = true;
 			RecordTargetSample(target.position);
 
-			// Advance & Hold shield whilst firing - NOTE: DO WE WANT THIS DESIGN?
+			// Advance & Hold shield whilst firing
+			// TODO NOTE: Do we want this design?
 			owner.SetShieldRaised(true);
 			owner.FaceTarget(target.position);
 			owner.StopMove();
@@ -197,15 +201,9 @@ namespace Game.AI.Shield {
 				animator.SetBool(fireBoolHash, false);
 			}
 
-			//// Reset emission on stop / overheat
-			//if (minigunMaterial != null) {
-			//	minigunMaterial.SetColor(emissionColorProperty, baseEmissionColor);
-			//}
-
-			// Reset emission on stop / overheat
-			UpdateEmission(0.0f);
+			// Prevent instantly resetting emission
+			// TickFire() cools the heat down gradually while IsFiring is false
 		}
-
 
 		// Updates firing + barrel spin + tracer timing + aim history + overheat
 		// Call this every frame while the owner is alive
@@ -215,9 +213,20 @@ namespace Game.AI.Shield {
 				return;
 			}
 
+			// Update minigun heat every frame
+			// While firing, heat rises toward overheat
+			// While not firing, heat gradually cools back down
+			if (IsFiring) {
+				currentHeatPercent += Time.deltaTime / Mathf.Max(0.01f, minigunOverheatDuration);
+			}
+			else {
+				currentHeatPercent -= Time.deltaTime / Mathf.Max(0.01f, minigunCooldownDuration);
+			}
+
+			currentHeatPercent = Mathf.Clamp01(currentHeatPercent);
+			UpdateEmission(currentHeatPercent);
+
 			if (IsFiring == false) {
-				// TODO: Check if this completely resets the minigun heat rather than cooling it down
-				UpdateEmission(0.0f);
 				return;
 			}
 
@@ -328,32 +337,29 @@ namespace Game.AI.Shield {
 
 			float targetTime = Time.time - delay;
 
-			// Assumes history is sorted newest -> oldest
-			AimSample newer = aimHistory[0];
-			AimSample older = aimHistory[aimHistory.Count - 1];
+			// If there is not enough history yet: use the oldest available sample instead of snapping to live aim
+			if (targetTime <= aimHistory[0].Time) {
+				return aimHistory[0].Position;
+			}
+
+			// If the target time is newer than the newest sample: use the latest known target position
+			int lastIndex = aimHistory.Count - 1;
+			if (targetTime >= aimHistory[lastIndex].Time) {
+				return aimHistory[lastIndex].Position;
+			}
 
 			for (int i = 0; i < aimHistory.Count; i++) {
-				AimSample sample = aimHistory[i];
+				AimSample older = aimHistory[i - 1];
+				AimSample newer = aimHistory[i];
 
-				// Stop once we reach the desired delayed timestamp
-				if (sample.Time <= targetTime) {
-					older = sample;
-					if (i > 0) {
-						newer = aimHistory[i - 1];
-					}
-					else {
-						newer = sample;
-					}
-					break;
+				// Stop once the desired delayed timestamp has been reached
+				if (newer.Time >= targetTime) {
+					float t = Mathf.InverseLerp(older.Time, newer.Time, targetTime);
+					return Vector3.Lerp(older.Position, newer.Position, t);
 				}
 			}
 
-			if (Mathf.Approximately(newer.Time, older.Time)) {
-				return older.Position;
-			}
-				
-			float t = Mathf.InverseLerp(older.Time, newer.Time, targetTime);
-			return Vector3.Lerp(older.Position, newer.Position, t);
+			return fallbackPoint;
 		}
 
 		private void FireShot(ShieldEnemy owner, Vector3 aimPoint) {
@@ -444,12 +450,7 @@ namespace Game.AI.Shield {
 		}
 
 		private float GetHeatPercent() {
-			if (IsFiring == false || minigunFireStartTime == -Mathf.Infinity) {
-				return 0.0f;
-			}
-
-			float duration = Mathf.Max(0.01f, minigunOverheatDuration);
-			return Mathf.Clamp01((Time.time - minigunFireStartTime) / duration);
+			return currentHeatPercent;
 		}
 
 		// Updates all assigned minigun heat renderers using the same overheat percentage
@@ -484,11 +485,7 @@ namespace Game.AI.Shield {
 		}
 
 		private bool HasMinigunOverheated() {
-			if (IsFiring == false || minigunFireStartTime == -Mathf.Infinity) {
-				return false;
-			}
-
-			return Time.time - minigunFireStartTime >= minigunOverheatDuration;
+			return currentHeatPercent >= 1.0f;
 		}
 
 		private void SetupTracerPool() {
@@ -546,10 +543,6 @@ namespace Game.AI.Shield {
 
 			ShieldMinigunTracer tracer = item.GetComponent<ShieldMinigunTracer>();
 			tracer?.OnSpawned();
-
-			//foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
-			//	handler.OnSpawned();
-			//}
 		}
 
 		private void OnReturnTracerToPool(PooledObject item) {
@@ -559,10 +552,6 @@ namespace Game.AI.Shield {
 
 			ShieldMinigunTracer tracer = item.GetComponent<ShieldMinigunTracer>();
 			tracer?.OnDespawned();
-
-			//foreach (IPoolLifecycleHandler handler in item.GetComponents<IPoolLifecycleHandler>()) {
-			//	handler.OnDespawned();
-			//}
 
 			item.transform.SetParent(transform, false);
 			item.transform.localPosition = Vector3.zero;
