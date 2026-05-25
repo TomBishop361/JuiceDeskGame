@@ -12,8 +12,8 @@ namespace Game.AI {
 		[SerializeField] private float visionAngle = 120.0f;
 		[Tooltip("Vertical offset applied to the ray origin when checking LOS.")]
 		[SerializeField] private Transform eyes;
-		//[Tooltip("Vertical offset applied to the ray origin when checking LOS.")]
-		//[SerializeField] private float eyeHeight = 0.5f;
+		[Tooltip("Fallback eye height used when no eyes transform has been assigned.")]
+		[SerializeField] private float fallbackEyeHeight = 0.5f;
 
 		public float DetectionRange => detectionRange;
 		public float VisionAngle => visionAngle;
@@ -24,26 +24,39 @@ namespace Game.AI {
 				return false;
 			}
 
-			Vector3 origin = transform.position + Vector3.up * eyes.transform.position.y;
+			// Use the eye transform's world position
+			Vector3 origin = eyes != null ? eyes.position : transform.position + Vector3.up * fallbackEyeHeight;
 
 			// Calculate distance to target
 			Vector3 toTarget = target.position - origin;
 			float distanceToTarget = toTarget.magnitude;
 
 			// Detection Radius
+			if (distanceToTarget < 0.0001f) {
+				return true;
+			}
 			if (distanceToTarget > detectionRange) {
 				return false;
 			}
 
-			// Calculate direction to target
-			Vector3 directionToTarget = toTarget / distanceToTarget;
+			// FOV is checked horizontally so vertical platforming height does not unfairly break sight
+			Vector3 flatForward = transform.forward;
+			flatForward.y = 0.0f;
 
-			// Get Vision Cone
-			float angle = Vector3.Angle(transform.forward, directionToTarget);
-			// Multiply by 0.5 because the full vision cone must be divided into left/right (Vector3.Angle returns the half-angle)
-			if (angle > visionAngle * 0.5f) {
-				return false;
+			Vector3 flatToTarget = toTarget;
+			flatToTarget.y = 0.0f;
+
+			if (flatForward.sqrMagnitude > 0.0001f && flatToTarget.sqrMagnitude > 0.0001f) {
+				// Get Vision Cone
+				float angle = Vector3.Angle(flatForward.normalized, flatToTarget.normalized);
+				// Multiply by 0.5 because the full vision cone must be divided into left/right (Vector3.Angle returns the half-angle)
+				if (angle > visionAngle * 0.5f) {
+					return false;
+				}
 			}
+
+			// Calculate horizontal direction to target
+			Vector3 directionToTarget = toTarget / distanceToTarget;
 
 			// Line of sight raycast
 			if (Physics.Raycast(origin, directionToTarget, out RaycastHit hit, distanceToTarget, visionLayerMask, QueryTriggerInteraction.Ignore)) {
@@ -52,7 +65,6 @@ namespace Game.AI {
 
 			return false;
 		}
-
 
 		// - DEPRECATED -
 
