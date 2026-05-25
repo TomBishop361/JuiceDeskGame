@@ -14,8 +14,8 @@ namespace Game.AI.Shield {
 		[SerializeField] private Transform minigunMuzzle;
 		[Tooltip("Optional pooled tracer prefab used as a short-lived bullet tracer.")]
 		[SerializeField] private ShieldMinigunTracer minigunBulletTracerPrefab;
-		[Tooltip("Renderer used for minigun heat / emission feedback.")]
-		[SerializeField] private Renderer minigunRenderer;
+		[Tooltip("Renderers used for minigun heat / emission feedback.")]
+		[SerializeField] private Renderer[] minigunHeatRenderers;
 
 		[Header("Damage")]
 		[Tooltip("Base attack data used for minigun shots before distance falloff is applied.")]
@@ -97,6 +97,8 @@ namespace Game.AI.Shield {
 		private Vector3 lastMinigunAimPoint;
 		private bool hasLastMinigunAimPoint;
 		private Material minigunMaterial;
+		private MaterialPropertyBlock minigunEmissionBlock;
+		private int emissionColorPropertyId;
 		private ShieldEnemy activeOwner;
 
 		private IObjectPool<PooledObject> tracerPool;
@@ -120,9 +122,11 @@ namespace Game.AI.Shield {
 				hitScanHitbox.Initialise(minigunAttackData);
 			}
 
-			if (minigunRenderer != null) {
-				minigunMaterial = minigunRenderer.material;
-			}
+			emissionColorPropertyId = Shader.PropertyToID(emissionColorProperty);
+			minigunEmissionBlock = new MaterialPropertyBlock();
+
+			// Make sure all assigned heat renderers start cold
+			UpdateEmission(0.0f);
 
 			SetupTracerPool();
 		}
@@ -448,13 +452,35 @@ namespace Game.AI.Shield {
 			return Mathf.Clamp01((Time.time - minigunFireStartTime) / duration);
 		}
 
+		// Updates all assigned minigun heat renderers using the same overheat percentage
+		// Uses MaterialPropertyBlock so each renderer can glow independently without creating runtime material instances
 		private void UpdateEmission(float heatPercent) {
-			if (minigunMaterial == null) {
+			if (minigunHeatRenderers == null || minigunHeatRenderers.Length == 0) {
 				return;
 			}
 
-			Color emission = Color.Lerp(baseEmissionColor, maxEmissionColor, heatPercent * heatPercent);
-			minigunMaterial.SetColor(emissionColorProperty, emission);
+			if (minigunEmissionBlock == null) {
+				minigunEmissionBlock = new MaterialPropertyBlock();
+			}
+
+			float smoothedHeat = heatPercent * heatPercent;
+			Color emission = Color.Lerp(baseEmissionColor, maxEmissionColor, smoothedHeat);
+
+			for (int i = 0; i < minigunHeatRenderers.Length; i++) {
+				Renderer heatRenderer = minigunHeatRenderers[i];
+
+				if (heatRenderer == null) {
+					continue;
+				}
+
+				// Keep any other property block values already on this renderer
+				heatRenderer.GetPropertyBlock(minigunEmissionBlock);
+
+				// Apply the current heat emission colour
+				minigunEmissionBlock.SetColor(emissionColorPropertyId, emission);
+
+				heatRenderer.SetPropertyBlock(minigunEmissionBlock);
+			}
 		}
 
 		private bool HasMinigunOverheated() {
