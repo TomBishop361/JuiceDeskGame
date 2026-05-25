@@ -56,7 +56,7 @@ namespace Game.AI.Behavior.Shield {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
-			return shieldEnemy != null && shieldEnemy.GrappleWindowOpen;
+			return shieldEnemy != null /*&& shieldEnemy.GrappleWindowOpen*/;
 		}
 	}
 

@@ -40,7 +40,7 @@ namespace Game.AI.Shield {
 		public bool InFireRange => HasTarget && minigunWeapon != null && minigunWeapon.InFireRange(DistanceToTarget);
 		public bool CanSlam => shockwaveAttack != null && defenseState != null && defenseState.CanUseOffense() && shockwaveAttack.CanSlam(this);
 		public bool CanFireMinigun => minigunWeapon != null && defenseState != null && defenseState.CanUseOffense() && minigunWeapon.CanFire(this);
-		public bool GrappleWindowOpen => defenseState != null && defenseState.GrappleWindowOpen;
+		//public bool GrappleWindowOpen => defenseState != null && defenseState.GrappleWindowOpen;
 		public bool PlayerInFront => defenseState != null && defenseState.PlayerInFront(Target);
 		public bool ShieldRaised => defenseState != null && defenseState.ShieldRaised;
 		public bool IsExposed => defenseState != null && defenseState.IsExposed;
