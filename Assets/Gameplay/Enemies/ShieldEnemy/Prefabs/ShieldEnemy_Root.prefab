@@ -752,6 +752,7 @@ GameObject:
   - component: {fileID: 7803343986905604957}
   - component: {fileID: 5554221476752247085}
   - component: {fileID: 3964159061307939131}
+  - component: {fileID: 5500836194498768042}
   - component: {fileID: 6459022839229409296}
   - component: {fileID: 3622940390707777444}
   - component: {fileID: 919526336564966754}
@@ -876,6 +877,51 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &5500836194498768042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8618922778442928813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3493282773045184aaf00ebc8f8c7c6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMode: 0
+  animator: {fileID: 8342141347256848035}
+  moveSpeedParameter: MoveSpeed
+  shieldRaisedBoolParameter: ShieldRaised
+  firingBoolParameter: IsFiring
+  exposedBoolParameter: IsExposed
+  slamTriggerParameter: Slam
+  blockReactTriggerParameter: BlockReact
+  hitTriggerParameter: Hit
+  dieTriggerParameter: Die
+  idleMoveSpeed: 0
+  advanceMoveSpeed: 4.5
+  crossFadeStates: 1
+  idleStateName: Shield_Idle
+  advanceStateName: Shield_AdvanceShieldRaised
+  shieldRaisedStateName: Shield_Block
+  firingStateName: Shield_FireMinigun
+  slamStateName: Shield_SlamShockwave
+  exposedStateName: Shield_Exposed
+  blockReactStateName: Shield_BlockReact
+  hitStateName: Shield_Hit
+  dieStateName: Shield_Die
+  crossFadeDuration: 0.08
+  idleKey: 49
+  advanceKey: 50
+  shieldRaisedKey: 51
+  firingKey: 52
+  slamKey: 53
+  exposedKey: 54
+  blockReactKey: 55
+  hitKey: 56
+  dieKey: 57
+  resetKey: 114
 --- !u!114 &6459022839229409296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1011,8 +1057,8 @@ MonoBehaviour:
   minigunAimOffsetRadius: 0.5
   minigunInaccuracyDegrees: 2
   minigunMaxAimSnapPerShot: 1.5
-  minigunExposeDuration: 8
-  minigunOverheatDuration: 2
+  minigunExposeDuration: 4
+  minigunOverheatDuration: 3.5
   baseEmissionColor: {r: 0, g: 0, b: 0, a: 1}
   maxEmissionColor: {r: 1.5, g: 0.4, b: 0.1, a: 1}
   emissionColorProperty: _EmissionColor
@@ -1041,11 +1087,11 @@ MonoBehaviour:
     Attacker: {fileID: 8618922778442928813}
     Type: 0
     AttackerFaction: 1
-  slamRange: 15
+  slamRange: 6.5
   slamCooldown: 5
   slamLockTime: 1
-  slamExposeDuration: 2.5
-  shockwaveRadius: 6.5
+  slamExposeDuration: 4.5
+  shockwaveRadius: 8
   shockwaveDamageMask:
     serializedVersion: 2
     m_Bits: 128
