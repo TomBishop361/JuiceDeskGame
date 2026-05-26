@@ -23,6 +23,10 @@ namespace Game.Combat.Projectiles {
 		[Header("Physics")]
 		[SerializeField] private Rigidbody rb;
 
+		// Reused splash damage buffers to avoid allocations when pooled projectiles explode
+		private readonly Collider[] splashOverlapBuffer = new Collider[32];
+		private readonly HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
+
 		// Runtime params
 		private Transform target;
 		private ProjectileHitbox projectileHitbox;
@@ -336,19 +340,16 @@ namespace Game.Combat.Projectiles {
 
 		// Deals splash damage to indirect targets found inside the explosion radius
 		private void DealSplashDamage(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
-			Collider[] overlaps = Physics.OverlapSphere(hitPoint, explosionRadius, damageLayers, QueryTriggerInteraction.Ignore); //Use Physics.OverlapSphereNonAlloc() instead 
+			damagedTargets.Clear();
 
-            HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
+			int hitCount = Physics.OverlapSphereNonAlloc(hitPoint, explosionRadius, splashOverlapBuffer, damageLayers, QueryTriggerInteraction.Collide);
 
-			foreach (Collider hit in overlaps) {
+			for (int i = 0; i < hitCount; i++) {
+				Collider hit = splashOverlapBuffer[i];
+
 				if (hit == null) {
 					continue;
 				}
-
-				//// Check if hits inside splash radius contains a HurtBox
-				//if (hit.TryGetComponent(out IDamageable damageable) == false) {
-				//	continue;
-				//}
 
 				// Check if hits inside splash radius contain a damage receiver on the collider or one of its parents
 				IDamageable damageable = hit.GetComponentInParent<IDamageable>();
@@ -369,6 +370,7 @@ namespace Game.Combat.Projectiles {
 				// Distance from damage target and projectile impact point
 				float distance = Vector3.Distance(hit.ClosestPoint(hitPoint), hitPoint);
 				float finalDamage = CalculateDamageFalloff(attackData, distance);
+
 				if (finalDamage <= 0.0f) {
 					continue;
 				}

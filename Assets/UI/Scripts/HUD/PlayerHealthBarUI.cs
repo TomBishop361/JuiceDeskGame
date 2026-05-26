@@ -10,7 +10,7 @@ public class PlayerHealthBarUI : MonoBehaviour {
 	[Tooltip("The main filled Image used as the visible current health amount.")]
 	[SerializeField] private Image fillImage;
 	[Tooltip("A second filled Image placed behind the main fill. Lags behind when the player takes damage.")]
-	[SerializeField] private Image delayedDamageImage;
+	[SerializeField] private Image delayedDamageFillImage;
 	[Tooltip("RectTransform to scale when damage is taken.")]
 	[SerializeField] private RectTransform pulseTarget;
 
@@ -30,10 +30,10 @@ public class PlayerHealthBarUI : MonoBehaviour {
 	[Tooltip("Smooths the visible bar towards the real health value instead of snapping instantly.")]
 	[SerializeField] private bool smoothFill = true;
 	[Tooltip("How quickly the visible health bar catches up to the real health value.")]
-	[SerializeField] private float fillLerpSpeed = 12.0f;
+	[SerializeField, Min(0.01f)] private float fillLerpSpeed = 12.0f;
 
 	[Header("Delayed Damage Bar")]
-	[Tooltip("If enabled and Delayed Damage Image is assigned, the old health amount remains behind the main bar briefly before draining.")]
+	[Tooltip("If enabled and Delayed Damage Fill Image is assigned, the old health amount remains behind the main bar briefly before draining.")]
 	[SerializeField] private bool useDelayedDamageBar = true;
 	[Tooltip("How long the delayed damage bar waits before it starts draining down to the current health value.")]
 	[SerializeField] private float delayedDamageHoldTime = 0.18f;
@@ -77,19 +77,8 @@ public class PlayerHealthBarUI : MonoBehaviour {
 	private bool hasReceivedHealthValue;
 
 	private void Awake() {
-		if (fillImage == null) {
-			TryGetComponent(out fillImage);
-		}
+		CacheReferences();
 
-		// If no custom pulse target is assigned then use a fallback by pulsing the fill image itself
-		if (pulseTarget == null && fillImage != null) {
-			pulseTarget = fillImage.rectTransform;
-		}
-
-		// Store the starting scale so damage pulses can always return to the correct size
-		if (pulseTarget != null) {
-			defaultPulseScale = pulseTarget.localScale;
-		}
 	}
 
 	// Subscribe to the Health event and sync the UI with the player's current health
@@ -121,6 +110,22 @@ public class PlayerHealthBarUI : MonoBehaviour {
 		UpdateFillColour(deltaTime);
 	}
 
+	private void CacheReferences() {
+		if (fillImage == null) {
+			TryGetComponent(out fillImage);
+		}
+
+		// If no custom pulse target is assigned then use a fallback by pulsing the fill image itself
+		if (pulseTarget == null && fillImage != null) {
+			pulseTarget = fillImage.rectTransform;
+		}
+
+		// Store the starting scale so damage pulses can always return to the correct size
+		if (pulseTarget != null) {
+			defaultPulseScale = pulseTarget.localScale;
+		}
+	}
+
 	// Reads the current value from the Health component and applies it instantly
 	private void RefreshFromCurrentHealth() {
 		if (health == null) {
@@ -150,7 +155,7 @@ public class PlayerHealthBarUI : MonoBehaviour {
 			StartDelayedDamageBar();
 		}
 		else if (healed || forceInstant) {
-			// Healing should not leave the delayed damage trail behind
+			// Healing or forced refresh should not leave the delayed damage trail behind
 			SnapDelayedDamageBar(healthPercent);
 		}
 
@@ -184,20 +189,21 @@ public class PlayerHealthBarUI : MonoBehaviour {
 	}
 
 	// Holds the delayed damage image at the previous health value after the player takes damage
+	// This is done prior to draining down to the real health value
 	private void StartDelayedDamageBar() {
-		if (useDelayedDamageBar == false || delayedDamageImage == null) {
+		if (useDelayedDamageBar == false || delayedDamageFillImage == null) {
 			return;
 		}
 
 		// Keep the delayed bar at the previous visible value, then drain it after a configured amount of time
 		float previousVisibleFill = fillImage != null ? fillImage.fillAmount : targetFillAmount;
-		delayedDamageImage.fillAmount = Mathf.Max(delayedDamageImage.fillAmount, previousVisibleFill);
+		delayedDamageFillImage.fillAmount = Mathf.Max(delayedDamageFillImage.fillAmount, previousVisibleFill);
 		delayedDamageTimer = delayedDamageHoldTime;
 	}
 
 	// Drains the delayed damage image down towards the real health value after its hold timer ends
 	private void UpdateDelayedDamageFill(float deltaTime) {
-		if (useDelayedDamageBar == false || delayedDamageImage == null) {
+		if (useDelayedDamageBar == false || delayedDamageFillImage == null) {
 			return;
 		}
 
@@ -206,26 +212,26 @@ public class PlayerHealthBarUI : MonoBehaviour {
 			return;
 		}
 
-		delayedDamageImage.fillAmount = Mathf.MoveTowards(delayedDamageImage.fillAmount, targetFillAmount, delayedDamageDrainSpeed * deltaTime);
+		delayedDamageFillImage.fillAmount = Mathf.MoveTowards(delayedDamageFillImage.fillAmount, targetFillAmount, delayedDamageDrainSpeed * deltaTime);
 	}
 
 	// Instantly matches the delayed damage image to the current health value
 	private void SnapDelayedDamageBar(float fillAmount) {
-		if (delayedDamageImage == null) {
+		if (delayedDamageFillImage == null) {
 			return;
 		}
 
-		delayedDamageImage.fillAmount = Mathf.Clamp01(fillAmount);
+		delayedDamageFillImage.fillAmount = Mathf.Clamp01(fillAmount);
 		delayedDamageTimer = 0.0f;
 	}
 
 	// Applies the configured colour to the delayed damage image
 	private void ApplyDelayedDamageColour() {
-		if (delayedDamageImage == null) {
+		if (delayedDamageFillImage == null) {
 			return;
 		}
 
-		delayedDamageImage.color = delayedDamageColor;
+		delayedDamageFillImage.color = delayedDamageColor;
 	}
 
 	// Starts the short visual reactions that happen when the player takes damage
@@ -253,7 +259,7 @@ public class PlayerHealthBarUI : MonoBehaviour {
 		// Progress goes from 0 to 1 during the pulse lifetime
 		float progress = 1.0f - Mathf.Clamp01(pulseTimer / Mathf.Max(0.001f, damagePulseDuration));
 
-		// Sine creates a quick pop out and smooth return as apose to a linear scale snap
+		// Sine creates a quick pop out and smooth return as opposed to a linear scale snap
 		float pulse = Mathf.Sin(progress * Mathf.PI);
 		float scale = Mathf.Lerp(1.0f, damagePulseScale, pulse);
 

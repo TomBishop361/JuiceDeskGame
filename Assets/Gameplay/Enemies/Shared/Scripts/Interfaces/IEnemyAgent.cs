@@ -1,6 +1,6 @@
 namespace Game.AI {
 	// Shared interface so Custom Behaviour nodes can work with Sword/Shield/Drone enemies consistently
-	// This is to be implemented on SwordEnemy, ShieldEnemy, DroneEnemy (TODO: common base class that implemnts this)
+	// This is to be implemented on SwordEnemy, ShieldEnemy, DroneEnemy
 	public interface IEnemyAgent {
 		// Core State
 		bool IsDead { get; }

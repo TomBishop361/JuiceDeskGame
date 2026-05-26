@@ -28,9 +28,11 @@ public class BulletPoolManager : MonoBehaviour
     void createBullet()
     {
         GameObject Bullet = Instantiate(bulletPrefab, transform);
-        bullets.Add(Bullet.GetComponent<Bullet>());
-        Bullet.SetActive(false);
-        Bullet.GetComponent<ProjectileBase>().onBulletHit += returnBulletToPool;
+		ProjectileBase projectile = Bullet.GetComponent<ProjectileBase>();
+		bullets.Add(projectile);
+
+		Bullet.SetActive(false);
+		projectile.onBulletHit += returnBulletToPool;
     }
 
     public void ShootBullet(Vector3 direction, Vector3 origin, float speed, float dmg)

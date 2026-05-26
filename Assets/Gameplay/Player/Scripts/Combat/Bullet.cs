@@ -66,35 +66,64 @@ public class Bullet : ProjectileBase {
 		if (lifeTimer <= 0) OnBulletHit(this);
 	}
 
-	private void OnCollisionEnter(Collision collision)
-	{
+	// PREVIOUS
+	//private void OnCollisionEnter(Collision collision)
+	//{
+	//	isActive = false;
+	//	IDamageable hit;
+	//	if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
+	//	{
+	//		hit.TakeDamage(bulletAttackData);
+	//	}
+	//	else
+	//	{
+	//		if(collision.transform.root.TryGetComponent<IDamageable>(out hit))
+	//		{
+	//               hit.TakeDamage(bulletAttackData);
+	//           }
+	//	}
+	//		OnBulletHit(this);
+	//	Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
+	//}
+
+	// UPDATED: Add shield block detection before applying damage to hit target
+	private void OnCollisionEnter(Collision collision) {
+		if (isActive == false) {
+			return;
+		}
+
+		Vector3 hitPoint = collision.contactCount > 0 ? collision.GetContact(0).point : transform.position;
+
+		// Shield block is checked before any IDamageable
+		ShieldBlockReceiver shieldBlock = collision.collider.GetComponentInParent<ShieldBlockReceiver>();
+		if (shieldBlock != null && shieldBlock.TryBlockProjectile(this, hitPoint)) {
+			return;
+		}
+
 		isActive = false;
-		IDamageable hit;
-		if (collision.gameObject.TryGetComponent<IDamageable>(out hit))
-		{
+
+		// Only damage the actual collider that was hit by the bullet
+		if (collision.gameObject.TryGetComponent<IDamageable>(out IDamageable hit)) {
 			hit.TakeDamage(bulletAttackData);
 		}
-		else
-		{
-			if(collision.transform.root.TryGetComponent<IDamageable>(out hit))
-			{
-                hit.TakeDamage(bulletAttackData);
-            }
+
+		OnBulletHit(this);
+
+		if (testHitParticle != null) {
+			Instantiate(testHitParticle, hitPoint, Quaternion.LookRotation(-direction));
 		}
-			OnBulletHit(this);
-		Instantiate(testHitParticle, transform.position, Quaternion.LookRotation(-direction));
 	}
 
 	public void HandleProjectileHitImpact(AttackData attackData, IDamageable directReceiver, Vector3 hitPoint) {
 		if (isActive == false) {
 			return;
 		}
+
 		// Disable the projectile
 		isActive = false;
 
 		// Apply damage if something damageable was hit
 		if (directReceiver != null) {
-			Debug.Log("direct receiver take damage");
 			directReceiver.TakeDamage(attackData);
 		}
 		
@@ -103,7 +132,22 @@ public class Bullet : ProjectileBase {
 
 		// Spawn hit effect
 		if (testHitParticle != null) {
-			Debug.Log("testhit particle spawn");
+			Instantiate(testHitParticle, hitPoint, Quaternion.LookRotation(-direction));
+		}
+	}
+
+	// Used for when the shield enemy blocks incoming bullets
+	public void ResolveBlockedHit(Vector3 hitPoint) {
+		if (isActive == false) {
+			return;
+		}
+
+		isActive = false;
+		rb.linearVelocity = Vector3.zero;
+
+		OnBulletHit(this);
+
+		if (testHitParticle != null) {
 			Instantiate(testHitParticle, hitPoint, Quaternion.LookRotation(-direction));
 		}
 	}
@@ -128,13 +172,13 @@ public class Bullet : ProjectileBase {
 		lifeTimer = 0.0f;
 		if (projectileHitbox != null) {
 			projectileHitbox.Initialise(bulletAttackData);
-			projectileHitbox.OnProjectileHitImpact -= HandleProjectileHitImpact;
-			projectileHitbox.OnProjectileHitImpact += HandleProjectileHitImpact;
+			//projectileHitbox.OnProjectileHitImpact -= HandleProjectileHitImpact;
+			//projectileHitbox.OnProjectileHitImpact += HandleProjectileHitImpact;
 		}
 	}
 	private void OnDisable() {
 		if (projectileHitbox != null) {
-			projectileHitbox.OnProjectileHitImpact -= HandleProjectileHitImpact;
+			//projectileHitbox.OnProjectileHitImpact -= HandleProjectileHitImpact;
 		}
 
 		rb.linearVelocity = Vector3.zero;

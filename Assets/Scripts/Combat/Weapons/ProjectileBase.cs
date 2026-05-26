@@ -18,4 +18,9 @@ public class ProjectileBase : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+	// Called when something externally consumes the projectile
+	// Example: Shield block
+	public void ForceReturnToPool() {
+		onBulletHit?.Invoke(this);
+	}
 }
