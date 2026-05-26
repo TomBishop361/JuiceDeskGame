@@ -78,7 +78,7 @@ public class MusicManager : MonoBehaviour
                 track.mute = true;
             }
             trackIndex = trackIndex + 1;
-            Debug.Log(trackIndex);
+            
         }
 
     }
@@ -96,7 +96,7 @@ public class MusicManager : MonoBehaviour
                 track.mute = true;
             }
             trackIndex = trackIndex + 1;
-            Debug.Log(trackIndex);
+            
         }
 
     }

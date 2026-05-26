@@ -3245,6 +3245,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 648950004}
     - target: {fileID: 2481668657288226550, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      propertyPath: GM
+      value: 
+      objectReference: {fileID: 2119289179}
+    - target: {fileID: 2481668657288226550, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
       propertyPath: Camera
       value: 
       objectReference: {fileID: 474968520}
@@ -3402,7 +3406,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8787690750738527828, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
       insertIndex: -1
       addedObject: {fileID: 487403350}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7743499516999693894, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2119289154}
+    - targetCorrespondingSourceObject: {fileID: 7743499516999693894, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2119289179}
   m_SourcePrefab: {fileID: 100100000, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
 --- !u!4 &2119289150 stripped
 Transform:
@@ -3414,7 +3424,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3360952311824732236, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
   m_PrefabInstance: {fileID: 2119289149}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2119289153}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 757d90cd0ee3f454d8dd8b559252610e, type: 3}
@@ -3425,6 +3435,60 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8787690750738527828, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
   m_PrefabInstance: {fileID: 2119289149}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2119289153 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7743499516999693894, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+  m_PrefabInstance: {fileID: 2119289149}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2119289154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119289153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f174d641cabb8df4587a559e71012fab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 2119289178}
+  toggleKnockOffRail: 0
+  onRail: 0
+  canRailGrind: 1
+  railGrindTime: 1
+  railBoost: 0
+  railGrindNoiseInterval: 0.3
+  grindSpeed: 12
+  heightOffset: 1
+  currentRailScript: {fileID: 0}
+--- !u!114 &2119289178 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7128203245387133486, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+  m_PrefabInstance: {fileID: 2119289149}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119289153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7beb60b306e2314ca4c7c3a2a416399, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2119289179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119289153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2055e3b73ce5349bd396524b3cbd10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainController: {fileID: 2119289178}
+  grappleSpeedBoost: 1.5
+  grapplePullForce: 20
+  anchorLaunchAmount: 25
 --- !u!1001 &2145047994
 PrefabInstance:
   m_ObjectHideFlags: 0

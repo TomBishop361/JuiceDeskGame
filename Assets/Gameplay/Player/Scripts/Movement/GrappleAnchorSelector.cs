@@ -3,6 +3,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(GrappleMovement), typeof(Grapple))]
 public class GrappleAnchorSelector : MonoBehaviour
 {
     [Header("Detection Settings")]
