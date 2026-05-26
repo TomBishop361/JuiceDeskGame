@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public abstract class MovementState
+public abstract class NewMovementState
 {
     protected PlayerController context;
     protected PlayerMotor motor;
     protected IInputManager input;
 
-    public MovementState(PlayerController context)
+    public NewMovementState(PlayerController context)
     {
         this.context = context;
         this.motor = context.Motor;

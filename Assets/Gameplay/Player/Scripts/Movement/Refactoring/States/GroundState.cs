@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class GroundState : MovementState
+public class GroundedState : NewMovementState
 {
-    public GroundState(PlayerController context) : base(context) { }
+    public GroundedState(PlayerController context) : base(context) { }
 
     public override void EnterState()
     {

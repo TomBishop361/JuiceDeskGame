@@ -18,11 +18,12 @@ public class PlayerController : MonoBehaviour
     public IInputManager InputManager => _inputManager.InputManager;
     public PlayerNoiseEmitter NoiseEmitter { get; private set; }
 
-    private MovementState currentState;
+    private NewMovementState currentState;
 
     //States
     public WalkState walkState { get; private set; }
     public SprintState SprintState { get; private set; }
+    public SlideState slideState { get; private set; }
 
     //Flags
     public bool JumpPressed { get; private set; }
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
         //instantiate states
         walkState = new WalkState(this);
         SprintState = new SprintState(this);
+        slideState = new SlideState(this);
     }
 
     private void Start()
@@ -71,7 +73,7 @@ public class PlayerController : MonoBehaviour
         Motor.HandleLook(InputManager.Look);
     }
 
-    public void SwitchState(MovementState newState)
+    public void SwitchState(NewMovementState newState)
     {
         currentState?.ExitState();
         currentState = newState;

@@ -14,7 +14,7 @@ public class WallRunning : MonoBehaviour
     [SerializeField] InputController controller;
     Vector2 moveDir;
     bool jump;
-    [SerializeField] Rigidbody rb;
+    [SerializeField] public Rigidbody rb;
 
     [Header("Wall Run")]
     public float wallCheckDist =0.7f;

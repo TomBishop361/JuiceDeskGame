@@ -10,6 +10,10 @@ public class PlayerMotor : MonoBehaviour
     public Rigidbody rb { get; private set; }
     public GameObject Camera => _camera;
 
+    [Header("Collider Reference")]
+    [SerializeField] private CapsuleCollider capsuleCollider;
+    public CapsuleCollider Collider => capsuleCollider;
+
     [Header("Settings")]
     [SerializeField] LayerMask Ground;
     [SerializeField] float CharacterHeight;
@@ -65,12 +69,12 @@ public class PlayerMotor : MonoBehaviour
     }
 
     //Move the player 
-    public void Move(Vector3 desiredVelocity, float accel, float friction)
+    public void Move(Vector3 desiredVelocity, float movespeed, float accel, float friction)
     {
         if (OnSlope())
         {
             // Project the desired velocity onto the slope and scale it by movement speed
-            Vector3 slopeVel = GetSlopeMoveDirection(desiredVelocity);
+            Vector3 slopeVel = GetSlopeMoveDirection(desiredVelocity) * movespeed ;
             // Preserve vertical velocity, but ensure it's consistent with slope behavior
             rb.linearVelocity = slopeVel;
             // Apply an extra force to keep the player grounded          
@@ -103,7 +107,8 @@ public class PlayerMotor : MonoBehaviour
                 // Ensure airAcceleration is high enough to overcome gravity's feel
                 Vector3 moveDir = Vector3.MoveTowards(currentHorizontalVel, desiredVelocity, airAcceleration * Time.deltaTime);
                 rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
-            }           
+            }
+            
         }
         rb.useGravity = !OnSlope();
         RotateTowardsVelocity();
@@ -120,7 +125,13 @@ public class PlayerMotor : MonoBehaviour
         }
     }
 
-   public void HandleLook(Vector2 Direction)
+    public void SetCapsuleSize(float height, Vector3 center)
+    {
+        if (capsuleCollider == null) capsuleCollider = GetComponent<CapsuleCollider>();
+        capsuleCollider.height = height;
+        capsuleCollider.center = center;
+    }
+    public void HandleLook(Vector2 Direction)
     {
         inputLagTimer += Time.deltaTime;
 
