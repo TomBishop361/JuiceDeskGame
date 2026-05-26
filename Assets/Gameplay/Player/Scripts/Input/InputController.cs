@@ -65,7 +65,7 @@ public class InputController : MonoBehaviour
     [SerializeField] float jumpCoolDown = 0.3f;
     [SerializeField] bool isGrounded;
     [SerializeField] float inputLagPeriod = 0.0001f;
-    [SerializeField] TextMeshProUGUI VelocityUI;
+    
 
 
     public const float gravity = -9.81f;
@@ -83,13 +83,7 @@ public class InputController : MonoBehaviour
     public bool isRailGrinding;
     public bool activeGrapple;
     bool exitingSlope;
-    public bool enableMoveOnNextTouch;
-
-
-    private PlayerNoiseEmitter noiseEmitter;
-    private float nextRailGrindNoiseTime;
-    private bool wasGrounded;
-    private float previousYVelocity;
+    public bool enableMoveOnNextTouch; 
 
     [SerializeField] GameObject IKGunTarget;
     [SerializeField] GameObject PlayerRoot;
@@ -129,15 +123,7 @@ public class InputController : MonoBehaviour
         sliding,
         idle,
         air
-    }
-
-    private void Awake()
-    {
-        noiseEmitter = GetComponent<PlayerNoiseEmitter>();
-        wasGrounded = _isGrounded;
-        previousYVelocity = rb != null ? rb.linearVelocity.y : 0.0f;
-    }
-
+    }       
 
     private void OnEnable()
     {
@@ -475,24 +461,10 @@ public class InputController : MonoBehaviour
         {
             MoveDirection = InputManager.Movement;
         }
-        LookDirection = InputManager.Look;
-
-
-        bool groundedNow = _isGrounded;
-
-        if (!wasGrounded && groundedNow && previousYVelocity < -6.0f)
-        {
-            noiseEmitter?.EmitLandingNoise();
-        }
-
-        wasGrounded = groundedNow;
-        previousYVelocity = rb.linearVelocity.y;
+        LookDirection = InputManager.Look;    
 
         Velocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude;
-        if (VelocityUI != null)
-        {
-            VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-        }
+        
     }
     private void FixedUpdate()
     {
