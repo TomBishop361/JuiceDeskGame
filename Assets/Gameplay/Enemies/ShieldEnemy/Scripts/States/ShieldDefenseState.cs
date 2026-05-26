@@ -35,9 +35,10 @@ namespace Game.AI.Shield {
 
 		// Shield Enemy Defense State Specific Properties
 		public bool IsExposed { get; private set; } // True while the weapon has overheated and the owner should be vulnerable
-		//public bool GrappleWindowOpen { get; private set; }
 		public bool ShieldRaised { get; private set; }
 		public float PostExposeEndTime => postExposeEndTime;
+		public bool IsRecoveringFromExpose => IsExposed == false && Time.time < postExposeEndTime;
+		public bool IsExposedOrRecovering => IsExposed || Time.time < postExposeEndTime;
 
 		private void Awake() {
 			exposedBoolHash = Animator.StringToHash(exposedBoolName);
