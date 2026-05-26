@@ -838,7 +838,7 @@ MonoBehaviour:
   stopLungeOnHit: 1
   hitSlowSpeedMultiplier: 0.35
   hitSlowDuration: 0.12
-  windupGlowVisual: {fileID: 3706704026287101437}
+  windupGlowVisual: {fileID: 0}
   windupGlowRenderers: []
   windupGlowColorProperty: _EmissionColor
   windupGlowColor: {r: 0, g: 1, b: 1, a: 1}
@@ -2007,9 +2007,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 85796357b5fdf904c8c5fe79e74f541a, type: 2}
     - target: {fileID: -3607770261372961234, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3607770261372961234, guid: e4a47841e13734d44adf786b432fa674, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 85796357b5fdf904c8c5fe79e74f541a, type: 2}
+    - target: {fileID: -3607770261372961234, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 632bed26b81b1ab44aad2bdf9e7ba811, type: 2}
     - target: {fileID: -3184083980942426767, guid: e4a47841e13734d44adf786b432fa674, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 3.7758985
@@ -2321,7 +2329,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 385210557964097242, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8529172584724310187}
   m_SourcePrefab: {fileID: 100100000, guid: e4a47841e13734d44adf786b432fa674, type: 3}
 --- !u!137 &233903586714955335 stripped
 SkinnedMeshRenderer:
@@ -2423,6 +2434,31 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 19849086085182777, guid: e4a47841e13734d44adf786b432fa674, type: 3}
   m_PrefabInstance: {fileID: 3574536218554706558}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3802101547867225252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 385210557964097242, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+  m_PrefabInstance: {fileID: 3574536218554706558}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8529172584724310187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3802101547867225252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2dea9946a72444d93525974bb1a240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 8968335707971900496}
+  materialIndex: 1
+  columns: 28
+  rows: 26
+  totalFrames: 712
+  framesPerSecond: 12
+  playOnEnable: 1
+  loop: 1
 --- !u!4 &3896164249416093077 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e4a47841e13734d44adf786b432fa674, type: 3}
