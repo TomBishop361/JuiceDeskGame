@@ -14,7 +14,7 @@ public class InputController : MonoBehaviour
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
     [SerializeField] GameObject _camera;
-    [SerializeField] TimerManager _timerManager;
+    
 
     [Header("Movement Values")]
     float moveSpeed  = 7;
@@ -84,6 +84,8 @@ public class InputController : MonoBehaviour
     public bool activeGrapple;
     bool exitingSlope;
     public bool enableMoveOnNextTouch;
+
+
 	private PlayerNoiseEmitter noiseEmitter;
 	private float nextRailGrindNoiseTime;
 	private bool wasGrounded;
@@ -137,9 +139,7 @@ public class InputController : MonoBehaviour
 
 
 	private void OnEnable()
-    {
-        _timerManager = TimerManager.instance;  
-            
+    {       
         InputManager.OnJumpReceived += JumpPressed;
        
         InputManager.OnSprintReceived += SprintPressed;
@@ -160,8 +160,7 @@ public class InputController : MonoBehaviour
             {
                 if (coyoteCoroutine != null) StopCoroutine(coyoteCoroutine);
                 coyoteCoroutine = StartCoroutine(coyoteTime(false));
-            }
-            //True
+            }            
             else
             {
                 if (coyoteCoroutine != null) StopCoroutine(coyoteCoroutine);              
@@ -178,7 +177,7 @@ public class InputController : MonoBehaviour
 
     IEnumerator coyoteTime(bool value)
     {
-        yield return new WaitForSeconds(CoyoteTime);// new WaitForSeconds(0f);
+        yield return new WaitForSeconds(CoyoteTime);
         isGrounded = value;
     }
 
@@ -441,9 +440,7 @@ public class InputController : MonoBehaviour
     {
         
         if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
-        {            
-           // if (isRailGrinding) throwOffRail();          
-
+        { 
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();

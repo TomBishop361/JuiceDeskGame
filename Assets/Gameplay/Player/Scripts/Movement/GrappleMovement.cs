@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using UnityEngine;
-
+[RequireComponent(typeof(Grapple),typeof(GrappleAnchorSelector))]
 public class GrappleMovement : MonoBehaviour
 {
     [Header("Dependencies")]

@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 using Game.AI;
-
+[RequireComponent(typeof(GrappleMovement), typeof(GrappleAnchorSelector))]
 public class Grapple : MonoBehaviour
 {
     [Header("References")]
