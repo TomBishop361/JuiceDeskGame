@@ -182,9 +182,9 @@ public class RailGrind : MonoBehaviour
             _timerManager.RestartTimer(RailtimerID);
 
 
-            Vector3 launchDir = cameraTransform.forward;
+            Vector3 launchDir = transform.forward;
             launchDir.y = 0f;
-            controller._rb.AddForce(launchDir.normalized * railBoost, ForceMode.VelocityChange);
+            controller._rb.AddForce((launchDir.normalized * railBoost )+Vector3.up * 10, ForceMode.VelocityChange);
             controller.OverrideMoveSpeed(7);
         }
     }

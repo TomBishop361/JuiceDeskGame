@@ -47,8 +47,6 @@ public class InputController : MonoBehaviour
     private Vector3 grappleTargetPos;
     [SerializeField] float AnchorLaunchAmount;
 
-
-
     [Header("Misc")]
     [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
