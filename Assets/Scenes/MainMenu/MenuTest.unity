@@ -7625,7 +7625,7 @@ MonoBehaviour:
   lowestSubdivLevelOverride: 0
   highestSubdivLevelOverride: 7
   overridesSubdivLevels: 0
-  mightNeedRebaking: 1
+  mightNeedRebaking: 0
   cachedTransform:
     e00: 1
     e01: 0
@@ -25656,7 +25656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &927689271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25692,9 +25692,9 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 134.6
-  m_Range: 10
-  m_SpotAngle: 94.542595
-  m_InnerSpotAngle: 77.32184
+  m_Range: 8.169248
+  m_SpotAngle: 159.45404
+  m_InnerSpotAngle: 79.57781
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -25734,8 +25734,8 @@ Light:
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_ColorTemperature: 6570
-  m_UseColorTemperature: 0
+  m_ColorTemperature: 3886
+  m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
@@ -25753,13 +25753,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 927689270}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.36497083, y: 0.12161212, z: -0.043371443, w: 0.92202264}
+  m_LocalRotation: {x: 0.36649492, y: 0.1610362, z: -0.027681755, w: 0.9159599}
   m_LocalPosition: {x: -14.37, y: 7.11, z: 38.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 43.123, y: 15.3, z: 0.69}
+  m_LocalEulerAnglesHint: {x: 42.867, y: 22.013, z: 5.271}
 --- !u!1 &933544853
 GameObject:
   m_ObjectHideFlags: 0
@@ -43289,7 +43289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a83d2f7ae04ab6f4f99b0d85377be998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializedBakingSet: {fileID: 0}
+  serializedBakingSet: {fileID: 11400000, guid: 3783a5f64c792a9459aa2bd51772268b, type: 2}
   sceneGUID: 29390fba5380ef34daec25fe49b78381
   obsoleteAsset: {fileID: 0}
   obsoleteCellSharedDataAsset: {fileID: 0}
@@ -43759,6 +43759,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6055836897539617247, guid: e4bd08b49db6c5a47b3a42bb9311cbaa, type: 3}
   m_PrefabInstance: {fileID: 754612486}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1675032567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1675032569}
+  - component: {fileID: 1675032568}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1675032568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675032567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: f688e7b6dcb17134bac0b308aa726a83, type: 2}
+--- !u!4 &1675032569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675032567}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1676522761
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46377,23 +46426,23 @@ MonoBehaviour:
   overridesSubdivLevels: 0
   mightNeedRebaking: 0
   cachedTransform:
-    e00: 0
+    e00: 1
     e01: 0
     e02: 0
-    e03: 0
+    e03: 13.158482
     e10: 0
-    e11: 0
+    e11: 1
     e12: 0
-    e13: 0
+    e13: -0.013550043
     e20: 0
     e21: 0
-    e22: 0
-    e23: 0
+    e22: 1
+    e23: -43.101913
     e30: 0
     e31: 0
     e32: 0
-    e33: 0
-  cachedHashCode: 0
+    e33: 1
+  cachedHashCode: -1796774389
   fillEmptySpaces: 0
   version: 2
   globalVolume: 0
@@ -54598,3 +54647,4 @@ SceneRoots:
   - {fileID: 756787325}
   - {fileID: 1793469257}
   - {fileID: 1920264187}
+  - {fileID: 1675032569}
