@@ -305,7 +305,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5108222343556212981
 RectTransform:
   m_ObjectHideFlags: 0
@@ -966,6 +966,7 @@ MonoBehaviour:
   detectionRange: 55
   visionAngle: 190
   eyes: {fileID: 4837338207519690221}
+  fallbackEyeHeight: 0.5
 --- !u!114 &7282551018810303331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1409,34 +1410,35 @@ MonoBehaviour:
   delayedDamageFillImage: {fileID: 624052081226411288}
   hpText: {fileID: 5545335760635482645}
   canvasGroup: {fileID: 7731926544382190883}
+  fullHealthColor: {r: 0.1882353, g: 1, b: 0.69803923, a: 1}
+  lowHealthColor: {r: 1, g: 0.23137255, b: 0.23137255, a: 1}
   followTarget: 1
   worldAnchor: {fileID: 1435362426548697243}
   uiOffset: {x: 0, y: 0, z: 0}
   faceCamera: 1
+  smoothFill: 1
   fillLerpSpeed: 8
-  useDelayedDamageFill: 1
+  useDelayedDamageBar: 1
   delayedDamageHoldTime: 0.04
-  delayedFillSpeed: 4.5
-  delayedDamageColor: {r: 1, g: 0.41568628, b: 0.18, a: 0.627451}
+  delayedDamageDrainSpeed: 4.5
   flashOnDamage: 1
   damageFlashColor: {r: 1, g: 1, b: 1, a: 1}
   damageFlashDuration: 0.06
   damageFlashStrength: 0.45
+  delayedDamageColor: {r: 1, g: 0.41568628, b: 0.18, a: 0.627451}
+  pulseOnDamage: 1
+  damagePulseScale: 1.08
+  damagePulseDuration: 0.1
   hideWhenFullHealth: 1
   fadeSpeed: 8
   hideOnDeath: 1
-  useDamagePulse: 1
-  damagePulseScale: 1.08
-  damagePulseDuration: 0.1
   scaleWithDistance: 0
   nearDistance: 8
   farDistance: 35
   farDistanceScale: 0.75
-  fullHealthColor: {r: 0.1882353, g: 1, b: 0.69803923, a: 1}
-  lowHealthColor: {r: 1, g: 0.23137255, b: 0.23137255, a: 1}
+  useSegments: 0
   segmentsContainer: {fileID: 2671315781403562818}
   segmentDividerPrefab: {fileID: 1156805498912163604, guid: 7f1e7d88e31493341a30f41a8e1d2e37, type: 3}
-  useSegments: 0
   maxSegmentDividers: 5
 --- !u!1001 &6216262224787439468
 PrefabInstance:

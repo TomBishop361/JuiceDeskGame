@@ -763,6 +763,7 @@ MonoBehaviour:
   moveSpeed: 12
   acceleration: 60
   angularSpeed: 720
+  useManualRotation: 1
   toggleSmoothRotation: 0
   rotationSpeed: 720
   rotationSmoothing: 20
@@ -1024,6 +1025,7 @@ MonoBehaviour:
   detectionRange: 32
   visionAngle: 135
   eyes: {fileID: 7600281626392431154}
+  fallbackEyeHeight: 0.5
 --- !u!114 &5060210018255925907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1599,7 +1601,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3887792731988058215
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1647,7 +1649,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100 / 100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 013452e52f526b04d86a1d112120da20, type: 2}
   m_sharedMaterial: {fileID: 72507007090943585, guid: 013452e52f526b04d86a1d112120da20, type: 2}
