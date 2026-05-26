@@ -28,24 +28,12 @@ public class InputController : MonoBehaviour
     private float lastDesiredMoveSpeed;
     [Header("Slope Slide Multiplier")]
     public float speedIncreaseMultiplier;
-    public float slopeIncreaseMultiplier;
-
-    [Header("Crouching")]
-    [SerializeField] float crouchSpeed = 4;
-    [SerializeField] float crouchYscale = 0.5f; // This will likely be removed when animations are made
-    [SerializeField] float startScaleYscale = 1;
+    public float slopeIncreaseMultiplier;  
 
     [Header("Slope Handling")]
     [SerializeField] public float maxSlopeAngle;
     [SerializeField] float Slopeforce;
-    private RaycastHit slopeHit;
-
-    [Header("Grappling Feel")]
-    [SerializeField] float grappleSpeedBoost = 1.5f; // Multiplier for speed after grapple
-    [SerializeField] float airControlDuringGrapple = 0.5f; // How much you can steer mid-air
-    [SerializeField] float grapplePullForce = 20f; // Continuous pull toward target
-    private Vector3 grappleTargetPos;
-    [SerializeField] float AnchorLaunchAmount;
+    private RaycastHit slopeHit;   
 
     [Header("Misc")]
     [SerializeField] Animator animator;
@@ -62,15 +50,13 @@ public class InputController : MonoBehaviour
     [SerializeField] float jumpForce = 10;
     [SerializeField] float jumpCoolDown = 0.3f;
     [SerializeField] bool isGrounded;
-    [SerializeField] float inputLagPeriod = 0.0001f;
-    
+    [SerializeField] float inputLagPeriod = 0.0001f;   
 
 
     public const float gravity = -9.81f;
     public bool jump;
 
-    private bool sprint;
-    bool crouching;
+    private bool sprint;    
     public bool sliding;
     public bool wallRunning;
     public bool IsJumpReady;
@@ -86,6 +72,8 @@ public class InputController : MonoBehaviour
     [SerializeField] GameObject IKGunTarget;
     [SerializeField] GameObject PlayerRoot;
 
+    int CoyoteTimerID;
+    int JumpCoolDownID;
 
     private Vector2 lastInputEvent;
     private float InputLagTimer;
@@ -126,15 +114,15 @@ public class InputController : MonoBehaviour
     private void OnEnable()
     {
         InputManager.OnJumpReceived += JumpPressed;
-
         InputManager.OnSprintReceived += SprintPressed;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        startScaleYscale = transform.localScale.y;
+        CoyoteTimerID = TimerManager.instance.NewTimer(CoyoteTime, coyoteTimeComplete, "CoyoteTime");
+        JumpCoolDownID = TimerManager.instance.NewTimer(jumpCoolDown, JumpCoolDownComplete, "JumpCoolDown");
 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;       
     }
-    Coroutine coyoteCoroutine;
+    
 
     public bool _isGrounded
     {
@@ -143,32 +131,38 @@ public class InputController : MonoBehaviour
         {
             if (value == false)
             {
-                StartCoroutine(coyoteTime(value));
+                // StartCoroutine(coyoteTime(value));
+                if(TimerManager.instance.GetTimerState(CoyoteTimerID) == false) //Timer is not active
+                    TimerManager.instance.RestartTimer(CoyoteTimerID);
             }
             //True
             else
             {
+                TimerManager.instance.SetTimerState(CoyoteTimerID, false);
                 isGrounded = value;
                 if (!IsJumpReady && !isOnCoolDown)
                 {
                     isOnCoolDown = true;
-                    StartCoroutine("JumpCoolDown");
+                    //StartCoroutine("JumpCoolDown");
+                    TimerManager.instance.RestartTimer(JumpCoolDownID);
+
                 }
             }
         }
     }
 
-    IEnumerator coyoteTime(bool value)
+    //  CHANGE TO NEW TIMER MANAGER SOLUTION
+    
+    void coyoteTimeComplete()
     {
         Debug.Log("CoyoteTimer");
-        yield return new WaitForSeconds(CoyoteTime);
-        isGrounded = value;
+        //yield return new WaitForSeconds(CoyoteTime);
+        isGrounded = false;
     }
 
-    IEnumerator JumpCoolDown()
+    void JumpCoolDownComplete()
     {
-        Debug.Log("JumpReady");
-        yield return new WaitForSeconds(jumpCoolDown);
+        
         IsJumpReady = true;
         isOnCoolDown = false;
     }
@@ -202,16 +196,8 @@ public class InputController : MonoBehaviour
             {
                 desiredMoveSpeed = slideSpeed;
             }
-
             else desiredMoveSpeed = sprintSpeed;
-
-        }
-        else if (crouching)
-        {
-            state = MovementState.crouching;
-            desiredMoveSpeed = crouchSpeed;
-        }
-
+        }     
         else if (_isGrounded && sprint)
         {
             state = MovementState.sprinting;
@@ -230,9 +216,7 @@ public class InputController : MonoBehaviour
         else
         {
             state = MovementState.air;
-
         }
-
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
         {
             if (speedLerpCoroutine != null)
@@ -403,7 +387,7 @@ public class InputController : MonoBehaviour
 
     void HandleLook(Vector2 Direction)
     {
-        InputLagTimer += Time.deltaTime;
+        InputLagTimer += Time.smoothDeltaTime;
 
 
         if ((Mathf.Approximately(0, Direction.x) && Mathf.Approximately(0, Direction.y)) == false || InputLagTimer >= inputLagPeriod)
