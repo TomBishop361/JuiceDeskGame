@@ -155,7 +155,7 @@ public class InputController : MonoBehaviour
     
     void coyoteTimeComplete()
     {
-        Debug.Log("CoyoteTimer");
+        //Debug.Log("CoyoteTimer");
         //yield return new WaitForSeconds(CoyoteTime);
         isGrounded = false;
     }

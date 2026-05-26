@@ -74,7 +74,7 @@ public class Health : MonoBehaviour {
 			//if (gameObject.TryGetComponent(out ShieldEnemy shield) != null) {
 			//	shield.StopMinigun();
 			//}
-			Debug.Log(gameObject + "died");
+			//Debug.Log(gameObject + "died");
 		}
 	}
 

@@ -20,7 +20,7 @@ public class HitScanHitbox : MonoBehaviour {
 
 		IDamageable damageableInterface = hit.collider.GetComponentInParent<IDamageable>();
 		if (damageableInterface == null) {
-			Debug.LogError("IDamageable: not found in parent of: " + hit.collider.gameObject.name);
+			//Debug.LogError("IDamageable: not found in parent of: " + hit.collider.gameObject.name);
 			return;
 		}
 

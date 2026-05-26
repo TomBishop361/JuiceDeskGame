@@ -65,7 +65,7 @@ public class PlayerSettings : MonoBehaviour, IFactionOwner, IHealthSettings {
 	}
 
 	private void OnHealthChanged(float current, float max) {
-		Debug.Log("ON HEALTH CHANGED IS CALLED");
+		//Debug.Log("ON HEALTH CHANGED IS CALLED");
 		// Damage only if health has gone down
 		if (current < previousHealthValue) {
 			// Reset regen delay timer - only regen when out of combat
