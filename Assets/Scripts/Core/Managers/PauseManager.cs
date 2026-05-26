@@ -16,8 +16,7 @@ public class PauseManager : MonoBehaviour
 
     private void PausePressed(bool value)
     {
-        IsPaused = (value == IsPaused) ? !value : value;
-        Debug.Log($"IsPaused = {IsPaused}");
+        IsPaused = (value == IsPaused) ? !value : value;        
         PausePanel.SetActive(IsPaused);
         HUDPanel.SetActive(!IsPaused);
 
