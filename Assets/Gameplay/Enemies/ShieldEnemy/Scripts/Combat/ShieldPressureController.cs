@@ -125,8 +125,8 @@ namespace Game.AI {
 			}
 
 			// Do not fire minigun on top of other attack/exposure states
-			if (shield.IsAttacking || shield.IsExposed) {
-				shield.StopMinigunFiring();
+			if (shield.IsAttacking || shield.IsExposedOrRecovering) {
+				groundMotor.Stop();
 				return;
 			}
 
@@ -166,8 +166,8 @@ namespace Game.AI {
 		// Movement is pressure/memory driven
 		// LOS is not required for movement around corners
 		private void TickMovement() {
-			if (shield.IsAttacking || shield.IsExposed) {
-				groundMotor.Stop();
+			if (shield.IsAttacking || shield.IsExposedOrRecovering) {
+				shield.StopMinigunFiring();
 				return;
 			}
 
