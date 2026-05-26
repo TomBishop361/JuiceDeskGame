@@ -50,6 +50,8 @@ public class GrappleMovement : MonoBehaviour
         mainController.OverrideMoveSpeed(mainController.sprintSpeed * grappleSpeedBoost);
     }
 
+
+
     public void HandleGrappleMovement()
     {
         if (!IsActive) return;

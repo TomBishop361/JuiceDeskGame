@@ -2749,6 +2749,8 @@ GameObject:
   - component: {fileID: 749521401872351453}
   - component: {fileID: 7761443611690410262}
   - component: {fileID: 3639359626453078628}
+  - component: {fileID: 5923364076685414571}
+  - component: {fileID: 8291113777328702534}
   m_Layer: 7
   m_Name: Player_Root_Model
   m_TagString: Player
@@ -2839,7 +2841,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inputManager: {fileID: 3360952311824732236}
   _camera: {fileID: 1312244048495141995}
-  _timerManager: {fileID: 0}
   walkSpeed: 8
   sprintSpeed: 12
   wallRunSpeed: 12
@@ -2855,16 +2856,6 @@ MonoBehaviour:
   airControlDuringGrapple: 0.5
   grapplePullForce: 20
   AnchorLaunchAmount: 0
-  toggleKnockOffRail: 1
-  onRail: 0
-  railGrindTime: 1
-  railBoost: 0
-  railGrindNoiseInterval: 0.3
-  grindSpeed: 12
-  heightOffset: 1
-  currentRailScript: {fileID: 0}
-  PausePanel: {fileID: 0}
-  HUDPanel: {fileID: 0}
   animator: {fileID: 8593586654675245498}
   acceleration: 50
   airAcceleration: 50
@@ -2880,7 +2871,6 @@ MonoBehaviour:
   isGrounded: 0
   inputLagPeriod: 0.0001
   VelocityUI: {fileID: 0}
-  _health: {fileID: 6915328010031275841}
   jump: 0
   sliding: 0
   wallRunning: 0
@@ -2891,6 +2881,7 @@ MonoBehaviour:
   WallRunLeft: 0
   isRailGrinding: 0
   activeGrapple: 0
+  enableMoveOnNextTouch: 0
   IKGunTarget: {fileID: 226746330427770559}
   PlayerRoot: {fileID: 2597609611847294696}
   rb: {fileID: 8303638504209387791}
@@ -2985,6 +2976,7 @@ MonoBehaviour:
   controller: {fileID: 7128203245387133486}
   manager: {fileID: 3360952311824732236}
   selector: {fileID: 7401631509944898134}
+  GM: {fileID: 5923364076685414571}
   Camera: {fileID: 0}
   GrappleOrigin: {fileID: 8374649921046561131}
   Grappleable:
@@ -3118,6 +3110,7 @@ MonoBehaviour:
     Attacker: {fileID: 7743499516999693894}
     Type: 1
     AttackerFaction: 0
+  sniperHitRadius: 1
   shotOrigin: {fileID: 6373591792510189152}
   StartFOV: 0
   ZoomFOV: 30
@@ -3473,6 +3466,45 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5923364076685414571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2055e3b73ce5349bd396524b3cbd10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainController: {fileID: 7128203245387133486}
+  grappleSpeedBoost: 1.5
+  grapplePullForce: 20
+  anchorLaunchAmount: 25
+--- !u!114 &8291113777328702534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f174d641cabb8df4587a559e71012fab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 7128203245387133486}
+  cameraTransform: {fileID: 0}
+  onRail: 0
+  canRailGrind: 1
+  railGrindTime: 1
+  railBoost: 25
+  railGrindNoiseInterval: 0.3
+  grindSpeed: 12
+  heightOffset: 1
+  currentRailScript: {fileID: 0}
+  _health: {fileID: 6915328010031275841}
 --- !u!1 &7925212583705595643
 GameObject:
   m_ObjectHideFlags: 0

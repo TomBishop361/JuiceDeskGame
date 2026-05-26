@@ -8,22 +8,22 @@ using UnityEngine;
 
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
-{   
+{
 
-    [Header ("Input")]
+    [Header("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
     [SerializeField] GameObject _camera;
-    
+
 
     [Header("Movement Values")]
-    float moveSpeed  = 7;
+    float moveSpeed = 7;
     public float Velocity { get; private set; }
     [SerializeField] float walkSpeed = 7;
     [SerializeField] public float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
     [SerializeField] float slideSpeed = 30;
-    
+
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
     [Header("Slope Slide Multiplier")]
@@ -47,9 +47,9 @@ public class InputController : MonoBehaviour
     private Vector3 grappleTargetPos;
     [SerializeField] float AnchorLaunchAmount;
 
- 
 
-    [Header("Misc")]  
+
+    [Header("Misc")]
     [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
@@ -57,21 +57,21 @@ public class InputController : MonoBehaviour
     [SerializeField] float groundFriction = 0.4f;
     [SerializeField] LayerMask Ground;
     [SerializeField] float CharacterHeight = 2;
-    [Range(0,1)]
+    [Range(0, 1)]
     [SerializeField] float CoyoteTime = 0.1f;
-    [Range(0,1)]
+    [Range(0, 1)]
     [SerializeField] float Sensitivity = 0.15f;
-    [SerializeField] float jumpForce= 10;
+    [SerializeField] float jumpForce = 10;
     [SerializeField] float jumpCoolDown = 0.3f;
     [SerializeField] bool isGrounded;
     [SerializeField] float inputLagPeriod = 0.0001f;
     [SerializeField] TextMeshProUGUI VelocityUI;
-    
+
 
     public const float gravity = -9.81f;
     public bool jump;
-    
-    private bool sprint;    
+
+    private bool sprint;
     bool crouching;
     public bool sliding;
     public bool wallRunning;
@@ -86,12 +86,12 @@ public class InputController : MonoBehaviour
     public bool enableMoveOnNextTouch;
 
 
-	private PlayerNoiseEmitter noiseEmitter;
-	private float nextRailGrindNoiseTime;
-	private bool wasGrounded;
-	private float previousYVelocity;
+    private PlayerNoiseEmitter noiseEmitter;
+    private float nextRailGrindNoiseTime;
+    private bool wasGrounded;
+    private float previousYVelocity;
 
-	[SerializeField] GameObject IKGunTarget;
+    [SerializeField] GameObject IKGunTarget;
     [SerializeField] GameObject PlayerRoot;
 
 
@@ -106,7 +106,7 @@ public class InputController : MonoBehaviour
     Vector2 LookDirection;
 
     Coroutine speedLerpCoroutine;
-    
+
 
     public IInputManager InputManager => _inputManager.InputManager;
     [SerializeField] private Rigidbody rb;
@@ -131,26 +131,27 @@ public class InputController : MonoBehaviour
         air
     }
 
-	private void Awake() {
-		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
-		wasGrounded = _isGrounded;
-		previousYVelocity = rb != null ? rb.linearVelocity.y : 0.0f;
-	}
+    private void Awake()
+    {
+        noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+        wasGrounded = _isGrounded;
+        previousYVelocity = rb != null ? rb.linearVelocity.y : 0.0f;
+    }
 
 
-	private void OnEnable()
-    {       
+    private void OnEnable()
+    {
         InputManager.OnJumpReceived += JumpPressed;
-       
+
         InputManager.OnSprintReceived += SprintPressed;
-        
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         startScaleYscale = transform.localScale.y;
-        
+
     }
     Coroutine coyoteCoroutine;
-        
+
     public bool _isGrounded
     {
         get => isGrounded;
@@ -158,13 +159,11 @@ public class InputController : MonoBehaviour
         {
             if (value == false)
             {
-                if (coyoteCoroutine != null) StopCoroutine(coyoteCoroutine);
-                coyoteCoroutine = StartCoroutine(coyoteTime(false));
-            }            
+                StartCoroutine(coyoteTime(value));
+            }
+            //True
             else
             {
-                if (coyoteCoroutine != null) StopCoroutine(coyoteCoroutine);              
-
                 isGrounded = value;
                 if (!IsJumpReady && !isOnCoolDown)
                 {
@@ -177,6 +176,7 @@ public class InputController : MonoBehaviour
 
     IEnumerator coyoteTime(bool value)
     {
+        Debug.Log("CoyoteTimer");
         yield return new WaitForSeconds(CoyoteTime);
         isGrounded = value;
     }
@@ -185,15 +185,16 @@ public class InputController : MonoBehaviour
     {
         Debug.Log("JumpReady");
         yield return new WaitForSeconds(jumpCoolDown);
-        IsJumpReady = true;        
+        IsJumpReady = true;
         isOnCoolDown = false;
     }
-        
+
     //Movement fsm
     private void StateHandler()
     {
-        
-        if (isRailGrinding) {
+
+        if (isRailGrinding)
+        {
             state = MovementState.railGrinding;
             desiredMoveSpeed = 0;
             rb.useGravity = false;
@@ -208,7 +209,7 @@ public class InputController : MonoBehaviour
         {
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
-            
+
         }
         else if (sliding)
         {
@@ -245,29 +246,29 @@ public class InputController : MonoBehaviour
         else
         {
             state = MovementState.air;
-            
+
         }
 
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
         {
-            if(speedLerpCoroutine != null)
+            if (speedLerpCoroutine != null)
                 StopCoroutine(speedLerpCoroutine);
             speedLerpCoroutine = StartCoroutine(SmoothLerpSpeed());
         }
         else
         {
             moveSpeed = desiredMoveSpeed;
-            
-        }        
+
+        }
         lastDesiredMoveSpeed = desiredMoveSpeed;
 
-        
+
     }
 
     private IEnumerator SmoothLerpSpeed()
     {
-        float t = 0;        
-        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed)-1;
+        float t = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed) - 1;
         float startValue = moveSpeed;
         while (t < difference)
         {
@@ -284,10 +285,10 @@ public class InputController : MonoBehaviour
 
                 t += Time.deltaTime * speedIncreaseMultiplier * slopeIncreaseMultiplier * slopeAngleIncrease;
             }
-           
+
             else
                 t += Time.deltaTime * speedIncreaseMultiplier;
-            
+
             yield return null;
         }
         moveSpeed = desiredMoveSpeed;
@@ -295,23 +296,23 @@ public class InputController : MonoBehaviour
 
     #region Inputs   
 
-    private void JumpPressed(bool value) 
-    {        
-            jump = value;        
-            
+    private void JumpPressed(bool value)
+    {
+        jump = value;
+
     }
 
     private void SprintPressed(bool value)
     {
         sprint = value;
-    }  
+    }
 
     #endregion
 
-    void GroundCheck()
+    public void GroundCheck()
     {
-        
-        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, Ground);
+
+        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f) * transform.localScale.y), 0.1f, Ground);
         if (_isGrounded)
             exitingSlope = false;
     }
@@ -319,8 +320,8 @@ public class InputController : MonoBehaviour
     //Detects if player is on a slope
     public bool OnSlope()
     {
-       if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
-        { 
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
+        {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0; // Ensure slope angle is within valid bounds.        
         }
@@ -334,23 +335,23 @@ public class InputController : MonoBehaviour
     }
 
 
-    public Vector3 GetSlopeMoveDirection( Vector3 Direction)
-    {        
+    public Vector3 GetSlopeMoveDirection(Vector3 Direction)
+    {
         return Vector3.ProjectOnPlane(Direction, slopeHit.normal).normalized;
     }
 
     void HandleMove(Vector2 Direction)
     {
-        if (isRailGrinding || activeGrapple || wallRunning) return;        
+        if (isRailGrinding || activeGrapple || wallRunning) return;
 
         // 1. Calculate desired velocity based on camera
         Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
-        Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;   
+        Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
 
         Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
         //3. Slop Logic
-        if (OnSlope() && !exitingSlope )
+        if (OnSlope() && !exitingSlope)
         {
             // Project the desired velocity onto the slope and scale it by movement speed
             Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
@@ -358,7 +359,7 @@ public class InputController : MonoBehaviour
             rb.linearVelocity = slopeVel;
             // Apply an extra force to keep the player grounded          
             rb.AddForce(-slopeHit.normal * Slopeforce, ForceMode.Force);
-        }        
+        }
 
         // 4. Ground vs Air Movement Logic
         if (isGrounded)
@@ -420,7 +421,7 @@ public class InputController : MonoBehaviour
     {
         InputLagTimer += Time.deltaTime;
 
-        
+
         if ((Mathf.Approximately(0, Direction.x) && Mathf.Approximately(0, Direction.y)) == false || InputLagTimer >= inputLagPeriod)
         {
             lastInputEvent = Direction;
@@ -432,15 +433,15 @@ public class InputController : MonoBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -89, 89);
 
-        _camera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0); 
-        
+        _camera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
     }
 
     private void Jump()
     {
-        
+
         if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
-        { 
+        {
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();
@@ -459,7 +460,7 @@ public class InputController : MonoBehaviour
         }
     }
 
-   
+
 
     private void LateUpdate()
     {
@@ -470,33 +471,36 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         //Look and move can be polled
-        if (!activeGrapple) {
+        if (!activeGrapple)
+        {
             MoveDirection = InputManager.Movement;
         }
         LookDirection = InputManager.Look;
 
 
-		bool groundedNow = _isGrounded;
+        bool groundedNow = _isGrounded;
 
-		if (!wasGrounded && groundedNow && previousYVelocity < -6.0f) {
-			noiseEmitter?.EmitLandingNoise();
-		}
+        if (!wasGrounded && groundedNow && previousYVelocity < -6.0f)
+        {
+            noiseEmitter?.EmitLandingNoise();
+        }
 
-		wasGrounded = groundedNow;
-		previousYVelocity = rb.linearVelocity.y;
+        wasGrounded = groundedNow;
+        previousYVelocity = rb.linearVelocity.y;
 
-		Velocity = new Vector3 (rb.linearVelocity.x,0,rb.linearVelocity.z).magnitude;
-        if (VelocityUI != null) {
-			VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-		}
+        Velocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude;
+        if (VelocityUI != null)
+        {
+            VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
+        }
     }
     private void FixedUpdate()
-    {    
+    {
         GroundCheck();
         Jump();
         StateHandler();
-        HandleMove(MoveDirection);        
-	}
+        HandleMove(MoveDirection);
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -510,35 +514,35 @@ public class InputController : MonoBehaviour
 
             if (TryGetComponent<Grapple>(out var g)) g.StopGrapple();
         }
-        
+
     }
 
-    
+
     private void OnDisable()
-    {        
+    {
         InputManager.OnJumpReceived -= JumpPressed;
-        InputManager.OnSprintReceived -= SprintPressed;        
+        InputManager.OnSprintReceived -= SprintPressed;
     }
 
     public void ResetRestrictions()
     {
         rb.linearDamping = 0.75f;
         activeGrapple = false;
-             
-        
+
+
     }
 
 
 
     //MoveToInputController?
-  
+
 
 #if UNITY_EDITOR
 
     private void OnValidate()
     {
         rb = GetComponent<Rigidbody>();
-        
+
     }
 #endif
 }
