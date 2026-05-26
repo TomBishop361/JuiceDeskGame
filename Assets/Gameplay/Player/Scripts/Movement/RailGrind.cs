@@ -6,8 +6,8 @@ public class RailGrind : MonoBehaviour
 {
     [SerializeField] InputController controller;
     [Header("Grinding")]
-    
 
+    [SerializeField] Transform cameraTransform;
     //Rail
     public bool onRail;
     public bool canRailGrind = true;
@@ -145,7 +145,7 @@ public class RailGrind : MonoBehaviour
         
         if (collision.gameObject.tag == "Rail" && !isRailGrinding && canRailGrind)
         {
-            Debug.Log("Collision YES");
+            
             isRailGrinding = true;
             onRail = true;
 
@@ -176,13 +176,16 @@ public class RailGrind : MonoBehaviour
             isRailGrinding = false;
             onRail = false;
             controller._rb.useGravity = true;
-            currentRailScript = null;
-            controller._rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
+            currentRailScript = null;            
             canRailGrind = false;
             railGrindTimer = railGrindTime;
             _timerManager.RestartTimer(RailtimerID);
 
-            //desiredMoveSpeed = walkSpeed;
+
+            Vector3 launchDir = cameraTransform.forward;
+            launchDir.y = 0f;
+            controller._rb.AddForce(launchDir.normalized * railBoost, ForceMode.VelocityChange);
+            controller.OverrideMoveSpeed(7);
         }
     }
 }
