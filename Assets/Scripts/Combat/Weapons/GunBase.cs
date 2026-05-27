@@ -1,5 +1,6 @@
 
 using Game.AI;
+using Game.Audio;
 using System;
 using Unity.Collections;
 using UnityEngine;
@@ -96,6 +97,10 @@ public class GunBase : MonoBehaviour
 	#endregion
 
 	[SerializeField] private float weaponNoiseInterval = 0.15f;
+
+	[Header("SMG SFX")]
+	[Tooltip("Played every time the SMG fires.")]
+	[SerializeField] private SFXDefinition smgFireSFX;
 
 	private PlayerNoiseEmitter noiseEmitter;
 	private float nextWeaponNoiseTime;
@@ -249,6 +254,8 @@ public class GunBase : MonoBehaviour
         Vector3 offset = Vector3.zero; //new Vector3(UnityEngine.Random.Range(-0.05f,0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f));
         bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage); 
         EmitPrimaryFireNoise();
+		Vector3 position = BulletOrigin != null ? BulletOrigin.transform.position : transform.position;
+		SFXManager.PlayAtPosition(smgFireSFX, position);
 	}
 
     void reloadGun()
