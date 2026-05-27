@@ -60,6 +60,7 @@ public class Health : MonoBehaviour {
 		// Notify any listener of health change
 		OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
 		OnDamageDealt?.Invoke();
+		EventManager.instance.Invoke("OnDamage");
 
 		if (CurrentHealth <= 0.0f) {
 			// Player only

@@ -3718,7 +3718,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8787690750738527828, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
       insertIndex: -1
       addedObject: {fileID: 487403350}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7743499516999693894, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2119289155}
+    - targetCorrespondingSourceObject: {fileID: 7743499516999693894, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2119289156}
   m_SourcePrefab: {fileID: 100100000, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
 --- !u!4 &2119289150 stripped
 Transform:
@@ -3730,7 +3736,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3360952311824732236, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
   m_PrefabInstance: {fileID: 2119289149}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2119289154}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 757d90cd0ee3f454d8dd8b559252610e, type: 3}
@@ -3741,6 +3747,38 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8787690750738527828, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
   m_PrefabInstance: {fileID: 2119289149}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2119289154 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7743499516999693894, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+  m_PrefabInstance: {fileID: 2119289149}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2119289155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119289154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0138d5fc5baec4681e693072c14c60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sniperChargeShootSFX: {fileID: 11400000, guid: 71bb9fe13b319a547a736664d818a1f0, type: 2}
+  sniperShotFireDelay: 1.02
+  smgFireSFX: {fileID: 11400000, guid: c223b3d5b7939a94aa40cb931567d246, type: 2}
+--- !u!114 &2119289156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119289154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3da8e6155cd092649a911437dc324ecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2145047994
 PrefabInstance:
   m_ObjectHideFlags: 0

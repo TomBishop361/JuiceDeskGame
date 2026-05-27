@@ -280,7 +280,7 @@ public class InputController : MonoBehaviour
     public void GroundCheck()
     {
 
-        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f) * transform.localScale.y), 0.1f, Ground);
+        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f) * transform.localScale.y), 0.25f, Ground);
         if (_isGrounded)
             exitingSlope = false;
     }
