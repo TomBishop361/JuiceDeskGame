@@ -31,6 +31,13 @@ public class NoiseEmitterListener : MonoBehaviour
         _EventManager.Subscribe("OnRailGrind", EmitRail);
     }
 
+    private void OnDisable()
+    {
+        _EventManager.Unsubscribe("SMGShot", EmitPrimaryFireNoise);
+        _EventManager.Unsubscribe("OnSlide", EmitSlide);
+        _EventManager.Unsubscribe("OnRailGrind", EmitRail);
+    }
+
     private void EmitSlide(object data)
     {
         if (Time.time >= nextSlideNoiseTime)

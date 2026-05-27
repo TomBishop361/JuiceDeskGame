@@ -35,10 +35,11 @@ public class RailGrind : MonoBehaviour
 
     private void OnEnable()
     {
-        if(_health != null)
-        {
-            _health.OnDamageDealt += throwOffRail;
-        }
+        EventManager.instance.Subscribe("OnDamage", damageHandler);
+        //if(_health != null)
+        //{
+        //    _health.OnDamageDealt += throwOffRail;
+        //}
 
         _timerManager = TimerManager.instance;
         RailtimerID = _timerManager.NewTimer(railGrindTime, RailTimerEnd, "RailGrind Timer");
@@ -47,10 +48,11 @@ public class RailGrind : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_health != null)
-        {
-            _health.OnDamageDealt -= throwOffRail;
-        }
+        EventManager.instance.Unsubscribe("OnDamage", damageHandler);
+        //if (_health != null)
+        //{
+        //    _health.OnDamageDealt -= throwOffRail;
+        //}
         controller.InputManager.OnJumpReceived -= JumpInput;
     }
     void JumpInput(bool input)
@@ -59,6 +61,11 @@ public class RailGrind : MonoBehaviour
         {
            throwOffRail();
         }
+    }
+
+    void damageHandler(object data)
+    {
+        throwOffRail();
     }
 
     private void FixedUpdate()
