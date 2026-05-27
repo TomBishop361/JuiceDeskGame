@@ -225,7 +225,7 @@ public class GunBase : MonoBehaviour
             {
                 Debug.DrawLine(AimOrigin.transform.position, hit.point, Color.blue, 5f);
                 ShootDir = (hit.point - BulletOrigin.transform.position).normalized;
-                Debug.Log("Hit Object Name " + hit.transform.name);               
+               // Debug.Log("Hit Object Name " + hit.transform.name);               
             }
             else
             {

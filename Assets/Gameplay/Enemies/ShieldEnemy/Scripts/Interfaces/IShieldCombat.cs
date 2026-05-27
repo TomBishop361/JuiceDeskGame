@@ -4,7 +4,7 @@ namespace Game.AI.Shield {
 		bool InFireRange { get; }
 		bool CanSlam { get; }
 		bool CanFireMinigun { get; }
-		bool GrappleWindowOpen { get; }
+		//bool GrappleWindowOpen { get; }
 		bool PlayerInFront { get; }
 		bool ShieldRaised { get; }
 		bool IsExposed { get; }

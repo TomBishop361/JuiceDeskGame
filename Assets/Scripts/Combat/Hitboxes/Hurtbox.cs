@@ -120,7 +120,7 @@ public class Hurtbox : MonoBehaviour, IDamageable {
 
 		// Clamp upward velocity
 		// In cases where the player is already rising, they won't be sent too high
-		float maxUpVelocity = 8.0f; // TODO: MAKE THIS A VARIABLE [STORE INSIDE AttackData]
+		float maxUpVelocity = 10.0f; // TODO: MAKE THIS A VARIABLE [STORE INSIDE AttackData]
 
 		Vector3 velocity = rigidbody.linearVelocity;
 

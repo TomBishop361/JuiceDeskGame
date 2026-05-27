@@ -56,7 +56,7 @@ namespace Game.AI.Behavior.Shield {
 		public override bool IsTrue() {
 			ShieldEnemy shieldEnemy = GameObject.GetComponent<ShieldEnemy>();
 
-			return shieldEnemy != null && shieldEnemy.GrappleWindowOpen;
+			return shieldEnemy != null /*&& shieldEnemy.GrappleWindowOpen*/;
 		}
 	}
 
@@ -77,10 +77,6 @@ namespace Game.AI.Behavior.Shield {
 			return shieldEnemy != null && shieldEnemy.IsExposed;
 		}
 	}
-
-	// TODO: ADD ShieldPlayerBehind CONDITION NODE CLASS
-
-
 
 	// Category: Enemy/Shield/Conditions
 

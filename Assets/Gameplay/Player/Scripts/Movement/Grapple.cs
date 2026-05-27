@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 using Game.AI;
-
+[RequireComponent(typeof(GrappleMovement), typeof(GrappleAnchorSelector))]
 public class Grapple : MonoBehaviour
 {
     [Header("References")]
@@ -11,6 +11,8 @@ public class Grapple : MonoBehaviour
     IInputManager inputManager => manager.InputManager;
 
    [SerializeField] GrappleAnchorSelector selector;
+
+    [SerializeField] public GrappleMovement GM;
 
     public Transform Camera;
     public Transform GrappleOrigin;
@@ -152,7 +154,7 @@ public class Grapple : MonoBehaviour
         Vector3 velocity = JumpVelocityCalc.CalculateJumpVelocity(transform.position, grapplePoint, dynamicHeight);
 
         // Launch immediately rather than using Invoke
-        controller.JumpToPosition(grapplePoint, dynamicHeight);
+        GM.JumpToPosition(grapplePoint, dynamicHeight);
 
         // Safety timeout in case we never reach the point
         Invoke(nameof(StopGrapple), 2.0f);
@@ -167,7 +169,7 @@ public class Grapple : MonoBehaviour
         lineRenderer.enabled = false;
         CancelInvoke(nameof(StopGrapple));
         controller.ResetRestrictions();
-        controller.AnchorLaunch();
+        GM.AnchorLaunch(Camera);
         OnGrappleEnd?.Invoke();
     }
 

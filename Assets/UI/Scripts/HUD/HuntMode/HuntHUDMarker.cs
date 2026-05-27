@@ -277,7 +277,6 @@ public sealed class HuntHUDMarker : MonoBehaviour {
 			if (Mathf.Abs(verticalDelta) >= manager.VerticalIconThreshold) {
 				showDirectionalIcon = true;
 
-				// TODO: add < , > then rotate arrowRotationOffset
 				directionalIcon = verticalDelta > 0.0f ? "▲" : "▼";
 			}
 		}

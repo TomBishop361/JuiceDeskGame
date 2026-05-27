@@ -9,8 +9,8 @@ namespace Game.AI.Shield {
 		[SerializeField] private float blockArcDegrees = 120.0f;
 
 		[Header("Timing")]
-		[Tooltip("Duration of the vulnerability window during which grapple interactions are allowed.")]
-		[SerializeField] private float grappleWindowDuration = 1.0f;
+		//[Tooltip("Duration of the vulnerability window during which grapple interactions are allowed.")]
+		//[SerializeField] private float grappleWindowDuration = 1.0f;
 		[Tooltip("Recovery time after the exposed state ends before normal defence resumes.")]
 		[SerializeField] private float postExposeRecoveryTime = 0.4f;
 
@@ -24,7 +24,7 @@ namespace Game.AI.Shield {
 
 		// Cooldown timer for when the next lunge is allowed to start
 		private float exposedEndTime = -Mathf.Infinity;
-		private float grappleWindowEndTime = -Mathf.Infinity;
+		//private float grappleWindowEndTime = -Mathf.Infinity;
 		private float postExposeEndTime = -Mathf.Infinity;
 		private float nextBlockReactTime = -Mathf.Infinity;
 
@@ -35,9 +35,10 @@ namespace Game.AI.Shield {
 
 		// Shield Enemy Defense State Specific Properties
 		public bool IsExposed { get; private set; } // True while the weapon has overheated and the owner should be vulnerable
-		public bool GrappleWindowOpen { get; private set; }
 		public bool ShieldRaised { get; private set; }
 		public float PostExposeEndTime => postExposeEndTime;
+		public bool IsRecoveringFromExpose => IsExposed == false && Time.time < postExposeEndTime;
+		public bool IsExposedOrRecovering => IsExposed || Time.time < postExposeEndTime;
 
 		private void Awake() {
 			exposedBoolHash = Animator.StringToHash(exposedBoolName);
@@ -47,10 +48,10 @@ namespace Game.AI.Shield {
 
 		public void ResetRuntime(Animator animator) {
 			IsExposed = false;
-			GrappleWindowOpen = false;
+			//GrappleWindowOpen = false;
 			ShieldRaised = false;
 			exposedEndTime = -Mathf.Infinity;
-			grappleWindowEndTime = -Mathf.Infinity;
+			//grappleWindowEndTime = -Mathf.Infinity;
 			postExposeEndTime = -Mathf.Infinity;
 			nextBlockReactTime = -Mathf.Infinity;
 
@@ -69,9 +70,9 @@ namespace Game.AI.Shield {
 				ExitExposed(animator);
 			}
 
-			if (GrappleWindowOpen && Time.time >= grappleWindowEndTime) {
-				GrappleWindowOpen = false;
-			}
+			//if (GrappleWindowOpen && Time.time >= grappleWindowEndTime) {
+			//	GrappleWindowOpen = false;
+			//}
 
 			UpdateShieldBlockState(target);
 		}
@@ -109,9 +110,9 @@ namespace Game.AI.Shield {
 
 		public void EnterExposed(float duration, Animator animator, Transform target = null) {
 			IsExposed = true;
-			GrappleWindowOpen = true;
+			//GrappleWindowOpen = true;
 			exposedEndTime = Time.time + duration;
-			grappleWindowEndTime = Time.time + grappleWindowDuration;
+			//grappleWindowEndTime = Time.time + grappleWindowDuration;
 			postExposeEndTime = exposedEndTime + postExposeRecoveryTime;
 
 			SetShieldRaised(false, animator, target);
@@ -131,7 +132,7 @@ namespace Game.AI.Shield {
 
 		public void StopAllStates(Animator animator) {
 			IsExposed = false;
-			GrappleWindowOpen = false;
+			//GrappleWindowOpen = false;
 			SetShieldRaised(false, animator);
 
 			if (animator != null) {
@@ -144,7 +145,7 @@ namespace Game.AI.Shield {
 				return;
 			}
 
-			nextBlockReactTime = Time.time + 0.15f;
+			nextBlockReactTime = Time.time + 0.20f;
 			animator.SetTrigger(blockReactTriggerHash);
 		}
 

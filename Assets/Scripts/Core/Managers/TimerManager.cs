@@ -28,6 +28,11 @@ public class TimerManager : MonoBehaviour
         return id;
     }
 
+    public bool GetTimerState(int ID)
+    {
+        return timers[ID].isActive;
+    }
+
     public void SetTimerState(int ID, bool isActive)
     {
         if (ID >= 0 && ID < timers.Count)

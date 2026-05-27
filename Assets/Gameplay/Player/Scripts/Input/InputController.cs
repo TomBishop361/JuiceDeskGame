@@ -2,76 +2,40 @@ using Game.AI;
 using System;
 using System.Collections;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Splines;
+
 
 
 [RequireComponent((typeof(Rigidbody)))]
 public class InputController : MonoBehaviour
-{   
+{
 
-    [Header ("Input")]
+    [Header("Input")]
     [SerializeField] InputManagerBase _inputManager;
     //[SerializeField] Camera _camera;
     [SerializeField] GameObject _camera;
-    [SerializeField] TimerManager _timerManager;
+
 
     [Header("Movement Values")]
-    float moveSpeed  = 7;
+    float moveSpeed = 7;
     public float Velocity { get; private set; }
     [SerializeField] float walkSpeed = 7;
-    [SerializeField] float sprintSpeed = 14;
+    [SerializeField] public float sprintSpeed = 14;
     [SerializeField] float wallRunSpeed = 7;
     [SerializeField] float slideSpeed = 30;
-    
+
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
     [Header("Slope Slide Multiplier")]
     public float speedIncreaseMultiplier;
-    public float slopeIncreaseMultiplier;
-
-    [Header("Crouching")]
-    [SerializeField] float crouchSpeed = 4;
-    [SerializeField] float crouchYscale = 0.5f; // This will likely be removed when animations are made
-    [SerializeField] float startScaleYscale = 1;
+    public float slopeIncreaseMultiplier;  
 
     [Header("Slope Handling")]
     [SerializeField] public float maxSlopeAngle;
     [SerializeField] float Slopeforce;
-    private RaycastHit slopeHit;
-
-    [Header("Grappling Feel")]
-    [SerializeField] float grappleSpeedBoost = 1.5f; // Multiplier for speed after grapple
-    [SerializeField] float airControlDuringGrapple = 0.5f; // How much you can steer mid-air
-    [SerializeField] float grapplePullForce = 20f; // Continuous pull toward target
-    private Vector3 grappleTargetPos;
-    [SerializeField] float AnchorLaunchAmount;
-
-    [Header("Grinding")]
-    // Debug
-    public bool toggleKnockOffRail = true;
-
-    //Rail
-    public bool onRail;
-    bool canRailGrind = true;
-
-    public float railGrindTime = 1;
-	float railGrindTimer;
-	private int RailtimerID;
-
-    public float railBoost;
-	[SerializeField] private float railGrindNoiseInterval = 0.3f;
-
-	[SerializeField] float grindSpeed;
-    [SerializeField] float heightOffset; // playerheight/2
-    float timeForFullSpline;
-    float elapsdTime;    
-    [SerializeField] RailScript currentRailScript;
+    private RaycastHit slopeHit;   
 
     [Header("Misc")]
-    [SerializeField] GameObject PausePanel;
-    [SerializeField] GameObject HUDPanel;
     [SerializeField] Animator animator;
     [Tooltip("For instant movement set to 'Infinity'")]
     [SerializeField] float acceleration = 50;
@@ -79,23 +43,20 @@ public class InputController : MonoBehaviour
     [SerializeField] float groundFriction = 0.4f;
     [SerializeField] LayerMask Ground;
     [SerializeField] float CharacterHeight = 2;
-    [Range(0,1)]
+    [Range(0, 1)]
     [SerializeField] float CoyoteTime = 0.1f;
-    [Range(0,1)]
+    [Range(0, 1)]
     [SerializeField] float Sensitivity = 0.15f;
-    [SerializeField] float jumpForce= 10;
+    [SerializeField] float jumpForce = 10;
     [SerializeField] float jumpCoolDown = 0.3f;
     [SerializeField] bool isGrounded;
-    [SerializeField] float inputLagPeriod = 0.0001f;
-    [SerializeField] TextMeshProUGUI VelocityUI;
-    [SerializeField] Health _health;
+    [SerializeField] float inputLagPeriod = 0.0001f;   
+
 
     public const float gravity = -9.81f;
     public bool jump;
-    bool IsPaused;
-    private bool sprint;
-    private float crouch;
-    bool crouching;
+
+    private bool sprint;    
     public bool sliding;
     public bool wallRunning;
     public bool IsJumpReady;
@@ -106,15 +67,13 @@ public class InputController : MonoBehaviour
     public bool isRailGrinding;
     public bool activeGrapple;
     bool exitingSlope;
-    bool enableMoveOnNextTouch;
-	private PlayerNoiseEmitter noiseEmitter;
-	private float nextRailGrindNoiseTime;
-	private bool wasGrounded;
-	private float previousYVelocity;
+    public bool enableMoveOnNextTouch; 
 
-	[SerializeField] GameObject IKGunTarget;
+    [SerializeField] GameObject IKGunTarget;
     [SerializeField] GameObject PlayerRoot;
 
+    int CoyoteTimerID;
+    int JumpCoolDownID;
 
     private Vector2 lastInputEvent;
     private float InputLagTimer;
@@ -128,8 +87,10 @@ public class InputController : MonoBehaviour
 
     Coroutine speedLerpCoroutine;
 
+
     public IInputManager InputManager => _inputManager.InputManager;
-    [SerializeField] Rigidbody rb;
+    [SerializeField] private Rigidbody rb;
+    public Rigidbody _rb => rb;
 
     public event Action JumpEvent = delegate { };
 
@@ -148,33 +109,20 @@ public class InputController : MonoBehaviour
         sliding,
         idle,
         air
-    }
+    }       
 
-	private void Awake() {
-		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
-		wasGrounded = _isGrounded;
-		previousYVelocity = rb != null ? rb.linearVelocity.y : 0.0f;
-	}
-
-
-	private void OnEnable()
+    private void OnEnable()
     {
-        _timerManager = TimerManager.instance;
-       RailtimerID = _timerManager.NewTimer(railGrindTime, RailTimerEnd, "RailGrind Timer");
-
-        if (toggleKnockOffRail) _health.OnDamageDealt += throwOffRail;
-
-        InputManager.OnMoveReceived += MovePressed;
-        InputManager.OnLookReceived += LookMoved;
         InputManager.OnJumpReceived += JumpPressed;
-        InputManager.OnPauseReceived += PausePressed;
         InputManager.OnSprintReceived += SprintPressed;
-        InputManager.OnCrouchReceived += CrouchPressed;        
+
+        CoyoteTimerID = TimerManager.instance.NewTimer(CoyoteTime, coyoteTimeComplete, "CoyoteTime");
+        JumpCoolDownID = TimerManager.instance.NewTimer(jumpCoolDown, JumpCoolDownComplete, "JumpCoolDown");
+
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        startScaleYscale = transform.localScale.y;
-        
+        Cursor.visible = false;       
     }
+    
 
     public bool _isGrounded
     {
@@ -182,41 +130,49 @@ public class InputController : MonoBehaviour
         private set
         {
             if (value == false)
-            {                
-                StartCoroutine(coyoteTime(value));
+            {
+                // StartCoroutine(coyoteTime(value));
+                if(TimerManager.instance.GetTimerState(CoyoteTimerID) == false) //Timer is not active
+                    TimerManager.instance.RestartTimer(CoyoteTimerID);
             }
             //True
             else
-            {                
+            {
+                TimerManager.instance.SetTimerState(CoyoteTimerID, false);
                 isGrounded = value;
                 if (!IsJumpReady && !isOnCoolDown)
                 {
                     isOnCoolDown = true;
-                    StartCoroutine("JumpCoolDown");
+                    //StartCoroutine("JumpCoolDown");
+                    TimerManager.instance.RestartTimer(JumpCoolDownID);
+
                 }
             }
         }
     }
 
-    IEnumerator coyoteTime(bool value)
+    //  CHANGE TO NEW TIMER MANAGER SOLUTION
+    
+    void coyoteTimeComplete()
     {
-        yield return new WaitForSeconds(CoyoteTime);// new WaitForSeconds(0f);
-        isGrounded = value;
+        //Debug.Log("CoyoteTimer");
+        //yield return new WaitForSeconds(CoyoteTime);
+        isGrounded = false;
     }
 
-    IEnumerator JumpCoolDown()
+    void JumpCoolDownComplete()
     {
-        Debug.Log("JumpReady");
-        yield return new WaitForSeconds(jumpCoolDown);
-        IsJumpReady = true;        
+        
+        IsJumpReady = true;
         isOnCoolDown = false;
     }
-        
+
     //Movement fsm
     private void StateHandler()
     {
-        
-        if (isRailGrinding) {
+
+        if (isRailGrinding)
+        {
             state = MovementState.railGrinding;
             desiredMoveSpeed = 0;
             rb.useGravity = false;
@@ -231,7 +187,7 @@ public class InputController : MonoBehaviour
         {
             state = MovementState.wallRunning;
             desiredMoveSpeed = wallRunSpeed;
-            
+
         }
         else if (sliding)
         {
@@ -240,16 +196,8 @@ public class InputController : MonoBehaviour
             {
                 desiredMoveSpeed = slideSpeed;
             }
-
             else desiredMoveSpeed = sprintSpeed;
-
-        }
-        else if (crouching)
-        {
-            state = MovementState.crouching;
-            desiredMoveSpeed = crouchSpeed;
-        }
-
+        }     
         else if (_isGrounded && sprint)
         {
             state = MovementState.sprinting;
@@ -268,29 +216,27 @@ public class InputController : MonoBehaviour
         else
         {
             state = MovementState.air;
-            
         }
-
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 7f && moveSpeed != 0)
         {
-            if(speedLerpCoroutine != null)
+            if (speedLerpCoroutine != null)
                 StopCoroutine(speedLerpCoroutine);
             speedLerpCoroutine = StartCoroutine(SmoothLerpSpeed());
         }
         else
         {
             moveSpeed = desiredMoveSpeed;
-            
-        }        
+
+        }
         lastDesiredMoveSpeed = desiredMoveSpeed;
 
-        
+
     }
 
     private IEnumerator SmoothLerpSpeed()
     {
-        float t = 0;        
-        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed)-1;
+        float t = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed) - 1;
         float startValue = moveSpeed;
         while (t < difference)
         {
@@ -307,70 +253,34 @@ public class InputController : MonoBehaviour
 
                 t += Time.deltaTime * speedIncreaseMultiplier * slopeIncreaseMultiplier * slopeAngleIncrease;
             }
-           
+
             else
                 t += Time.deltaTime * speedIncreaseMultiplier;
-            
+
             yield return null;
         }
         moveSpeed = desiredMoveSpeed;
     }
 
-    #region Inputs
-    private void LookMoved(Vector2 vector)
+    #region Inputs   
+
+    private void JumpPressed(bool value)
     {
-        LookDirection = vector;
-    }
+        jump = value;
 
-    private void MovePressed(Vector2 vector)
-    {
-       // if (activeGrapple) return;
-        MoveDirection = vector;
-    }
-
-    private void JumpPressed(bool value) 
-    {        
-            jump = value;        
-            //_isGrounded = false;
-    }
-
-    private void PausePressed(bool value)
-    {
-        IsPaused = (value == IsPaused) ? !value : value;
-        Debug.Log($"IsPaused = {IsPaused}");
-        PausePanel.SetActive(IsPaused);
-        HUDPanel.SetActive(!IsPaused);
-
-        if (IsPaused)
-        {
-            Time.timeScale = 0;
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Time.timeScale = 1;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
     }
 
     private void SprintPressed(bool value)
     {
         sprint = value;
     }
-    private void CrouchPressed(float value)
-    {
-        crouch = value;
-    }
 
     #endregion
 
-    void GroundCheck()
+    public void GroundCheck()
     {
-        Collider[] hit = new Collider[1];
-        
-        _isGrounded = Physics.OverlapSphereNonAlloc(transform.position + -transform.up * ((CharacterHeight * 0.5f)*transform.localScale.y), 0.1f, hit, Ground) > 0;
+
+        _isGrounded = Physics.CheckSphere(transform.position + -transform.up * ((CharacterHeight * 0.5f) * transform.localScale.y), 0.1f, Ground);
         if (_isGrounded)
             exitingSlope = false;
     }
@@ -378,82 +288,38 @@ public class InputController : MonoBehaviour
     //Detects if player is on a slope
     public bool OnSlope()
     {
-       if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
-        { 
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 1.2f))
+        {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0; // Ensure slope angle is within valid bounds.        
         }
         return false;
     }
 
-    public void AnchorLaunch()
-    {        
-        isGrounded = true;
-        Vector3 launchDir = _camera.transform.forward;
-        launchDir.y = 0f;
-        rb.AddForce(launchDir.normalized * AnchorLaunchAmount, ForceMode.VelocityChange);
-        //UnFreeze player
-        desiredMoveSpeed = sprintSpeed;
-    }
-
-    public void JumpToPosition(Vector3 targetPos, float trajectoryHeight)
+    public void OverrideMoveSpeed(float speed)
     {
-        activeGrapple = true;
-        rb.linearDamping = 0;
-        grappleTargetPos = targetPos; // Store this for the pull force
-
-        Vector3 pullDir = (grappleTargetPos - transform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(pullDir - (Vector3.up * pullDir.y), Vector3.up);
-        transform.rotation = targetRotation;
-
-
-        // Calculate initial burst
-        velocityToSet = JumpVelocityCalc.CalculateJumpVelocity(transform.position, targetPos, trajectoryHeight);
-
-        // Slight delay to allow the "launch" to feel distinct
-        Invoke(nameof(setVelocity), 0.05f);
+        desiredMoveSpeed = speed;
+        moveSpeed = speed;
     }
 
-    Vector3 velocityToSet;
-    void setVelocity()
+
+    public Vector3 GetSlopeMoveDirection(Vector3 Direction)
     {
-        rb.linearVelocity = velocityToSet;
-        enableMoveOnNextTouch = true;
-
-        // Boost max speed so the lerp doesn't immediately throttle us
-        moveSpeed = sprintSpeed * grappleSpeedBoost;        
-    }
-
-    public Vector3 GetSlopeMoveDirection( Vector3 Direction)
-    {        
         return Vector3.ProjectOnPlane(Direction, slopeHit.normal).normalized;
     }
 
     void HandleMove(Vector2 Direction)
     {
-        if (isRailGrinding) return;
-        if (wallRunning) return;
+        if (isRailGrinding || activeGrapple || wallRunning) return;
+
         // 1. Calculate desired velocity based on camera
         Vector3 cameraFlatForward = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z);
         Vector3 desiredvelocity = (cameraFlatForward * Direction.y + _camera.transform.right * Direction.x).normalized * moveSpeed;
 
-        // 2. grapple-specific logic
-        if (activeGrapple)
-        {
-
-            Vector3 dirToTarget = (grappleTargetPos - transform.position).normalized;
-            dirToTarget.y = 0; // Keep rotation upright
-            if (dirToTarget != Vector3.zero)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirToTarget), 15 * Time.deltaTime);
-            }
-            return;
-        }
-
         Vector3 moveDir = Vector3.MoveTowards(rb.linearVelocity, desiredvelocity, acceleration * Time.deltaTime);
 
         //3. Slop Logic
-        if (OnSlope() && !exitingSlope )
+        if (OnSlope() && !exitingSlope)
         {
             // Project the desired velocity onto the slope and scale it by movement speed
             Vector3 slopeVel = GetSlopeMoveDirection(desiredvelocity) * moveSpeed;
@@ -461,7 +327,7 @@ public class InputController : MonoBehaviour
             rb.linearVelocity = slopeVel;
             // Apply an extra force to keep the player grounded          
             rb.AddForce(-slopeHit.normal * Slopeforce, ForceMode.Force);
-        }        
+        }
 
         // 4. Ground vs Air Movement Logic
         if (isGrounded)
@@ -521,9 +387,9 @@ public class InputController : MonoBehaviour
 
     void HandleLook(Vector2 Direction)
     {
-        InputLagTimer += Time.deltaTime;
+        InputLagTimer += Time.smoothDeltaTime;
 
-        
+
         if ((Mathf.Approximately(0, Direction.x) && Mathf.Approximately(0, Direction.y)) == false || InputLagTimer >= inputLagPeriod)
         {
             lastInputEvent = Direction;
@@ -535,17 +401,15 @@ public class InputController : MonoBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -89, 89);
 
-        _camera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0); 
-        
+        _camera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
     }
 
     private void Jump()
     {
-        
-        if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
-        {            
-            if (isRailGrinding) throwOffRail();          
 
+        if (jump && ((isGrounded && IsJumpReady) || isRailGrinding))
+        {
             float slideJumpMultiplier = sliding ? 1.25f : 1f;
 
             JumpEvent();
@@ -564,209 +428,75 @@ public class InputController : MonoBehaviour
         }
     }
 
-    void HandleCrouch()
-    {
-        if (crouch ==1 )
-        {
-            crouch = -1;
-            crouching = true;
-            transform.localScale = new Vector3(transform.localScale.x, crouchYscale, transform.localScale.z);
-            rb.AddForce(Vector3.down, ForceMode.Impulse);
-            
-        }
-        if(crouch == 0)
-        {
-            crouch = -1;
-            crouching = false;
-            transform.localScale = new Vector3(transform.localScale.x, startScaleYscale, transform.localScale.z);
-            
-        }
-    }
+
 
     private void LateUpdate()
     {
-        if (IsPaused) return;
+        if (PauseManager.IsPaused) return;
         HandleLook(LookDirection);
     }
 
     private void Update()
     {
-		bool groundedNow = _isGrounded;
+        //Look and move can be polled
+        if (!activeGrapple)
+        {
+            MoveDirection = InputManager.Movement;
+        }
+        LookDirection = InputManager.Look;    
 
-		if (!wasGrounded && groundedNow && previousYVelocity < -6.0f) {
-			noiseEmitter?.EmitLandingNoise();
-		}
-
-		wasGrounded = groundedNow;
-		previousYVelocity = rb.linearVelocity.y;
-
-		Velocity = new Vector3 (rb.linearVelocity.x,0,rb.linearVelocity.z).magnitude;
-        if (VelocityUI != null) {
-			VelocityUI.text = Mathf.Abs(rb.linearVelocity.magnitude).ToString();
-		}
+        Velocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude;
+        
     }
     private void FixedUpdate()
     {
-    
         GroundCheck();
         Jump();
-        HandleMove(MoveDirection);
-        
         StateHandler();
-        HandleCrouch();
-        movePlayerAlongRail();
-
-		if (railGrindTimer > 0) {
-			railGrindTimer -= Time.deltaTime;
-			if (railGrindTimer <= 0) {
-				canRailGrind = true;
-			}
-		}
-	}
-
-    void RailTimerEnd()
-    {
-        canRailGrind = true;
+        HandleMove(MoveDirection);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (enableMoveOnNextTouch)
+        {
+            enableMoveOnNextTouch = false;
+
+            // Instead of instant reset, let the SpeedLerp handle the slowdown
+            // This keeps the "Zoom" feeling when you hit the ground
+            ResetRestrictions();
+
+            if (TryGetComponent<Grapple>(out var g)) g.StopGrapple();
+        }
+
+    }
+
 
     private void OnDisable()
     {
-        _health.OnDamageDealt -= throwOffRail;
-        InputManager.OnMoveReceived -= MovePressed;
-        InputManager.OnLookReceived -= LookMoved;
         InputManager.OnJumpReceived -= JumpPressed;
         InputManager.OnSprintReceived -= SprintPressed;
-        InputManager.OnCrouchReceived -= CrouchPressed;
     }
 
     public void ResetRestrictions()
     {
         rb.linearDamping = 0.75f;
         activeGrapple = false;
-             
-        
-    }
 
-private void OnCollisionEnter(Collision collision)
-{
-    if (enableMoveOnNextTouch)
-    {
-        enableMoveOnNextTouch = false;
-        
-        // Instead of instant reset, let the SpeedLerp handle the slowdown
-        // This keeps the "Zoom" feeling when you hit the ground
-        ResetRestrictions();
-        
-        if(TryGetComponent<Grapple>(out var g)) g.StopGrapple();
-    }
-    if (collision.gameObject.tag == "Rail" && !isRailGrinding && canRailGrind)
-        {
-            isRailGrinding = true;
-            onRail = true;
 
-            currentRailScript = collision.gameObject.GetComponent<RailScript>();
-            CalculateAndSetRailPosition();
-
-			noiseEmitter?.EmitRailGrindNoise();
-			nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
-		}
     }
 
 
-    private void movePlayerAlongRail()
-    {
-        if (!isRailGrinding || currentRailScript == null || !onRail) return;
-
-        float progess = elapsdTime / timeForFullSpline;
-        if (progess < 0 || progess > 1)
-        {
-            throwOffRail();
-            return;
-        }
-
-        // 1. Calculate current and next positions exactly like your smooth version
-        float nextTime;
-        if (currentRailScript.normalDir)
-            nextTime = (elapsdTime + Time.fixedDeltaTime);
-        else
-            nextTime = (elapsdTime - Time.fixedDeltaTime);
-
-        float3 pos, tan, up;
-        float3 nextPosFloat, nextTan, nextUp;
-        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, progess, out pos, out tan, out up);
-        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, nextTime / timeForFullSpline, out nextPosFloat, out nextTan, out nextUp);
-
-        Vector3 worldPos = currentRailScript.LocalToWorldConversion(pos);
-        Vector3 nextPos = currentRailScript.LocalToWorldConversion(nextPosFloat);
-        Vector3 worldUp = currentRailScript.transform.TransformDirection(up);
-
-        //The Target: where the player SHOULD be
-        Vector3 targetSnapPos = worldPos + (worldUp * heightOffset);
-
-        //correct the velocity        
-        Vector3 correctionDir = (targetSnapPos - transform.position);
-
-        //keep smooth forward velocity
-        Vector3 forwardVel = (nextPos - worldPos).normalized * grindSpeed;
-
-        //add the correction but multiply it to make it "snappy" without jitter        
-        rb.linearVelocity = forwardVel + (correctionDir * 0.75f);
-
-        //Rotation
-        Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
-        Quaternion targetRotation = Quaternion.LookRotation(horizontalView, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
-
-        //Update Time
-        if (currentRailScript.normalDir)
-            elapsdTime += Time.fixedDeltaTime;
-        else
-            elapsdTime -= Time.fixedDeltaTime;
-
-		// Pulse noise for continued rail grinding
-		if (isRailGrinding && Time.time >= nextRailGrindNoiseTime) {
-			noiseEmitter?.EmitRailGrindNoise(0.7f);
-			nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
-		}
-	}
-
-    private void CalculateAndSetRailPosition()
-    {
-        timeForFullSpline = currentRailScript.totalSplineLength / grindSpeed;
-        Vector3 splinePoint;
-        float normalisedTime = currentRailScript.calclulateTargetRailPoint(transform.position, out splinePoint);
-        elapsdTime = timeForFullSpline * normalisedTime;
-        float3 pos, forward, up;
-        SplineUtility.Evaluate(currentRailScript.railSpline.Spline, normalisedTime, out pos, out forward, out up);
-        currentRailScript.CalculateDirection(forward, transform.forward);
-        transform.position = splinePoint + (transform.up * heightOffset);
-    }
 
     //MoveToInputController?
-    void throwOffRail()
-    {
-        if (isRailGrinding)
-        {
-            isRailGrinding = false;
-            onRail = false;
-            rb.useGravity = true;
-            currentRailScript = null;
-            rb.AddForce(transform.forward.normalized * railBoost, ForceMode.Impulse);
-            canRailGrind = false;
-            railGrindTimer = railGrindTime;
-            _timerManager.RestartTimer(RailtimerID);
 
-            desiredMoveSpeed = walkSpeed;
-        }
-    }
 
 #if UNITY_EDITOR
 
     private void OnValidate()
     {
         rb = GetComponent<Rigidbody>();
-        
+
     }
 #endif
 }

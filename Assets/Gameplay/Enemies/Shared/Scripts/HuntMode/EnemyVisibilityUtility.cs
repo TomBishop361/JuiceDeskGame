@@ -96,11 +96,7 @@ public static class EnemyVisibilityUtility {
 			|| IsWorldPointOnScreen(playerCamera, center + new Vector3(0.0f, 0.0f, extents.z))
 			|| IsWorldPointOnScreen(playerCamera, center - new Vector3(0.0f, 0.0f, extents.z));
 	}
-	private static bool HasLineOfSightToBounds(
-		Vector3 rayOrigin, 
-		Bounds bounds, 
-		LayerMask visibilityBlockingLayers
-		) {
+	private static bool HasLineOfSightToBounds(Vector3 rayOrigin, Bounds bounds, LayerMask visibilityBlockingLayers) {
 		// If the ray starts inside the enemy bounds, treat it as visible
 		if (bounds.Contains(rayOrigin)) {
 			return true;

@@ -1,8 +1,8 @@
 using UnityEngine;
 
 namespace Game.AI.Sword {
-	// Temporary keyboard-driven animation tester for the Sword enemy
-	// Add this to the SwordEnemy_Root prefab only while checking animation/controller setup, then remove or disable it before making any builds
+	// Keyboard-driven animation tester for the Sword enemy
+	// Setup: Add to SwordEnemy_Root and enable whilst checking animation/controller setup, then disable/remove before making builds
 	[DisallowMultipleComponent]
 	public sealed class SwordEnemyAnimationDebugTool : MonoBehaviour {
 		[Header("Debug Toggle")]
@@ -72,7 +72,6 @@ namespace Game.AI.Sword {
 			CacheHashes();
 		}
 
-		// Rebuilds hashes after Inspector value changes
 		private void OnValidate() {
 			idleMoveSpeed = Mathf.Max(0.0f, idleMoveSpeed);
 			runMoveSpeed = Mathf.Max(0.0f, runMoveSpeed);
@@ -115,7 +114,7 @@ namespace Game.AI.Sword {
 			}
 		}
 
-		// Sends the same MoveSpeed value the real SwordEnemy script uses when standing still
+		// Sends the same MoveSpeed value the SwordEnemy script uses when standing still
 		private void PlayIdle() {
 			ResetCombatTriggers();
 			animator.SetFloat(moveSpeedHash, idleMoveSpeed);
