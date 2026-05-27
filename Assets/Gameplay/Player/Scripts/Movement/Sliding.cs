@@ -1,5 +1,6 @@
 using Game.AI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 
 public class Sliding : MonoBehaviour
@@ -17,7 +18,6 @@ public class Sliding : MonoBehaviour
     public float slideForce;
 
 
-	[SerializeField] private float slideNoiseInterval = 0.35f;
 
 	TimerManager _timerManager;
 
@@ -33,12 +33,6 @@ public class Sliding : MonoBehaviour
     float slideInput;
 	//bool jump;
 
-	private PlayerNoiseEmitter noiseEmitter;
-	private float nextSlideNoiseTime;
-
-	private void Awake() {
-		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
-	}
 
 	private void OnEnable()
     {
@@ -92,10 +86,8 @@ public class Sliding : MonoBehaviour
        
         rb.AddForce(Vector3.down * SlideDownforce, ForceMode.Force);
 
-		if (Time.time >= nextSlideNoiseTime) {
-			noiseEmitter?.EmitSlideNoise(0.65f);
-			nextSlideNoiseTime = Time.time + slideNoiseInterval;
-		}
+		
+        EventManager.instance.Invoke("OnSlide");
 	}
 
     void StartSlide()
@@ -113,9 +105,8 @@ public class Sliding : MonoBehaviour
         //slideTimer = maxSlideTime;
         _timerManager.RestartTimer(SlideTimerID);
 
-		noiseEmitter?.EmitSlideNoise();
-		nextSlideNoiseTime = Time.time + slideNoiseInterval;
-	}
+        EventManager.instance.Invoke("OnSlide");
+    }
 
     void StopSlide()
     {

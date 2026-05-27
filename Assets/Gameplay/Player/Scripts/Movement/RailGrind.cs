@@ -127,12 +127,7 @@ public class RailGrind : MonoBehaviour
         else
             elapsdTime -= Time.fixedDeltaTime;
 
-        // Pulse noise for continued rail grinding
-        //if (controller.isRailGrinding && Time.time >= nextRailGrindNoiseTime)
-        //{
-        //    //noiseEmitter?.EmitRailGrindNoise(0.7f);
-        //    nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
-        //}
+        EventManager.instance.Invoke("OnRailGrind");
     }
 
     void RailTimerEnd()
@@ -152,8 +147,7 @@ public class RailGrind : MonoBehaviour
             currentRailScript = collision.gameObject.GetComponent<RailScript>();
             CalculateAndSetRailPosition();
 
-            //noiseEmitter?.EmitRailGrindNoise();
-            //nextRailGrindNoiseTime = Time.time + railGrindNoiseInterval;
+            
         }
     }
 
