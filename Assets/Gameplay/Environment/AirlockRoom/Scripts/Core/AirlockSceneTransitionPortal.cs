@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Game.Audio;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -105,15 +105,13 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	[Tooltip("Delay after fade-in before restoring player control.")]
 	[SerializeField] private float restoreControlDelay = 0.05f;
 
-	[Header("Audio")]
-	[Tooltip("Optional audio source for transition sounds.")]
-	[SerializeField] private AudioSource transitionAudioSource;
-	[Tooltip("Clip played when the airlock starts sealing.")]
-	[SerializeField] private AudioClip airlockStartClip;
-	[Tooltip("Clip played during the hidden player handoff.")]
-	[SerializeField] private AudioClip handoffClip;
-	[Tooltip("Clip played when the transition finishes.")]
-	[SerializeField] private AudioClip transitionCompleteClip;
+	[Header("Transition SFX")]
+	[Tooltip("Played when the sealed airlock transition begins, before fade out.")]
+	[SerializeField] private SFXDefinition airlockTransitionStartSFX;
+	[Tooltip("Played once the screen has fully faded to black, before loading/handoff begins.")]
+	[SerializeField] private SFXDefinition airlockTransitionHandoffSFX;
+	[Tooltip("Played after the new scene is visible and player control is about to return.")]
+	[SerializeField] private SFXDefinition airlockTransitionCompleteSFX;
 
 	[Header("Unity Events")]
 	[Tooltip("Invoked when the next scene starts loading during blackout.")]
@@ -177,7 +175,6 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	private void Reset() {
 		airlockEntranceDoor = GetComponentInChildren<AirlockDoorController>();
 		airlockAnimator = GetComponentInChildren<Animator>();
-		transitionAudioSource = GetComponentInChildren<AudioSource>();
 	}
 
 	private void Awake() {
@@ -282,7 +279,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		SetStatus(AirlockStatus.AirlockSealing);
 
 		onAirlockStarted?.Invoke();
-		PlayOneShot(airlockStartClip);
+		PlayTransitionSFX(airlockTransitionStartSFX);
 
 		//// If the player reached the commit trigger before preload started, start it now
 		//RequestPreload();
@@ -327,7 +324,6 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		}
 
 		SetStatus(AirlockStatus.HandingOffPlayer);
-		PlayOneShot(handoffClip);
 
 		if (playerHandoff != null && targetEntryPoint != null) {
 			// Only the player moves
@@ -382,7 +378,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			playerHandoff.UnlockPlayer();
 		}
 
-		PlayOneShot(transitionCompleteClip);
+		PlayTransitionSFX(airlockTransitionCompleteSFX);
 
 		SetStatus(AirlockStatus.Complete);
 		onTransitionComplete?.Invoke();
@@ -572,6 +568,10 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			yield break;
 		}
 
+		// Screen is now fully black
+		// Play the main transition/handoff sound here so it masks the hidden load and teleport
+		PlayTransitionSFX(airlockTransitionHandoffSFX);
+
 		yield return levelTransitionAnimation.PlayRoutine();
 	}
 
@@ -752,12 +752,12 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		targetAnimator.SetTrigger(triggerName);
 	}
 
-	private void PlayOneShot(AudioClip clip) {
-		if (transitionAudioSource == null || clip == null) {
+	private void PlayTransitionSFX(SFXDefinition sfx) {
+		if (sfx == null) {
 			return;
 		}
 
-		transitionAudioSource.PlayOneShot(clip);
+		SFXManager.Play(sfx);
 	}
 
 	private void Log(string message) {

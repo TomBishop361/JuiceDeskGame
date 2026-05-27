@@ -1,3 +1,4 @@
+using Game.Audio;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,8 +11,6 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	[SerializeField] private Animator animator;
 	[Tooltip("Collider that blocks the doorway while the door is closed or locked.")]
 	[SerializeField] private Collider blockingCollider;
-	[Tooltip("Optional audio source used for simple one-shot door feedback.")]
-	[SerializeField] private AudioSource audioSource;
 
 	[Header("Animator Parameters")]
 	[Tooltip("Animator trigger fired when the door opens.")]
@@ -25,15 +24,17 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	[Tooltip("If true, the door begins locked and cannot open until UnlockDoor is called.")]
 	[SerializeField] private bool startsLocked = false;
 
-	[Header("Audio Clips")]
-	[Tooltip("Optional one-shot scanner/access beep played when the player attempts to open the door from the outside.")]
-	[SerializeField] private AudioClip scannerClip;
-	[Tooltip("Optional one-shot clip played when the door is asked to open.")]
-	[SerializeField] private AudioClip openClip;
-	[Tooltip("Optional one-shot clip played when the door is asked to close.")]
-	[SerializeField] private AudioClip closeClip;
-	[Tooltip("Optional one-shot clip played when the door is locked or denied.")]
-	[SerializeField] private AudioClip lockedClip;
+	[Header("Airlock SFX")]
+	[Tooltip("Played when the player attempts to open the airlock from outside.")]
+	[SerializeField] private SFXDefinition airlockOpenRequestSFX;
+	[Tooltip("Played when the airlock door opens.")]
+	[SerializeField] private SFXDefinition airlockDoorOpenSFX;
+	[Tooltip("Played when the airlock door closes.")]
+	[SerializeField] private SFXDefinition airlockDoorCloseSFX;
+	[Tooltip("Played when the player tries to open a locked or denied airlock.")]
+	[SerializeField] private SFXDefinition airlockDoorLockedSFX;
+	[Tooltip("World position to play the airlock door SFX. If empty, this door transform is used.")]
+	[SerializeField] private Transform doorSFXPoint;
 
 	[Header("Unity Events")]
 	[Tooltip("Invoked when the door receives an open request.")]
@@ -61,7 +62,6 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	private void Reset() {
 		animator = GetComponentInChildren<Animator>();
 		blockingCollider = GetComponentInChildren<Collider>();
-		audioSource = GetComponentInChildren<AudioSource>();
 	}
 
 	private void Awake() {
@@ -84,11 +84,11 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	// Called when the player approaches/uses the door from the outside
 	// Plays the scanner/access sound before deciding whether the door can actually open
 	public void RequestOpenFromOutside() {
-		PlayOneShot(scannerClip);
+		PlayDoorSFX(airlockOpenRequestSFX);
 
 		// If the door is locked, play the denied/locked feedback instead of opening
 		if (locked) {
-			PlayOneShot(lockedClip);
+			PlayDoorSFX(airlockDoorLockedSFX);
 			onOpenDenied?.Invoke();
 			Log("Outside open request denied because the door is locked.");
 			return;
@@ -101,7 +101,7 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	// Called by AirlockSceneTransitionPortal when the player is allowed into the airlock
 	public void OpenDoor() {
 		if (locked) {
-			PlayOneShot(lockedClip);
+			PlayDoorSFX(airlockDoorLockedSFX);
 			onOpenDenied?.Invoke();
 			Log("Open denied because the door is locked.");
 			return;
@@ -114,7 +114,7 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		isOpen = true;
 
 		SetAnimatorTrigger(openTriggerName);
-		PlayOneShot(openClip);
+		PlayDoorSFX(airlockDoorOpenSFX);
 		onOpenRequested?.Invoke();
 		UpdateBlocker();
 
@@ -132,7 +132,7 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		isOpen = false;
 
 		SetAnimatorTrigger(closeTriggerName);
-		PlayOneShot(closeClip);
+		PlayDoorSFX(airlockDoorCloseSFX);
 		onCloseRequested?.Invoke();
 		UpdateBlocker();
 
@@ -150,7 +150,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		}
 
 		ApplyLockedAnimatorState();
-		PlayOneShot(lockedClip);
+		// NOTE: Remove if an open door plays its closed and locked SFX and it becomes too noisy/cluttered
+		PlayDoorSFX(airlockDoorLockedSFX); 
 		onLocked?.Invoke();
 		UpdateBlocker();
 
@@ -172,8 +173,8 @@ public sealed class AirlockDoorController : MonoBehaviour {
 	// Called when something tries to open the door but the portal/system refuses it
 	// Plays scanner first, then denied/locked feedback
 	public void DenyOpenRequest() {
-		PlayOneShot(scannerClip);
-		PlayOneShot(lockedClip);
+		PlayDoorSFX(airlockOpenRequestSFX);
+		PlayDoorSFX(airlockDoorLockedSFX);
 		onOpenDenied?.Invoke();
 		Log("Open denied.");
 	}
@@ -208,12 +209,16 @@ public sealed class AirlockDoorController : MonoBehaviour {
 		animator.SetTrigger(triggerName);
 	}
 
-	private void PlayOneShot(AudioClip clip) {
-		if (audioSource == null || clip == null) {
+	private Vector3 GetDoorSFXPosition() {
+		return doorSFXPoint != null ? doorSFXPoint.position : transform.position;
+	}
+
+	private void PlayDoorSFX(SFXDefinition sfx) {
+		if (sfx == null) {
 			return;
 		}
 
-		audioSource.PlayOneShot(clip);
+		SFXManager.PlayAtPosition(sfx, GetDoorSFXPosition());
 	}
 
 	private void Log(string message) {
