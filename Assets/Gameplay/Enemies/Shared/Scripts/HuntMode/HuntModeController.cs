@@ -372,9 +372,6 @@ public sealed class HuntModeController : MonoBehaviour {
 		scanPulseEndTime = Time.time + scanRevealDuration;
 		nextScanPulseTime = Time.time + scanPulseInterval;
 
-		// Play scanner pulse SFX once at the start of each scan pulse
-		SFXManager.Play(scannerPulseSFX);
-
 		// Pull current living enemies from EnemyTracker
 		FillAliveEnemyBuffer();
 
@@ -421,6 +418,10 @@ public sealed class HuntModeController : MonoBehaviour {
 		EndScanPulseIfNeeded();
 
 		finalRevealActive = true;
+
+		// Play once when the final enemy reveal mode starts
+		SFXManager.Play(scannerPulseSFX);
+
 		RefreshFinalRevealTargets();
 
 		onFinalEnemyRevealStarted?.Invoke();
