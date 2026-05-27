@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -12,11 +13,19 @@ namespace Game.Audio {
 	// - Looping behaviour
 	// The SFXManager reads this data when playing sounds
 	// Gameplay scripts should reference this asset instead of storing their own raw AudioClips
+
+	public enum SFXClipPlaybackMode {
+		RandomOne,
+		AllAtOnce
+	}
+
 	[CreateAssetMenu(fileName = "SFX_NewSound", menuName = "Game/Audio/SFX Definition")]
 	public class SFXDefinition : ScriptableObject {
 		[Header("Clips")]
-		[Tooltip("One or more clips for this sound. If multiple clips are added, one will be chosen randomly each time.")]
+		[Tooltip("One or more clips for this sound. Depending on Clip Playback Mode, the manager can either play one random clip or play every valid clip in this list.")]
 		[SerializeField] private AudioClip[] clips;
+		[Tooltip("Random One plays one random clip from the list. All At Once plays every valid clip in the list together as a layered sound.")]
+		[SerializeField] private SFXClipPlaybackMode clipPlaybackMode = SFXClipPlaybackMode.RandomOne;
 
 		[Header("Mixer")]
 		[Tooltip("The Audio Mixer Group this sound should play through. Use SFX for gameplay sounds and UI for Menu/HUD sounds.")]
@@ -56,6 +65,7 @@ namespace Game.Audio {
 		[SerializeField] private bool ignoreListenerPause = false;
 
 		public AudioMixerGroup OutputMixerGroup => outputMixerGroup;
+		public SFXClipPlaybackMode ClipPlaybackMode => clipPlaybackMode;
 		public float Volume => volume;
 		public float SpatialBlend => spatialBlend;
 		public float MinDistance => minDistance;
@@ -112,6 +122,35 @@ namespace Game.Audio {
 			}
 
 			return null;
+		}
+
+		// Returns the clips that should be played for this SFXDefinition
+		// RandomOne returns a single random clip
+		// AllAtOnce returns every valid clip in the list
+		public AudioClip[] GetClipsToPlay() {
+			if (HasValidClip == false) {
+				return System.Array.Empty<AudioClip>();
+			}
+
+			if (clipPlaybackMode == SFXClipPlaybackMode.RandomOne) {
+				AudioClip randomClip = GetRandomClip();
+
+				if (randomClip == null) {
+					return System.Array.Empty<AudioClip>();
+				}
+
+				return new AudioClip[] { randomClip };
+			}
+
+			List<AudioClip> validClips = new List<AudioClip>();
+
+			for (int i = 0; i < clips.Length; i++) {
+				if (clips[i] != null) {
+					validClips.Add(clips[i]);
+				}
+			}
+
+			return validClips.ToArray();
 		}
 
 		// Returns the final randomised volume before SFXManager global volume is applied

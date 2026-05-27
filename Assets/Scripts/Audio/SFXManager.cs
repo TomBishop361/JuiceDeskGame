@@ -251,63 +251,84 @@ namespace Game.Audio {
 				return null;
 			}
 
-			AudioClip clip = sfx.GetRandomClip();
+			AudioClip[] clipsToPlay = sfx.GetClipsToPlay();
 
-			if (clip == null) {
+			if (clipsToPlay == null || clipsToPlay.Length == 0) {
 				if (debugLogging) {
-					Debug.LogWarning($"SFXDefinition '{sfx.name}' selected a null AudioClip.");
+					Debug.LogWarning($"SFXDefinition '{sfx.name}' did not return any valid clips to play.");
 				}
 
 				return null;
 			}
 
-			AudioSource source = GetSource();
+			AudioSource firstSource = null;
+			bool playedAnyClip = false;
 
-			if (source == null) {
-				if (debugLogging) {
-					Debug.LogWarning($"SFXManager could not play '{sfx.name}' because the AudioSource pool is full.");
+			// If the SFXDefinition is set to AllAtOnce, this loop layers every valid clip.
+			// If it is set to RandomOne, clipsToPlay only contains one clip.
+			for (int i = 0; i < clipsToPlay.Length; i++) {
+				AudioClip clip = clipsToPlay[i];
+
+				if (clip == null) {
+					continue;
 				}
 
-				return null;
+				AudioSource source = GetSource();
+
+				if (source == null) {
+					if (debugLogging) {
+						Debug.LogWarning($"SFXManager could not play '{sfx.name}' because the AudioSource pool is full.");
+					}
+
+					break;
+				}
+
+				// Final volume is built from:
+				// SFXDefinition base/random volume * call-site multiplier * global SFX volume
+				float finalVolume = sfx.GetRandomisedVolume() * Mathf.Clamp01(volumeMultiplier) * globalSFXVolume;
+
+				// Pitch is also randomised per SFXDefinition, then adjusted by an optional call-site multiplier
+				float finalPitch = sfx.GetRandomisedPitch() * Mathf.Max(0.01f, pitchMultiplier);
+
+				// Force 2D is used by Play() so UI sounds ignore 3D spatial settings
+				float finalSpatialBlend = force2D ? 0.0f : sfx.SpatialBlend;
+
+				ConfigureSource(source, sfx, clip, finalVolume, finalPitch, finalSpatialBlend);
+
+				// Attached sounds follow the parent object
+				// Position-based sounds stay under the manager and play at a fixed world position
+				if (parent != null) {
+					source.transform.SetParent(parent);
+					source.transform.localPosition = Vector3.zero;
+				}
+				else {
+					source.transform.SetParent(transform);
+					source.transform.position = position;
+				}
+
+				source.gameObject.SetActive(true);
+				activeSources.Add(source);
+
+				source.Play();
+
+				if (firstSource == null) {
+					firstSource = source;
+				}
+
+				playedAnyClip = true;
+
+				// One-shot sounds automatically return to the pool.
+				// Looping sounds must be stopped manually using the returned AudioSource.
+				if (sfx.Loop == false) {
+					StartCoroutine(ReturnWhenFinished(source));
+				}
 			}
 
-			// Final volume is built from:
-			// SFXDefinition base/random volume * call-site multiplier * global SFX volume
-			float finalVolume = sfx.GetRandomisedVolume() * Mathf.Clamp01(volumeMultiplier) * globalSFXVolume;
-
-			// Pitch is also randomised per SFXDefinition, then adjusted by an optional call-site multiplier
-			float finalPitch = sfx.GetRandomisedPitch() * Mathf.Max(0.01f, pitchMultiplier);
-
-			// Force 2D is used by Play() so UI sounds ignore 3D spatial settings
-			float finalSpatialBlend = force2D ? 0.0f : sfx.SpatialBlend;
-
-			ConfigureSource(source, sfx, clip, finalVolume, finalPitch, finalSpatialBlend);
-
-			// Attached sounds follow the parent object
-			// Position-based sounds stay under the manager and play at a fixed world position
-			if (parent != null) {
-				source.transform.SetParent(parent);
-				source.transform.localPosition = Vector3.zero;
-			}
-			else {
-				source.transform.SetParent(transform);
-				source.transform.position = position;
+			if (playedAnyClip) {
+				ApplyCooldown(sfx);
 			}
 
-			source.gameObject.SetActive(true);
-			activeSources.Add(source);
-
-			source.Play();
-
-			ApplyCooldown(sfx);
-
-			// One-shot sounds automatically return to the pool
-			// Looping sounds must be stopped manually using the returned AudioSource
-			if (sfx.Loop == false) {
-				StartCoroutine(ReturnWhenFinished(source));
-			}
-
-			return source;
+			return firstSource;
 		}
 
 		// Applies all settings from the SFXDefinition to the selected AudioSource
