@@ -848,6 +848,8 @@ MonoBehaviour:
   fadeOutDuration: 0.25
   fadeInDuration: 0.35
   minimumBlackoutTime: 0.15
+  playLevelTransitionAnimation: 1
+  levelTransitionAnimation: {fileID: 0}
   airlockEntranceCloseDelay: 0.35
   pressuriseDelay: 0.2
   postHandoffDelay: 0.1
@@ -1634,15 +1636,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 6881595345769497279}
   blockingCollider: {fileID: 8332102903464424124}
-  audioSource: {fileID: 336121078251628392}
   openTriggerName: Open
   closeTriggerName: Close
   lockedBoolName: Locked
   startsLocked: 0
-  scannerClip: {fileID: 0}
-  openClip: {fileID: 0}
-  closeClip: {fileID: 0}
-  lockedClip: {fileID: 0}
+  airlockOpenRequestSFX: {fileID: 11400000, guid: 57c659745670ada4bbe961ef2fc6bbff, type: 2}
+  airlockDoorOpenSFX: {fileID: 11400000, guid: 88587746a587f4043a32733d7c8c444e, type: 2}
+  airlockDoorCloseSFX: {fileID: 11400000, guid: f350780f6bd02f04488f02b6dfba83b5, type: 2}
+  airlockDoorLockedSFX: {fileID: 11400000, guid: 55a6534d811d2074190570610c8ee3c0, type: 2}
+  doorSFXPoint: {fileID: 8646810509742264970}
   onOpenRequested:
     m_PersistentCalls:
       m_Calls: []
@@ -1769,6 +1771,11 @@ Animator:
 --- !u!65 &8332102903464424124 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 7568168628114665844, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
+  m_PrefabInstance: {fileID: 1920251114510926792}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8646810509742264970 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7879538404842901826, guid: 96e392cbee59d9941a13f98d59604c40, type: 3}
   m_PrefabInstance: {fileID: 1920251114510926792}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2022729819073851179
@@ -2991,15 +2998,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 4351885415091734391}
   blockingCollider: {fileID: 1172278724470699892}
-  audioSource: {fileID: 0}
   openTriggerName: Open
   closeTriggerName: Close
   lockedBoolName: Locked
   startsLocked: 0
-  scannerClip: {fileID: 0}
-  openClip: {fileID: 0}
-  closeClip: {fileID: 0}
-  lockedClip: {fileID: 0}
+  airlockOpenRequestSFX: {fileID: 0}
+  airlockDoorOpenSFX: {fileID: 0}
+  airlockDoorCloseSFX: {fileID: 0}
+  airlockDoorLockedSFX: {fileID: 0}
+  doorSFXPoint: {fileID: 0}
   onOpenRequested:
     m_PersistentCalls:
       m_Calls: []
