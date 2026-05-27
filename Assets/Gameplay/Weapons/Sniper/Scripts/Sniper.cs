@@ -1,4 +1,6 @@
+using Game.Audio;
 using System;
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -28,7 +30,17 @@ public class Sniper : MonoBehaviour
 
     [SerializeField] LaserVFXManager laserVFX;
 
-    IGunInputManager gunInputManager => _gunInputManager.InputManager;    
+	public bool isOnCoolDown;
+
+	[Header("Sniper SFX")]
+	[Tooltip("Played when the sniper fires a charged shot.")]
+	[SerializeField] private SFXDefinition sniperChargeShootSFX;
+	[Tooltip("Time into the sniper charge/shoot SFX where the actual shot blast happens.")]
+	[SerializeField] private float sniperShotFireDelay = 1.02f;
+
+	private bool isFiringSniper;
+
+	IGunInputManager gunInputManager => _gunInputManager.InputManager;    
 
     public event Action OnShotTaken = delegate { };
 
@@ -52,7 +64,6 @@ public class Sniper : MonoBehaviour
     byte aim = 0; 
     bool aiming;
     bool isAimed;
-    public bool isOnCoolDown;
 
     void ShootInput(bool shoot)
     {
@@ -100,42 +111,56 @@ public class Sniper : MonoBehaviour
     {
         isOnCoolDown = false;
     }
-    
 
-    void HandleShoot()
-    {        
-        if (_aim !=0 && isAimed && !isOnCoolDown)
-        {            
-            //ShotLineEffect.SetPosition(0, shotOrigin.position);            
-            if (Physics.Raycast(_cameraTarget.transform.position, _camera.transform.forward.normalized, out RaycastHit hit, 100, hitMask))
-            {
-                RaycastHit[] results = new RaycastHit[5];
-                if (Physics.SphereCastNonAlloc(_cameraTarget.transform.position, sniperHitRadius, _camera.transform.forward.normalized, results, 100, DamagehitMask) > 0)
-                {
-                    foreach (RaycastHit _hit in results)
-                    {
-                        if (_hit.transform == null) continue;
-                        if ( _hit.transform.TryGetComponent<IDamageable>(out IDamageable damageable) || _hit.transform.root.TryGetComponent<IDamageable>(out damageable))
-                        {
-                            damageable.TakeDamage(_attackData);
-                        }
-                    }
-                }
-                laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(hit.point - shotOrigin.transform.position),Vector3.Distance(shotOrigin.position,hit.point));
-            }
-            else
-            {
-                
-                laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(hit.point - _cameraTarget.transform.forward * 10), 30);
-            }
-            isOnCoolDown = true;
-            
-            OnShotTaken?.Invoke();
-        }
+	void HandleShoot() {
+        if (_aim != 0 && isAimed && !isOnCoolDown && !isFiringSniper) {
+			StartCoroutine(SniperChargeThenShootRoutine());
+		} 
     }
 
+	private IEnumerator SniperChargeThenShootRoutine() {
+		isFiringSniper = true;
+		isOnCoolDown = true;
 
-    void AimTimer()
+		// Play the full charge-up + shot sound immediately
+		SFXManager.PlayAttached(sniperChargeShootSFX, shotOrigin);
+
+		// Wait until the actual shot moment inside the audio clip
+		yield return new WaitForSeconds(sniperShotFireDelay);
+
+		FireSniperShot();
+
+		OnShotTaken?.Invoke();
+
+		isFiringSniper = false;
+	}
+
+	private void FireSniperShot() {
+		//ShotLineEffect.SetPosition(0, shotOrigin.position);    
+		if (Physics.Raycast(_cameraTarget.transform.position, _camera.transform.forward.normalized, out RaycastHit hit, 100, hitMask)) {
+			RaycastHit[] results = new RaycastHit[5];
+
+			if (Physics.SphereCastNonAlloc(_cameraTarget.transform.position, sniperHitRadius, _camera.transform.forward.normalized, results, 100, DamagehitMask) > 0) {
+				foreach (RaycastHit _hit in results) {
+					if (_hit.transform == null) continue;
+
+					if (_hit.transform.TryGetComponent<IDamageable>(out IDamageable damageable) || _hit.transform.root.TryGetComponent<IDamageable>(out damageable)) {
+						damageable.TakeDamage(_attackData);
+					}
+				}
+			}
+
+			laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(hit.point - shotOrigin.position), Vector3.Distance(shotOrigin.position, hit.point));
+		}
+		else {
+			// Prevent using original hit point since this else block will occur when hit is invalid
+			Vector3 endPoint = _cameraTarget.transform.position + _camera.transform.forward * 30.0f;
+			laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(endPoint - shotOrigin.position), 30f);
+		}
+	}
+
+
+	void AimTimer()
     {
         if (aimTimer < 1)
             aimTimer += Time.unscaledDeltaTime;
