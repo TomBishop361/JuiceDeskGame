@@ -1,3 +1,4 @@
+using Game.Audio;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -70,6 +71,10 @@ public sealed class HuntModeController : MonoBehaviour {
 	[SerializeField] private float visibilityBoundsPadding = 0.1f;
 	[Tooltip("Local camera-space offset used as the LOS ray origin.")]
 	[SerializeField] private Vector3 visibilityRayOriginOffset = Vector3.zero;
+
+	[Header("Hunt Mode SFX")]
+	[Tooltip("Played when the Hunt Mode scanner pulse activates.")]
+	[SerializeField] private SFXDefinition scannerPulseSFX;
 
 	[Header("Unity Events")]
 	[Tooltip("Invoked when Hunt Mode first becomes active.")]
@@ -366,6 +371,9 @@ public sealed class HuntModeController : MonoBehaviour {
 		scanPulseActive = true;
 		scanPulseEndTime = Time.time + scanRevealDuration;
 		nextScanPulseTime = Time.time + scanPulseInterval;
+
+		// Play scanner pulse SFX once at the start of each scan pulse
+		SFXManager.Play(scannerPulseSFX);
 
 		// Pull current living enemies from EnemyTracker
 		FillAliveEnemyBuffer();
