@@ -8,6 +8,11 @@ namespace Game.AI {
 		// Any EnemyHearingSensor can subscribe to this event
 		public static event Action<AINoiseEvent> NoiseEmitted;
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics() {
+			NoiseEmitted = null;
+		}
+
 		// Sends a noise event to all listening enemies
 		public static void Emit(Vector3 position, Transform source, float radius, float loudness, AINoiseKind kind) {
 			// Ignore invalid or silent noise events

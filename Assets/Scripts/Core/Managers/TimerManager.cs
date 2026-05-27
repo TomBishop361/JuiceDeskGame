@@ -9,7 +9,12 @@ public class TimerManager : MonoBehaviour
     List<Timer> timers = new List<Timer>(); //pool
     public static TimerManager instance;
 
-    private void Awake()
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	private static void ResetStatics() {
+		instance = null;
+	}
+
+	private void Awake()
     {
         if (instance == null)
             instance = this;

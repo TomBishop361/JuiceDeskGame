@@ -8,6 +8,11 @@ using UnityEngine.SceneManagement;
 public class CheckpointManager : MonoBehaviour {
 	public static CheckpointManager Instance;
 
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	private static void ResetStatics() {
+		Instance = null;
+	}
+
 	[Header("Player")]
 	[Tooltip("Rigidbody of the player that should be respawned.")]
 	[SerializeField] private Rigidbody player;

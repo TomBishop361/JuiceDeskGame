@@ -19,6 +19,11 @@ namespace Game.AI {
 		// Scene-wide active awareness hub used by reporters and newly spawned enemies
 		public static EnemyAwarenessHub Active { get; private set; }
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics() {
+			Active = null;
+		}
+
 		[Header("Memory")]
 		[Tooltip("How long a seen player position remains usable after LOS is lost.")]
 		[SerializeField] private float sightMemoryDuration = 5.0f;

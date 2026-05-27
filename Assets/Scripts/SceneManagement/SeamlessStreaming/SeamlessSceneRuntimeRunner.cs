@@ -8,6 +8,11 @@ using UnityEngine;
 public sealed class SeamlessSceneRuntimeRunner : MonoBehaviour {
 	private static SeamlessSceneRuntimeRunner instance;
 
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	private static void ResetStatics() {
+		instance = null;
+	}
+
 	// Runs a coroutine on a hidden DontDestroyOnLoad object
 	public static Coroutine Run(IEnumerator routine) {
 		if (routine == null) {

@@ -22,6 +22,11 @@ using UnityEditor;
 public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	public static event Action OnAnyPlayerHandoff;
 
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	private static void ResetStatics() {
+		OnAnyPlayerHandoff = null;
+	}
+
 	[Serializable]
 	public sealed class LoadingProgressEvent : UnityEvent<float> { }
 
@@ -74,7 +79,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 
 	[Header("Fade")]
 	[Tooltip("CanvasGroup used for fade/blackout effect.")]
-	[SerializeField] private CanvasGroup fadeGroup;
+	[SerializeField] private CanvasGroup fadeGroup = null;
 	[Tooltip("Seconds used to fade to black before activating the next scene.")]
 	[SerializeField] private float fadeOutDuration = 0.25f;
 	[Tooltip("Seconds used to fade back in after the old scene unloads.")]
@@ -86,7 +91,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	[Tooltip("If true, the fullscreen UI animation can play while the screen is black, after player handoff and before fading back in.")]
 	[SerializeField] private bool playLevelTransitionAnimation = true;
 	[Tooltip("Fullscreen PNG sequence player used for the level transition animation.")]
-	[SerializeField] private LevelTransitionSequencePlayer levelTransitionAnimation;
+	[SerializeField] private LevelTransitionSequencePlayer levelTransitionAnimation = null;
 	//[Tooltip("If true, the portal searches the loaded scenes for a LevelTransitionSequencePlayer when the reference is not assigned manually.")]
 	//[SerializeField] private bool autoFindLevelTransitionAnimation = true;
 
@@ -177,7 +182,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 
 	private void Awake() {
 		locked = startsLocked;
-		ResolveFadeGroup();
+		ResolveFadeGroup(false);
 
 		SetStatus(locked ? AirlockStatus.Locked : AirlockStatus.Idle);
 
@@ -516,7 +521,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	}
 
 	// Finds the persistent fade CanvasGroup from the additive Player scene
-	private void ResolveFadeGroup() {
+	private void ResolveFadeGroup(bool warnIfMissing) {
 		if (fadeGroup != null) {
 			return;
 		}
@@ -532,13 +537,14 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			}
 		}
 
-		if (fadeGroup == null) {
+		if (fadeGroup == null && warnIfMissing) {
 			Debug.LogWarning($"{name}: No fade group found. Add AirlockFadeGroupLocator to the fade CanvasGroup in the persistent Player scene.", this);
 		}
 	}
 
 	// Finds the fullscreen transition animation player from the persistent UI scene
 	// This allows the level airlock portals to use one shared UI animation without using any scene specific references
+	// This is intentionally resolved at runtime because level airlock portals should not need direct scene references
 	private void ResolveLevelTransitionAnimation() {
 		if (levelTransitionAnimation != null) {
 			return;
@@ -640,7 +646,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 	}
 
 	private IEnumerator FadeTo(float targetAlpha, float duration) {
-		ResolveFadeGroup();
+		ResolveFadeGroup(true);
 
 		if (fadeGroup == null) {
 			yield break;

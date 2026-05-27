@@ -2,6 +2,16 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 namespace Game.Audio {
+	// ScriptableObject data asset that describes how a sound effect should play
+	// This stores the reusable settings for a sound:
+	// - Clip variations
+	// - Mixer routing
+	// - Volume and pitch randomisation
+	// - 2D/3D spatial settings
+	// - Cooldown
+	// - Looping behaviour
+	// The SFXManager reads this data when playing sounds
+	// Gameplay scripts should reference this asset instead of storing their own raw AudioClips
 	[CreateAssetMenu(fileName = "SFX_NewSound", menuName = "Game/Audio/SFX Definition")]
 	public class SFXDefinition : ScriptableObject {
 		[Header("Clips")]
@@ -56,9 +66,24 @@ namespace Game.Audio {
 		public int Priority => priority;
 		public bool IgnoreListenerPause => ignoreListenerPause;
 
-		public bool HasValidClip => clips != null && clips.Length > 0;
+		// Returns true if this SFXDefinition has at least one assigned AudioClip.
+		public bool HasValidClip {
+			get {
+				if (clips == null || clips.Length == 0) {
+					return false;
+				}
 
-		// Returns a random clip from the assigned variation list
+				for (int i = 0; i < clips.Length; i++) {
+					if (clips[i] != null) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+		}
+
+		// Returns a random AudioClip from the assigned clip list
 		public AudioClip GetRandomClip() {
 			if (clips == null || clips.Length == 0) {
 				return null;
@@ -68,17 +93,34 @@ namespace Game.Audio {
 				return clips[0];
 			}
 
-			int index = Random.Range(0, clips.Length);
-			return clips[index];
+			// Try random selection first so variation still feels natural
+			// Only doing limited attempts helps to avoid an infinite loop if several slots are empty
+			for (int i = 0; i < clips.Length; i++) {
+				int randomIndex = Random.Range(0, clips.Length);
+				AudioClip selectedClip = clips[randomIndex];
+
+				if (selectedClip != null) {
+					return selectedClip;
+				}
+			}
+
+			// Fallback: if random attempts hit empty slots, return the first valid clip
+			for (int i = 0; i < clips.Length; i++) {
+				if (clips[i] != null) {
+					return clips[i];
+				}
+			}
+
+			return null;
 		}
 
-		// Returns final randomised volume before the manager global volume is applied
+		// Returns the final randomised volume before SFXManager global volume is applied
 		public float GetRandomisedVolume() {
 			float randomMultiplier = Random.Range(volumeRandomRange.x, volumeRandomRange.y);
 			return Mathf.Clamp01(volume * randomMultiplier);
 		}
 
-		// Returns randomised pitch
+		// Returns a random pitch value from the assigned pitch range
 		public float GetRandomisedPitch() {
 			return Random.Range(pitchRandomRange.x, pitchRandomRange.y);
 		}

@@ -3486,6 +3486,33 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 427583772}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &468973118 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 75464112219002090, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
+  m_PrefabInstance: {fileID: 8787451922381745793}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &468973122
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 468973118}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -6414484537370906500, guid: ee36903024c241649a6f6c33f9fca5c5, type: 3}
 --- !u!1 &483076097
 GameObject:
   m_ObjectHideFlags: 0
@@ -3709,6 +3736,33 @@ MonoBehaviour:
   gizmoColor: {r: 0.1, g: 0.85, b: 1, a: 1}
   drawLabel: 1
   labelText: Scene Entry Point
+--- !u!1 &498577560 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7115555646988954365, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
+  m_PrefabInstance: {fileID: 8787451922381745793}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &498577564
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498577560}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7225240214704344613, guid: ee36903024c241649a6f6c33f9fca5c5, type: 3}
 --- !u!1 &500353404
 GameObject:
   m_ObjectHideFlags: 0
@@ -7337,6 +7391,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3821767889359053709, guid: 73770458930eb6b4aa6881b3bc019c94, type: 3}
   m_PrefabInstance: {fileID: 877881352}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &878493335
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 878493337}
+  - component: {fileID: 878493336}
+  m_Layer: 0
+  m_Name: SFXTester
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &878493336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 878493335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 712cfd0e2d7d0a54a96ba02bc286ca08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  test2DSound: {fileID: 0}
+  test3DSound: {fileID: 11400000, guid: f373c66600e2bf242b9f1358720cb668, type: 2}
+  testAttachedSound: {fileID: 0}
+  worldSoundPoint: {fileID: 0}
+--- !u!4 &878493337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 878493335}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &883132060
 GameObject:
   m_ObjectHideFlags: 0
@@ -17056,7 +17158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2359174628885896912, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       propertyPath: nextSceneName
-      value: Level_1.5
+      value: Baked_Level_1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2359174628885896912, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       propertyPath: pressuriseDelay
@@ -17409,6 +17511,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3407897033977823938, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8787451922381745795}
+    - targetCorrespondingSourceObject: {fileID: 75464112219002090, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 468973122}
+    - targetCorrespondingSourceObject: {fileID: 7115555646988954365, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 498577564}
     - targetCorrespondingSourceObject: {fileID: 5322145078311438709, guid: 34c3068e4f1b30d47b9d93494ebb6b87, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1021559974}
@@ -17490,6 +17598,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShieldEnemy_Root
       objectReference: {fileID: 0}
+    - target: {fileID: 8618922778442928813, guid: 13f90ac2d7c865442b7fad31cbf1b8af, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17505,3 +17617,4 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 163358954}
+  - {fileID: 878493337}

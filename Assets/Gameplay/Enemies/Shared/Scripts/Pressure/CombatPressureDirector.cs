@@ -12,6 +12,11 @@ namespace Game.AI {
 		// Only one director should exist in a combat scene
 		public static CombatPressureDirector Active { get; private set; }
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics() {
+			Active = null;
+		}
+
 		[Header("Target")]
 		[Tooltip("Optional explicit player predictor reference. Leave empty to auto-find the player predictor.")]
 		[SerializeField] private PlayerMotionPredictor playerPredictor;

@@ -11,6 +11,11 @@ namespace Game.AI {
 		// Global reference so AI systems can quickly find the active player predictor
 		public static PlayerMotionPredictor Active { get; private set; }
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics() {
+			Active = null;
+		}
+
 		[Header("Prediction")]
 		[Tooltip("Time (in seconds) ahead used for immediate melee aim and close pressure.")]
 		[SerializeField] private float shortLeadTime = 0.25f;
