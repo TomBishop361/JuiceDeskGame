@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,7 +18,13 @@ public class PlayerLoader : MonoBehaviour
         // Check if the scene is already loaded to avoid duplicates
         if (!SceneManager.GetSceneByName("Player").isLoaded)
         {
-            SceneManager.LoadScene("Player", LoadSceneMode.Additive);
+            StartCoroutine(LoadAsync("Player"));           
         }
+    }
+
+    IEnumerator LoadAsync(string scene)
+    {
+        SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
+        yield return null;
     }
 }
