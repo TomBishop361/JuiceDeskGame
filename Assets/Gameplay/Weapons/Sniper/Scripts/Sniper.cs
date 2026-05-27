@@ -5,6 +5,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 
 
+
 public class Sniper : MonoBehaviour
 {
     //Hold RightMouse to slow down time and aim
@@ -32,9 +33,7 @@ public class Sniper : MonoBehaviour
 
 	public bool isOnCoolDown;
 
-	[Header("Sniper SFX")]
-	[Tooltip("Played when the sniper fires a charged shot.")]
-	[SerializeField] private SFXDefinition sniperChargeShootSFX;
+	[Header("Sniper SFX")]	
 	[Tooltip("Time into the sniper charge/shoot SFX where the actual shot blast happens.")]
 	[SerializeField] private float sniperShotFireDelay = 1.02f;
 
@@ -50,7 +49,7 @@ public class Sniper : MonoBehaviour
     }
 
     private void OnEnable()
-    {
+    {        
         gunInputManager.onSecondFire += AimInput;
          gunInputManager.onShootReceived += ShootInput;
     }
@@ -122,8 +121,7 @@ public class Sniper : MonoBehaviour
 		isFiringSniper = true;
 		isOnCoolDown = true;
 
-		// Play the full charge-up + shot sound immediately
-		SFXManager.PlayAttached(sniperChargeShootSFX, shotOrigin);
+        EventManager.instance.Invoke("SniperShot",shotOrigin); //Calls Event
 
 		// Wait until the actual shot moment inside the audio clip
 		yield return new WaitForSeconds(sniperShotFireDelay);
@@ -149,7 +147,6 @@ public class Sniper : MonoBehaviour
 					}
 				}
 			}
-
 			laserVFX.FireLaser(shotOrigin.position, Quaternion.LookRotation(hit.point - shotOrigin.position), Vector3.Distance(shotOrigin.position, hit.point));
 		}
 		else {

@@ -98,18 +98,16 @@ public class GunBase : MonoBehaviour
 
 	[SerializeField] private float weaponNoiseInterval = 0.15f;
 
-	[Header("SMG SFX")]
-	[Tooltip("Played every time the SMG fires.")]
-	[SerializeField] private SFXDefinition smgFireSFX;
+
 
 	private PlayerNoiseEmitter noiseEmitter;
 	private float nextWeaponNoiseTime;
 
-	public delegate void OnShoot();
-    public event OnShoot onShot;
+	//public delegate void OnShoot();
+ //   public event OnShoot onShot;
 
-    public delegate void OnReload();
-    public event OnReload onReload;
+    //public delegate void OnReload();
+    //public event OnReload onReload;
 
     private void OnEnable()
     {
@@ -249,18 +247,19 @@ public class GunBase : MonoBehaviour
         canShoot = false;
         shootTimer = fireRate;
 
-        onShot?.Invoke(); //For animation Script or audio or anything else to subscribe to        
+        EventManager.instance.Invoke("SMGShot",BulletOrigin.transform);
         overHeatLvl += HeatBuildRate;
         Vector3 offset = Vector3.zero; //new Vector3(UnityEngine.Random.Range(-0.05f,0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f));
         bulletPoolManager.ShootBullet(ShootDir.normalized + offset, BulletOrigin.transform.position , muzzleVilocity,damage); 
         EmitPrimaryFireNoise();
 		Vector3 position = BulletOrigin != null ? BulletOrigin.transform.position : transform.position;
-		SFXManager.PlayAtPosition(smgFireSFX, position);
+		
 	}
 
     void reloadGun()
     {
-        onReload?.Invoke();    
+        //onReload?.Invoke();    
+        EventManager.instance.Invoke("OnReload");
         Debug.Log("Reload Complete");        
         OverHeated = false;        
     }

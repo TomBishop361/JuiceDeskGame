@@ -15,6 +15,8 @@ public class Sliding : MonoBehaviour
     private int SlideTimerID;
     [SerializeField] float SlideDownforce;
     public float slideForce;
+
+
 	[SerializeField] private float slideNoiseInterval = 0.35f;
 
 	TimerManager _timerManager;
