@@ -1037,6 +1037,9 @@ MonoBehaviour:
   defenseState: {fileID: 7334690218744183616}
   shockwaveAttack: {fileID: 4254916816721932567}
   stunState: {fileID: 1122574990893991801}
+  damagedSFX: {fileID: 0}
+  exposedSFX: {fileID: 11400000, guid: fb18b77eab96af84a81ebbc9632759c1, type: 2}
+  deathSFX: {fileID: 0}
 --- !u!114 &4488825989965254406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1123,6 +1126,8 @@ MonoBehaviour:
   maxTracerPoolSize: 64
   populateTracerPoolAtStartup: 1
   fireBoolName: IsFiring
+  minigunFireSFX: {fileID: 11400000, guid: e2476e93050a40a41ac41470674fd74e, type: 2}
+  minigunOverheatSFX: {fileID: 11400000, guid: c834fc6471598964ba6505069f7d584f, type: 2}
 --- !u!114 &4254916816721932567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1146,7 +1151,7 @@ MonoBehaviour:
     AttackerFaction: 1
   slamRange: 6
   slamCooldown: 6.5
-  slamLockTime: 2.7
+  slamLockTime: 1.5
   slamExposeDuration: 4
   shockwaveRadius: 8
   shockwaveDamageMask:
@@ -1160,6 +1165,8 @@ MonoBehaviour:
   shockwaveRingPrefab: {fileID: 3616850448136473984, guid: 290d4698bde3e9b4da736ae27f7327e7, type: 3}
   shockwaveDebugLifetime: 1
   slamTriggerName: Slam
+  slamStartSFX: {fileID: 11400000, guid: 421b4bfd178aefe4f8b6c7aa5e58566b, type: 2}
+  slamImpactSFX: {fileID: 11400000, guid: c6ccefbbc2d97c542a63ff2304cad93d, type: 2}
 --- !u!114 &1122574990893991801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1194,6 +1201,7 @@ MonoBehaviour:
   exposedBoolName: IsExposed
   shieldRaisedBoolName: ShieldRaised
   blockReactTriggerName: BlockReact
+  shieldBlockSFX: {fileID: 11400000, guid: 4afba59e6f3da454fbf42261d895b1c8, type: 2}
 --- !u!114 &1464211298414496071
 MonoBehaviour:
   m_ObjectHideFlags: 0

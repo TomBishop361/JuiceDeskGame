@@ -1,3 +1,4 @@
+using Game.Audio;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -76,6 +77,12 @@ namespace Game.AI.Shield {
 		[Header("Animation")]
 		[Tooltip("Animator bool name used while continuously firing.")]
 		[SerializeField] private string fireBoolName = "IsFiring";
+
+		[Header("SFX")]
+		[Tooltip("Played every time the shield minigun fires a hitscan shot.")]
+		[SerializeField] private SFXDefinition minigunFireSFX;
+		[Tooltip("Played when the minigun overheats and forces the shield enemy into exposed state.")]
+		[SerializeField] private SFXDefinition minigunOverheatSFX;
 
 		// Stores historical target positions with timestamps
 		// So the minigun can aim at a delayed target position
@@ -257,6 +264,9 @@ namespace Game.AI.Shield {
 
 			// Overheat check
 			if (HasMinigunOverheated()) {
+				// Play the overheat fail sound before entering exposed state
+				SFXManager.PlayAttached(minigunOverheatSFX, transform);
+
 				StopFiring(animator);
 				owner.SetShieldRaised(false);
 				owner.EnterExposedState(minigunExposeDuration);
@@ -366,6 +376,9 @@ namespace Game.AI.Shield {
 			}
 
 			Vector3 bulletOrigin = minigunMuzzle.position;
+
+			// Play the minigun shot from the muzzle so it feels properly positioned in 3D space
+			SFXManager.PlayAtPosition(minigunFireSFX, bulletOrigin);
 
 			Vector3 direction = aimPoint - bulletOrigin;
 			if (direction.sqrMagnitude < 0.0001f) {

@@ -1,3 +1,4 @@
+using Game.Audio;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,6 +43,12 @@ namespace Game.AI.Shield {
 		[Tooltip("Animator trigger name used to start the slam animation.")]
 		[SerializeField] private string slamTriggerName = "Slam";
 
+		[Header("SFX")]
+		[Tooltip("Played when the shield enemy begins the slam animation.")]
+		[SerializeField] private SFXDefinition slamStartSFX;
+		[Tooltip("Played on the exact animation event frame where the shockwave is created.")]
+		[SerializeField] private SFXDefinition slamImpactSFX;
+
 		// Reused shockwave buffers to avoid allocations when the slam attack runs
 		private readonly Collider[] slamShockwaveOverlapBuffer = new Collider[32];
 		private readonly HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
@@ -85,6 +92,9 @@ namespace Game.AI.Shield {
 			nextSlamTime = Time.time + slamCooldown;
 			owner.BeginAttackLock(slamLockTime);
 
+			// Play the slam wind-up/start sound once when the attack begins
+			SFXManager.PlayAttached(slamStartSFX, transform);
+
 			if (animator != null) {
 				animator.SetTrigger(slamTriggerHash);
 			}
@@ -104,6 +114,9 @@ namespace Game.AI.Shield {
 			if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit groundHit, 5.0f, shockwaveGroundMask, QueryTriggerInteraction.Ignore)) {
 				center = groundHit.point;
 			}
+
+			// Play the impact sound from the actual ground impact point.
+			SFXManager.PlayAtPosition(slamImpactSFX, center);
 
 			// Spawn Shockwave Debug ring to visualise the AOE on the ground
 			if (spawnShockwaveDebugRing && shockwaveRingPrefab != null) {

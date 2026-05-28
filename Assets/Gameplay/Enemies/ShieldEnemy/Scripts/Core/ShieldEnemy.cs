@@ -1,3 +1,4 @@
+using Game.Audio;
 using UnityEngine;
 
 namespace Game.AI.Shield {
@@ -29,6 +30,14 @@ namespace Game.AI.Shield {
 		[SerializeField] private ShieldShockwaveAttack shockwaveAttack;
 		[Tooltip("Stun module used to apply hit stun and interrupt the enemy when damaged.")]
 		[SerializeField] private ShieldStunState stunState;
+
+		[Header("SFX")]
+		[Tooltip("Played when the shield enemy takes real health damage.")]
+		[SerializeField] private SFXDefinition damagedSFX;
+		[Tooltip("Played when the shield enemy enters exposed/vulnerable state.")]
+		[SerializeField] private SFXDefinition exposedSFX;
+		[Tooltip("Played when the shield enemy dies.")]
+		[SerializeField] private SFXDefinition deathSFX;
 
 		// Implement IHealthSettings
 		public float MaxHealth => maxHealth;
@@ -107,12 +116,19 @@ namespace Game.AI.Shield {
 
 		// Interrupts minigun firing behaviour and applies hit stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
+			// This is only for real damage taken, not shield block deflections
+			SFXManager.PlayAttached(damagedSFX, transform);
+
 			stunState?.ApplyHitStun(this, animator);
 		}
 
-		// Handles shield-specific death cleanup by TBD
+		// Handles shield-specific death cleanup
 		protected override void OnDieStarted() {
 			base.OnDieStarted();
+
+			// Play at the current world position so the death sound can finish even if the enemy is pooled/disabled soon after
+			SFXManager.PlayAtPosition(deathSFX, transform.position);
+
 			StopMinigunFiring();
 			defenseState?.StopAllStates(animator);
 			groundMotor?.DisableAgent();
@@ -185,6 +201,10 @@ namespace Game.AI.Shield {
 
 		public void EnterExposedState(float duration) {
 			StopMinigunFiring();
+
+			// Here so both slam recovery and minigun overheat can use the same exposed feedback
+			SFXManager.PlayAttached(exposedSFX, transform);
+
 			defenseState?.EnterExposed(duration, animator);
 		}
 
