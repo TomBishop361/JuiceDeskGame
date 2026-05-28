@@ -1,6 +1,7 @@
 using UnityEngine;
 using Game.AI.Drone;
 using System.Collections.Generic;
+using Game.Audio;
 
 // DroneHomingProjectile:
 // Uses a Rigidbody and steers toward the target with a configurable turn rate
@@ -18,10 +19,14 @@ namespace Game.Combat.Projectiles {
 		[Tooltip("Material shown once homing has expired and the projectile is flying straight.")]
 		[SerializeField] private Material homingExpiredMaterial;
 
-		[Space(5)]
-
 		[Header("Physics")]
 		[SerializeField] private Rigidbody rb;
+
+		[Header("SFX")]
+		[Tooltip("Optional sound played when the projectile becomes armed.")]
+		[SerializeField] private SFXDefinition projectileArmedSFX;
+		[Tooltip("Played when the projectile explodes from impact, proximity fuse, or timeout.")]
+		[SerializeField] private SFXDefinition projectileExplosionSFX;
 
 		// Reused splash damage buffers to avoid allocations when pooled projectiles explode
 		private readonly Collider[] splashOverlapBuffer = new Collider[32];
@@ -205,6 +210,9 @@ namespace Game.Combat.Projectiles {
 
 			isArmed = true;
 			ApplyCurrentVisualState();
+
+			// Optional small warning beep/zap when the projectile becomes dangerous
+			SFXManager.PlayAtPosition(projectileArmedSFX, transform.position);
 		}
 
 
@@ -262,7 +270,7 @@ namespace Game.Combat.Projectiles {
 
 			hasHit = true;
 			DealSplashDamage(activeAttackData, null, transform.position);
-			Explode();
+			Explode(transform.position);
 		}
 
 		// Returns the steering/fuse point used for target tracking
@@ -335,7 +343,7 @@ namespace Game.Combat.Projectiles {
 			// In-Direct hit = Splash Damage
 			DealSplashDamage(attackData, directReceiver, hitPoint);
 
-			Explode(/*hitPoint*/);
+			Explode(hitPoint);
 		}
 
 		// Deals splash damage to indirect targets found inside the explosion radius
@@ -388,11 +396,13 @@ namespace Game.Combat.Projectiles {
 		}
 
 		// TODO: Play Camera shake + SFX + VFX + Despawn projectile regardless of hit
-		private void Explode(/*Vector3 explosionPoint*/) {
-			// Play projectile explosion Camera shake + SFX + VFX at explosion point
-			//CameraShakeManager.Instance.TriggerCameraShakeAtPosition(CameraShakeType.BossProjectileHit, explosionPoint);
-			//SFXController.Instance.PlayProjectileExplosion(explosionPoint);
-			//VFXController.Instance.SpawnProjectileExplosion(explosionPointl);
+		private void Explode(Vector3 explosionPoint) {
+			// Play explosion audio before returning the projectile to the pool
+			SFXManager.PlayAtPosition(projectileExplosionSFX, explosionPoint);
+
+			// TODO: Camera shake + VFX can also use explosionPoint here.
+			// CameraShakeManager.Instance.TriggerCameraShakeAtPosition(CameraShakeType.BossProjectileHit, explosionPoint);
+			// VFXController.Instance.SpawnProjectileExplosion(explosionPoint);
 
 			// Return to pool once explosion effects have been started
 			ReturnToPool();
@@ -408,7 +418,7 @@ namespace Game.Combat.Projectiles {
 
 			// Timeout explosion has no directReceiver since no collision was made, so it's just splash damage
 			DealSplashDamage(timeoutAttackData, null, transform.position);
-			Explode(/*transform.position*/);
+			Explode(transform.position);
 		}
 
 		private void ApplyVelocity(Vector3 velocity) {

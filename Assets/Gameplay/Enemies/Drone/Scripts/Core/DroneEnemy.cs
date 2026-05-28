@@ -1,4 +1,5 @@
 using UnityEngine;
+using Game.Audio;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent]
@@ -21,6 +22,10 @@ namespace Game.AI.Drone {
 		[SerializeField] private DroneKnockdownState knockdownState;
 		[SerializeField] private DroneDeathFall deathFall;
 		[SerializeField] private DroneVisualMotion visualMotion;
+
+		[Header("SFX")]
+		[Tooltip("Played when the drone takes damage but survives.")]
+		[SerializeField] private SFXDefinition hitSFX;
 
 		//// Animator IDs
 		//private static readonly int AnimMoveSpeed = Animator.StringToHash("MoveSpeed"); // Float
@@ -82,6 +87,8 @@ namespace Game.AI.Drone {
 
 		// Interrupts behaviour and applies a knockdown stun when the enemy takes damage but survives
 		protected override void OnDamaged(float previousHealth, float currentHealth) {
+			SFXManager.PlayAtPosition(hitSFX, transform.position);
+
 			knockdownState?.EnterKnockdown(this/*, animator*/);
 		}
 

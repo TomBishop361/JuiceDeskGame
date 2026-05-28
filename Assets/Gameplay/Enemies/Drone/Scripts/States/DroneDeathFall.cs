@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using Game.Audio;
 
 namespace Game.AI.Drone {
     public sealed class DroneDeathFall : MonoBehaviour {
@@ -9,6 +10,10 @@ namespace Game.AI.Drone {
 
 		[Header("VFX")]
 		[SerializeField] private ParticleSystem deathFX;
+
+		[Header("SFX")]
+		[Tooltip("Played when the drone starts its death fall sequence.")]
+		[SerializeField] private SFXDefinition deathSFX;
 
 		private Coroutine fallRoutine;
 
@@ -25,6 +30,8 @@ namespace Game.AI.Drone {
 			//if (animator != null) {
 			//	animator.SetTrigger("Die");
 			//}
+
+			SFXManager.PlayAtPosition(deathSFX, transform.position);
 
 			// TODO: death FX
 			if (deathFX != null) {
