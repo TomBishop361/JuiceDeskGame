@@ -54,7 +54,7 @@ public class WallRunning : MonoBehaviour
 	private float nextWallRunNoiseTime;
 
 	private void Awake() {
-		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+		noiseEmitter = GetComponentInParent<PlayerNoiseEmitter>();
 	}
 
 	private void OnEnable()

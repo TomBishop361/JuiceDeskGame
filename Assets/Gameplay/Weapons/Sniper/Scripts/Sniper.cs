@@ -121,7 +121,7 @@ public class Sniper : MonoBehaviour
 		isFiringSniper = true;
 		isOnCoolDown = true;
 
-        EventManager.instance.Invoke("SniperShot",shotOrigin); //Calls Event
+        EventManager.instance.Invoke("SniperShot",shotOrigin); // Calls Event
 
 		// Wait until the actual shot moment inside the audio clip
 		yield return new WaitForSeconds(sniperShotFireDelay);

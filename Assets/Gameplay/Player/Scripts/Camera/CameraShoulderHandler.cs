@@ -21,18 +21,16 @@ public class CameraShoulderHandler : MonoBehaviour
     [SerializeField] InputController _controller;
     [SerializeField] CinemachineThirdPersonFollow cineCam;
     [SerializeField] CinemachineCamera cinemachineCamera;
-
     Coroutine cameraLerp;
+    Coroutine cameraFOVLerp;
 
-    [Header("Temp Gun Movement")]
-    //Temporary Move Gun Side
-    [SerializeField] GameObject gunObj;
-    [SerializeField] Vector3 RightSideGunPlacement;
-    [SerializeField] Vector3 LeftSideGunPlacement;
+    [Header("FOVs")]
+    [SerializeField] float startFOV;
+    [SerializeField] float boostedFov;
 
 
     [Header("FOV")]
-    float startFOV;
+    
     public float FOVMulti;
 
     private void Start()
@@ -40,18 +38,29 @@ public class CameraShoulderHandler : MonoBehaviour
         currentOffset = XShoulderOffset;
         startFOV = cinemachineCamera.Lens.FieldOfView;
         cineCam.ShoulderOffset.x = XShoulderOffset;
+
+        
         
     }
     private void OnEnable()
     {        
         wallRunController.OnWallRunStart += changeShoulder;
         wallRunController.OnWallRunEnd += resetDutch;
+
+        EventManager.instance.Subscribe("OnSprint", SprintBoostFOV);
+        EventManager.instance.Subscribe("OnRailGrind", RailGrindBoostFov);
+        EventManager.instance.Subscribe("OnRailGrindEnd", resetFOV);
+        
         
     }
     private void OnDisable()
     {
         wallRunController.OnWallRunStart -= changeShoulder;
         wallRunController.OnWallRunEnd -= resetDutch;
+
+        EventManager.instance.Unsubscribe("OnSprint", SprintBoostFOV);
+        EventManager.instance.Unsubscribe("OnRailGrind", RailGrindBoostFov);
+        EventManager.instance.Unsubscribe("OnRailGrindEnd", resetFOV);
     }
 
     private void Update()
@@ -59,11 +68,36 @@ public class CameraShoulderHandler : MonoBehaviour
         //ChangeFOV();
     }
 
-    void ChangeFOV()
-    {   
-        float t = Mathf.InverseLerp(8,15,Mathf.Clamp(_controller.Velocity, 8,15));
-        //Debug.Log(t);
-        cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, startFOV + (FOVMulti*t), t);        
+    void resetFOV(object data)
+    {
+        if (cameraFOVLerp != null) StopCoroutine(cameraFOVLerp);
+        cameraFOVLerp = StartCoroutine(FOVLerp(startFOV));
+        
+    }
+
+    void RailGrindBoostFov(object data)
+    {
+        if (cameraLerp != null) StopCoroutine(cameraFOVLerp);
+        cameraFOVLerp = StartCoroutine(FOVLerp(boostedFov));
+    }
+
+    void SprintBoostFOV( object data)
+    {
+        Debug.Log("SPRINT BOOST");
+        if (data is bool boost)
+        {
+            if (boost)
+            {
+                if (cameraFOVLerp != null) StopCoroutine(cameraFOVLerp);
+                cameraFOVLerp = StartCoroutine(FOVLerp(boostedFov));
+            }
+            else
+            {
+                resetFOV(null);
+            }
+        }
+        else return;
+            
     }
 
     void changeShoulder(bool right)
@@ -90,6 +124,18 @@ public class CameraShoulderHandler : MonoBehaviour
         targetDutch = 0;
         if (cameraLerp != null) StopCoroutine(cameraLerp);
         cameraLerp = StartCoroutine("MoveCameraOffset");
+    }
+
+    IEnumerator FOVLerp(float newFov)
+    {
+        Debug.Log("Lerping");
+        float t = 0;
+        while (t < 1)
+        {
+            cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, newFov, t);
+            t += Time.deltaTime;
+            yield return null;            
+        }
     }
 
     IEnumerator MoveCameraOffset()

@@ -1,16 +1,32 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class MainMenuButtons : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public UnityEvent CreditsEvent;
+    public UnityEvent BackEvent;
+
+    public void PlayButton()
     {
-        
+        LoadingManager.SceneToLoad = "Level_1";
+
+        // Load the loading screen ADDITIVELY so it doesn't kill this script immediately
+        SceneManager.LoadScene("LoadingScene");
     }
 
-    // Update is called once per frame
-    void Update()
+    public void CreditsButton()
     {
-        
+        CreditsEvent.Invoke();
+    }
+
+    public void ExitButton()
+    {
+        Application.Quit();
+    }
+
+    public void BackButton()
+    {
+        BackEvent.Invoke();
     }
 }
