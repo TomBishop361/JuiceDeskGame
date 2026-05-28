@@ -13,6 +13,7 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] InputController _controller;
     [SerializeField] Sniper _Sniper;
     [SerializeField] Image Fillimage;
+    [SerializeField] float cooldownmulti;
 
     public event Action OnSniperCoolDown = delegate { };
     public bool CanPrimaryFire = true;
@@ -51,7 +52,7 @@ public class WeaponManager : MonoBehaviour
     {
         if((_controller.wallRunning || _controller.sliding || _controller.isRailGrinding) && SniperOnCoolDown)
         {            
-            sniperCDTimer -= Time.deltaTime;
+            sniperCDTimer -= Time.deltaTime * cooldownmulti;
             Fillimage.fillAmount = Mathf.InverseLerp(sniperCDTime,0 , sniperCDTimer);
             if (sniperCDTimer <= 0) {
                 
