@@ -18,8 +18,6 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 	[SerializeField] private Camera playerCamera;
 	//[Tooltip("CinemachineImpulseSource or compatible component. The script calls it safely by reflection, so this stays optional.")]
 	//[SerializeField] private MonoBehaviour cameraImpulseSource;
-	[Tooltip("Audio source used for local player damage feedback sounds.")]
-	[SerializeField] private AudioSource audioSource;
 
 	[Header("Feedback Strength")]
 	[Tooltip("Damage amount that produces the smallest visible hit feedback.")]
@@ -47,7 +45,7 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 	//[Tooltip("Strongest camera impulse force used for heavy hits.")]
 	//[SerializeField] private float heavyCameraImpulse = 0.45f;
 
-	[Header("Audio")]
+	[Header("SFX")]
 	[Tooltip("Played when the player is hit by a melee enemy attack. Example: a sword swing.")]
 	[SerializeField] private SFXDefinition meleeHitSFX;
 	[Tooltip("Played when the player is hit by a ranged enemy attack. Example: a minigun bullet or drone projectile.")]
@@ -58,6 +56,10 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 	[SerializeField] private float lightHitVolumeMultiplier = 0.65f;
 	[Tooltip("Highest volume multiplier used for full-strength or heavy hits.")]
 	[SerializeField] private float fullHitVolumeMultiplier = 1.0f;
+	[Tooltip("Played when the player is hit by laser.")]
+	[SerializeField] private SFXDefinition laserHitSFX;
+	[Tooltip("Minimum time between laser hit feedback. Prevents trigger damage from spamming audio.")]
+	[SerializeField] private float laserFeedbackInterval = 0.22f;
 
 	// Used to calculate how much health was lost
 	private float previousHealth;
@@ -245,6 +247,10 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 			return 0.0f;
 		}
 
+		if (attackData.Type == DamageType.Laser) {
+			return laserFeedbackInterval;
+		}
+
 		return attackData.Type == DamageType.Ranged ? rangedFeedbackInterval : normalFeedbackInterval;
 	}
 
@@ -300,6 +306,10 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 	private SFXDefinition PickHitSFX(DamageType type, bool isHeavyHit) {
 		if (isHeavyHit && heavyHitSFX != null) {
 			return heavyHitSFX;
+		}
+
+		if (type == DamageType.Laser && laserHitSFX != null) {
+			return laserHitSFX;
 		}
 
 		return type == DamageType.Melee ? meleeHitSFX : rangedHitSFX;
