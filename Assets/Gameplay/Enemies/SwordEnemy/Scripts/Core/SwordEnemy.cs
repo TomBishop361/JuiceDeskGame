@@ -231,12 +231,12 @@ namespace Game.AI.Sword {
 
 		// Called by animation at the exact dash-start frame to launch the lunge movement
 		public void OnLungeDashStart() {
-			lungeAttack?.OnLungeDashStart(this);
+			lungeAttack?.StartLungeDashFromOwner(this);
 		}
 
 		// Called by animation when the lunge dash motion is over to end the dash phase cleanly
 		public void OnLungeDashEnd() {
-			lungeAttack?.OnLungeDashEnd(this);
+			lungeAttack?.EndLungeDashFromOwner(this);
 		}
 	}
 }

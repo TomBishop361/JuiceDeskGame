@@ -115,7 +115,7 @@ namespace Game.AI.Shield {
 				center = groundHit.point;
 			}
 
-			// Play the impact sound from the actual ground impact point.
+			// Play the impact sound from the actual ground impact point
 			SFXManager.PlayAtPosition(slamImpactSFX, center);
 
 			// Spawn Shockwave Debug ring to visualise the AOE on the ground
