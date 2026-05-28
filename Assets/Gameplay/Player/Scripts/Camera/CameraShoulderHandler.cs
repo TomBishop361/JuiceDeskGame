@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class CameraShoulderHandler : MonoBehaviour
 {
-    [Header("Shoulder")]    
-    [Range(-1,1)]
-    [SerializeField]float XShoulderOffset;
+    [Header("Shoulder")]
+    [Range(-1, 1)]
+    [SerializeField] float XShoulderOffset;
     [SerializeField] float DutchTilt;
 
     float targetOffset;
     float currentOffset;
-
     float targetDutch;
     float currentDutch;
 
@@ -21,101 +20,113 @@ public class CameraShoulderHandler : MonoBehaviour
     [SerializeField] InputController _controller;
     [SerializeField] CinemachineThirdPersonFollow cineCam;
     [SerializeField] CinemachineCamera cinemachineCamera;
+    
     Coroutine cameraLerp;
     Coroutine cameraFOVLerp;
 
     [Header("FOVs")]
     [SerializeField] float startFOV;
     [SerializeField] float boostedFov;
+    [SerializeField] float sniperFov = 50f; // Added to match Sniper script
 
-
-    [Header("FOV")]
-    
-    public float FOVMulti;
+    private bool isSprinting = false;
+    private bool isSniperAiming = false;
 
     private void Start()
     {
         currentOffset = XShoulderOffset;
         startFOV = cinemachineCamera.Lens.FieldOfView;
         cineCam.ShoulderOffset.x = XShoulderOffset;
-
-        
-        
     }
+
     private void OnEnable()
-    {        
+    {
         wallRunController.OnWallRunStart += changeShoulder;
         wallRunController.OnWallRunEnd += resetDutch;
-
         EventManager.instance.Subscribe("OnSprint", SprintBoostFOV);
         EventManager.instance.Subscribe("OnRailGrind", RailGrindBoostFov);
         EventManager.instance.Subscribe("OnRailGrindEnd", resetFOV);
-        
-        
+        EventManager.instance.Subscribe("OnSniperZoom", HandleSniperZoom);
     }
+
     private void OnDisable()
     {
         wallRunController.OnWallRunStart -= changeShoulder;
         wallRunController.OnWallRunEnd -= resetDutch;
-
         EventManager.instance.Unsubscribe("OnSprint", SprintBoostFOV);
         EventManager.instance.Unsubscribe("OnRailGrind", RailGrindBoostFov);
         EventManager.instance.Unsubscribe("OnRailGrindEnd", resetFOV);
+        EventManager.instance.Unsubscribe("OnSniperZoom", HandleSniperZoom);
     }
 
-    private void Update()
+    void HandleSniperZoom(object data)
     {
-        //ChangeFOV();
+        // Fixed type checking (matching the byte passed from Sniper)
+        if (data is byte aimByte)
+        {
+            isSniperAiming = (aimByte == 1);
+            EvaluateTargetFOV();
+        }
     }
 
-    void resetFOV(object data)
+    void SprintBoostFOV(object data)
     {
-        if (cameraFOVLerp != null) StopCoroutine(cameraFOVLerp);
-        cameraFOVLerp = StartCoroutine(FOVLerp(startFOV));
-        
+        if (data is bool boost)
+        {
+            isSprinting = boost;
+            EvaluateTargetFOV();
+        }
     }
 
     void RailGrindBoostFov(object data)
     {
-        if (cameraLerp != null) StopCoroutine(cameraFOVLerp);
-        cameraFOVLerp = StartCoroutine(FOVLerp(boostedFov));
+        // Rail grind overrides normal FOV
+        StartFOVLerp(boostedFov);
     }
 
-    void SprintBoostFOV( object data)
+    void resetFOV(object data)
     {
-        Debug.Log("SPRINT BOOST");
-        if (data is bool boost)
+        EvaluateTargetFOV();
+    }
+
+    // Directs what the FOV priority should be
+    void EvaluateTargetFOV()
+    {
+        if (isSniperAiming)
         {
-            if (boost)
-            {
-                if (cameraFOVLerp != null) StopCoroutine(cameraFOVLerp);
-                cameraFOVLerp = StartCoroutine(FOVLerp(boostedFov));
-            }
-            else
-            {
-                resetFOV(null);
-            }
-        }
-        else return;
             
+            StartFOVLerp(sniperFov);
+        }
+        else if (isSprinting)
+        {
+            StartFOVLerp(boostedFov);
+        }
+        else
+        {
+            StartFOVLerp(startFOV);
+        }
+    }
+
+    void StartFOVLerp(float targetFov)
+    {
+        if (cameraFOVLerp != null) StopCoroutine(cameraFOVLerp);
+        cameraFOVLerp = StartCoroutine(FOVLerp(targetFov));
     }
 
     void changeShoulder(bool right)
     {
-        
         if (right)
         {
             targetOffset = -XShoulderOffset;
-            targetDutch = DutchTilt;            
+            targetDutch = DutchTilt;
         }
         else
-        {            
-            targetDutch = -DutchTilt;            
+        {
+            targetDutch = -DutchTilt;
         }
 
-        //Begin Lerp
         if (cameraLerp != null) StopCoroutine(cameraLerp);
-        cameraLerp = StartCoroutine("MoveCameraOffset");
+        cameraLerp = StartCoroutine(MoveCameraOffset());
     }
 
     void resetDutch()
@@ -123,25 +134,27 @@ public class CameraShoulderHandler : MonoBehaviour
         targetOffset = XShoulderOffset;
         targetDutch = 0;
         if (cameraLerp != null) StopCoroutine(cameraLerp);
-        cameraLerp = StartCoroutine("MoveCameraOffset");
+        cameraLerp = StartCoroutine(MoveCameraOffset());
     }
 
     IEnumerator FOVLerp(float newFov)
     {
-        Debug.Log("Lerping");
         float t = 0;
+        float currentFov = cinemachineCamera.Lens.FieldOfView;
+        
         while (t < 1)
         {
-            cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, newFov, t);
-            t += Time.deltaTime;
-            yield return null;            
+            
+            cinemachineCamera.Lens.FieldOfView = Mathf.SmoothStep(currentFov, newFov, t);
+            t += Time.deltaTime * 4f; 
+            yield return null;
         }
+        cinemachineCamera.Lens.FieldOfView = newFov;
     }
 
     IEnumerator MoveCameraOffset()
     {
-        Debug.Log("Lerping");
-        float t =0;
+        float t = 0;
         while (t < 1)
         {
             currentDutch = Mathf.Lerp(currentDutch, targetDutch, t);
@@ -152,6 +165,4 @@ public class CameraShoulderHandler : MonoBehaviour
             cineCam.ShoulderOffset.x = currentOffset;
         }
     }
-
-    
 }

@@ -80,6 +80,7 @@ public class Sniper : MonoBehaviour
     void AimInput(bool aim)
     {
         _aim = (byte)(aim ? 1 : 0);
+        EventManager.instance.Invoke("OnSniperZoom", (_aim));
         
     }
 
@@ -177,19 +178,21 @@ public class Sniper : MonoBehaviour
     }
 
     void AimIn()
-    {        
+    {
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = false;
-        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, ZoomFOV, t);
-        Time.timeScale = Mathf.SmoothStep(Time.timeScale, 0.5f, t);        
+
+        
+        Time.timeScale = Mathf.SmoothStep(Time.timeScale, 0.5f, t);
     }
 
     void AimOut()
-    {  
+    {
         float t = aimTimer;
         _weaponManager.CanPrimaryFire = true;
-        _camera.Lens.FieldOfView = Mathf.SmoothStep(_camera.Lens.FieldOfView, StartFOV, t);
-        Time.timeScale = Mathf.SmoothStep(Time.timeScale, 1, t);
+
+        
+        Time.timeScale = Mathf.SmoothStep(Time.timeScale, 1f, t);
     }
-   
+
 }
