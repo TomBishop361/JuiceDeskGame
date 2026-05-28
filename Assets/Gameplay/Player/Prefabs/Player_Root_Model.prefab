@@ -2900,9 +2900,8 @@ MonoBehaviour:
   _controller: {fileID: 7128203245387133486}
   cineCam: {fileID: 0}
   cinemachineCamera: {fileID: 0}
-  gunObj: {fileID: 0}
-  RightSideGunPlacement: {x: 0.526, y: 0, z: 0.307}
-  LeftSideGunPlacement: {x: -0.526, y: 0, z: 0.307}
+  startFOV: 0
+  boostedFov: 0
   FOVMulti: 0
 --- !u!114 &8330575932952866227
 MonoBehaviour:
@@ -3707,6 +3706,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8776520717299130423}
   - component: {fileID: 7406292818552470993}
+  - component: {fileID: 5013370057792353606}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -3754,7 +3754,7 @@ SkinnedMeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 34a732f070e0f6c4eb9e64657d2d50df, type: 2}
   - {fileID: 2100000, guid: 2ff6baabadb546a4690f92c7c4df229d, type: 2}
-  - {fileID: 2100000, guid: 5807530e692c6ec4baac39605414c6a5, type: 2}
+  - {fileID: 2100000, guid: d3b16c85172606b4fa8f5a63c5b902ba, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3830,6 +3830,26 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0002612602, y: 0.025768839, z: 0.000670447}
     m_Extent: {x: 0.010681446, y: 0.028198842, z: 0.0050861184}
   m_DirtyAABB: 0
+--- !u!114 &5013370057792353606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599329751217420211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2dea9946a72444d93525974bb1a240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 7406292818552470993}
+  materialIndex: 2
+  columns: 30
+  rows: 20
+  totalFrames: 600
+  framesPerSecond: 12
+  playOnEnable: 1
+  loop: 1
 --- !u!1 &8771173811866869184
 GameObject:
   m_ObjectHideFlags: 0
