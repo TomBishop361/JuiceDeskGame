@@ -2088,6 +2088,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b617d6975f07845920cf1b602d7147, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  sourceA: {fileID: 0}
+  sourceB: {fileID: 0}
+  globalMusicVolume: 1
+  defaultFadeDuration: 2
+  debugLogging: 1
 --- !u!4 &1031545242
 Transform:
   m_ObjectHideFlags: 0
@@ -3815,6 +3821,10 @@ PrefabInstance:
       propertyPath: feedbackUI
       value: 
       objectReference: {fileID: 1927656558}
+    - target: {fileID: 6004627866533404591, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6004627866533404591, guid: ab2a14e8e26a0ec408c024157d628f05, type: 3}
       propertyPath: playerCamera
       value: 
