@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuButtons : MonoBehaviour
 {
     public UnityEvent CreditsEvent;
+    public UnityEvent BackEvent;
 
     public void PlayButton()
     {
@@ -22,5 +23,10 @@ public class MainMenuButtons : MonoBehaviour
     public void ExitButton()
     {
         Application.Quit();
+    }
+
+    public void BackButton()
+    {
+        BackEvent.Invoke();
     }
 }
