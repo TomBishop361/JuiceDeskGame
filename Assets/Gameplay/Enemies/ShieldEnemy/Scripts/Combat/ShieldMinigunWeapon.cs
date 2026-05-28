@@ -111,6 +111,7 @@ namespace Game.AI.Shield {
 		private ShieldEnemy activeOwner;
 
 		private IObjectPool<PooledObject> tracerPool;
+		private AudioSource minigunFireLoopSource;
 
 		// Shield Enemy Minigun Specific Properties 
 
@@ -178,6 +179,10 @@ namespace Game.AI.Shield {
 
 			if (IsFiring == false) {
 				minigunFireStartTime = Time.time;
+
+				// Start a continuous minigun loop without restarting it every bullet
+				Transform sfxParent = minigunMuzzle != null ? minigunMuzzle : transform;
+				minigunFireLoopSource = SFXManager.PlayAttached(minigunFireSFX, sfxParent);
 			}
 
 			activeOwner = owner;
@@ -199,6 +204,9 @@ namespace Game.AI.Shield {
 
 		// Stops continuous firing and clears temporary aim state
 		public void StopFiring(Animator animator) {
+			SFXManager.Stop(minigunFireLoopSource);
+			minigunFireLoopSource = null;
+
 			IsFiring = false;
 			activeOwner = null;
 			minigunFireStartTime = -Mathf.Infinity;
@@ -207,6 +215,9 @@ namespace Game.AI.Shield {
 			if (animator != null) {
 				animator.SetBool(fireBoolHash, false);
 			}
+
+
+
 
 			// Prevent instantly resetting emission
 			// TickFire() cools the heat down gradually while IsFiring is false
@@ -376,9 +387,6 @@ namespace Game.AI.Shield {
 			}
 
 			Vector3 bulletOrigin = minigunMuzzle.position;
-
-			// Play the minigun shot from the muzzle so it feels properly positioned in 3D space
-			SFXManager.PlayAtPosition(minigunFireSFX, bulletOrigin);
 
 			Vector3 direction = aimPoint - bulletOrigin;
 			if (direction.sqrMagnitude < 0.0001f) {
