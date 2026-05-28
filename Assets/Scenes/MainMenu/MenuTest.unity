@@ -16267,6 +16267,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2933139716659438605, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d3b16c85172606b4fa8f5a63c5b902ba, type: 2}
     - target: {fileID: 919132149155446097, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
       propertyPath: m_Name
       value: player_Character
@@ -16284,7 +16288,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2199108544892431095, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 784769161}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7985974569186381559, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 882508187}
   m_SourcePrefab: {fileID: 100100000, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
 --- !u!1 &652241367 stripped
 GameObject:
@@ -26810,6 +26817,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 685474917}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &882508184 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7985974569186381559, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
+  m_PrefabInstance: {fileID: 650701311}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &882508186 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2933139716659438605, guid: 04b3b306416b84eec83d4901eff0d6b4, type: 3}
+  m_PrefabInstance: {fileID: 650701311}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &882508187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882508184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2dea9946a72444d93525974bb1a240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 882508186}
+  materialIndex: 2
+  columns: 30
+  rows: 20
+  totalFrames: 600
+  framesPerSecond: 12
+  playOnEnable: 1
+  loop: 1
 --- !u!1 &882856557
 GameObject:
   m_ObjectHideFlags: 0
