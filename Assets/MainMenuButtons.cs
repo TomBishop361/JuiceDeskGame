@@ -9,7 +9,7 @@ public class MainMenuButtons : MonoBehaviour
 
     public void PlayButton()
     {
-        LoadingManager.SceneToLoad = "Baked_Level_1.5";
+        LoadingManager.SceneToLoad = "Level_1";
 
         // Load the loading screen ADDITIVELY so it doesn't kill this script immediately
         SceneManager.LoadScene("LoadingScene");
