@@ -110999,11 +110999,48 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 9159926559187481750, guid: a51b6ff6b21d0924a893a06a83e9636a, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e808fe3cb7f97664d81ea48f81b123a5, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7214314552096625987, guid: a51b6ff6b21d0924a893a06a83e9636a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1208210540}
   m_SourcePrefab: {fileID: 100100000, guid: a51b6ff6b21d0924a893a06a83e9636a, type: 3}
+--- !u!1 &1208210538 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7214314552096625987, guid: a51b6ff6b21d0924a893a06a83e9636a, type: 3}
+  m_PrefabInstance: {fileID: 1208210537}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1208210539 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 9159926559187481750, guid: a51b6ff6b21d0924a893a06a83e9636a, type: 3}
+  m_PrefabInstance: {fileID: 1208210537}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1208210540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208210538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2dea9946a72444d93525974bb1a240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 1208210539}
+  materialIndex: 1
+  columns: 12
+  rows: 12
+  totalFrames: 142
+  framesPerSecond: 12
+  playOnEnable: 1
+  loop: 1
 --- !u!43 &1209244018
 Mesh:
   m_ObjectHideFlags: 0
@@ -161607,6 +161644,7 @@ MonoBehaviour:
   enemyTracker: {fileID: 1792179235}
   includeInactiveSpawners: 0
   autoAssignTrackerToSpawners: 1
+  debugLogging: 1
 --- !u!1001 &1792273782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -180161,6 +180199,7 @@ MonoBehaviour:
     m_Bits: 24648
   visibilityBoundsPadding: 0.1
   visibilityRayOriginOffset: {x: 0, y: 0, z: 0}
+  scannerPulseSFX: {fileID: 0}
   onHuntModeStarted:
     m_PersistentCalls:
       m_Calls: []
