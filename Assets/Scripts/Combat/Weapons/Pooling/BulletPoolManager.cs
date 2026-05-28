@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
+
+//Script was Added from previous project
 public class BulletPoolManager : MonoBehaviour
 {
     //BulletPool 40 bullets?
