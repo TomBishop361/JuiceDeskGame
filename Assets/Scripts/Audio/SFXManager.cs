@@ -264,8 +264,8 @@ namespace Game.Audio {
 			AudioSource firstSource = null;
 			bool playedAnyClip = false;
 
-			// If the SFXDefinition is set to AllAtOnce, this loop layers every valid clip.
-			// If it is set to RandomOne, clipsToPlay only contains one clip.
+			// If the SFXDefinition is set to AllAtOnce, this loop layers every valid clip
+			// If it is set to RandomOne, clipsToPlay only contains one clip
 			for (int i = 0; i < clipsToPlay.Length; i++) {
 				AudioClip clip = clipsToPlay[i];
 
@@ -317,8 +317,8 @@ namespace Game.Audio {
 
 				playedAnyClip = true;
 
-				// One-shot sounds automatically return to the pool.
-				// Looping sounds must be stopped manually using the returned AudioSource.
+				// One-shot sounds automatically return to the pool
+				// Looping sounds must be stopped manually using the returned AudioSource
 				if (sfx.Loop == false) {
 					StartCoroutine(ReturnWhenFinished(source));
 				}
@@ -419,6 +419,7 @@ namespace Game.Audio {
 		}
 
 		// Waits until a non-looping AudioSource has finished playing, then returns it to the pool
+		// Looping sounds are not handled here because they need to be stopped manually
 		// Looping sounds are not handled here because they need to be stopped manually
 		private IEnumerator ReturnWhenFinished(AudioSource source) {
 			// Wait one frame so AudioSource.isPlaying has a chance to update after source.Play()

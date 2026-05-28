@@ -44,7 +44,7 @@ public class Grapple : MonoBehaviour
 	private PlayerNoiseEmitter noiseEmitter;
 
 	private void Awake() {
-		noiseEmitter = GetComponent<PlayerNoiseEmitter>();
+		noiseEmitter = GetComponentInParent<PlayerNoiseEmitter>();
 	}
 
 	private void OnEnable()

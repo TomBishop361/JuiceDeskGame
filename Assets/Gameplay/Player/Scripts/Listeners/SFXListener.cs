@@ -1,32 +1,28 @@
 using Game.Audio;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class SFXListener : MonoBehaviour
-{
-    EventManager _EventManager = EventManager.instance;
-
-    [Header("Sniper SFX")]
-    [Tooltip("Played when the sniper fires a charged shot.")]
-    [SerializeField] private SFXDefinition sniperChargeShootSFX;
-    [Tooltip("Time into the sniper charge/shoot SFX where the actual shot blast happens.")]
-    [SerializeField] private float sniperShotFireDelay = 1.02f;
-    
+public class SFXListener : MonoBehaviour {
+   EventManager _EventManager => EventManager.instance;
 
     [Header("SMG SFX")]
     [Tooltip("Played every time the SMG fires.")]
     [SerializeField] private SFXDefinition smgFireSFX;
 
+    [Header("Sniper SFX")]
+    [Tooltip("Played when the sniper fires a charged shot.")]
+    [SerializeField] private SFXDefinition sniperChargeShootSFX;
 
-    void OnEnable()
-    {
+	private void OnEnable() {
         _EventManager.Subscribe("SniperShot", PlaySniperSound);
-        _EventManager.Subscribe("SMGShot",PlaySMG);
+        _EventManager.Subscribe("SMGShot", PlaySMG);
     }
 
+	private void OnDisable() {
+		_EventManager.Unsubscribe("SMGShot", PlaySMG);
+		_EventManager.Unsubscribe("SniperShot", PlaySniperSound);
+	}
 
-    void PlaySniperSound(object data)
-    {
+	private void PlaySniperSound(object data) {
         Transform origin = data as Transform;
 
         if (origin == null)
@@ -35,8 +31,7 @@ public class SFXListener : MonoBehaviour
         SFXManager.PlayAttached(sniperChargeShootSFX, origin);
     }
 
-    void PlaySMG(object data)
-    {
+	private void PlaySMG(object data) {
         Transform origin = data as Transform;
 
         if (origin == null)

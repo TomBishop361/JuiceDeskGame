@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Rendering;
+using Game.Audio;
 
 namespace Game.AI.Sword {
 	// Explicit lunge phases make it easier to control damage reactions + movement + animation events + recovery separately
@@ -97,6 +96,14 @@ namespace Game.AI.Sword {
 		[Header("Animation")]
 		[Tooltip("Animator trigger name used to start the lunge animation.")]
 		[SerializeField] private string lungeTriggerName = "Lunge";
+
+		[Header("SFX")]
+		[Tooltip("Played when the lunge dash actually begins.")]
+		[SerializeField] private SFXDefinition lungeDashSFX;
+		[Tooltip("Optional point where the lunge sound should play from. If empty, the enemy root is used.")]
+		[SerializeField] private Transform lungeSFXPoint;
+		[Tooltip("If true, the lunge SFX plays at the exact dash-start moment.")]
+		[SerializeField] private bool playLungeSFXOnDashStart = true;
 
 		// How many target-position samples are cached for lagged lunge aiming.
 		private const int TargetHistoryCapacity = 16;
@@ -452,6 +459,11 @@ namespace Game.AI.Sword {
 
 			SetWindupGlowVisible(false);
 			SetPhase(SwordLungePhase.Dash);
+
+			if (playLungeSFXOnDashStart) {
+				PlayLungeDashSFX(owner);
+			}
+
 			owner.DisableNavAgent();
 
 			lungeRB.isKinematic = false;
@@ -737,6 +749,25 @@ namespace Game.AI.Sword {
 		private Vector3 Flatten(Vector3 value) {
 			value.y = 0.0f;
 			return value;
+		}
+
+		// Plays the lunge dash SFX from the assigned point if available, otherwise from the enemy root
+		private void PlayLungeDashSFX(SwordEnemy owner) {
+			if (lungeDashSFX == null) {
+				return;
+			}
+
+			Transform sfxTarget = lungeSFXPoint;
+
+			if (sfxTarget == null && owner != null) {
+				sfxTarget = owner.transform;
+			}
+
+			if (sfxTarget == null) {
+				sfxTarget = transform;
+			}
+
+			SFXManager.PlayAttached(lungeDashSFX, sfxTarget);
 		}
 
 		// Draws the locked aim point and clamped dash endpoint for quick tuning in the Scene view
