@@ -2729,7 +2729,9 @@ GameObject:
   - component: {fileID: 5447062614033670975}
   - component: {fileID: 8330575932952866227}
   - component: {fileID: 1127249066402206109}
+  - component: {fileID: 8291113777328702534}
   - component: {fileID: 2481668657288226550}
+  - component: {fileID: 5923364076685414571}
   - component: {fileID: 7401631509944898134}
   - component: {fileID: 3102673259003457122}
   - component: {fileID: 2912212841907514719}
@@ -2749,8 +2751,8 @@ GameObject:
   - component: {fileID: 749521401872351453}
   - component: {fileID: 7761443611690410262}
   - component: {fileID: 3639359626453078628}
-  - component: {fileID: 5923364076685414571}
-  - component: {fileID: 8291113777328702534}
+  - component: {fileID: 846355696536556436}
+  - component: {fileID: 8318862195946778889}
   m_Layer: 7
   m_Name: Player_Root_Model
   m_TagString: Player
@@ -2919,7 +2921,6 @@ MonoBehaviour:
   maxSlideTime: 0.75
   SlideDownforce: 800
   slideForce: 35
-  slideNoiseInterval: 0.35
   slideYScale: 0.5
 --- !u!114 &1127249066402206109
 MonoBehaviour:
@@ -2953,6 +2954,28 @@ MonoBehaviour:
   wallJumpSideForce: 20
   exitWallTime: 0.5
   forceMode: 1
+--- !u!114 &8291113777328702534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f174d641cabb8df4587a559e71012fab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 7128203245387133486}
+  cameraTransform: {fileID: 0}
+  onRail: 0
+  canRailGrind: 1
+  railGrindTime: 1
+  railBoost: 25
+  grindSpeed: 12
+  heightOffset: 1
+  currentRailScript: {fileID: 0}
+  _health: {fileID: 6915328010031275841}
 --- !u!114 &2481668657288226550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2987,6 +3010,22 @@ MonoBehaviour:
   grapplingCoolDown: 1
   BestGrappleAnchor: {fileID: 0}
   CurrentGrappleAnchor: {fileID: 0}
+--- !u!114 &5923364076685414571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2055e3b73ce5349bd396524b3cbd10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainController: {fileID: 7128203245387133486}
+  grappleSpeedBoost: 1.5
+  grapplePullForce: 20
+  anchorLaunchAmount: 25
 --- !u!114 &7401631509944898134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3041,8 +3080,6 @@ MonoBehaviour:
   CoolDownRate: 10
   StartNaturalCoolDownTime: 1
   bulletPoolManager: {fileID: 0}
-  weaponNoiseInterval: 0.15
-  smgFireSFX: {fileID: 11400000, guid: c223b3d5b7939a94aa40cb931567d246, type: 2}
 --- !u!114 &2912212841907514719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3286,16 +3323,11 @@ MonoBehaviour:
   attackDataCacheWindow: 0.08
   normalFeedbackInterval: 0.12
   rangedFeedbackInterval: 0.18
-  meleeHitClips:
-  - {fileID: 8300000, guid: 01f76cfb545e8c1408ecaa1586bdf3d2, type: 3}
-  - {fileID: 8300000, guid: d9962a40de49dc044a1ea2409a93751a, type: 3}
-  rangedHitClips:
-  - {fileID: 8300000, guid: 2f4604b6b1e9b014db4ba177cb6354db, type: 3}
-  - {fileID: 8300000, guid: fe862ed7f26db3a41997f3ee0042e56e, type: 3}
-  - {fileID: 8300000, guid: 1bd362c7a14cc644cb39fc4a776cc608, type: 3}
-  heavyHitClips: []
-  randomPitchRange: {x: 0.94, y: 1.06}
-  hitVolume: 0.85
+  meleeHitSFX: {fileID: 0}
+  rangedHitSFX: {fileID: 0}
+  heavyHitSFX: {fileID: 0}
+  lightHitVolumeMultiplier: 0.65
+  fullHitVolumeMultiplier: 1
 --- !u!114 &3184003480799253394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3460,7 +3492,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &5923364076685414571
+--- !u!114 &846355696536556436
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3469,14 +3501,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7743499516999693894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af2055e3b73ce5349bd396524b3cbd10, type: 3}
+  m_Script: {fileID: 11500000, guid: ba0138d5fc5baec4681e693072c14c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainController: {fileID: 7128203245387133486}
-  grappleSpeedBoost: 1.5
-  grapplePullForce: 20
-  anchorLaunchAmount: 25
---- !u!114 &8291113777328702534
+  sniperChargeShootSFX: {fileID: 11400000, guid: 71bb9fe13b319a547a736664d818a1f0, type: 2}
+  sniperShotFireDelay: 1.02
+  smgFireSFX: {fileID: 11400000, guid: c223b3d5b7939a94aa40cb931567d246, type: 2}
+--- !u!114 &8318862195946778889
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3485,20 +3516,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7743499516999693894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f174d641cabb8df4587a559e71012fab, type: 3}
+  m_Script: {fileID: 11500000, guid: 3da8e6155cd092649a911437dc324ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 7128203245387133486}
-  cameraTransform: {fileID: 0}
-  onRail: 0
-  canRailGrind: 1
-  railGrindTime: 1
-  railBoost: 25
+  weaponNoiseInterval: 0.15
+  slideNoiseInterval: 0.35
   railGrindNoiseInterval: 0.3
-  grindSpeed: 12
-  heightOffset: 1
-  currentRailScript: {fileID: 0}
-  _health: {fileID: 6915328010031275841}
 --- !u!1 &7925212583705595643
 GameObject:
   m_ObjectHideFlags: 0

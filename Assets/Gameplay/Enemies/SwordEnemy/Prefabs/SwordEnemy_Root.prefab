@@ -793,6 +793,9 @@ MonoBehaviour:
   swingCooldown: 1.1
   swingLockTime: 0.58
   swingTriggerName: Swing
+  swingSFX: {fileID: 11400000, guid: fa06ebf9b905de643940bf425c72a6ec, type: 2}
+  swingSFXPoint: {fileID: 5453370431311965968}
+  playSwingSFXOnHitboxEnable: 1
 --- !u!114 &3023304084321499275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -844,6 +847,9 @@ MonoBehaviour:
   windupGlowColor: {r: 0, g: 1, b: 1, a: 1}
   windupGlowIntensity: 3
   lungeTriggerName: Lunge
+  lungeDashSFX: {fileID: 11400000, guid: eab8f327e710e9f478c9717429caca68, type: 2}
+  lungeSFXPoint: {fileID: 5453370431311965968}
+  playLungeSFXOnDashStart: 1
 --- !u!114 &1170873606460523252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2502,6 +2508,11 @@ SkinnedMeshRenderer:
 --- !u!137 &5050062651411704957 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8614859391451268611, guid: e4a47841e13734d44adf786b432fa674, type: 3}
+  m_PrefabInstance: {fileID: 3574536218554706558}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5453370431311965968 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -417411709044570770, guid: e4a47841e13734d44adf786b432fa674, type: 3}
   m_PrefabInstance: {fileID: 3574536218554706558}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &5482259163815485824 stripped

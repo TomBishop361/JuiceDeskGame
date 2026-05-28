@@ -1,3 +1,4 @@
+using Game.Audio;
 using UnityEngine;
 
 // Plays local feedback to the player based on their health loss
@@ -47,16 +48,16 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 	//[SerializeField] private float heavyCameraImpulse = 0.45f;
 
 	[Header("Audio")]
-	[Tooltip("Clips used when the player is hit by melee attacks.")]
-	[SerializeField] private AudioClip[] meleeHitClips;
-	[Tooltip("Clips used when the player is hit by ranged attacks.")]
-	[SerializeField] private AudioClip[] rangedHitClips;
-	[Tooltip("Clips used for heavy hits. Examples: lunge or slam shockwave damage.")]
-	[SerializeField] private AudioClip[] heavyHitClips;
-	[Tooltip("Random pitch range applied to one-shot hit sounds.")]
-	[SerializeField] private Vector2 randomPitchRange = new Vector2(0.94f, 1.06f);
-	[Tooltip("Base volume for player damage feedback sounds.")]
-	[SerializeField] private float hitVolume = 0.85f;
+	[Tooltip("Played when the player is hit by a melee enemy attack. Example: a sword swing.")]
+	[SerializeField] private SFXDefinition meleeHitSFX;
+	[Tooltip("Played when the player is hit by a ranged enemy attack. Example: a minigun bullet or drone projectile.")]
+	[SerializeField] private SFXDefinition rangedHitSFX;
+	[Tooltip("Played when the player is hit by a heavy enemy attack. Example: a sword lunge or shield slam shockwave.")]
+	[SerializeField] private SFXDefinition heavyHitSFX;
+	[Tooltip("Lowest volume multiplier used for light hits.")]
+	[SerializeField] private float lightHitVolumeMultiplier = 0.65f;
+	[Tooltip("Highest volume multiplier used for full-strength or heavy hits.")]
+	[SerializeField] private float fullHitVolumeMultiplier = 1.0f;
 
 	// Used to calculate how much health was lost
 	private float previousHealth;
@@ -125,10 +126,6 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 
 		if (directionIndicator == null) {
 			directionIndicator = GetComponentInChildren<PlayerDamageDirectionIndicator>(true);
-		}
-
-		if (audioSource == null) {
-			audioSource = GetComponent<AudioSource>();
 		}
 	}
 
@@ -283,47 +280,28 @@ public sealed class PlayerDamageFeedbackController : MonoBehaviour {
 	//	TriggerImpulse(cameraImpulseSource, impulseForce, impulseDirection);
 	//}
 
-	// Plays the correct hit audio for the damage type and strength
+	// Plays the correct SFXDefinition for the damage type and strength
 	private void PlayHitAudio(DamageType type, bool isHeavyHit, float strength) {
-		if (audioSource == null) {
+		SFXDefinition sfx = PickHitSFX(type, isHeavyHit);
+
+		if (sfx == null) {
 			return;
 		}
-
-		AudioClip clip = PickClip(type, isHeavyHit);
-		if (clip == null) {
-			return;
-		}
-
-		// Temporarily randomise pitch for the one-shot sound
-		// Prevents repeated hits from sounding identical
-		float oldPitch = audioSource.pitch;
-		audioSource.pitch = Random.Range(randomPitchRange.x, randomPitchRange.y);
 
 		// Stronger hits play slightly louder
-		audioSource.PlayOneShot(clip, hitVolume * Mathf.Lerp(0.65f, 1.0f, strength));
+		// Pitch and clip randomisation are inside the SFXDefinition asset
+		float volumeMultiplier = Mathf.Lerp(lightHitVolumeMultiplier,fullHitVolumeMultiplier, Mathf.Clamp01(strength));
 
-		// Restore original pitch so other audio on the source is not permanently affected
-		audioSource.pitch = oldPitch;
+		// This is local player feedback so we use Play() for a 2D sound
+		SFXManager.Play(sfx, volumeMultiplier);
 	}
 
-	// Chooses which audio category to use for this hit
-	private AudioClip PickClip(DamageType type, bool isHeavyHit) {
-		if (isHeavyHit) {
-			AudioClip heavyClip = PickRandomClip(heavyHitClips);
-			if (heavyClip != null) {
-				return heavyClip;
-			}
+	// Chooses which SFXDefinition should be used for this hit
+	private SFXDefinition PickHitSFX(DamageType type, bool isHeavyHit) {
+		if (isHeavyHit && heavyHitSFX != null) {
+			return heavyHitSFX;
 		}
 
-		return type == DamageType.Melee ? PickRandomClip(meleeHitClips) : PickRandomClip(rangedHitClips);
-	}
-
-	// Picks a random audio clip from an array
-	private AudioClip PickRandomClip(AudioClip[] clips) {
-		if (clips == null || clips.Length == 0) {
-			return null;
-		}
-
-		return clips[Random.Range(0, clips.Length)];
+		return type == DamageType.Melee ? meleeHitSFX : rangedHitSFX;
 	}
 }

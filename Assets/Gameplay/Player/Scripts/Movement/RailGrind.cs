@@ -17,7 +17,6 @@ public class RailGrind : MonoBehaviour
     private int RailtimerID;
 
     public float railBoost;
-    [SerializeField] private float railGrindNoiseInterval = 0.3f;
 
     [SerializeField] float grindSpeed;
     [SerializeField] float heightOffset; // playerheight/2

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Game.Audio;
 
 namespace Game.AI.Sword {
 	// Handles the sword enemy's normal melee swing, including cooldown checks + swing range validation + hitbox setup
@@ -26,6 +27,14 @@ namespace Game.AI.Sword {
 		[Header("Animation")]
 		[Tooltip("Animator trigger name used to start the swing animation.")]
 		[SerializeField] private string swingTriggerName = "Swing";
+
+		[Header("SFX")]
+		[Tooltip("Played when the sword swing becomes active.")]
+		[SerializeField] private SFXDefinition swingSFX;
+		[Tooltip("Optional point where the swing sound should play from. If empty, the enemy root is used.")]
+		[SerializeField] private Transform swingSFXPoint;
+		[Tooltip("If true, the swing SFX plays when the swing hitbox is enabled by the animation event.")]
+		[SerializeField] private bool playSwingSFXOnHitboxEnable = true;
 
 		// Sword swing attack cooldown/state timers
 
@@ -108,6 +117,10 @@ namespace Game.AI.Sword {
 
 		// Enables the swing hitbox during the active damage frames
 		public void EnableSwingHitbox() {
+			if (playSwingSFXOnHitboxEnable) {
+				PlaySwingSFX();
+			}
+
 			if (swingHitbox != null) {
 				swingHitbox.Enable();
 			}
@@ -123,6 +136,25 @@ namespace Game.AI.Sword {
 		// Disables all melee hitboxes owned by this module
 		public void DisableAllHitboxes() {
 			DisableSwingHitbox();
+		}
+
+		// Plays the sword swing SFX from the sword point if assigned, otherwise from the enemy root
+		private void PlaySwingSFX() {
+			if (swingSFX == null) {
+				return;
+			}
+
+			Transform sfxTarget = swingSFXPoint;
+
+			if (sfxTarget == null && activeOwner != null) {
+				sfxTarget = activeOwner.transform;
+			}
+
+			if (sfxTarget == null) {
+				sfxTarget = transform;
+			}
+
+			SFXManager.PlayAttached(swingSFX, sfxTarget);
 		}
 	}
 }
