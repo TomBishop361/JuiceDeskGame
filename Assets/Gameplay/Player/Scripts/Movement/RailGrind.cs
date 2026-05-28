@@ -170,6 +170,7 @@ public class RailGrind : MonoBehaviour
         currentRailScript.CalculateDirection(forward, transform.forward);
         transform.position = splinePoint + (transform.up * heightOffset);
 
+        EventManager.instance.Invoke("OnRailGrind");
         SparkVFX.SetActive(true);
     }
 

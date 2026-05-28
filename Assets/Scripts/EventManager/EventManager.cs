@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages Event, allows for subscribing to events without referencing other scripts
+/// </summary>
 public class EventManager 
 {
     private Dictionary<string, Action<object>> _table = new Dictionary<string, Action<object>>();

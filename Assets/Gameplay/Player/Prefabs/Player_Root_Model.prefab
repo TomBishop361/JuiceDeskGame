@@ -2753,6 +2753,8 @@ GameObject:
   - component: {fileID: 3639359626453078628}
   - component: {fileID: 846355696536556436}
   - component: {fileID: 8318862195946778889}
+  - component: {fileID: 3065674816596522182}
+  - component: {fileID: 6683983704469344180}
   m_Layer: 7
   m_Name: Player_Root_Model
   m_TagString: Player
@@ -2921,6 +2923,7 @@ MonoBehaviour:
   maxSlideTime: 0.75
   SlideDownforce: 800
   slideForce: 35
+  SparksVFX: {fileID: 0}
   slideYScale: 0.5
 --- !u!114 &1127249066402206109
 MonoBehaviour:
@@ -2975,7 +2978,7 @@ MonoBehaviour:
   grindSpeed: 12
   heightOffset: 1
   currentRailScript: {fileID: 0}
-  _health: {fileID: 6915328010031275841}
+  SparkVFX: {fileID: 0}
 --- !u!114 &2481668657288226550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3504,9 +3507,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba0138d5fc5baec4681e693072c14c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sniperChargeShootSFX: {fileID: 11400000, guid: 71bb9fe13b319a547a736664d818a1f0, type: 2}
-  sniperShotFireDelay: 1.02
   smgFireSFX: {fileID: 11400000, guid: c223b3d5b7939a94aa40cb931567d246, type: 2}
+  sniperChargeShootSFX: {fileID: 11400000, guid: 71bb9fe13b319a547a736664d818a1f0, type: 2}
 --- !u!114 &8318862195946778889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3519,9 +3521,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da8e6155cd092649a911437dc324ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponNoiseInterval: 0.15
+  smgNoiseInterval: 0.15
+  sniperNoiseInterval: 0.5
+  sniperNoiseMultiplier: 1.35
   slideNoiseInterval: 0.35
   railGrindNoiseInterval: 0.3
+--- !u!114 &3065674816596522182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0138d5fc5baec4681e693072c14c60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smgFireSFX: {fileID: 11400000, guid: c223b3d5b7939a94aa40cb931567d246, type: 2}
+  sniperChargeShootSFX: {fileID: 11400000, guid: 71bb9fe13b319a547a736664d818a1f0, type: 2}
+--- !u!114 &6683983704469344180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7743499516999693894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3da8e6155cd092649a911437dc324ecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smgNoiseInterval: 0.15
+  sniperNoiseInterval: 0.5
+  sniperNoiseMultiplier: 1.35
+  slideNoiseInterval: 0.35
+  railGrindNoiseInterval: 0
 --- !u!1 &7925212583705595643
 GameObject:
   m_ObjectHideFlags: 0

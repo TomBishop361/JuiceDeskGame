@@ -272,7 +272,8 @@ public class InputController : MonoBehaviour
 
     private void SprintPressed(bool value)
     {
-        sprint = value;
+        sprint = value;        
+        EventManager.instance.Invoke("OnSprint",sprint);
     }
 
     #endregion
@@ -358,6 +359,7 @@ public class InputController : MonoBehaviour
                 rb.linearVelocity = new Vector3(moveDir.x, rb.linearVelocity.y, moveDir.z);
             }
         }
+       
 
         // 5. Rotation Logic
         Vector3 horizontalView = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
