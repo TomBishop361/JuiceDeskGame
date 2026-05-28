@@ -2,6 +2,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(GrappleMovement), typeof(Grapple))]
 public class GrappleAnchorSelector : MonoBehaviour
@@ -31,14 +32,42 @@ public class GrappleAnchorSelector : MonoBehaviour
     public delegate void anchorFound(AnchorPoint anchor);
     public event anchorFound OnAnchorFound;
 
-
-    private void Start()
-    {
-
-        anchorPoints = FindObjectsOfType<AnchorPoint>();
+    private void Start() {
+        RefreshAnchorPoints();
     }
 
-    private void Update()
+	private void OnEnable() {
+		SceneManager.sceneLoaded += OnSceneLoaded;
+		SceneManager.sceneUnloaded += OnSceneUnloaded;
+		AirlockSceneTransitionPortal.OnAnyPlayerHandoff += RefreshAnchorPoints;
+	}
+
+	private void OnDisable() {
+		SceneManager.sceneLoaded -= OnSceneLoaded;
+		SceneManager.sceneUnloaded -= OnSceneUnloaded;
+		AirlockSceneTransitionPortal.OnAnyPlayerHandoff -= RefreshAnchorPoints;
+	}
+
+	private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+		RefreshAnchorPoints();
+	}
+
+	private void OnSceneUnloaded(Scene scene) {
+		RefreshAnchorPoints();
+	}
+
+	private void RefreshAnchorPoints() {
+		anchorPoints = FindObjectsByType<AnchorPoint>(FindObjectsSortMode.None);
+
+		if (bestAnchor != null) {
+			bestAnchor.deactivate();
+		}
+
+		bestAnchor = null;
+		ClosestAnchor = null;
+	}
+
+	private void Update()
     {
         
         GetBestAnchorInView(out AnchorPoint newAnchor);
@@ -70,8 +99,11 @@ public class GrappleAnchorSelector : MonoBehaviour
 
         foreach (AnchorPoint anchor in anchorPoints)
         {
+			if (anchor == null) {
+				continue;
+			}
 
-            if(Vector3.Distance(_camera.transform.position,anchor.transform.position) > grappleMaxDist)
+			if (Vector3.Distance(_camera.transform.position,anchor.transform.position) > grappleMaxDist)
             {
                 if (anchor == ClosestAnchor) ClosestAnchor = null;
                 continue;
@@ -98,11 +130,6 @@ public class GrappleAnchorSelector : MonoBehaviour
         result = bestTarget;
         return result;
     }
-
-
-
-
-
 
     void GrappleUI()
     {

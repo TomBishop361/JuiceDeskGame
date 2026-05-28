@@ -1,3 +1,4 @@
+using Game.Audio;
 using UnityEngine;
 namespace Game.AI.Shield {
     [DisallowMultipleComponent]
@@ -21,6 +22,10 @@ namespace Game.AI.Shield {
 		[SerializeField] private string shieldRaisedBoolName = "ShieldRaised";
 		[Tooltip("Animator trigger name used to play the shield block reaction animation.")]
 		[SerializeField] private string blockReactTriggerName = "BlockReact";
+
+		[Header("SFX")]
+		[Tooltip("Played when the shield successfully blocks or deflects an incoming hit.")]
+		[SerializeField] private SFXDefinition shieldBlockSFX;
 
 		// Cooldown timer for when the next lunge is allowed to start
 		private float exposedEndTime = -Mathf.Infinity;
@@ -147,6 +152,9 @@ namespace Game.AI.Shield {
 
 			nextBlockReactTime = Time.time + 0.20f;
 			animator.SetTrigger(blockReactTriggerHash);
+
+			// Play block feedback here so the sound follows the same cooldown as the block reaction animation
+			SFXManager.PlayAttached(shieldBlockSFX, transform);
 		}
 
 		private void UpdateShieldBlockState(Transform target) {

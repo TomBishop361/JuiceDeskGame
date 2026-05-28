@@ -371,13 +371,13 @@ namespace Game.AI.Sword {
 
 		// Animation event entry point
 		// Starts the dash using the aim point locked at windup start
-		public void OnLungeDashStart(SwordEnemy owner) {
+		public void StartLungeDashFromOwner(SwordEnemy owner) {
 			BeginDash(owner != null ? owner : activeOwner);
 		}
 
 		// Animation event entry point
 		// Ends the dash cleanly and enters recovery
-		public void OnLungeDashEnd(SwordEnemy owner) {
+		public void EndLungeDashFromOwner(SwordEnemy owner) {
 			EndDash(owner != null ? owner : activeOwner);
 		}
 

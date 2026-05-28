@@ -1,3 +1,4 @@
+using Game.Audio;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -77,6 +78,12 @@ namespace Game.AI.Shield {
 		[Tooltip("Animator bool name used while continuously firing.")]
 		[SerializeField] private string fireBoolName = "IsFiring";
 
+		[Header("SFX")]
+		[Tooltip("Played every time the shield minigun fires a hitscan shot.")]
+		[SerializeField] private SFXDefinition minigunFireSFX;
+		[Tooltip("Played when the minigun overheats and forces the shield enemy into exposed state.")]
+		[SerializeField] private SFXDefinition minigunOverheatSFX;
+
 		// Stores historical target positions with timestamps
 		// So the minigun can aim at a delayed target position
 		private struct AimSample {
@@ -104,6 +111,7 @@ namespace Game.AI.Shield {
 		private ShieldEnemy activeOwner;
 
 		private IObjectPool<PooledObject> tracerPool;
+		private AudioSource minigunFireLoopSource;
 
 		// Shield Enemy Minigun Specific Properties 
 
@@ -171,6 +179,10 @@ namespace Game.AI.Shield {
 
 			if (IsFiring == false) {
 				minigunFireStartTime = Time.time;
+
+				// Start a continuous minigun loop without restarting it every bullet
+				Transform sfxParent = minigunMuzzle != null ? minigunMuzzle : transform;
+				minigunFireLoopSource = SFXManager.PlayAttached(minigunFireSFX, sfxParent);
 			}
 
 			activeOwner = owner;
@@ -192,6 +204,9 @@ namespace Game.AI.Shield {
 
 		// Stops continuous firing and clears temporary aim state
 		public void StopFiring(Animator animator) {
+			SFXManager.Stop(minigunFireLoopSource);
+			minigunFireLoopSource = null;
+
 			IsFiring = false;
 			activeOwner = null;
 			minigunFireStartTime = -Mathf.Infinity;
@@ -200,6 +215,9 @@ namespace Game.AI.Shield {
 			if (animator != null) {
 				animator.SetBool(fireBoolHash, false);
 			}
+
+
+
 
 			// Prevent instantly resetting emission
 			// TickFire() cools the heat down gradually while IsFiring is false
@@ -257,6 +275,9 @@ namespace Game.AI.Shield {
 
 			// Overheat check
 			if (HasMinigunOverheated()) {
+				// Play the overheat fail sound before entering exposed state
+				SFXManager.PlayAttached(minigunOverheatSFX, transform);
+
 				StopFiring(animator);
 				owner.SetShieldRaised(false);
 				owner.EnterExposedState(minigunExposeDuration);
