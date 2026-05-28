@@ -1,6 +1,7 @@
 using Game.Combat.Projectiles;
 using UnityEngine;
 using UnityEngine.Pool;
+using Game.Audio;
 
 namespace Game.AI.Drone {
 	[DisallowMultipleComponent]
@@ -35,15 +36,12 @@ namespace Game.AI.Drone {
 		[Tooltip("Populate the projectile pool during Awake so the first shot doesn't cause any lag.")]
 		[SerializeField] private bool populateProjectilePoolAtStartup = true;
 
-		//[Header("Animation")]
-		//[Tooltip("Whether the drone will fire a projectile based on the animation event or not.")]
-		//[SerializeField] private bool fireOnAnimationEvent = true;
-		//[Tooltip("Animator trigger name used to start the fire animation.")]
-		//[SerializeField] private string fireTriggerName = "Fire";
+		[Header("SFX")]
+		[Tooltip("Played when the drone actually launches a homing projectile.")]
+		[SerializeField] private SFXDefinition projectileLaunchSFX;
 
 		// Cooldown/State timers
 		private float nextFireTime = -Mathf.Infinity;
-		//private int fireTriggerHash;
 
 		private DroneVisualMotion droneVisualMotion;
 		private DroneEnemy activeOwner;
@@ -53,7 +51,6 @@ namespace Game.AI.Drone {
 		public DroneHomingProjectileStats HomingProjectileStats => homingProjectileStats;
 
 		private void Awake() {
-			//fireTriggerHash = Animator.StringToHash(fireTriggerName);
 			droneVisualMotion = GetComponent<DroneVisualMotion>();
 			SetupProjectilePool();
 		}
@@ -173,6 +170,9 @@ namespace Game.AI.Drone {
 			homingProjectile.Configure(BuildProjectileAttackData(), homingProjectileStats);
 			homingProjectile.Init(target);
 			homingProjectile.Launch(direction);
+
+			// Play the launch sound at the actual projectile spawn position
+			SFXManager.PlayAtPosition(projectileLaunchSFX, spawnPosition);
 
 			//if (projectileObject.TryGetComponent(out Rigidbody rigidbody)) {
 			//	rigidbody.linearVelocity = direction.normalized * 14.0f;
