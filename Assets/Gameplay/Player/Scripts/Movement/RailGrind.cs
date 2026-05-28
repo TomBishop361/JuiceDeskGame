@@ -24,7 +24,9 @@ public class RailGrind : MonoBehaviour
     float timeForFullSpline;
     float elapsdTime;
     [SerializeField] RailScript currentRailScript;
-    [SerializeField] Health _health;
+    
+
+    [SerializeField] GameObject SparkVFX;
 
     bool isRailGrinding {
         get => controller.isRailGrinding;
@@ -168,6 +170,8 @@ public class RailGrind : MonoBehaviour
         SplineUtility.Evaluate(currentRailScript.railSpline.Spline, normalisedTime, out pos, out forward, out up);
         currentRailScript.CalculateDirection(forward, transform.forward);
         transform.position = splinePoint + (transform.up * heightOffset);
+
+        SparkVFX.SetActive(true);
     }
 
     void throwOffRail()
@@ -181,7 +185,7 @@ public class RailGrind : MonoBehaviour
             canRailGrind = false;
             railGrindTimer = railGrindTime;
             _timerManager.RestartTimer(RailtimerID);
-
+            SparkVFX.SetActive(false);
 
             Vector3 launchDir = transform.forward;
             launchDir.y = 0f;

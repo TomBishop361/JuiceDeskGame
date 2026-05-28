@@ -17,6 +17,8 @@ public class Sliding : MonoBehaviour
     [SerializeField] float SlideDownforce;
     public float slideForce;
 
+    [SerializeField] GameObject SparksVFX;
+
 
 
 	TimerManager _timerManager;
@@ -106,6 +108,9 @@ public class Sliding : MonoBehaviour
         _timerManager.RestartTimer(SlideTimerID);
 
         EventManager.instance.Invoke("OnSlide");
+
+        if (SparksVFX != null)
+            SparksVFX.SetActive(true);
     }
 
     void StopSlide()
@@ -118,6 +123,8 @@ public class Sliding : MonoBehaviour
         
         _capsuleCollider.height = startYScale;
 
+        if (SparksVFX != null)
+            SparksVFX.SetActive(false);
     }
   
 
