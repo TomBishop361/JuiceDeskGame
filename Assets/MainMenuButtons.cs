@@ -7,6 +7,11 @@ public class MainMenuButtons : MonoBehaviour
     public UnityEvent CreditsEvent;
     public UnityEvent BackEvent;
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+
     public void PlayButton()
     {
         LoadingManager.SceneToLoad = "Level_1";
