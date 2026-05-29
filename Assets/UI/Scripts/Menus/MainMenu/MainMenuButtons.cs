@@ -7,7 +7,11 @@ public class MainMenuButtons : MonoBehaviour
     public UnityEvent CreditsEvent;
     public UnityEvent BackEvent;
 
-    private void Start()
+	private void Awake() {
+		DontDestroyOnLoadCleaner.DestroyAllDontDestroyOnLoadObjects();
+	}
+
+	private void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;
     }

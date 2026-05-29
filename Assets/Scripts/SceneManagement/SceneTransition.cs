@@ -62,7 +62,7 @@ public class SceneTransition : MonoBehaviour {
 		fadeGroup.interactable = false;
 	}
 
-	private IEnumerator FadeAndLoad(string sceneName) {
+	public IEnumerator FadeAndLoad(string sceneName) {
 		FindFadeGroup();
 
 		if (fadeGroup == null) {
@@ -79,7 +79,8 @@ public class SceneTransition : MonoBehaviour {
 			fadeGroup.alpha = Mathf.Clamp01(fadeGroup.alpha);
 			yield return null;
 		}
-
+		Cursor.visible = true;
+		Cursor.lockState = CursorLockMode.None;
 		SceneManager.LoadScene(sceneName);
 	}
 }

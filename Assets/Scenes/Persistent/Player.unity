@@ -504,6 +504,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eed9dded05bc29c40898b3f1a1a70916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!225 &350004795 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 8627946133683133535, guid: 6d235cd6a12245d4da4e9fccc3f0d693, type: 3}
+  m_PrefabInstance: {fileID: 648949999}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &403469439
 GameObject:
   m_ObjectHideFlags: 0
@@ -1987,6 +1992,52 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 333268269445579637, guid: 6d235cd6a12245d4da4e9fccc3f0d693, type: 3}
   m_PrefabInstance: {fileID: 648949999}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &743163584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 743163586}
+  - component: {fileID: 743163585}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &743163585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743163584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00dbd8b917bf2ad4abe8a966cdbec7eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeGroup: {fileID: 350004795}
+  fadeSpeed: 2
+--- !u!4 &743163586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743163584}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.8103347, y: 47.324398, z: -65.59504}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &819703350
 GameObject:
   m_ObjectHideFlags: 0
@@ -3847,6 +3898,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9b52d36e5ffa249bbd7624b6d488dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pauseManager: {fileID: 1834086979}
+  sceneTransition: {fileID: 743163585}
 --- !u!1001 &2021846441
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4562,3 +4615,4 @@ SceneRoots:
   - {fileID: 1031545242}
   - {fileID: 467306874}
   - {fileID: 2063015925}
+  - {fileID: 743163586}
