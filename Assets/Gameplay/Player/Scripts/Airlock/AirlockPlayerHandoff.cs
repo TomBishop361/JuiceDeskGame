@@ -124,12 +124,21 @@ public sealed class AirlockPlayerHandoff : MonoBehaviour {
 
 		disabledComponentStates.Clear();
 
+		if (inputController != null) {
+			inputController.freeze = previousInputControllerFreeze;
+		}
+
+		if (playerRigidbody != null) {
+			playerRigidbody.isKinematic = false;
+			playerRigidbody.detectCollisions = true;
+		}
+
 		if (playerInput != null) {
-			playerInput.enabled = previousPlayerInputEnabled;
+			playerInput.enabled = true;
 		}
 
 		if (inputController != null) {
-			inputController.enabled = previousInputControllerEnabled;
+			inputController.enabled = true;
 			inputController.freeze = previousInputControllerFreeze;
 		}
 
@@ -164,6 +173,8 @@ public sealed class AirlockPlayerHandoff : MonoBehaviour {
 		}
 
 		ResolveReferences();
+
+		Physics.SyncTransforms();
 
 		MovePlayer(
 			entryPoint.position, 

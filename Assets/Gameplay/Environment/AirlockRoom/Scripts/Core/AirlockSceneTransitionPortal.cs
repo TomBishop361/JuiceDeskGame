@@ -313,9 +313,18 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			yield return new WaitForSeconds(pressuriseDelay);
 		}
 
-		// Hide the screen before activating the next scene
+		// Hide the screen before any scene unload/load work happens.
 		yield return FadeTo(1.0f, fadeOutDuration);
 
+		// Unload the old level first so the old and new baked/static level scenes are not alive together.
+		// This is safe only because the Player/UI scenes are persistent and protected.
+		yield return UnloadPreviousSceneRoutine(previousScene);
+
+		if (currentStatus == AirlockStatus.Failed) {
+			yield break;
+		}
+
+		// Now load the next level while the screen is still black.
 		SetStatus(AirlockStatus.LoadingNextScene);
 		yield return LoadNextSceneDuringBlackout();
 
@@ -326,19 +335,22 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 		SetStatus(AirlockStatus.HandingOffPlayer);
 
 		if (playerHandoff != null && targetEntryPoint != null) {
-			// Only the player moves
+			// Only the player moves. The loaded scene root/static geometry is never moved.
 			playerHandoff.TeleportToEntryPoint(
-				targetEntryPoint.transform, 
-				alignPlayerToEntryPointRotation, 
-				velocityHandling, 
-				velocityDamping, 
+				targetEntryPoint.transform,
+				alignPlayerToEntryPointRotation,
+				velocityHandling,
+				velocityDamping,
 				clearAngularVelocity
 			);
 
-			// Inspector event on the transition portal
+			// Make sure physics/ground checks see the new player position immediately.
+			Physics.SyncTransforms();
+
+			// Inspector event on the transition portal.
 			onPlayerHandoff?.Invoke();
 
-			// Runtime event that newly loaded scene objects can listen to
+			// Runtime event that newly loaded scene objects can listen to.
 			OnAnyPlayerHandoff?.Invoke();
 		}
 		else {
@@ -348,9 +360,6 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 
 		UpdateCheckpointAfterHandoff();
 
-		// Optional animation hook after arriving in the next scene
-		SetAnimatorTrigger(airlockAnimator, depressuriseTriggerName);
-
 		if (minimumBlackoutTime > 0.0f) {
 			yield return new WaitForSeconds(minimumBlackoutTime);
 		}
@@ -359,9 +368,55 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 			yield return new WaitForSeconds(postHandoffDelay);
 		}
 
-		// Unload the previous level while the screen is still black
-		// Avoids showing any old-scene cleanup to the player
-		yield return UnloadPreviousSceneRoutine(previousScene);
+		//// Hide the screen before activating the next scene
+		//yield return FadeTo(1.0f, fadeOutDuration); //
+
+		//SetStatus(AirlockStatus.LoadingNextScene);
+		//yield return LoadNextSceneDuringBlackout();
+
+		//if (currentStatus == AirlockStatus.Failed) {
+		//	yield break;
+		//}
+
+		//SetStatus(AirlockStatus.HandingOffPlayer);
+
+		//if (playerHandoff != null && targetEntryPoint != null) {
+		//	// Only the player moves
+		//	playerHandoff.TeleportToEntryPoint(
+		//		targetEntryPoint.transform, 
+		//		alignPlayerToEntryPointRotation, 
+		//		velocityHandling, 
+		//		velocityDamping, 
+		//		clearAngularVelocity
+		//	);
+
+		//	// Inspector event on the transition portal
+		//	onPlayerHandoff?.Invoke();
+
+		//	// Runtime event that newly loaded scene objects can listen to
+		//	OnAnyPlayerHandoff?.Invoke();
+		//}
+		//else {
+		//	FailTransition("Player handoff failed because the player handoff or target entry point is missing.");
+		//	yield break;
+		//}
+
+		//UpdateCheckpointAfterHandoff();
+
+		//// Optional animation hook after arriving in the next scene
+		//SetAnimatorTrigger(airlockAnimator, depressuriseTriggerName);
+
+		//if (minimumBlackoutTime > 0.0f) {
+		//	yield return new WaitForSeconds(minimumBlackoutTime);
+		//}
+
+		//if (postHandoffDelay > 0.0f) {
+		//	yield return new WaitForSeconds(postHandoffDelay);
+		//}
+
+		//// Unload the previous level while the screen is still black
+		//// Avoids showing any old-scene cleanup to the player
+		//yield return UnloadPreviousSceneRoutine(previousScene);
 
 		// Play the fullscreen transition animation after the hidden load and handoff is finished, but before the fade clears
 		// The fade panel remains black behind the animation
@@ -462,7 +517,7 @@ public sealed class AirlockSceneTransitionPortal : MonoBehaviour {
 
 	private IEnumerator UnloadPreviousSceneRoutine(Scene previousScene) {
 		if (IsSceneSafeToUnload(previousScene) == false) {
-			Debug.LogWarning($"{name}: Old scene '{previousScene.name}' is protected or invalid and cannot be unloaded.", this);
+			FailTransition($"Old scene '{previousScene.name}' is protected or invalid and cannot be unloaded before loading the next scene.");
 			yield break;
 		}
 
