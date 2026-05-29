@@ -62,7 +62,7 @@ public class SceneTransition : MonoBehaviour {
 		fadeGroup.interactable = false;
 	}
 
-	public IEnumerator FadeAndLoad(string sceneName) {
+	private IEnumerator FadeAndLoad(string sceneName) {
 		FindFadeGroup();
 
 		if (fadeGroup == null) {
