@@ -20,8 +20,8 @@ public class ScreenShaderHandler : MonoBehaviour
 
         EventManager.instance.Subscribe("OnWallrunEnd", DisableHandler);
 
-        EventManager.instance.Subscribe("OnRailGrind", DisableHandler);
-        EventManager.instance.Subscribe("OnRailGrindEnd", EnableHandler);
+        EventManager.instance.Subscribe("OnRailGrind", EnableHandler);
+        EventManager.instance.Subscribe("OnRailGrindEnd", DisableHandler);
     }
     
     private void OnDisable()
