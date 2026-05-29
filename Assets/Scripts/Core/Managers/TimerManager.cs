@@ -9,18 +9,20 @@ public class TimerManager : MonoBehaviour
     List<Timer> timers = new List<Timer>(); //pool
     public static TimerManager instance;
 
-	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-	private static void ResetStatics() {
-		instance = null;
-	}
 
-	private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(this);
+	//[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	//private static void ResetStatics() {
+	//	instance = null;
+	//}
 
+    private void Awake() {
+		if (instance != null && instance != this) {
+			Destroy(gameObject);
+			return;
+		}
+
+		instance = this;
+		DontDestroyOnLoad(gameObject);
     }
 
     public int NewTimer(float time, Action Callback, string Name)
@@ -33,13 +35,15 @@ public class TimerManager : MonoBehaviour
         return id;
     }
 
-    public bool GetTimerState(int ID)
-    {
-        return timers[ID].isActive;
+    public bool GetTimerState(int ID){
+		if (ID < 0 || ID >= timers.Count) {
+			return false;
+		}
+
+		return timers[ID].isActive;
     }
 
-    public void SetTimerState(int ID, bool isActive)
-    {
+    public void SetTimerState(int ID, bool isActive) {
         if (ID >= 0 && ID < timers.Count)
         {
             timers[ID].isActive = isActive;
