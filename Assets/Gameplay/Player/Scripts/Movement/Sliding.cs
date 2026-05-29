@@ -123,6 +123,8 @@ public class Sliding : MonoBehaviour
         
         _capsuleCollider.height = startYScale;
 
+        EventManager.instance.Invoke("OnSlideEnd");
+
         if (SparksVFX != null)
             SparksVFX.SetActive(false);
     }

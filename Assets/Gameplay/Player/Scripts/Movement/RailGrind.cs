@@ -187,10 +187,12 @@ public class RailGrind : MonoBehaviour
             _timerManager.RestartTimer(RailtimerID);
             SparkVFX.SetActive(false);
 
+
             Vector3 launchDir = transform.forward;
             launchDir.y = 0f;
             controller._rb.AddForce((launchDir.normalized * railBoost )+Vector3.up * 10, ForceMode.VelocityChange);
             controller.OverrideMoveSpeed(7);
+            EventManager.instance.Invoke("OnRailGrindEnd");
         }
     }
 }

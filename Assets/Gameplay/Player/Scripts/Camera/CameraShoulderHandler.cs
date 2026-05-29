@@ -31,6 +31,7 @@ public class CameraShoulderHandler : MonoBehaviour
 
     private bool isSprinting = false;
     private bool isSniperAiming = false;
+    private bool isRailGrinding = false;
 
     private void Start()
     {
@@ -81,11 +82,13 @@ public class CameraShoulderHandler : MonoBehaviour
     void RailGrindBoostFov(object data)
     {
         // Rail grind overrides normal FOV
+        isRailGrinding = true;
         StartFOVLerp(boostedFov);
     }
 
     void resetFOV(object data)
     {
+        isRailGrinding = false;
         EvaluateTargetFOV();
     }
 
@@ -98,6 +101,10 @@ public class CameraShoulderHandler : MonoBehaviour
             StartFOVLerp(sniperFov);
         }
         else if (isSprinting)
+        {
+            StartFOVLerp(boostedFov);
+        }
+        else if(isRailGrinding)
         {
             StartFOVLerp(boostedFov);
         }

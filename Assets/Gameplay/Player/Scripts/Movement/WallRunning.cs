@@ -174,7 +174,10 @@ public class WallRunning : MonoBehaviour
 
 
         controller.wallRunning = true;
+
+        //Change to new system in future
         OnWallRunStart?.Invoke(wallRight);
+        EventManager.instance.Invoke("OnWallrun",wallRight);
 
 		noiseEmitter?.EmitWallRunNoise();
 		nextWallRunNoiseTime = Time.time + wallRunNoiseInterval;
@@ -184,7 +187,9 @@ public class WallRunning : MonoBehaviour
     {
         _timerManager.SetTimerState(wallRunTimerID, false);
         controller.wallRunning = false;
+        //Old System replace with new one
         OnWallRunEnd?.Invoke();
+        EventManager.instance.Invoke("OnWallrunEnd", wallRight);
         //OnWallRunStart?.Invoke(false);
     }
 
