@@ -22,4 +22,12 @@ public class TutorialTriggerPopUp : MonoBehaviour
             tutorialPanel.SetActive(true);
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            tutorialPanel.SetActive(false);
+        }
+    }
 }
