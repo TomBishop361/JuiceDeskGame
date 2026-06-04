@@ -36,7 +36,7 @@ public class RailGrind : MonoBehaviour
 
     private void OnEnable()
     {
-        EventManager.instance.Subscribe("OnDamage", damageHandler);
+        //EventManager.instance.Subscribe("OnDamage", damageHandler);
         //if(_health != null)
         //{
         //    _health.OnDamageDealt += throwOffRail;
@@ -49,7 +49,7 @@ public class RailGrind : MonoBehaviour
 
     private void OnDisable()
     {
-        EventManager.instance.Unsubscribe("OnDamage", damageHandler);
+       // EventManager.instance.Unsubscribe("OnDamage", damageHandler);
         //if (_health != null)
         //{
         //    _health.OnDamageDealt -= throwOffRail;
