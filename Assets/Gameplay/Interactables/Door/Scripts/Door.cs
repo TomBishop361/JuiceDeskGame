@@ -20,7 +20,17 @@ public class Door : MonoBehaviour {
 	[Tooltip("Animator trigger used to close the door.")]
 	[SerializeField] private string closeTriggerName = "Close";
 
-	[Header("Debug")]
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip openSound;
+    [SerializeField] private AudioClip closeSound;
+
+    [Header("Glass Door")]
+    [SerializeField] private bool isGlassDoor = false;
+    [SerializeField] private GameObject leftGlassDoor;
+    [SerializeField] private GameObject rightGlassDoor;
+
+    [Header("Debug")]
 	[Tooltip("If true, the door process is logged to the Unity Console.")]
 	[SerializeField] private bool debugLogging = true;
 
@@ -120,8 +130,16 @@ public class Door : MonoBehaviour {
 		}
 	}
 
-	// Opens the door if it is unlocked
-	public void TryOpen() {
+    private bool GlassStillExists()
+    {
+        if (!isGlassDoor)
+            return true;
+
+        return leftGlassDoor != null || rightGlassDoor != null;
+    }
+
+    // Opens the door if it is unlocked
+    public void TryOpen() {
 		if (unlocked == false) {
 			return;
 		}
@@ -132,7 +150,12 @@ public class Door : MonoBehaviour {
 
 		isOpen = true;
 		SetAnimatorTrigger(openTriggerName);
-	}
+
+        if (GlassStillExists() && audioSource != null && openSound != null)
+        {
+            audioSource.PlayOneShot(openSound);
+        }
+    }
 
 	// Closes the door
 	public void TryClose() {
@@ -142,7 +165,12 @@ public class Door : MonoBehaviour {
 
 		isOpen = false;
 		SetAnimatorTrigger(closeTriggerName);
-	}
+
+        if (GlassStillExists() && audioSource != null && closeSound != null)
+        {
+            audioSource.PlayOneShot(closeSound);
+        }
+    }
 
 	private void SetAnimatorTrigger(string triggerName) {
 		if (animator == null || string.IsNullOrWhiteSpace(triggerName)) {

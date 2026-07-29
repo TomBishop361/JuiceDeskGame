@@ -14,6 +14,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: SciFiPanel_TrimSheet
     second: {fileID: 2100000, guid: cdb0a185e66255e4bb42005748ef4099, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TrimSheet
+    second: {fileID: 2100000, guid: cdb0a185e66255e4bb42005748ef4099, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -38,7 +43,8 @@ ModelImporter:
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    extraUserProperties: []
+    extraUserProperties:
+    - '#BAKERY{"meshName":["DoorFrameFloor_low","Wall_Door01","Wall_Door02","DoorFrame_low"],"padding":[39,21,21,19],"unwrapper":[0,0,0,0]}'
     clipAnimations: []
     isReadable: 0
   meshes:
@@ -56,7 +62,7 @@ ModelImporter:
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
